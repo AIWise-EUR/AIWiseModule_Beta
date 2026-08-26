@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Wise · C3: How Do We Use AI?</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --card: #fcfdfc;
+  --text: #0f2f33;
+  --muted: #5b6668;
+  --border: #d8dfde;
+  --accent: #2b5d63;
+  --nav-bg: #022f35;
+  --nav-w: 260px;
+  --teal-pale: #f0f6f5;
+  --teal-mid: #e2eeec;
+  --gold: #c9a96e;
+  --gold-pale: #faf5ec;
+  --radiusMd: 12px;
+  --radiusLg: 16px;
+  --shadowSm: 0 1px 2px rgba(9,24,26,0.05);
+  --shadowMd: 0 8px 24px rgba(9,24,26,0.08);
+  --shadowLg: 0 16px 48px rgba(9,24,26,0.12);
+  --green: #2a7a35;
+  --amber: #9a6d1a;
+  --red: #8b3a1a;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scrollbar-gutter: stable; }
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 400;
+  background: var(--bg);
+  color: var(--text);
+  overflow-y: scroll;
+}
+
+/* UI TRANSITIONS */
+.ui-transition-target { transition: opacity 0.38s ease; }
+.ui-transition-target.ui-entering { opacity: 0; }
+.ui-transition-target.ui-mounted { opacity: 1; }
+.ui-transition-target.ui-leaving { opacity: 0; }
+
+/* HEADER */
+.main-header {
+  padding: 16px max(32px, calc(50% - 568px));
+  background: #fff; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; gap: 16px;
+}
+.main-header h1 { font-size: 18px; font-weight: 700; color: var(--nav-bg); margin: 0; }
+.header-home-link {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: inherit; margin-right: auto;
+  transition: opacity 0.2s;
+}
+.header-home-link:hover { opacity: 0.7; }
+.header-logo { height: 32px; flex-shrink: 0; }
+.breadcrumb { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.breadcrumb span { color: var(--border); }
+
+/* PAGE LAYOUT: content + side nav */
+.page-layout {
+  display: flex;
+  align-items: flex-start;
+}
+.page-content {
+  flex: 1;
+  min-width: 0;
+}
+.side-nav-rail {
+  width: 288px;
+  flex-shrink: 0;
+  align-self: stretch;
+  padding: 24px 18px 24px 0;
+}
+
+/* RIGHT STICKY NAV */
+.side-nav {
+  position: sticky;
+  top: 80px;
+  width: 270px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radiusLg);
+  box-shadow: var(--shadowMd);
+  padding: 18px 14px;
+  z-index: 40;
+}
+.side-nav-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 14px;
+  padding: 0 6px;
+}
+.side-nav a { text-decoration: none; }
+
+/* CORE BLOCKS LIST */
+.core-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.core-nav-block {
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  overflow: hidden;
+  transition: background 0.25s ease;
+}
+.core-nav-block.current { background: var(--teal-pale); }
+
+.core-nav-block-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.core-nav-block:not(.current) .core-nav-block-header:hover { background: #f4f8f7; }
+
+.core-nav-block-title {
+  flex: 1;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  transition: color 0.2s;
+}
+.core-nav-block.current .core-nav-block-title { color: var(--accent); }
+.core-nav-block-title:hover { color: var(--accent); background: transparent; }
+
+.core-nav-toggle {
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: color 0.2s, background 0.2s;
+}
+.core-nav-toggle:hover { color: var(--accent); background: rgba(43,93,99,0.08); }
+.core-nav-toggle svg {
+  width: 10px;
+  height: 10px;
+  transition: transform 0.3s ease;
+}
+.core-nav-block.collapsed .core-nav-toggle svg { transform: rotate(-90deg); }
+
+/* smooth expand/collapse */
+.core-nav-subsections {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 6px 8px 8px;
+  max-height: 260px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+}
+.core-nav-block.collapsed .core-nav-subsections {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.side-nav .core-nav-sub {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-size: 12.5px;
+  padding: 7px 10px 7px 24px;
+  color: var(--muted);
+  border-radius: 6px;
+  line-height: 1.35;
+  position: relative;
+  transition: color 0.2s, background 0.2s;
+}
+.side-nav .core-nav-sub::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1.5px solid #a6b6b8;
+  background: transparent;
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.side-nav .core-nav-sub:hover {
+  color: var(--text);
+  background: rgba(43,93,99,0.05);
+}
+.side-nav .core-nav-sub:hover::before { border-color: var(--accent); }
+.side-nav .core-nav-sub.active {
+  color: var(--accent);
+  font-weight: 600;
+  background: rgba(43,93,99,0.08);
+}
+.side-nav .core-nav-sub.active::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(43,93,99,0.14);
+}
+
+/* BOTTOM EXTRAS */
+.side-nav-extras {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.side-nav-extras a {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+  line-height: 1.3;
+}
+.side-nav-extras .aws-link {
+  color: var(--gold);
+  font-weight: 600;
+}
+.side-nav-extras .aws-link:hover { background: var(--gold-pale); }
+.side-nav-extras .home-link {
+  color: var(--muted);
+  font-weight: 500;
+}
+.side-nav-extras .home-link:hover {
+  color: var(--accent);
+  background: var(--teal-pale);
+}
+
+/* PAGE */
+.page { }
+
+/* HERO */
+.hero {
+  background: var(--nav-bg); padding: 64px 40px 56px;
+  position: relative; overflow: hidden;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.hero-glow {
+  position: absolute; width: 600px; height: 300px;
+  right: -120px; bottom: -60px;
+  background: radial-gradient(ellipse, rgba(201,169,110,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-inner { position: relative; z-index: 2; max-width: 960px; margin: 0 auto; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 20px;
+}
+.hero-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+.hero h2 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 700; color: #fff; line-height: 1.2;
+  letter-spacing: -0.02em; margin-bottom: 16px;
+}
+.hero h2 em { font-style: normal; color: #fff; font-weight: inherit; }
+.hero-lead {
+  font-size: 0.97rem; color: rgba(255,255,255,0.6);
+  line-height: 1.75; font-weight: 400; max-width: 760px;
+}
+
+/* Cycle indicator */
+.cycle-bar {
+  display: inline-flex; align-items: center; gap: 0;
+  margin-top: 28px; flex-wrap: wrap;
+}
+.cycle-step {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 18px; border-radius: 8px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.85);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.cycle-step-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--gold); color: var(--nav-bg);
+  font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.cycle-arrow {
+  color: rgba(255,255,255,0.25); font-size: 18px;
+  padding: 0 8px; line-height: 1;
+}
+
+/* SECTIONS */
+.section {
+  padding: 64px 40px;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: 110px;
+}
+.section-alt { background: #f8faf9; }
+.section-tag {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+}
+.section h3 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 700; color: var(--text);
+  line-height: 1.25; margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+.section-body {
+  font-size: 0.95rem; color: var(--muted);
+  line-height: 1.8; max-width: 680px;
+  font-weight: 400;
+}
+.section-body p { margin-bottom: 1em; }
+.section-body p:last-child { margin-bottom: 0; }
+.section-body strong { color: var(--text); font-weight: 600; }
+.section-body, .sources p, .breadcrumb {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.section .section-tag,
+.section h3,
+.section .section-body { max-width: 960px; margin-left: auto; margin-right: auto; }
+.section .wide-content { max-width: 960px; margin-left: auto; margin-right: auto; }
+
+/* HERO QUOTE — calligraphic, faded */
+.hero-quote {
+  max-width: 960px; margin: 40px auto 8px;
+  padding: 0;
+}
+.hero-quote-text {
+  font-family: 'Lora', Georgia, 'Times New Roman', serif;
+  font-size: 1.35rem;
+  font-style: italic;
+  font-weight: 400;
+  color: #a3b0b1;
+  line-height: 1.75;
+  letter-spacing: 0.02em;
+  word-spacing: 0.03em;
+}
+.hero-quote-attr {
+  margin-top: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  font-style: normal;
+  font-weight: 500;
+  color: #c0cac9;
+  letter-spacing: 0.03em;
+  text-align: right;
+}
+
+/* SUBSECTION DIVIDER */
+.sub-tag {
+  max-width: 960px; margin: 48px auto 14px;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--gold);
+}
+
+/* FRAMING BOX */
+.framing-box {
+  max-width: 960px; margin: 24px auto;
+  padding: 24px 28px;
+  background: var(--nav-bg);
+  border-radius: var(--radiusLg);
+  color: rgba(255,255,255,0.75);
+  font-size: 0.93rem; line-height: 1.75;
+  font-weight: 300;
+}
+.framing-box strong { color: #fff; font-weight: 600; }
+.framing-box p + p { margin-top: 10px; }
+
+/* TECHNIQUE PANEL — tab bar + window */
+.technique-panel {
+  max-width: 960px; margin: 32px auto 0;
+  display: flex; align-items: stretch;
+  min-height: 380px;
+}
+.technique-tabs {
+  width: 210px; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.technique-tab {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 16px;
+  border-radius: 10px 0 0 10px;
+  cursor: pointer; user-select: none;
+  border: 1px solid transparent;
+  border-right: none;
+  background: transparent;
+  transition: all 0.25s;
+  position: relative;
+}
+.technique-tab:hover { background: var(--teal-pale); }
+.technique-tab.active {
+  background: #fff;
+  border-color: var(--border);
+  box-shadow: -4px 0 12px rgba(9,24,26,0.04);
+  z-index: 2;
+}
+.technique-tab.active::after {
+  content: '';
+  position: absolute; right: -1px; top: 8px; bottom: 8px;
+  width: 2px; background: #fff;
+}
+.technique-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--border); color: var(--text);
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.25s, color 0.25s;
+}
+.technique-tab.active .technique-num {
+  background: var(--accent); color: #fff;
+}
+.technique-tab-label { font-size: 12.5px; font-weight: 600; color: var(--muted); transition: color 0.25s; line-height: 1.3; }
+.technique-tab.active .technique-tab-label { color: var(--text); }
+.technique-window {
+  flex: 1; min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 0 var(--radiusLg) var(--radiusLg) 0;
+  background: #fff;
+  box-shadow: var(--shadowMd);
+  padding: 32px 30px;
+  position: relative;
+  min-height: 480px;
+}
+.technique-pane { display: none; }
+.technique-pane.active { display: block; }
+.technique-pane-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.technique-pane-subtitle { font-size: 12px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
+.technique-body { font-size: 13.5px; color: var(--muted); line-height: 1.7; }
+.technique-body strong { color: var(--text); font-weight: 600; }
+.technique-warn {
+  margin-top: 16px; padding: 12px 16px;
+  background: #fef9f3; border-radius: 8px;
+  border: 1px solid #f0dcc2;
+  font-size: 12.5px; color: #7a5a2e; line-height: 1.6;
+}
+.technique-warn strong { font-weight: 600; }
+.technique-example { margin-top: 16px; font-size: 12.5px; line-height: 1.65; }
+.technique-example .ex-bad { color: var(--red); padding: 8px 12px; background: rgba(180,50,30,0.04); border-radius: 6px; margin-bottom: 8px; }
+.technique-example .ex-good { color: var(--green); padding: 8px 12px; background: rgba(42,122,53,0.04); border-radius: 6px; }
+.technique-evidence {
+  margin-top: 14px; font-size: 11px; color: var(--muted);
+  font-style: italic; line-height: 1.5; opacity: 0.7;
+  padding-top: 10px; border-top: 1px solid var(--border);
+}
+@media (max-width: 900px) {
+  .technique-panel { flex-direction: column; }
+  .technique-tabs { width: 100%; flex-direction: row; overflow-x: auto; gap: 0; }
+  .technique-tab { border-radius: 8px 8px 0 0; border: 1px solid transparent; border-bottom: none; padding: 10px 14px; white-space: nowrap; }
+  .technique-tab.active::after { display: none; }
+  .technique-window { border-radius: 0 0 var(--radiusLg) var(--radiusLg); }
+}
+
+/* FLOW CONNECTOR */
+.flow-connector {
+  max-width: 960px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 8px 0;
+}
+.flow-arrow {
+  width: 6px; height: 28px;
+  background: var(--accent);
+  position: relative;
+  border-radius: 3px;
+}
+.flow-arrow:last-child::after {
+  content: '';
+  position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 11px solid var(--accent);
+}
+.flow-connector-text {
+  font-size: 14px; color: var(--text); font-weight: 600;
+  padding: 4px 0; text-align: center;
+}
+
+/* PROACTIVE PANEL */
+.proactive-panel { min-height: auto; }
+.proactive-panel .technique-window { min-height: auto; padding: 24px 26px; }
+.proactive-panel .technique-pane-subtitle { margin-bottom: 10px; }
+.proactive-questions {
+  list-style: none; padding: 0; margin: 8px 0 0;
+}
+.proactive-questions li {
+  font-size: 14px; color: var(--text); line-height: 1.7;
+  padding: 10px 0 10px 22px; position: relative;
+  border-bottom: 1px solid var(--border);
+}
+.proactive-questions li:last-child { border-bottom: none; }
+.proactive-questions li::before {
+  content: ''; position: absolute; left: 0; top: 17px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent); opacity: 0.4;
+}
+
+/* TEMPLATE BLOCK */
+.template-block {
+  position: relative;
+  max-width: 960px; margin: 28px auto 0; padding: 52px 28px 24px;
+  background: #f4f7f6; border-radius: var(--radiusLg); border: 1px solid var(--border);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap;
+}
+.template-block .tpl-label { color: var(--accent); font-weight: 700; }
+.template-block .tpl-fill { color: var(--muted); font-style: italic; }
+
+.template-copy {
+  position: absolute;
+  top: 14px; right: 14px;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  font: inherit; font-size: 11.5px; font-weight: 600;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--accent); background: #fff;
+  border: 1px solid var(--border); border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.template-copy:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.template-copy.is-copied { background: var(--accent); color: #fff; border-color: var(--accent); }
+.template-copy svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* CRITIQUE STEPPER */
+.critique-stepper { max-width: 960px; margin: 32px auto 0; }
+.critique-stepper-bar { display: flex; align-items: stretch; gap: 0; position: relative; }
+.critique-stepper-tab {
+  flex: 1; display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px; cursor: pointer;
+  background: var(--teal-pale); border: 1px solid var(--border);
+  position: relative; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%, 16px 50%);
+  transition: background 0.25s, color 0.25s;
+  user-select: none;
+}
+.critique-stepper-tab:first-child { clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%); border-radius: 10px 0 0 10px; }
+.critique-stepper-tab:last-child { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 16px 50%); border-radius: 0 10px 10px 0; }
+.critique-stepper-tab.active { background: var(--accent); border-color: var(--accent); }
+.critique-stepper-tab.active .cst-num { background: #fff; color: var(--accent); }
+.critique-stepper-tab.active .cst-label { color: #fff; }
+.critique-stepper-tab.active .cst-sub { color: rgba(255,255,255,0.7); }
+.critique-stepper-tab:not(.active):hover { background: var(--teal-mid); }
+.cst-num { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.25s, color 0.25s; }
+.cst-label { font-size: 14px; font-weight: 700; color: var(--text); transition: color 0.25s; line-height: 1.2; }
+.cst-sub { font-size: 10.5px; color: var(--muted); font-weight: 400; transition: color 0.25s; }
+
+/* critique window */
+.critique-window {
+  margin-top: -1px; border: 1px solid var(--border); border-radius: 0 0 var(--radiusLg) var(--radiusLg);
+  background: #fff; box-shadow: var(--shadowMd); position: relative; overflow: hidden; min-height: 220px;
+}
+.critique-window-inner { display: flex; transition: transform 0.4s cubic-bezier(.4,0,.2,1); will-change: transform; }
+.critique-slide {
+  min-width: 100%; padding: 28px 30px; opacity: 0; transition: opacity 0.35s ease;
+}
+.critique-slide.active { opacity: 1; }
+.critique-slide-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+.critique-checklist { list-style: none; padding: 0; margin-bottom: 18px; }
+.critique-checklist li { font-size: 13px; color: var(--muted); line-height: 1.7; padding: 4px 0 4px 24px; position: relative; }
+.critique-checklist li::before { content: '□'; position: absolute; left: 0; top: 4px; color: var(--accent); font-size: 14px; }
+.critique-example { padding: 14px 16px; background: var(--teal-pale); border-radius: 10px; font-size: 12.5px; color: var(--muted); line-height: 1.7; border: 1px solid var(--teal-mid); }
+.critique-example strong { color: var(--text); font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* critique nav arrows */
+.critique-nav { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-top: 1px solid var(--border); background: var(--teal-pale); border-radius: 0 0 var(--radiusLg) var(--radiusLg); }
+.critique-nav-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px;
+  border-radius: 8px; border: 1px solid var(--border); background: #fff;
+  font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer;
+  font-family: inherit; transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+.critique-nav-btn:hover { background: var(--teal-mid); border-color: var(--accent); transform: translateY(-1px); }
+.critique-nav-btn:disabled { opacity: 0.35; pointer-events: none; }
+.critique-nav-dots { display: flex; gap: 8px; }
+.critique-nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.25s, transform 0.25s; }
+.critique-nav-dot.active { background: var(--accent); transform: scale(1.25); }
+
+/* FORMAT TABLE */
+.styled-table { max-width: 960px; margin: 24px auto 0; width: 100%; border-collapse: collapse; font-size: 13px; border-radius: var(--radiusMd); overflow: hidden; border: 1px solid var(--border); }
+.styled-table thead th { background: var(--nav-bg); color: #fff; padding: 12px 18px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.styled-table tbody td { padding: 12px 18px; border-bottom: 1px solid var(--border); color: var(--muted); line-height: 1.55; }
+.styled-table tbody tr:nth-child(even) { background: #f8faf9; }
+.styled-table tbody tr:last-child td { border-bottom: none; }
+.styled-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+.risk-high { color: var(--red); font-weight: 600; }
+
+/* AMD PROCESS */
+.amd-steps { max-width: 960px; margin: 28px auto 0; }
+.amd-step { display: flex; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--border); }
+.amd-step:last-child { border-bottom: none; }
+.amd-step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.amd-step-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.amd-step-body { font-size: 13px; color: var(--muted); line-height: 1.65; }
+.amd-example { max-width: 960px; margin: 28px auto 0; padding: 24px; background: var(--teal-pale); border-radius: var(--radiusLg); border: 1px solid var(--teal-mid); }
+.amd-example-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.amd-item { padding: 10px 0; border-bottom: 1px solid var(--teal-mid); }
+.amd-item:last-child { border-bottom: none; }
+.amd-item-text { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 4px; }
+.amd-tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+.amd-tag-adopt { background: rgba(42,122,53,0.1); color: var(--green); }
+.amd-tag-modify { background: rgba(154,109,26,0.1); color: var(--amber); }
+.amd-tag-discard { background: rgba(180,50,30,0.08); color: var(--red); }
+.amd-reason { font-size: 12px; color: var(--muted); line-height: 1.55; margin-top: 4px; }
+
+/* CHECKLIST CARD */
+.checklist-card { max-width: 960px; margin: 36px auto 0; padding: 28px 32px; background: var(--nav-bg); border-radius: var(--radiusLg); border-left: 4px solid var(--gold); }
+.checklist-card-title { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+.checklist-items { list-style: none; padding: 0; }
+.checklist-items li { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.7; padding: 6px 0 6px 30px; position: relative; }
+.checklist-items li::before { content: '☐'; position: absolute; left: 0; top: 6px; color: var(--gold); font-size: 16px; }
+.checklist-source { margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.35); line-height: 1.5; }
+
+/* CODE COMPARISON */
+.code-compare { max-width: 960px; margin: 28px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.code-panel { border-radius: var(--radiusMd); overflow: hidden; border: 1px solid var(--border); }
+.code-panel-header { padding: 10px 18px; background: var(--nav-bg); font-size: 11px; font-weight: 700; color: #fff; letter-spacing: 0.1em; text-transform: uppercase; }
+.code-panel-body { padding: 18px; background: #f4f7f6; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 12px; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+.code-panel-body .tag { color: var(--accent); font-weight: 600; }
+.code-panel-body .heading { color: var(--accent); font-weight: 700; }
+.code-panel-body .comment { color: var(--muted); font-style: italic; }
+
+/* PRINCIPLES */
+.principles-grid { max-width: 960px; margin: 24px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.principle-card { padding: 16px 18px; border-radius: var(--radiusMd); border: 1px solid var(--border); background: #fff; }
+.principle-card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.principle-card-body { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.principle-card .ex-inline { display: block; margin-top: 6px; padding: 6px 10px; background: #f4f7f6; border-radius: 6px; font-size: 11.5px; font-family: 'SF Mono', 'Fira Code', monospace; }
+
+/* COLLAPSIBLE */
+details.collapsible { max-width: 960px; margin: 28px auto 0; border: 1px solid var(--border); border-radius: var(--radiusLg); overflow: hidden; }
+details.collapsible summary { padding: 16px 22px; font-size: 14px; font-weight: 600; color: var(--text); cursor: pointer; background: #fff; list-style: none; display: flex; align-items: center; gap: 10px; }
+details.collapsible summary::-webkit-details-marker { display: none; }
+details.collapsible summary::before { content: '▸'; font-size: 12px; color: var(--accent); transition: transform 0.2s; }
+details.collapsible[open] summary::before { transform: rotate(90deg); }
+details.collapsible .collapsible-body { padding: 20px 22px; background: #f4f7f6; border-top: 1px solid var(--border); font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 12.5px; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+.collapsible-body .tag { color: var(--accent); font-weight: 600; }
+.collapsible-body .comment { color: var(--muted); font-style: italic; }
+
+/* SOURCES */
+.sources { padding: 20px 40px; background: var(--teal-pale); border-top: 1px solid var(--teal-mid); }
+.sources p { font-size: 11.5px; color: #8a9597; line-height: 1.7; max-width: none; }
+
+.mobile-core-nav-wrap {
+  display: none;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+}
+.mobile-core-nav summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.mobile-core-nav summary::-webkit-details-marker { display: none; }
+.mobile-core-nav-body { padding-top: 10px; }
+.mobile-core-nav .core-nav-list { gap: 10px; }
+
+/* NEXT BAR */
+.next-bar { background: var(--nav-bg); padding: 32px 40px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.next-bar-text h4 { font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
+.next-bar-text p { font-size: 1rem; font-weight: 500; color: #fff; }
+.next-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; background: var(--accent); border: 1px solid var(--accent); border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s; font-family: inherit; }
+.next-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); opacity: 0.92; }
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .side-nav-rail { display: none; }
+  .mobile-core-nav-wrap { display: block; }
+}
+@media (max-width: 900px) {
+  .hero, .section, .sources, .next-bar { padding-left: 20px; padding-right: 20px; }
+  .technique-grid { grid-template-columns: 1fr; }
+  .critique-stepper-tab { padding: 10px 14px; gap: 8px; }
+  .cst-label { font-size: 12px; }
+  .cst-sub { display: none; }
+  .critique-slide { padding: 22px 20px; }
+  .code-compare { grid-template-columns: 1fr; }
+  .principles-grid { grid-template-columns: 1fr; }
+  .cycle-bar { gap: 6px; }
+  .cycle-step { padding: 6px 12px; font-size: 11px; }
+}
+@media (max-width: 560px) {
+  .proactive-panel { flex-direction: column; }
+  .proactive-panel .technique-tabs { width: 100%; flex-direction: row; flex-wrap: wrap; }
+  .proactive-panel .technique-window { border-radius: 0 0 var(--radiusLg) var(--radiusLg); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.5s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="main-header">
+  <a href="lobby.html" class="header-home-link">
+    <img src="erasmus-logo.png" alt="Erasmus University Rotterdam" class="header-logo">
+    <h1>AI-Wise</h1>
+  </a>
+  <div class="breadcrumb">
+    <span>Core Blocks</span> › C3 · How Do We Use AI?
+  </div>
+</header>
+
+<div class="mobile-core-nav-wrap">
+  <details class="mobile-core-nav">
+    <summary>Core Blocks Navigation</summary>
+    <div class="mobile-core-nav-body" id="mobileCoreNav"></div>
+  </details>
+</div>
+
+<!-- PAGE -->
+<div class="page-layout">
+<main class="page-content ui-transition-target">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-inner fade-up">
+      <div class="hero-tag"><div class="hero-tag-dot"></div>C3 · Core Block</div>
+      <h2>How Do We Use AI?</h2>
+      <p class="hero-lead">
+        C1 covered what GenAI is. C2 covered what it is to us. C3 covers the operational layer: how we actually interact with it. This is not a collection of prompt tips — it is a framework built around one cycle.
+      </p>
+      <div class="cycle-bar">
+        <div class="cycle-step"><span class="cycle-step-num">1</span> Prompt</div>
+        <span class="cycle-arrow">→</span>
+        <div class="cycle-step"><span class="cycle-step-num">2</span> Critique</div>
+        <span class="cycle-arrow">→</span>
+        <div class="cycle-step"><span class="cycle-step-num">3</span> Integrate</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 1: PROMPT -->
+  <section class="section" id="section-1">
+    <div class="section-tag">Section 1 · Prompt</div>
+    <h3>Designing the input</h3>
+
+    <div class="section-body">
+      <p>
+        A prompt is a text input given to AI to instruct a task. Research defines prompt engineering as "the skill of articulating a problem, its context, and the constraints of the desired solution to an AI assistant" (Federiakin et al., 2024).
+      </p>
+      <p>
+        In this module, prompting is <strong>calibration</strong>. It is the act of defining what you want to do, what you expect, what process to follow, and under what conditions. Think of it as designing a virtual workspace where AI operates on your terms. To write a good prompt, you need to understand GenAI, but you also need to understand yourself: your task, your intention, your current stage, and your boundaries.
+      </p>
+    </div>
+
+    <div class="hero-quote">
+      <p class="hero-quote-text">"Learning how to interact with AI is not unlike being someone who's really good at asking questions. Prompting AI is very similar. You can't just randomly ask a bunch of questions. Asking AI to be an assistant to you requires some expertise and artistry of how to prompt it."</p>
+      <p class="hero-quote-attr">— Jensen Huang, CEO of NVIDIA (Cleo Abram, "Huge Conversations", January 2025)</p>
+    </div>
+
+    <div class="sub-tag wide-content">Six types of information AI uses to process a task</div>
+    <p class="section-body wide-content">Research consistently shows that AI performs significantly better when certain types of information are clearly provided. The following six are the key components that support how AI processes and responds to your request.</p>
+    <div class="technique-panel wide-content">
+      <!-- LEFT: Tab bar -->
+      <div class="technique-tabs">
+        <div class="technique-tab active" data-tab="1"><span class="technique-num">1</span><span class="technique-tab-label">Clear Instruction</span></div>
+        <div class="technique-tab" data-tab="2"><span class="technique-num">2</span><span class="technique-tab-label">Role / Persona</span></div>
+        <div class="technique-tab" data-tab="3"><span class="technique-num">3</span><span class="technique-tab-label">Task Decomposition</span></div>
+        <div class="technique-tab" data-tab="4"><span class="technique-num">4</span><span class="technique-tab-label">Few-shot Examples</span></div>
+        <div class="technique-tab" data-tab="5"><span class="technique-num">5</span><span class="technique-tab-label">Chain-of-Thought</span></div>
+        <div class="technique-tab" data-tab="6"><span class="technique-num">6</span><span class="technique-tab-label">Output Format</span></div>
+      </div>
+      <!-- RIGHT: Content window -->
+      <div class="technique-window">
+        <div class="technique-pane active" data-pane="1">
+          <div class="technique-pane-subtitle">Task Specification</div>
+          <div class="technique-pane-title">Clear Instruction</div>
+          <div class="technique-body">Information about <strong>what needs to be done</strong>. The more you specify the purpose, scope, context, and conditions of a task, the narrower AI's working space becomes.</div>
+          <div class="technique-warn"><strong>If you don't set it:</strong> AI interprets the task in the most generic way possible. Whether it matches your intent is left to chance.</div>
+          <div class="technique-example" data-slot="c3.techniques.clear_instruction" data-slot-type="prompt-example"></div>
+          <div class="technique-evidence">Consensus: treated as baseline across all major prompt engineering surveys</div>
+        </div>
+        <div class="technique-pane" data-pane="2">
+          <div class="technique-pane-subtitle">Perspective Assignment</div>
+          <div class="technique-pane-title">Role / Persona</div>
+          <div class="technique-body">Information about <strong>what perspective AI should operate from</strong>. Setting a role is not a technique to boost AI accuracy — it is the act of deciding what position you want AI to occupy for this task.</div>
+          <div class="technique-warn"><strong>If you don't set it:</strong> AI operates as a generic "helpful assistant."</div>
+          <div class="technique-example" data-slot="c3.techniques.role" data-slot-type="prompt-example"></div>
+          <div class="technique-evidence">Evidence: no measurable accuracy improvement on benchmarks (Zheng et al., 2024 EMNLP; 162 personas, 4 LLM families). Effective as a tone and framing tool.</div>
+        </div>
+        <div class="technique-pane" data-pane="3">
+          <div class="technique-pane-subtitle">Structure of a Task</div>
+          <div class="technique-pane-title">Task Decomposition</div>
+          <div class="technique-body">Information about <strong>the structure of a task</strong>. When you throw a complex task at AI in one piece, you cannot tell which part of the output went wrong.</div>
+          <div class="technique-warn"><strong>If you don't set it:</strong> AI decomposes the task on its own, but you cannot know if its decomposition matches your intent.</div>
+          <div class="technique-example" data-slot="c3.techniques.task_decomposition" data-slot-type="prompt-example"></div>
+          <div class="technique-evidence">Evidence: Least-to-Most prompting showed 83.5pp gain on compositional benchmarks (Zhou et al., 2022 ICLR)</div>
+        </div>
+        <div class="technique-pane" data-pane="4">
+          <div class="technique-pane-subtitle">Desired Output</div>
+          <div class="technique-pane-title">Few-shot Examples</div>
+          <div class="technique-body">Information about <strong>what the desired output looks like</strong>. The act of creating an example forces you to check: do I actually know what I want? Modern models can infer intent without examples, but that means the model interprets on its own.</div>
+          <div class="technique-warn"><strong>If you don't set it:</strong> AI responds in its most generic form. Without a standard, you cannot judge if it is right.</div>
+          <div class="technique-example" data-slot="c3.techniques.few_shot" data-slot-type="prompt-example"></div>
+          <div class="technique-evidence">Evidence: established in Brown et al. (2020, NeurIPS) GPT-3 paper. Few-shot CoT scored highest in Schulhoff et al. benchmarks.</div>
+        </div>
+        <div class="technique-pane" data-pane="5">
+          <div class="technique-pane-subtitle">Reasoning Steps</div>
+          <div class="technique-pane-title">Chain-of-Thought</div>
+          <div class="technique-body">Information about <strong>the reasoning process</strong>. Asking AI to show its intermediate steps opens a window for you to check its logic.</div>
+          <div class="technique-warn"><strong>If you don't set it:</strong> You get only the conclusion, with no visibility into how it got there. If it sounds plausible, you just accept it.</div>
+          <div class="technique-example" data-slot="c3.techniques.chain_of_thought" data-slot-type="prompt-example"></div>
+          <div class="technique-evidence">Evidence: Wei et al. (2022, NeurIPS) GSM8K 18% → 58%. However, effects are limited outside math/symbolic reasoning (Sprague et al., 2024).</div>
+        </div>
+        <div class="technique-pane" data-pane="6">
+          <div class="technique-pane-subtitle">Shape of the Output</div>
+          <div class="technique-pane-title">Output Format</div>
+          <div class="technique-body">Information about <strong>the shape of the output</strong>. The same content delivered as a table, a list, a single sentence, or a set of questions changes how you can use it afterward. Specifying the format is not a convenience — it is designing how the output will integrate into your workflow.</div>
+          <div class="technique-warn"><strong>If you don't set it:</strong> AI defaults to its standard form (usually long paragraphs).</div>
+          <div class="technique-example" data-slot="c3.techniques.output_format" data-slot-type="prompt-example"></div>
+          <div class="technique-evidence">Revisited in Section 3 (Integrate) from the integration strategy perspective.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-tag wide-content">Proactive GenAI Usage</div>
+    <p class="section-body wide-content">If you think through these components before prompting, you stay in control of the task. If you skip them, AI fills them in for you, and because its output looks plausible, you may not realize decisions were made without you. Having your own ideas about these components before you let AI work is what we call proactive GenAI usage.</p>
+
+    <div class="technique-panel proactive-panel wide-content">
+      <div class="technique-tabs">
+        <div class="technique-tab active" data-tab="p1"><span class="technique-num">1</span><span class="technique-tab-label">Clear Instruction</span></div>
+        <div class="technique-tab" data-tab="p2"><span class="technique-num">2</span><span class="technique-tab-label">Role</span></div>
+        <div class="technique-tab" data-tab="p3"><span class="technique-num">3</span><span class="technique-tab-label">Task Decomposition</span></div>
+        <div class="technique-tab" data-tab="p4"><span class="technique-num">4</span><span class="technique-tab-label">Few-shot</span></div>
+        <div class="technique-tab" data-tab="p5"><span class="technique-num">5</span><span class="technique-tab-label">Chain-of-Thought</span></div>
+        <div class="technique-tab" data-tab="p6"><span class="technique-num">6</span><span class="technique-tab-label">Output Format</span></div>
+      </div>
+      <div class="technique-window">
+        <div class="technique-pane active" data-pane="p1">
+          <div class="technique-pane-subtitle">Ask yourself</div>
+          <div class="technique-pane-title">Clear Instruction</div>
+          <ul class="proactive-questions">
+            <li>What exactly am I trying to do right now?</li>
+            <li>What is the purpose of this task?</li>
+            <li>What is the scope?</li>
+            <li>Which stage of my project does this task belong to?</li>
+          </ul>
+        </div>
+        <div class="technique-pane" data-pane="p2">
+          <div class="technique-pane-subtitle">Ask yourself</div>
+          <div class="technique-pane-title">Role</div>
+          <ul class="proactive-questions">
+            <li>What perspective should AI operate from?</li>
+            <li>What should AI NOT do?</li>
+            <li>What tone and level of response do I need?</li>
+          </ul>
+        </div>
+        <div class="technique-pane" data-pane="p3">
+          <div class="technique-pane-subtitle">Ask yourself</div>
+          <div class="technique-pane-title">Task Decomposition</div>
+          <ul class="proactive-questions">
+            <li>Can I break this task into smaller units?</li>
+            <li>Am I trying to ask for too much at once?</li>
+            <li>What order should the sub-tasks follow?</li>
+          </ul>
+        </div>
+        <div class="technique-pane" data-pane="p4">
+          <div class="technique-pane-subtitle">Ask yourself</div>
+          <div class="technique-pane-title">Few-shot</div>
+          <ul class="proactive-questions">
+            <li>Do I know what the desired output looks like?</li>
+            <li>Can I create one example?</li>
+            <li>If I can't make an example, do I actually know what I want?</li>
+          </ul>
+        </div>
+        <div class="technique-pane" data-pane="p5">
+          <div class="technique-pane-subtitle">Ask yourself</div>
+          <div class="technique-pane-title">Chain-of-Thought</div>
+          <ul class="proactive-questions">
+            <li>What reasoning process does this task require?</li>
+            <li>What steps should AI go through?</li>
+            <li>Do I need to see the intermediate process?</li>
+          </ul>
+        </div>
+        <div class="technique-pane" data-pane="p6">
+          <div class="technique-pane-subtitle">Ask yourself</div>
+          <div class="technique-pane-title">Output Format</div>
+          <ul class="proactive-questions">
+            <li>What format do I need to actually use it?</li>
+            <li>Table? List? Single sentence? Questions?</li>
+            <li>Is this format easy to integrate into my workflow?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector wide-content">
+      <div class="flow-arrow"></div>
+      <p class="flow-connector-text">Based on these components, you build your prompt.</p>
+      <div class="flow-arrow"></div>
+    </div>
+    <div class="template-block"><span class="tpl-label">[Role]</span>      <span class="tpl-fill">You are a _______ who _______.</span>
+<span class="tpl-label">[Task]</span>      <span class="tpl-fill">I need you to _______.</span>
+<span class="tpl-label">[Context]</span>   <span class="tpl-fill">I am currently working on _______. This task is part of _______.</span>
+<span class="tpl-label">[Constraints]</span><span class="tpl-fill"> Do not _______. Stay within _______.</span>
+<span class="tpl-label">[Reasoning]</span> <span class="tpl-fill">Approach this by first _______, then _______.</span>
+<span class="tpl-label">[Examples]</span>  <span class="tpl-fill">Here is an example of what I want: _______</span>
+<span class="tpl-label">[Format]</span>    <span class="tpl-fill">Respond in the form of a _______.</span></div>
+  </section>
+
+  <!-- SECTION 2: CRITIQUE -->
+  <section class="section section-alt" id="section-2">
+    <div class="section-tag">Section 2 · Critique</div>
+    <h3>Output is not an answer — it is a candidate</h3>
+    <div class="section-body">
+      <p>What AI gives you is not a final answer but a <strong>candidate</strong>: candidate structure, candidate wording, candidate comparison, candidate interpretation. Output is material to review, not material to adopt.</p>
+      <p>This connects directly to what you learned in C1. GenAI output is statistically likely, not factually verified. It is conditioned on prior tokens, not on reasoning. It is bounded by training data. It reflects a distribution, not authorship. Without your domain knowledge, critique is impossible.</p>
+    </div>
+    <div class="sub-tag wide-content">Four steps: Read → Question → Verify → Decide</div>
+    <div class="critique-stepper wide-content" id="critiqueStepper">
+      <!-- Step bar -->
+      <div class="critique-stepper-bar">
+        <div class="critique-stepper-tab active" data-step="0"><span class="cst-num">1</span><div><div class="cst-label">Read</div><div class="cst-sub">Identify what came out</div></div></div>
+        <div class="critique-stepper-tab" data-step="1"><span class="cst-num">2</span><div><div class="cst-label">Question</div><div class="cst-sub">Generate questions before judging</div></div></div>
+        <div class="critique-stepper-tab" data-step="2"><span class="cst-num">3</span><div><div class="cst-label">Verify</div><div class="cst-sub">Judge against criteria</div></div></div>
+        <div class="critique-stepper-tab" data-step="3"><span class="cst-num">4</span><div><div class="cst-label">Decide</div><div class="cst-sub">Select, modify, or discard</div></div></div>
+      </div>
+      <!-- Content window -->
+      <div class="critique-window">
+        <div class="critique-window-inner">
+          <div class="critique-slide active" data-slide="0">
+            <div class="critique-slide-title">Read — Identify what came out</div>
+            <ul class="critique-checklist"><li>Is this a response to what I requested?</li><li>What structure did AI use? (list, paragraphs, table, etc.)</li><li>What overall claim or direction is it taking?</li></ul>
+            <div class="critique-example"><strong>Example</strong><br><span data-slot="c3.critique.read">Student asked "Extract the common themes from these three papers." AI returned three paragraphs. Observation: AI identified three themes, assigned papers to each, and wrote in paragraph form.</span></div>
+          </div>
+          <div class="critique-slide" data-slide="1">
+            <div class="critique-slide-title">Question — Generate questions before judging</div>
+            <ul class="critique-checklist"><li>Is this content factually verifiable?</li><li>Is anything missing?</li><li>Are any parts overly general or vague?</li><li>Does the output include claims I can't verify?</li><li>Did the output stay within my requested scope?</li></ul>
+            <div class="critique-example"><strong>Example</strong><br><span data-slot="c3.critique.question">Are these three themes actually from the papers, or did AI generalize? Is the third theme too broad? Paper B is assigned to two themes — is that accurate? I only asked for common themes, but AI added "implications" — did it exceed my request scope?</span></div>
+          </div>
+          <div class="critique-slide" data-slide="2">
+            <div class="critique-slide-title">Verify — Judge against criteria</div>
+            <ul class="critique-checklist"><li>If facts, citations, or numbers are included — can the source be verified?</li><li>Does the output match the scope of my request?</li><li>Can I explain this content myself?</li><li>Does this output reflect my intent and context?</li></ul>
+            <div class="critique-example"><strong>Example</strong><br><span data-slot="c3.critique.verify">Checking Paper A: AI's first theme is correct but was a secondary point, not the core finding. The third theme uses phrasing that doesn't appear in any original paper — AI generalized. The "implications" section covers a stage I haven't reached yet.</span></div>
+          </div>
+          <div class="critique-slide" data-slide="3">
+            <div class="critique-slide-title">Decide — Select, modify, or discard</div>
+            <ul class="critique-checklist"><li>Which parts can I use and which should I discard?</li><li>Which parts need modification?</li><li>Is a re-prompt necessary?</li></ul>
+            <div class="critique-example"><strong>Example</strong><br><span data-slot="c3.critique.decide">Themes 1 and 2 are usable as starting points. Theme 3 is discarded. The implications section is deleted. Theme 2's paper assignment needs verification — may re-prompt after checking the original.</span></div>
+          </div>
+        </div>
+        <!-- Bottom nav -->
+        <div class="critique-nav">
+          <button class="critique-nav-btn critique-prev" disabled>← Prev</button>
+          <div class="critique-nav-dots"><span class="critique-nav-dot active"></span><span class="critique-nav-dot"></span><span class="critique-nav-dot"></span><span class="critique-nav-dot"></span></div>
+          <button class="critique-nav-btn critique-next">Next →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: INTEGRATE -->
+  <section class="section" id="section-3">
+    <div class="section-tag">Section 3 · Integrate</div>
+    <h3>How AI output enters your work</h3>
+    <div class="section-body">
+      <p>Integration does not start after you receive the output — it starts at the prompting stage. The moment you decide what format to receive the output in, you have already determined how safe and controllable the integration will be.</p>
+      <p>"Compare these papers" produces paragraphs that easily bleed into your writing. "Make a comparison table" keeps the output separate from your text, verifiable cell by cell. Choosing the output format is not a convenience — it is a <strong>safety mechanism</strong> for integration.</p>
+    </div>
+    <table class="styled-table wide-content"><thead><tr><th>Requested Format</th><th>Integration Characteristics</th></tr></thead><tbody>
+      <tr><td>Comparison table</td><td>Verifiable and extractable cell by cell. Does not blend into your prose.</td></tr>
+      <tr><td>Question list</td><td>Serves as a thinking prompt. No copy-paste risk. You have to write the answers.</td></tr>
+      <tr><td>Single sentence summary</td><td>A single claim — easy to accept or reject clearly.</td></tr>
+      <tr><td>Keyword / term list</td><td>Easy to selectively adopt. You write the sentences.</td></tr>
+      <tr><td>Bullet point outline</td><td>Use the structure as reference; fill in the content yourself.</td></tr>
+      <tr><td class="risk-high">Full paragraph</td><td><span class="risk-high">Highest risk of blending into your writing. Use with caution.</span></td></tr>
+    </tbody></table>
+
+    <div class="sub-tag wide-content">Adopt / Modify / Discard</div>
+    <div class="critique-stepper wide-content">
+      <!-- Step bar -->
+      <div class="critique-stepper-bar">
+        <div class="critique-stepper-tab active" data-step="0"><span class="cst-num">1</span><div><div class="cst-label">Segment</div><div class="cst-sub">Break output into units</div></div></div>
+        <div class="critique-stepper-tab" data-step="1"><span class="cst-num">2</span><div><div class="cst-label">Tag</div><div class="cst-sub">Adopt / Modify / Discard</div></div></div>
+        <div class="critique-stepper-tab" data-step="2"><span class="cst-num">3</span><div><div class="cst-label">Execute</div><div class="cst-sub">Act on each tag</div></div></div>
+        <div class="critique-stepper-tab" data-step="3"><span class="cst-num">4</span><div><div class="cst-label">Review</div><div class="cst-sub">Look at the whole</div></div></div>
+      </div>
+      <!-- Content window -->
+      <div class="critique-window">
+        <div class="critique-window-inner">
+          <div class="critique-slide active" data-slide="0">
+            <div class="critique-slide-title">Segment — Break output into units</div>
+            <p style="font-size:13px;color:var(--muted);line-height:1.7;">Break the output into units that can be judged independently. Rows for tables, items for lists, claims for paragraphs.</p>
+          </div>
+          <div class="critique-slide" data-slide="1">
+            <div class="critique-slide-title">Tag — Adopt / Modify / Discard</div>
+            <p style="font-size:13px;color:var(--muted);line-height:1.7;">Assign a tag to each unit:</p>
+            <ul class="critique-checklist" style="margin-top:10px;">
+              <li><span class="amd-tag amd-tag-adopt">Adopt</span> &nbsp;accurate, matches my intent, ready to use</li>
+              <li><span class="amd-tag amd-tag-modify">Modify</span> &nbsp;direction is right, needs adjustment</li>
+              <li><span class="amd-tag amd-tag-discard">Discard</span> &nbsp;inaccurate, outside scope, or I cannot verify it</li>
+            </ul>
+          </div>
+          <div class="critique-slide" data-slide="2">
+            <div class="critique-slide-title">Execute — Act on each tag</div>
+            <ul class="critique-checklist">
+              <li><strong style="color:var(--text);">Adopt →</strong> place in your work; confirm source and context.</li>
+              <li><strong style="color:var(--text);">Modify →</strong> define what to change; return to original source or re-prompt.</li>
+              <li><strong style="color:var(--text);">Discard →</strong> delete; record why in one line.</li>
+            </ul>
+          </div>
+          <div class="critique-slide" data-slide="3">
+            <div class="critique-slide-title">Review — Look at the whole</div>
+            <p style="font-size:13px;color:var(--muted);line-height:1.7;">After integration, look at the whole:</p>
+            <ul class="critique-checklist" style="margin-top:10px;">
+              <li>Does this reflect my thinking?</li>
+              <li>Has AI's language remained unchanged in my text?</li>
+              <li>Can I explain and defend every part?</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Bottom nav -->
+        <div class="critique-nav">
+          <button class="critique-nav-btn critique-prev" disabled>← Prev</button>
+          <div class="critique-nav-dots"><span class="critique-nav-dot active"></span><span class="critique-nav-dot"></span><span class="critique-nav-dot"></span><span class="critique-nav-dot"></span></div>
+          <button class="critique-nav-btn critique-next">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="amd-example wide-content" data-slot="c3.amd_example" data-slot-type="amd-example"></div>
+
+
+    <div class="checklist-card wide-content">
+      <div class="checklist-card-title">Human Accountability Checklist</div>
+      <ul class="checklist-items"><li>Are the core ideas and judgments in this work my own?</li><li>Have I verified all AI-generated content that I adopted?</li><li>Can I explain and defend every part of this work?</li><li>Can I transparently disclose how AI was used?</li></ul>
+      <div class="checklist-source">Based on the Author Checklist from Cheng, Calhoun, & Reedy (2025). Advances in Simulation, 10, 22.</div>
+    </div>
+  </section>
+
+  <!-- CLOSING: PROMPT TEMPLATE -->
+  <section class="section section-alt" id="section-4">
+    <div class="section-tag">Closing · Template</div>
+    <h3>Building your prompt</h3>
+    <div class="section-body">
+      <p>AI processes structured input more accurately than prose paragraphs. Formatting changes alone can shift accuracy by up to 76 percentage points (Sclar et al., ICLR 2024). Two common structuring formats are Markdown and XML.</p>
+    </div>
+    <div class="code-compare wide-content">
+      <div class="code-panel"><div class="code-panel-header">Markdown</div><div class="code-panel-body" data-slot="c3.template_compare.md" data-slot-type="md-panel"></div></div>
+      <div class="code-panel"><div class="code-panel-header">XML</div><div class="code-panel-body" data-slot="c3.template_compare.xml" data-slot-type="xml-panel"></div></div>
+    </div>
+    <div class="section-body" style="margin-top:20px;">
+      <p>Markdown uses <code style="background:#f0f3f2;padding:2px 6px;border-radius:4px;font-size:12px;">#</code> for headings and <code style="background:#f0f3f2;padding:2px 6px;border-radius:4px;font-size:12px;">-</code> for lists — intuitive and easy for humans to read. XML uses explicit opening and closing tags, which models parse more precisely. XML is the only delimiter format recommended by all three major providers (OpenAI, Anthropic, Google), making it advantageous for complex prompts.</p>
+    </div>
+
+    <div class="sub-tag wide-content">Prompt template (XML)</div>
+    <div class="template-block wide-content" data-copyable><button class="template-copy" type="button" data-copy-template aria-label="Copy prompt template"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span class="template-copy-label">Copy</span></button><span class="tpl-label">&lt;role&gt;</span>
+<span class="tpl-fill">[What perspective should AI operate from?]</span>
+<span class="tpl-label">&lt;/role&gt;</span>
+
+<span class="tpl-label">&lt;task&gt;</span>
+<span class="tpl-fill">[What specifically needs to be done? Include purpose and context]</span>
+<span class="tpl-label">&lt;/task&gt;</span>
+
+<span class="tpl-label">&lt;context&gt;</span>
+<span class="tpl-fill">[The situation this task sits in. Current stage, background, materials]</span>
+<span class="tpl-label">&lt;/context&gt;</span>
+
+<span class="tpl-label">&lt;constraints&gt;</span>
+<span class="tpl-fill">[What should AI NOT do? Scope limits. Conditions to respect]</span>
+<span class="tpl-label">&lt;/constraints&gt;</span>
+
+<span class="tpl-label">&lt;steps&gt;</span>
+<span class="tpl-fill">[The reasoning or work steps AI should follow]
+1. ...
+2. ...
+3. ...</span>
+<span class="tpl-label">&lt;/steps&gt;</span>
+
+<span class="tpl-label">&lt;examples&gt;</span>
+<span class="tpl-fill">[Examples of the desired output. 1–3]</span>
+<span class="tpl-label">&lt;/examples&gt;</span>
+
+<span class="tpl-label">&lt;output_format&gt;</span>
+<span class="tpl-fill">[Shape, length, and structure of the output]</span>
+<span class="tpl-label">&lt;/output_format&gt;</span></div>
+
+    <div class="sub-tag wide-content">Prompt length guide</div>
+    <table class="styled-table wide-content"><thead><tr><th>Task Complexity</th><th>Recommended Length</th></tr></thead><tbody>
+      <tr><td>Simple</td><td>50–100 words (summary, factual question)</td></tr>
+      <tr><td>Moderate</td><td>150–300 words (analysis, comparison, structured output)</td></tr>
+      <tr><td>Complex</td><td>300–500 words (multi-step reasoning, detailed generation)</td></tr>
+      <tr><td>Beyond 500 words</td><td>Split into multiple turns</td></tr>
+    </tbody></table>
+
+    <div class="sub-tag wide-content">Writing principles</div>
+    <div class="principles-grid wide-content">
+      <div class="principle-card"><div class="principle-card-title">Use imperative verbs</div><div class="principle-card-body">Start instructions with action words.<span class="ex-inline">"Summarize", "Compare", "Identify"</span></div></div>
+      <div class="principle-card"><div class="principle-card-title">Skip politeness tokens</div><div class="principle-card-body">"Please", "thank you", and "if you don't mind" are unnecessary and can reduce performance (Dobariya & Kumar, 2025).</div></div>
+      <div class="principle-card"><div class="principle-card-title">Use affirmative instructions</div><div class="principle-card-body">Affirmative instructions outperform negations.<span class="ex-inline">"Use plain language" > "Don't use jargon"</span></div></div>
+      <div class="principle-card"><div class="principle-card-title">Place key instructions at the edges</div><div class="principle-card-body">Put the most important instructions at the very beginning or very end of your prompt, countering the "Lost in the Middle" effect (Liu et al., 2024).</div></div>
+    </div>
+
+    <div class="framing-box wide-content" style="margin-top:28px;">
+      <p><strong>This template is a general-purpose framework.</strong> The activity preset prompts in this module are instances of this template with each field pre-filled for a specific learning activity.</p>
+    </div>
+
+    <details class="collapsible wide-content">
+      <summary><span data-slot="c3.full_example_title">Full worked example — Common theme extraction from three papers</span></summary>
+      <div class="collapsible-body" data-slot="c3.full_example" data-slot-type="xml-panel"></div>
+    </details>
+  </section>
+
+  <!-- SOURCES -->
+  <div class="sources">
+    <p>
+      <strong>Sources:</strong>
+      Federiakin, D. et al. (2024). Prompt engineering as a new 21st century skill. <em>Frontiers in Education</em>, 9, 1366434. ·
+      Schulhoff, S. et al. (2024). The Prompt Report. <em>arXiv:2406.06608</em>. ·
+      Sahoo, P. et al. (2024). A Systematic Survey of Prompt Engineering in LLMs. <em>arXiv:2402.07927</em>. ·
+      Liu, D. et al. (2026). A comprehensive taxonomy of prompt engineering techniques. <em>Frontiers of Computer Science</em>, 20(3). ·
+      White, J. et al. (2023). A Prompt Pattern Catalog. <em>PLoP 2023, Vanderbilt</em>. ·
+      Bozkurt, A. & Sharma, R. (2023). <em>Open Praxis</em>. ·
+      Wei, J. et al. (2022). Chain-of-Thought Prompting. <em>NeurIPS 2022</em>. ·
+      Brown, T. et al. (2020). Language Models are Few-Shot Learners. <em>NeurIPS 2020</em>. ·
+      Yusuf, A. et al. (2024). <em>Thinking Skills and Creativity</em>, 54, 101619. ·
+      Wang, Z. & Wang, C. (2025). APSE Model. <em>Journal of Second Language Writing</em>, 67, 101187. ·
+      Zhu, J. & Duan, C. (2025). Pan-indexicality and prompt. <em>Language and Semiotic Studies</em>. ·
+      Cheng, A., Calhoun, A. & Reedy, G. (2025). <em>Advances in Simulation</em>, 10, 22. ·
+      Sclar, M. et al. (2024). Sensitivity to Spurious Features. <em>ICLR 2024</em>. ·
+      Bsharat, S. et al. (2023). 26 Principled Instructions. ·
+      Liu, N. et al. (2024). Lost in the Middle. <em>TACL</em>. ·
+      Levy, M., Jacoby, A. & Goldberg, Y. (2024). Same Task, More Tokens. <em>ACL 2024</em>. ·
+      Shanahan, M. (2024). <em>Communications of the ACM</em>, 67(2). ·
+      Huang, L. et al. (2025). <em>ACM Transactions on Information Systems</em>. ·
+      Naveed, H. et al. (2025). <em>ACM TIST</em>. ·
+      Yenduri, G. et al. (2024). <em>IEEE Access</em>, 12, 54608–54649.
+    </p>
+  </div>
+
+
+</main>
+
+<!-- RIGHT STICKY NAV -->
+<aside class="side-nav-rail">
+  <div class="side-nav" id="sideNav" data-current-block="c3">
+    <div class="side-nav-title">Core Blocks</div>
+    <div class="core-nav-list" id="coreNavDesktop"></div>
+    <div class="side-nav-extras">
+      <a class="home-link" href="lobby.html">← Back to Home</a>
+    </div>
+  </div>
+</aside>
+</div><!-- /page-layout -->
+
+<!-- NEXT BAR: outside page-layout so the dark bar spans the full viewport width -->
+<div class="next-bar">
+  <a class="next-btn" href="aiwise-c2-final.html" style="background:transparent;border-color:rgba(255,255,255,0.2);">← C2 · What is AI for us?</a>
+  <div class="next-bar-text" style="text-align:right;">
+    <h4>Next</h4>
+    <p>GenAI in AWS I</p>
+  </div>
+  <a class="next-btn" href="sub-lobby.html">Continue →</a>
+</div>
+
+<script src="course-loader.js?v=5"></script>
+<script>
+// Core block navigation with subsection awareness
+(function() {
+  var desktopRoot = document.getElementById('coreNavDesktop');
+  var mobileRoot = document.getElementById('mobileCoreNav');
+  var navRoot = document.getElementById('sideNav');
+  if (!desktopRoot || !navRoot) return;
+
+  var currentBlock = navRoot.getAttribute('data-current-block') || 'c3';
+  var blocks = [
+    {
+      id: 'c1',
+      title: 'C1: What is AI?',
+      href: 'aiwise-c1-final.html',
+      sections: [
+        { id: 'section-1', label: 'History & Development' },
+        { id: 'section-2', label: 'Anatomy of GenAI' },
+        { id: 'section-3', label: 'GenAI Output Traits' }
+      ]
+    },
+    {
+      id: 'c2',
+      title: 'C2: What is AI for us?',
+      href: 'aiwise-c2-final.html',
+      sections: [
+        { id: 'section-1', label: 'AI vs Human Intelligence' },
+        { id: 'section-2', label: 'Human vs GenAI' },
+        { id: 'section-3', label: 'Collaboration Framework' }
+      ]
+    },
+    {
+      id: 'c3',
+      title: 'C3: How do we use AI?',
+      href: 'aiwise-c3-final.html',
+      sections: [
+        { id: 'section-1', label: 'Prompt' },
+        { id: 'section-2', label: 'Critique' },
+        { id: 'section-3', label: 'Integrate' }
+      ]
+    }
+  ];
+
+  function makeBlock(block) {
+    var blockEl = document.createElement('div');
+    blockEl.className = 'core-nav-block' + (block.id === currentBlock ? ' current' : ' collapsed');
+
+    var header = document.createElement('div');
+    header.className = 'core-nav-block-header';
+
+    var title = document.createElement('a');
+    title.className = 'core-nav-block-title';
+    title.href = block.href;
+    title.textContent = block.title;
+
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'core-nav-toggle';
+    toggle.setAttribute('aria-label', block.title + ' subsections toggle');
+    toggle.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l4 4 4-4"/></svg>';
+    toggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      blockEl.classList.toggle('collapsed');
+    });
+
+    header.appendChild(title);
+    header.appendChild(toggle);
+    blockEl.appendChild(header);
+
+    var subs = document.createElement('div');
+    subs.className = 'core-nav-subsections';
+
+    block.sections.forEach(function(section) {
+      var sub = document.createElement('a');
+      sub.className = 'core-nav-sub';
+      sub.textContent = section.label;
+      sub.setAttribute('data-block', block.id);
+      sub.setAttribute('data-section', section.id);
+      sub.href = block.id === currentBlock ? ('#' + section.id) : (block.href + '#' + section.id);
+      subs.appendChild(sub);
+    });
+
+    blockEl.appendChild(subs);
+    return blockEl;
+  }
+
+  blocks.forEach(function(block) {
+    desktopRoot.appendChild(makeBlock(block));
+    if (mobileRoot) mobileRoot.appendChild(makeBlock(block));
+  });
+
+  var current = blocks.find(function(block) { return block.id === currentBlock; });
+  if (!current) return;
+  var sectionEls = current.sections
+    .map(function(section) { return document.getElementById(section.id); })
+    .filter(Boolean);
+  if (!sectionEls.length) return;
+
+  function setActiveSection(sectionId) {
+    document.querySelectorAll('.core-nav-sub[data-block="' + currentBlock + '"]').forEach(function(link) {
+      link.classList.toggle('active', link.getAttribute('data-section') === sectionId);
+    });
+  }
+
+  function syncActiveFromScroll() {
+    var activeId = sectionEls[0].id;
+    sectionEls.forEach(function(section) {
+      if (section.getBoundingClientRect().top <= 170) activeId = section.id;
+    });
+    setActiveSection(activeId);
+  }
+
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function() {
+      syncActiveFromScroll();
+      ticking = false;
+    });
+  }, { passive: true });
+
+  window.addEventListener('resize', syncActiveFromScroll);
+  document.querySelectorAll('.core-nav-sub[data-block="' + currentBlock + '"]').forEach(function(link) {
+    link.addEventListener('click', function() {
+      setActiveSection(this.getAttribute('data-section'));
+    });
+  });
+
+  var hash = window.location.hash.replace('#', '');
+  if (hash) setActiveSection(hash);
+  syncActiveFromScroll();
+})();
+</script>
+<script>
+// Technique tab-panel switching
+document.querySelectorAll('.technique-panel').forEach(function(panel) {
+  panel.querySelectorAll('.technique-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var id = this.getAttribute('data-tab');
+      panel.querySelectorAll('.technique-tab').forEach(function(t) { t.classList.remove('active'); });
+      panel.querySelectorAll('.technique-pane').forEach(function(p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      panel.querySelector('.technique-pane[data-pane="' + id + '"]').classList.add('active');
+    });
+  });
+});
+</script>
+<script>
+// Critique stepper navigation — supports multiple steppers on page
+(function() {
+  document.querySelectorAll('.critique-stepper').forEach(function(stepper) {
+    var tabs = stepper.querySelectorAll('.critique-stepper-tab');
+    var slides = stepper.querySelectorAll('.critique-slide');
+    var inner = stepper.querySelector('.critique-window-inner');
+    var dots = stepper.querySelectorAll('.critique-nav-dot');
+    var prevBtn = stepper.querySelector('.critique-prev');
+    var nextBtn = stepper.querySelector('.critique-next');
+    var current = 0;
+    var total = tabs.length;
+
+    function goTo(idx) {
+      if (idx < 0 || idx >= total) return;
+      current = idx;
+      inner.style.transform = 'translateX(-' + (current * 100) + '%)';
+      tabs.forEach(function(t, i) { t.classList.toggle('active', i === current); });
+      slides.forEach(function(s, i) { s.classList.toggle('active', i === current); });
+      dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+      if (prevBtn) prevBtn.disabled = current === 0;
+      if (nextBtn) nextBtn.disabled = current === total - 1;
+    }
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() { goTo(+this.getAttribute('data-step')); });
+    });
+    if (prevBtn) prevBtn.addEventListener('click', function() { goTo(current - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function() { goTo(current + 1); });
+
+    // Swipe support
+    var startX = 0, startY = 0, tracking = false;
+    var win = stepper.querySelector('.critique-window');
+    win.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; startY = e.touches[0].clientY; tracking = true; }, { passive: true });
+    win.addEventListener('touchend', function(e) {
+      if (!tracking) return; tracking = false;
+      var dx = e.changedTouches[0].clientX - startX;
+      var dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+        if (dx < 0) goTo(current + 1); else goTo(current - 1);
+      }
+    }, { passive: true });
+  });
+})();
+</script>
+<script>
+// Copy button for the XML prompt template: grab the block's plain text
+// (excluding the button itself), write to clipboard, give quick confirmation.
+(function(){
+  document.querySelectorAll('[data-copy-template]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var block = btn.closest('[data-copyable]');
+      if (!block) return;
+      var clone = block.cloneNode(true);
+      clone.querySelectorAll('[data-copy-template]').forEach(function(el){ el.remove(); });
+      var text = clone.textContent.replace(/^\s+/, '').replace(/\s+$/, '');
+      var label = btn.querySelector('.template-copy-label');
+      var done = function(){
+        btn.classList.add('is-copied');
+        if (label) label.textContent = 'Copied';
+        setTimeout(function(){
+          btn.classList.remove('is-copied');
+          if (label) label.textContent = 'Copy';
+        }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function(){
+          // fallback
+          var ta = document.createElement('textarea');
+          ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch(_) {}
+          document.body.removeChild(ta);
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(_) {}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+})();
+</script>
+<script src="ui-effects.js"></script>
+<script src="feedback-widget.js" defer></script>
+
+</body>
+</html>

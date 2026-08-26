@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI-Wise Module - Diagnostic Questionnaire</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Diagnostic-specific layout */
+    .lobby-layout {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 10px 12px 60px;
+      position: relative;
+    }
+    .lobby-main {
+      flex: 1 1 0;
+      min-width: 0;
+      padding-right: 0;
+    }
+    .fast-track-steps { margin-bottom: 12px; }
+    .fast-track-panel { width: 252px; flex: 0 0 252px; }
+
+    /* Page intro */
+    .diag-page-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 6px 0;
+      text-align: left;
+    }
+
+    .diag-intro {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+      margin: 0 0 28px 0;
+      max-width: 660px;
+    }
+
+    /* Step divider */
+    .step-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 26px 0 12px 0;
+    }
+
+    .step-divider-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .step-divider-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* Checkbox nodes */
+    .node-list { display: grid; gap: 6px; }
+
+    .node-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 13px;
+      border: 1px solid #cfd8d9;
+      border-radius: 9px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.45;
+      transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .node-option:hover { border-color: #9eb2b4; box-shadow: var(--shadowSm); }
+
+    .node-option:has(input:checked) {
+      border-color: var(--accent);
+      background: #f0f6f6;
+      box-shadow: var(--shadowSm);
+    }
+
+    .node-option input[type="checkbox"] {
+      margin-top: 2px;
+      flex-shrink: 0;
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
+    }
+
+    /* Submit row */
+    .diag-submit-row {
+      margin: 24px 0 0 0;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    #btn_diagnose {
+      padding: 12px 28px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: var(--shadowSm);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    #btn_diagnose:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    #btn_reset_diag {
+      padding: 12px 20px;
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    /* Result area */
+    #result_area { display: none; margin-top: 32px; }
+
+    .result-ai-row {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radiusLg);
+      padding: 14px 16px;
+      margin-bottom: 18px;
+    }
+
+    .result-ai-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 9px 0;
+    }
+
+    .result-ai-options { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .result-ai-options label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      padding: 7px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      transition: border-color 0.18s ease, background-color 0.18s ease;
+    }
+
+    .result-ai-options label:has(input:checked) {
+      border-color: var(--accent);
+      background: #f0f6f6;
+    }
+
+    /* Tier blocks */
+    .tier-block { margin-bottom: 14px; }
+
+    .tier-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin: 0 0 7px 0;
+      padding: 3px 8px;
+      border-radius: 5px;
+      display: inline-block;
+    }
+
+    .tier-must .tier-label       { background: #fdecea; color: #c0392b; }
+    .tier-strong .tier-label     { background: #fef3e2; color: #b7770d; }
+    .tier-recommended .tier-label { background: #e8f4f8; color: #1a6b8a; }
+    .tier-optional .tier-label   { background: #f0f0f0; color: #555; }
+
+    .tier-steps { display: grid; gap: 7px; }
+
+    .result-step-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 15px;
+      border: 1px solid var(--border);
+      border-radius: var(--radiusMd);
+      background: #fff;
+    }
+
+    .tier-must .result-step-card        { border-color: #f5c6c2; background: #fffafa; }
+    .tier-strong .result-step-card      { border-color: #f5dfa0; background: #fffdf5; }
+    .tier-recommended .result-step-card { border-color: #b8dce8; background: #f8fcfe; }
+    .tier-optional .result-step-card    { border-color: #ddd;    background: #fafafa; }
+
+    .result-step-info { flex: 1; min-width: 0; }
+
+    .result-step-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 2px 0;
+    }
+
+    .result-step-pct { font-size: 12px; color: var(--muted); margin: 0; }
+
+    .result-step-go {
+      padding: 7px 13px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .result-step-go:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* Step 7 special */
+    .result-step7-card {
+      margin-top: 16px;
+      padding: 13px 16px;
+      background: #f2f6f5;
+      border: 1.5px solid var(--accent);
+      border-radius: var(--radiusLg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .result-step7-info { flex: 1; }
+
+    .result-step7-badge {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--accent);
+      margin: 0 0 2px 0;
+    }
+
+    .result-step7-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 2px 0;
+    }
+
+    .result-step7-desc { font-size: 12px; color: var(--muted); margin: 0; }
+
+    /* Graph placeholder */
+    .graph-placeholder {
+      margin-top: 26px;
+      padding: 28px 20px;
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radiusLg);
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .graph-placeholder p { margin: 0; }
+
+    @media (max-width: 900px) {
+      .lobby-main { padding-right: 0; }
+      .fast-track-panel { display: none; }
+    }
+    @media (max-width: 1200px) and (min-width: 901px) {
+      .lobby-layout { gap: 16px; }
+      .fast-track-panel { width: 224px; flex-basis: 224px; }
+    }
+  </style>
+</head>
+<body>
+<header class="main-header">
+  <div class="header-inner">
+    <a href="lobby.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;">
+      <img src="erasmus-logo.png" alt="Erasmus University Rotterdam" class="header-logo">
+      <h1>AI-Wise</h1>
+    </a>
+    <span class="header-step-badge"><span>Diagnostic</span> &rsaquo; Questionnaire</span>
+  </div>
+</header>
+
+<section class="module-hero">
+  <div class="module-hero-grid"></div>
+  <div class="module-hero-glow"></div>
+  <div class="module-hero-inner">
+    <div class="module-hero-tag"><span class="module-hero-tag-dot"></span>GenAI in AWS I · Diagnostic</div>
+    <h2 class="module-hero-title">Diagnostic Questionnaire</h2>
+  </div>
+</section>
+
+<section>
+  <div class="lobby-layout">
+
+    <!-- MAIN QUESTIONNAIRE -->
+    <div class="lobby-main">
+      <p class="diag-intro">Check all statements that currently apply to you. Be honest — this is not a test. The questionnaire identifies where you are in the process and recommends the most relevant steps to focus on right now.</p>
+      <p id="diag_restore_note" class="diag-restore-note" style="display:none;">Your previous diagnostic state has been restored. Click <strong>Reset</strong> if you want to start fresh.</p>
+
+      <div class="diag-progress-bar"><div class="diag-progress-fill" id="diag_progress_fill"></div></div>
+      <p class="diag-progress-label" id="diag_progress_label">0 of 40 items checked</p>
+
+      <div class="step-divider">
+        <span class="step-divider-label">Step 1 — Exploring a Topic</span>
+        <span class="step-divider-line"></span>
+      </div>
+      <div class="node-list">
+        <label class="node-option"><input type="checkbox" name="node" value="WD01"> I have read all 5 provided articles at least once</label>
+        <label class="node-option"><input type="checkbox" name="node" value="CA01"> I created a mind map of my topic and identified subfields</label>
+        <label class="node-option"><input type="checkbox" name="node" value="CA02"> I explored possible focus directions before settling on my question</label>
+        <label class="node-option"><input type="checkbox" name="node" value="WD02"> I have a clear understanding of the key concepts in my topic</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU01"> I can explain the main concepts and theoretical background of my topic</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU02"> I can identify relevant subfields within my topic</label>
+      </div>
+
+      <div class="step-divider">
+        <span class="step-divider-label">Step 2 — Formulating a Research Question</span>
+        <span class="step-divider-line"></span>
+      </div>
+      <div class="node-list">
+        <label class="node-option"><input type="checkbox" name="node" value="WD03"> I have formulated a central research question</label>
+        <label class="node-option"><input type="checkbox" name="node" value="WD04"> I have received feedback on my central question</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU03"> My central question is specific, unambiguous, and clearly formulated</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU04"> My central question follows logically from my introduction</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU05"> I can explain why my RQ is scientifically or societally relevant</label>
+      </div>
+
+      <div class="step-divider">
+        <span class="step-divider-label">Step 3 — Searching for Literature</span>
+        <span class="step-divider-line"></span>
+      </div>
+      <div class="node-list">
+        <label class="node-option"><input type="checkbox" name="node" value="WD05"> I have searched Scopus and found relevant papers</label>
+        <label class="node-option"><input type="checkbox" name="node" value="WD06"> I have at least 5 self-found papers beyond the provided set</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU06"> My selected sources are relevant and scoped around my RQ</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU07"> I have described prior research in my introduction</label>
+      </div>
+
+      <div class="step-divider">
+        <span class="step-divider-label">Step 4 — Organizing Literature</span>
+        <span class="step-divider-line"></span>
+      </div>
+      <div class="node-list">
+        <label class="node-option"><input type="checkbox" name="node" value="WD07"> I have completed a literature overview table</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU08"> I can describe how my sources agree, contradict, or extend each other</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU09"> I have mapped the logical relationships between my sources</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU10"> I have a clear overview of the conclusions drawn in the literature</label>
+      </div>
+
+      <div class="step-divider">
+        <span class="step-divider-label">Step 5 — Creating a Draft Structure</span>
+        <span class="step-divider-line"></span>
+      </div>
+      <div class="node-list">
+        <label class="node-option"><input type="checkbox" name="node" value="WD08"> I have created a draft structure and uploaded it</label>
+        <label class="node-option"><input type="checkbox" name="node" value="WD09"> I have received trainer feedback on my draft structure</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU11"> My report follows the hourglass model</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU12"> My headings reflect a storyline connected to my RQ</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU13"> My report has all required sections: Abstract, Intro, Main Body, Disc.</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU14"> The overall structure of my report is logical and coherent</label>
+      </div>
+
+      <div class="step-divider">
+        <span class="step-divider-label">Step 6 — Writing Sections</span>
+        <span class="step-divider-line"></span>
+      </div>
+      <div class="node-list">
+        <label class="node-option"><input type="checkbox" name="node" value="WD10"> I have written the introduction</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU15"> I described the structure of my article in the introduction</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU16"> My introduction introduces the subject and theoretical framework</label>
+        <label class="node-option"><input type="checkbox" name="node" value="WD11"> I have written the main body</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU17"> My paragraphs each have one subject and a logical internal structure</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU18"> My paragraphs are in a logical order showing a clear line of reasoning</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU19"> I used structural indicators such as signal words and transitions</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU20"> My main body provides a clear overview of findings linked to my RQ</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU21"> I evaluated the quality and methods of the studies I selected</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU22"> I rephrased results and theories in my own words</label>
+        <label class="node-option"><input type="checkbox" name="node" value="WD12"> I have written the discussion</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU23"> My discussion answers the central research question</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU24"> My discussion reflects on limitations of the literature and my study</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU25"> My discussion includes suggestions for follow-up research</label>
+        <label class="node-option"><input type="checkbox" name="node" value="WD13"> I have written the abstract and title</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU26"> My abstract contains all required components and is within 250 words</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU27"> My title clearly describes the topic and indicates the variables</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU28"> My language is formal, objective, and scientific throughout</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU29"> I described other authors' ideas in my own words</label>
+        <label class="node-option"><input type="checkbox" name="node" value="WD14"> I have checked my APA citations and reference list</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU30"> My in-text citations are correctly formatted and placed</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU31"> My bibliography is in correct APA format and in the right order</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU32"> Every source in my text appears in my bibliography and vice versa</label>
+        <label class="node-option"><input type="checkbox" name="node" value="RU33"> The layout of my paper follows APA student paper formatting</label>
+        <label class="node-option"><input type="checkbox" name="node" value="WD15"> I have received peer feedback on my writing</label>
+      </div>
+
+      <div class="step-divider">
+        <span class="step-divider-label">Step 7 — Finalizing</span>
+        <span class="step-divider-line"></span>
+      </div>
+      <div class="node-list">
+        <label class="node-option"><input type="checkbox" name="node" value="WD16"> I have a complete draft and I am satisfied with the content</label>
+        <label class="node-option"><input type="checkbox" name="node" value="WD17"> I have gone through the rubric evaluation session with my paper</label>
+      </div>
+
+      <div class="diag-submit-row">
+        <button id="btn_diagnose" type="button">Get recommendation</button>
+        <button id="btn_reset_diag" type="button">Reset</button>
+      </div>
+
+      <div id="result_area">
+        <div id="tier_must" class="tier-block tier-must" style="display:none;">
+          <span class="tier-label">Must</span>
+          <div class="tier-steps" id="steps_must"></div>
+        </div>
+        <div id="tier_strong" class="tier-block tier-strong" style="display:none;">
+          <span class="tier-label">Strongly Recommended</span>
+          <div class="tier-steps" id="steps_strong"></div>
+        </div>
+        <div id="tier_recommended" class="tier-block tier-recommended" style="display:none;">
+          <span class="tier-label">Recommended</span>
+          <div class="tier-steps" id="steps_recommended"></div>
+        </div>
+        <div id="tier_optional" class="tier-block tier-optional" style="display:none;">
+          <span class="tier-label">Optional</span>
+          <div class="tier-steps" id="steps_optional"></div>
+        </div>
+
+        <div id="result_step7" style="display:none;">
+          <div class="result-step7-card">
+            <div class="result-step7-info">
+              <p class="result-step7-badge">Always available</p>
+              <p class="result-step7-name">Finalizing the Paper</p>
+              <p class="result-step7-desc">You have written content — evaluate it against the rubric at any time.</p>
+            </div>
+            <button class="result-step-go" id="btn_go_step7">Go</button>
+          </div>
+        </div>
+
+        <div class="graph-placeholder">
+          <p>📊 Your progress curve will appear here — coming soon.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- STICKY FAST TRACK PANEL -->
+    <div class="fast-track-panel">
+      <p class="fast-track-heading">Fast Track</p>
+      <p class="fast-track-desc">Already know where you are? Skip directly to a step.</p>
+
+      <div class="fast-track-steps">
+        <button class="fast-track-step" data-stage="exploring"><span class="fast-track-step-num">1</span> Exploring a Topic</button>
+        <button class="fast-track-step" data-stage="rq"><span class="fast-track-step-num">2</span> Formulating a Research Question</button>
+        <button class="fast-track-step" data-stage="searching"><span class="fast-track-step-num">3</span> Searching for Literature</button>
+        <button class="fast-track-step" data-stage="organizing"><span class="fast-track-step-num">4</span> Organizing Literature</button>
+        <button class="fast-track-step" data-stage="outline"><span class="fast-track-step-num">5</span> Creating a Draft Structure</button>
+        <button class="fast-track-step" data-stage="writing"><span class="fast-track-step-num">6</span> Writing Sections</button>
+        <button class="fast-track-step" data-stage="finalizing"><span class="fast-track-step-num">7</span> Finalizing the Paper</button>
+      </div>
+
+      <div class="fast-track-divider"></div>
+
+      <button class="fast-track-go" id="btn_fast_track_go" disabled>Go to step</button>
+
+      <div class="fast-track-divider"></div>
+      <a class="fast-track-diag-link" href="aws-i-materials.html">AWS I Materials</a>
+      <a class="fast-track-diag-link" href="lobby.html">Home</a>
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function () {
+  /* ── PROGRESS BAR ─────────────────────────────────────── */
+  var progressFill = document.getElementById("diag_progress_fill");
+  var progressLabel = document.getElementById("diag_progress_label");
+  var allCheckboxes = document.querySelectorAll('input[name="node"]');
+  var totalItems = allCheckboxes.length;
+
+  function updateProgress() {
+    var checked = document.querySelectorAll('input[name="node"]:checked').length;
+    var pct = totalItems > 0 ? Math.round((checked / totalItems) * 100) : 0;
+    if (progressFill) progressFill.style.width = pct + "%";
+    if (progressLabel) progressLabel.textContent = checked + " of " + totalItems + " items checked";
+  }
+
+  allCheckboxes.forEach(function (cb) {
+    cb.addEventListener("change", updateProgress);
+  });
+
+  var pageMap = {
+    exploring:  "exploring-topic.html",
+    rq:         "research-question.html",
+    searching:  "searching-literature.html",
+    organizing: "organizing-literature.html",
+    outline:    "draft-outline.html",
+    writing:    "writing-sections.html",
+    finalizing: "finalizing-paper.html"
+  };
+
+  var stageLabels = {
+    exploring:  "Exploring a Topic",
+    rq:         "Formulating a Research Question",
+    searching:  "Searching for Literature",
+    organizing: "Organizing Literature",
+    outline:    "Creating a Draft Structure",
+    writing:    "Writing Sections",
+    finalizing: "Finalizing the Paper"
+  };
+
+  var stepOrder = ["exploring","rq","searching","organizing","outline","writing"];
+
+  // Weighted node mapping: each node has weights [S1, S2, S3, S4, S5, S6]
+  // Index: 0=exploring, 1=rq, 2=searching, 3=organizing, 4=outline, 5=writing
+  var nodeWeights = {
+    WD01: [6,0,0,0,0,0],
+    CA01: [6,0,0,0,0,0],
+    CA02: [6,2,0,0,0,0],
+    WD02: [6,0,0,0,0,0],
+    RU01: [6,2,0,0,0,0],
+    RU02: [6,2,0,0,0,0],
+    WD03: [0,6,0,0,0,0],
+    WD04: [0,6,0,0,0,0],
+    RU03: [0,6,0,0,0,0],
+    RU04: [0,5,0,0,0,3],
+    RU05: [0,5,0,0,0,3],
+    WD05: [0,0,6,0,0,0],
+    WD06: [0,0,6,0,0,0],
+    RU06: [0,2,5,0,0,0],
+    WD07: [0,0,0,6,0,0],
+    RU08: [0,0,0,6,0,0],
+    RU09: [0,0,0,6,0,0],
+    RU10: [0,0,2,5,0,0],
+    WD08: [0,0,0,0,6,0],
+    WD09: [0,0,0,0,6,0],
+    RU12: [0,2,0,0,5,0],
+    RU13: [0,0,0,0,6,0],
+    RU14: [0,0,0,0,5,3],
+    WD10: [0,0,0,0,0,6],
+    RU15: [0,0,0,0,2,5],
+    RU11: [0,0,0,0,3,5],
+    RU16: [2,0,0,0,0,5],
+    WD11: [0,0,0,0,0,6],
+    RU17: [0,0,0,0,0,6],
+    RU18: [0,0,0,0,2,5],
+    RU19: [0,0,0,0,0,6],
+    RU20: [0,0,0,3,0,5],
+    RU21: [0,0,2,2,0,5],
+    RU22: [0,0,0,2,0,5],
+    WD12: [0,0,0,0,0,6],
+    RU23: [0,3,0,0,0,5],
+    RU24: [0,0,0,2,0,5],
+    RU25: [0,2,0,0,0,5],
+    WD13: [0,0,0,0,0,6],
+    RU26: [0,0,0,0,0,6],
+    RU27: [0,2,0,0,0,5],
+    RU28: [0,0,0,0,0,6],
+    RU29: [0,0,0,0,0,6],
+    WD14: [0,0,0,0,0,6],
+    RU30: [0,0,0,0,0,6],
+    RU31: [0,0,0,0,0,6],
+    RU07: [0,0,3,0,0,5],
+    RU32: [0,0,2,0,0,5],
+    RU33: [0,0,0,0,0,6],
+    WD15: [0,0,0,0,0,6],
+    WD16: [0,0,0,0,0,0],
+    WD17: [0,0,0,0,0,0]
+  };
+
+  // Max possible score per step (sum of all weights for that step index)
+  var maxScores = [0,0,0,0,0,0];
+  Object.values(nodeWeights).forEach(function(w) {
+    w.forEach(function(val, i) { maxScores[i] += val; });
+  });
+
+  var writingTriggers = ["WD10","WD11","WD12","WD13"];
+  var step7Nodes = ["WD16","WD17"];
+  var uiStateKey = "aiwise-diagnostic-ui-state";
+
+  function getChecked() {
+    var checked = {};
+    document.querySelectorAll('input[name="node"]:checked').forEach(function(el) {
+      checked[el.value] = true;
+    });
+    return checked;
+  }
+
+  function calcScores(checked) {
+    var earned = [0,0,0,0,0,0];
+    Object.keys(checked).forEach(function(nodeId) {
+      var weights = nodeWeights[nodeId];
+      if (!weights) return;
+      weights.forEach(function(w, i) { earned[i] += w; });
+    });
+    var scores = {};
+    stepOrder.forEach(function(step, i) {
+      var pct = maxScores[i] > 0 ? Math.round((earned[i] / maxScores[i]) * 100) : 0;
+      scores[step] = { pct: pct, earned: earned[i], max: maxScores[i] };
+    });
+    return scores;
+  }
+
+  function detectCurrentStep(scores) {
+    var current = 0;
+    stepOrder.forEach(function(step, i) {
+      if (scores[step].pct > 0) current = i;
+    });
+    return current;
+  }
+
+  function getTier(pct) {
+    if (pct < 25)  return "must";
+    if (pct < 50)  return "strong";
+    if (pct < 75)  return "recommended";
+    return "optional";
+  }
+
+  function getUseAi() {
+    return "";
+  }
+
+  function getFtUseAi() {
+    return "";
+  }
+
+  function buildGoUrl(stage, useAi) {
+    return pageMap[stage] + "?from=questionnaire&stage=" + stage + "&use_ai=" + (useAi || "");
+  }
+
+  function saveState(stage, useAi) {
+    try {
+      sessionStorage.setItem("aiwise-questionnaire-state", JSON.stringify({
+        stage: stage, useAi: useAi, fromQuestionnaire: true, generatedAt: Date.now()
+      }));
+    } catch(e) {}
+  }
+
+  function persistUiState(hasResult) {
+    try {
+      var checkedNodes = [];
+      document.querySelectorAll('input[name="node"]:checked').forEach(function(el) {
+        checkedNodes.push(el.value);
+      });
+
+      var resultUseAi = getUseAi();
+      var fastTrackUseAi = getFtUseAi();
+      var payload = {
+        checkedNodes: checkedNodes,
+        resultUseAi: resultUseAi,
+        fastTrackUseAi: fastTrackUseAi,
+        selectedFtStage: selectedFtStage,
+        hasResult: Boolean(hasResult),
+        savedAt: Date.now()
+      };
+      sessionStorage.setItem(uiStateKey, JSON.stringify(payload));
+    } catch (e) {}
+  }
+
+  function restoreUiState() {
+    var raw = null;
+    try {
+      raw = sessionStorage.getItem(uiStateKey);
+    } catch (e) {
+      raw = null;
+    }
+    if (!raw) return;
+
+    var parsed = null;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      parsed = null;
+    }
+    if (!parsed) return;
+
+    var checkedSet = {};
+    (parsed.checkedNodes || []).forEach(function(nodeId) {
+      checkedSet[nodeId] = true;
+    });
+
+    document.querySelectorAll('input[name="node"]').forEach(function(el) {
+      el.checked = Boolean(checkedSet[el.value]);
+    });
+
+    if (parsed.selectedFtStage) {
+      selectedFtStage = parsed.selectedFtStage;
+      document.querySelectorAll(".fast-track-step").forEach(function(btn) {
+        btn.classList.toggle("is-selected", btn.getAttribute("data-stage") === selectedFtStage);
+      });
+      document.getElementById("btn_fast_track_go").disabled = false;
+    }
+
+    if (parsed.hasResult) {
+      var checked = getChecked();
+      var scores = calcScores(checked);
+      var currentIdx = detectCurrentStep(scores);
+      document.getElementById("result_area").style.display = "block";
+      renderResults(scores, currentIdx, checked);
+    }
+
+    var restoreNote = document.getElementById("diag_restore_note");
+    if (restoreNote) restoreNote.style.display = "block";
+    updateProgress();
+  }
+
+  function makeStepCard(stage, pct) {
+    var card = document.createElement("div");
+    card.className = "result-step-card";
+    card.innerHTML =
+      '<div class="result-step-info">' +
+        '<p class="result-step-name">' + stageLabels[stage] + '</p>' +
+        '<p class="result-step-pct">' + pct + '% complete</p>' +
+      '</div>' +
+      '<button class="result-step-go" data-stage="' + stage + '">Go</button>';
+    card.querySelector('.result-step-go').addEventListener('click', function() {
+      var ai = getUseAi();
+      saveState(stage, ai);
+      (window.uiNavigate || function(u){ window.location.href = u; })(buildGoUrl(stage, ai));
+    });
+    return card;
+  }
+
+  function renderResults(scores, currentIdx, checked) {
+    var windowMax = Math.min(currentIdx + 1, stepOrder.length - 1);
+
+    ["must","strong","recommended","optional"].forEach(function(t) {
+      document.getElementById("steps_" + t).innerHTML = "";
+      document.getElementById("tier_" + t).style.display = "none";
+    });
+
+    for (var i = 0; i <= windowMax; i++) {
+      var stage = stepOrder[i];
+      var pct   = scores[stage].pct;
+
+      // Exclude 0% steps entirely
+      if (pct === 0) continue;
+
+      var tier = getTier(pct);
+      document.getElementById("steps_" + tier).appendChild(makeStepCard(stage, pct));
+      document.getElementById("tier_" + tier).style.display = "block";
+    }
+
+    // Step 7 special rule: show if any writing trigger OR step7 node is checked
+    var hasWriting = writingTriggers.some(function(n){ return checked[n]; });
+    var hasStep7   = step7Nodes.some(function(n){ return checked[n]; });
+    var showStep7  = hasWriting || hasStep7;
+    document.getElementById("result_step7").style.display = showStep7 ? "block" : "none";
+
+    if (showStep7) {
+      document.getElementById("btn_go_step7").onclick = function() {
+        var ai = getUseAi();
+        saveState("finalizing", ai);
+        (window.uiNavigate || function(u){ window.location.href = u; })(buildGoUrl("finalizing", ai));
+      };
+    }
+  }
+
+  document.getElementById("btn_diagnose").addEventListener("click", function() {
+    var checked    = getChecked();
+    var scores     = calcScores(checked);
+    var currentIdx = detectCurrentStep(scores);
+    document.getElementById("result_area").style.display = "block";
+    renderResults(scores, currentIdx, checked);
+    persistUiState(true);
+    document.getElementById("result_area").scrollIntoView({ behavior: "smooth", block: "start" });
+
+    /* Analytics: dispatch event so analytics.js can track result */
+    var scoresForAnalytics = {};
+    stepOrder.forEach(function(s) { scoresForAnalytics[s] = scores[s] ? scores[s].pct : 0; });
+    var checkedKeys = Object.keys(checked);
+    document.dispatchEvent(new CustomEvent("aiwise:diagnostic", { detail: {
+      recommendedStage: stepOrder[currentIdx] || "",
+      checkedCount:     checkedKeys.length,
+      checkedNodes:     checkedKeys,
+      scores:           scoresForAnalytics
+    }}));
+  });
+
+  document.querySelectorAll('input[name="node"]').forEach(function(checkbox) {
+    checkbox.addEventListener("change", function() {
+      persistUiState(document.getElementById("result_area").style.display === "block");
+    });
+  });
+
+  document.getElementById("btn_reset_diag").addEventListener("click", function() {
+    document.querySelectorAll('input[name="node"]').forEach(function(el){ el.checked = false; });
+    document.getElementById("result_area").style.display = "none";
+    document.querySelectorAll(".fast-track-step").forEach(function(b){ b.classList.remove("is-selected"); });
+    selectedFtStage = null;
+    document.getElementById("btn_fast_track_go").disabled = true;
+    var restoreNote = document.getElementById("diag_restore_note");
+    if (restoreNote) restoreNote.style.display = "none";
+    updateProgress();
+    try {
+      sessionStorage.removeItem("aiwise-questionnaire-state");
+      sessionStorage.removeItem(uiStateKey);
+    } catch(e) {}
+  });
+
+  // Fast Track Panel
+  var selectedFtStage = null;
+
+  document.querySelectorAll(".fast-track-step").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      document.querySelectorAll(".fast-track-step").forEach(function(b){ b.classList.remove("is-selected"); });
+      btn.classList.add("is-selected");
+      selectedFtStage = btn.getAttribute("data-stage");
+      document.getElementById("btn_fast_track_go").disabled = false;
+      persistUiState(document.getElementById("result_area").style.display === "block");
+    });
+  });
+
+  document.getElementById("btn_fast_track_go").addEventListener("click", function() {
+    if (!selectedFtStage) return;
+    var useAi = getFtUseAi();
+    persistUiState(document.getElementById("result_area").style.display === "block");
+    saveState(selectedFtStage, useAi);
+    (window.uiNavigate || function(u){ window.location.href = u; })(buildGoUrl(selectedFtStage, useAi));
+  });
+
+  restoreUiState();
+
+})();
+</script>
+<script src="analytics.js"></script>
+<script src="ui-effects.js"></script>
+<script src="feedback-widget.js" defer></script>
+</body>
+</html>

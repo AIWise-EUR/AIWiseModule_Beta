@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Wise · Erasmus University Rotterdam</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --dark: #022f35;
+  --accent: #2b5d63;
+  --gold: #c9a96e;
+  --light: #f8faf9;
+  --white: #ffffff;
+  --text: #0f2f33;
+  --muted: #5b6668;
+  --border: #d8dfde;
+  --radiusLg: 16px;
+  --shadowSm: 0 1px 2px rgba(9,24,26,0.05);
+  --shadowMd: 0 8px 24px rgba(9,24,26,0.08);
+  --shadowLg: 0 16px 48px rgba(9,24,26,0.12);
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOP HALF — dark ─────────────────────────────────────── */
+.top {
+  background: var(--dark);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 60px 24px 52px;
+  position: relative;
+  overflow: hidden;
+}
+.top::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+  background-size: 52px 52px;
+  pointer-events: none;
+}
+.top::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 220px;
+  background: radial-gradient(ellipse, rgba(201,169,110,0.12) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+.top-inner {
+  position: relative; z-index: 2;
+  text-align: center;
+  max-width: 1240px;
+}
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 20px;
+}
+.eyebrow-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+
+.title {
+  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin-bottom: 18px;
+}
+
+.intro {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.60);
+  line-height: 1.75;
+  font-weight: 400;
+  max-width: 460px; margin: 0 auto;
+}
+
+/* ── BOTTOM HALF — light ─────────────────────────────────── */
+.bottom {
+  background: var(--light);
+  padding: 52px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.choose-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 4px;
+}
+
+/* ── PATHWAY CARDS ───────────────────────────────────────── */
+.pathways {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 1080px;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 1180px;
+}
+
+.pathway {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radiusLg);
+  padding: 30px 26px 26px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadowMd);
+  position: relative; overflow: hidden;
+  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+}
+.info-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radiusLg);
+  padding: 28px 24px 22px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadowMd);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+}
+.info-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadowLg);
+}
+.info-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent);
+}
+.external-card::before { background: var(--gold); }
+.aws-card::before { background: var(--accent); }
+.info-card h3 {
+  font-size: 18px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 10px 0;
+}
+.info-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 13.5px;
+}
+.card-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+.external-card .card-label { color: #8a6828; }
+.card-source {
+  margin-top: 14px !important;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px !important;
+}
+.pathway:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadowLg);
+}
+.pathway-a:hover { border-color: var(--accent); }
+.pathway-b:hover { border-color: var(--gold); }
+
+.pathway::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: var(--radiusLg) var(--radiusLg) 0 0;
+}
+.pathway-a::before { background: var(--accent); }
+.pathway-b::before { background: var(--gold); }
+
+.pathway-icon {
+  width: 42px; height: 42px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; margin-bottom: 16px; flex-shrink: 0;
+}
+.pathway-a .pathway-icon { background: rgba(43,93,99,0.09); }
+.pathway-b .pathway-icon { background: rgba(201,169,110,0.12); }
+
+.pathway-tag {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.pathway-a .pathway-tag { color: var(--accent); }
+.pathway-b .pathway-tag { color: #8a6828; }
+
+.pathway-title {
+  font-size: 16px; font-weight: 700; color: var(--text);
+  line-height: 1.3; margin-bottom: 9px;
+}
+
+.pathway-desc {
+  font-size: 13px; color: var(--muted);
+  line-height: 1.7; font-weight: 400; flex: 1;
+}
+
+.pathway-items {
+  margin-top: 16px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.pathway-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--muted); font-weight: 400;
+}
+.pathway-item-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+}
+.pathway-a .pathway-item-dot { background: var(--accent); opacity: 0.45; }
+.pathway-b .pathway-item-dot { background: var(--gold); opacity: 0.55; }
+
+.pathway-cta {
+  margin-top: 20px; align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700;
+  padding: 7px 15px; border-radius: 8px;
+  transition: opacity 0.18s, transform 0.18s;
+}
+.pathway:hover .pathway-cta { opacity: 0.85; transform: translateX(2px); }
+.pathway-a .pathway-cta { background: rgba(43,93,99,0.09); color: var(--accent); }
+.pathway-b .pathway-cta { background: rgba(201,169,110,0.13); color: #8a6828; }
+.pathway-c:hover { border-color: #6c7f84; }
+.pathway-c::before { background: #6c7f84; }
+.pathway-c .pathway-icon { background: rgba(108,127,132,0.12); }
+.pathway-c .pathway-tag { color: #4f5d60; }
+.pathway-c .pathway-item-dot { background: #6c7f84; opacity: 0.55; }
+.pathway-c .pathway-cta { background: rgba(108,127,132,0.12); color: #4f5d60; }
+
+/* ── LOGO ────────────────────────────────────────────────── */
+.logo-wrap {
+  position: absolute; top: 22px; left: 28px; z-index: 10;
+}
+.logo-sticker {
+  display: block;
+  width: 128px;
+  max-width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
+}
+
+/* ── ANIMATIONS ──────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.eyebrow     { animation: fadeUp 0.5s ease 0.05s both; }
+.title       { animation: fadeUp 0.5s ease 0.14s both; }
+.intro       { animation: fadeUp 0.5s ease 0.22s both; }
+.choose-label{ animation: fadeUp 0.5s ease 0.32s both; }
+.pathways    { animation: fadeUp 0.5s ease 0.40s both; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 580px) {
+  .pathways, .card-grid { grid-template-columns: 1fr; }
+  .top { padding: 48px 20px 44px; }
+  .bottom { padding: 40px 20px 52px; }
+}
+@media (max-width: 980px) {
+  .pathways, .card-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 680px) {
+  .pathways, .card-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOP — dark -->
+  <div class="top">
+    <div class="logo-wrap">
+      <img src="erasmus-logo.png" alt="Erasmus University Rotterdam" class="logo-sticker">
+    </div>
+    <div class="top-inner">
+      <div class="eyebrow">
+        
+      </div>
+      <h1 class="title">AI-Wise</h1>
+      <div style="max-width: 1240px; margin: 0 auto 18px auto; line-height: 1.6; color: rgba(255,255,255,0.92); font-weight: 500; text-align: left;">
+        <p>
+          This module is designed to help you use GenAI in Academic Writing Skills I in a course aligned and academically responsible way. Rather than replacing your own work, it supports your thinking, writing process, and decisions as you move through the course.
+        </p>
+        <p>
+          You can begin with AI Orientation to build a clearer understanding of GenAI, or go directly to GenAI in AWS I to find course related support and decide what to use next.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM — light -->
+  <div class="bottom">
+    <p class="choose-label">Where would you like to start?</p>
+
+    <div class="card-grid">
+      <a class="info-card external-card" href="https://share.eu.articulate.com/21J35MtuVTrBS-u4Wq-Gb#/" target="_blank" rel="noopener noreferrer">
+        <div class="card-label">External e module</div>
+        <h3>A Student's Guide to Generative AI</h3>
+        <p>
+          A broader introductory e module on the responsible use of GenAI in academic contexts.
+          This resource can help build a general foundation before moving into AWS1 specific orientation.
+        </p>
+        <p class="card-source">
+          <strong>Developed by:</strong> Erasmus University Library and Community for Learning &amp; Innovation
+        </p>
+      </a>
+
+      <a class="info-card" href="aiwise-c1-final.html">
+        <div class="card-label">AI-Wise Module</div>
+        <h3>AI Orientation</h3>
+        <p>
+          Move from general understanding to course specific orientation by exploring how GenAI is positioned
+          within AWS1, what it is useful for, and how to use it responsibly within this module.
+        </p>
+        <p class="card-source">
+          <strong>Developed for:</strong> Academic Writing Skills 1, Erasmus University Rotterdam
+        </p>
+      </a>
+
+      <a class="info-card aws-card" href="diagnostic-questionnaire-final.html">
+        <div class="card-label">GenAI in AWS I</div>
+        <h3>Apply it to your writing now</h3>
+        <p>
+          Go directly to the AWS1 flow and use the Diagnostic Questionnaire to identify the most relevant
+          step modules for your current stage.
+        </p>
+        <p class="card-source">
+          <strong>Includes:</strong> Diagnostic Questionnaire and Activity Modules 1–7
+        </p>
+      </a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

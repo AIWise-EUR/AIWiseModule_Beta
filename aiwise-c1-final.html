@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Wise · C1: What is GenAI?</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --card: #fcfdfc;
+  --text: #0f2f33;
+  --muted: #5b6668;
+  --border: #d8dfde;
+  --accent: #2b5d63;
+  --nav-bg: #022f35;
+  --nav-w: 260px;
+  --teal-pale: #f0f6f5;
+  --teal-mid: #e2eeec;
+  --gold: #c9a96e;
+  --gold-pale: #faf5ec;
+  --radiusMd: 12px;
+  --radiusLg: 16px;
+  --shadowSm: 0 1px 2px rgba(9,24,26,0.05);
+  --shadowMd: 0 8px 24px rgba(9,24,26,0.08);
+  --shadowLg: 0 16px 48px rgba(9,24,26,0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scrollbar-gutter: stable; }
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 400;
+  background: var(--bg);
+  color: var(--text);
+  overflow-y: scroll;
+}
+
+/* UI TRANSITIONS */
+.ui-transition-target { transition: opacity 0.38s ease; }
+.ui-transition-target.ui-entering { opacity: 0; }
+.ui-transition-target.ui-mounted { opacity: 1; }
+.ui-transition-target.ui-leaving { opacity: 0; }
+
+/* PAGE LAYOUT: content + side nav */
+.page-layout {
+  display: flex;
+  align-items: flex-start;
+}
+.page-content {
+  flex: 1;
+  min-width: 0;
+}
+.side-nav-rail {
+  width: 288px;
+  flex-shrink: 0;
+  align-self: stretch;
+  padding: 24px 18px 24px 0;
+}
+
+/* RIGHT STICKY NAV */
+.side-nav {
+  position: sticky;
+  top: 80px;
+  width: 270px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radiusLg);
+  box-shadow: var(--shadowMd);
+  padding: 18px 14px;
+  z-index: 40;
+}
+.side-nav-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 14px;
+  padding: 0 6px;
+}
+.side-nav a { text-decoration: none; }
+
+/* CORE BLOCKS LIST */
+.core-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.core-nav-block {
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  overflow: hidden;
+  transition: background 0.25s ease;
+}
+.core-nav-block.current { background: var(--teal-pale); }
+
+.core-nav-block-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.core-nav-block:not(.current) .core-nav-block-header:hover { background: #f4f8f7; }
+
+.core-nav-block-title {
+  flex: 1;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  transition: color 0.2s;
+}
+.core-nav-block.current .core-nav-block-title { color: var(--accent); }
+.core-nav-block-title:hover { color: var(--accent); background: transparent; }
+
+.core-nav-toggle {
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: color 0.2s, background 0.2s;
+}
+.core-nav-toggle:hover { color: var(--accent); background: rgba(43,93,99,0.08); }
+.core-nav-toggle svg {
+  width: 10px;
+  height: 10px;
+  transition: transform 0.3s ease;
+}
+.core-nav-block.collapsed .core-nav-toggle svg { transform: rotate(-90deg); }
+
+/* smooth expand/collapse */
+.core-nav-subsections {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 6px 8px 8px;
+  max-height: 260px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+}
+.core-nav-block.collapsed .core-nav-subsections {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.side-nav .core-nav-sub {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-size: 12.5px;
+  padding: 7px 10px 7px 24px;
+  color: var(--muted);
+  border-radius: 6px;
+  line-height: 1.35;
+  position: relative;
+  transition: color 0.2s, background 0.2s;
+}
+.side-nav .core-nav-sub::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1.5px solid #a6b6b8;
+  background: transparent;
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.side-nav .core-nav-sub:hover {
+  color: var(--text);
+  background: rgba(43,93,99,0.05);
+}
+.side-nav .core-nav-sub:hover::before { border-color: var(--accent); }
+.side-nav .core-nav-sub.active {
+  color: var(--accent);
+  font-weight: 600;
+  background: rgba(43,93,99,0.08);
+}
+.side-nav .core-nav-sub.active::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(43,93,99,0.14);
+}
+
+/* BOTTOM EXTRAS */
+.side-nav-extras {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.side-nav-extras a {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+  line-height: 1.3;
+}
+.side-nav-extras .aws-link {
+  color: var(--gold);
+  font-weight: 600;
+}
+.side-nav-extras .aws-link:hover { background: var(--gold-pale); }
+.side-nav-extras .home-link {
+  color: var(--muted);
+  font-weight: 500;
+}
+.side-nav-extras .home-link:hover {
+  color: var(--accent);
+  background: var(--teal-pale);
+}
+
+/* HEADER */
+.main-header {
+  padding: 16px max(32px, calc(50% - 568px));
+  background: #fff; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; gap: 16px;
+}
+.main-header h1 { font-size: 18px; font-weight: 700; color: var(--nav-bg); margin: 0; }
+.header-home-link {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: inherit; margin-right: auto;
+  transition: opacity 0.2s;
+}
+.header-home-link:hover { opacity: 0.7; }
+.header-logo { height: 32px; flex-shrink: 0; }
+.breadcrumb { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.breadcrumb span { color: var(--border); }
+
+/* PAGE */
+.page { }
+
+/* HERO */
+.hero {
+  background: var(--nav-bg); padding: 64px 40px 56px;
+  position: relative; overflow: hidden;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.hero-glow {
+  position: absolute; width: 600px; height: 300px;
+  right: -120px; bottom: -60px;
+  background: radial-gradient(ellipse, rgba(201,169,110,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-inner { position: relative; z-index: 2; max-width: 960px; margin: 0 auto; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 20px;
+}
+.hero-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+.hero h2 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 700; color: #fff; line-height: 1.2;
+  letter-spacing: -0.02em; margin-bottom: 16px;
+}
+.hero h2 em { font-style: normal; color: #fff; font-weight: inherit; }
+.hero-lead {
+  font-size: 0.97rem; color: rgba(255,255,255,0.6);
+  line-height: 1.75; font-weight: 400; max-width: 760px;
+}
+
+/* SECTIONS */
+.section {
+  padding: 64px 40px;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: 110px;
+}
+.section-alt { background: #f8faf9; }
+
+.section-tag {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+}
+.section h3 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 700; color: var(--text);
+  line-height: 1.25; margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+.section-body {
+  font-size: 0.95rem; color: var(--muted);
+  line-height: 1.8; max-width: 680px;
+  font-weight: 400;
+}
+.section-body p { margin-bottom: 1em; }
+.section-body p:last-child { margin-bottom: 0; }
+.section-body strong { color: var(--text); font-weight: 600; }
+.section-body, .callout, .figure-caption, .anatomy-close, .sources p, .breadcrumb {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Center section content lane */
+.section .section-tag,
+.section h3,
+.section .section-body,
+.section .callout,
+.section .figure-box,
+.section .anatomy-intro,
+.section #anatomy-diagram-placeholder,
+.section .anatomy-close {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* FIGURE BOX */
+.figure-box {
+  margin-top: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radiusLg);
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--shadowMd);
+}
+.figure-img {
+  width: 100%; display: block;
+  background: #f4f7f6; padding: 32px;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 320px;
+}
+.figure-caption {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--muted);
+  line-height: 1.6;
+  background: var(--card);
+}
+.figure-caption strong { color: var(--text); }
+
+/* DIVIDER CALLOUT */
+.callout {
+  margin-top: 32px; padding: 20px 24px;
+  background: var(--teal-pale); border: 1px solid var(--teal-mid);
+  border-radius: var(--radiusMd);
+  font-size: 0.92rem; color: var(--accent);
+  line-height: 1.65; font-weight: 400;
+  border-left: 3px solid var(--accent);
+}
+
+/* ANATOMY GRID */
+.anatomy-intro {
+  max-width: 620px; margin-bottom: 48px;
+}
+
+/* Anatomy diagram placeholder — Codex will replace #anatomy-diagram-placeholder */
+
+/* SECTION 3: STRENGTHS & LIMITATIONS */
+.sl-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.sl-col {
+  display: flex; flex-direction: column;
+  border-radius: var(--radiusLg);
+  overflow: hidden;
+}
+.sl-col-header {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 13px; font-weight: 800; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 16px 18px;
+}
+.sl-col-icon {
+  font-size: 14px; font-weight: 800;
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sl-header-strength {
+  background: #2a7a35; color: #fff;
+}
+.sl-header-strength .sl-col-icon {
+  background: rgba(255,255,255,0.2); color: #fff;
+}
+.sl-header-limit {
+  background: #8b3a1a; color: #fff;
+}
+.sl-header-limit .sl-col-icon {
+  background: rgba(255,255,255,0.2); color: #fff;
+}
+.sl-col-body {
+  flex: 1;
+  display: flex; flex-direction: column; gap: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radiusLg) var(--radiusLg);
+}
+.sl-card {
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+  overflow: hidden;
+}
+.sl-card:last-child { border-bottom: none; }
+.sl-card-strength { border-left: 3px solid #2a7a35; }
+.sl-card-limit    { border-left: 3px solid #8b3a1a; }
+.sl-item-title {
+  font-size: 14px; font-weight: 600; color: var(--text);
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; margin: 0;
+  transition: background 0.2s;
+  user-select: none;
+}
+.sl-item-title:hover { background: #f8faf9; }
+.sl-item-title::after {
+  content: "+"; font-size: 16px; font-weight: 400;
+  color: var(--muted); flex-shrink: 0;
+}
+.sl-card.open .sl-item-title::after { content: "\2212"; }
+.sl-item-body {
+  font-size: 0.84rem; color: var(--muted); line-height: 1.7;
+  padding: 0 18px;
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+}
+.sl-card.open .sl-item-body {
+  max-height: 400px;
+  padding: 0 18px 16px;
+}
+.sl-mechanism {
+  font-size: 11px; color: var(--muted);
+  line-height: 1.55; font-weight: 400;
+  font-style: italic;
+  margin-top: 10px; padding-top: 9px;
+  border-top: 1px solid var(--border);
+  opacity: 0.75;
+}
+@media (max-width: 700px) {
+  .sl-grid { grid-template-columns: 1fr; }
+}
+
+/* FINAL CALLOUT */
+.anatomy-close {
+  margin-top: 40px; padding: 24px 28px;
+  background: var(--nav-bg);
+  border-radius: var(--radiusLg);
+  color: rgba(255,255,255,0.75);
+  font-size: 0.93rem; line-height: 1.75;
+  font-weight: 400;
+}
+.anatomy-close strong { color: #fff; font-weight: 600; }
+
+/* NEXT BAR */
+.next-bar {
+  background: var(--nav-bg); padding: 32px 40px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 20px; flex-wrap: wrap;
+}
+.next-bar-text h4 {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(255,255,255,0.4);
+  margin-bottom: 4px;
+}
+.next-bar-text p { font-size: 1rem; font-weight: 500; color: #fff; }
+.next-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 22px; background: var(--accent);
+  border: 1px solid var(--accent); border-radius: 10px;
+  color: #fff; font-size: 14px; font-weight: 600;
+  text-decoration: none; cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  font-family: inherit;
+}
+.next-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); opacity: 0.92; }
+
+/* SOURCES */
+.sources {
+  padding: 20px 40px; background: var(--teal-pale);
+  border-top: 1px solid var(--teal-mid);
+}
+.sources p { font-size: 11.5px; color: var(--muted); line-height: 1.7; }
+
+.mobile-core-nav-wrap {
+  display: none;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+}
+.mobile-core-nav summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.mobile-core-nav summary::-webkit-details-marker { display: none; }
+.mobile-core-nav-body { padding-top: 10px; }
+.mobile-core-nav .core-nav-list { gap: 10px; }
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .side-nav-rail { display: none; }
+  .mobile-core-nav-wrap { display: block; }
+}
+@media (max-width: 900px) {
+  .hero, .section, .sources, .next-bar { padding-left: 20px; padding-right: 20px; }
+  .physical-row, .pipeline-cols { grid-template-columns: 1fr; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.5s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="main-header">
+  <a href="lobby.html" class="header-home-link">
+    <img src="erasmus-logo.png" alt="Erasmus University Rotterdam" class="header-logo">
+    <h1>AI-Wise</h1>
+  </a>
+  <div class="breadcrumb">
+    <span>Core Blocks</span> › C1 · What is GenAI?
+  </div>
+</header>
+
+<div class="mobile-core-nav-wrap">
+  <details class="mobile-core-nav">
+    <summary>Core Blocks Navigation</summary>
+    <div class="mobile-core-nav-body" id="mobileCoreNav"></div>
+  </details>
+</div>
+
+<!-- PAGE -->
+<div class="page-layout">
+<main class="page-content ui-transition-target">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-inner fade-up">
+      <div class="hero-tag"><div class="hero-tag-dot"></div>C1 · Core Block</div>
+      <h2>What is Generative AI?</h2>
+      <p class="hero-lead">
+        The word "GenAI" is everywhere. But familiarity with a term is not the same as understanding what the thing actually is. This block builds that understanding — from where it came from, to what it is made of.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECTION 1: WHAT IS AI / GENAI -->
+  <section class="section" id="section-1">
+    <div class="section-tag">Section 1</div>
+    <h3>What is AI? What is GenAI?</h3>
+
+    <div class="section-body">
+      <p>
+        You have heard the term many times. But what exactly is GenAI, and how did it emerge?
+      </p>
+      <p>
+        Artificial intelligence has been developing for more than sixty years. The timeline below traces that broader history. Early systems such as ELIZA in the 1960s relied entirely on rules. They matched patterns in user input and returned prewritten responses. They did not learn from data, and they did not generate new content. Later systems such as Siri, Google Now, and Alexa could retrieve information and respond to voice input, but they still mainly depended on recognition, classification, and retrieval.
+      </p>
+      <p>
+        GenAI marks a different point in that history. Systems such as ChatGPT do not simply return stored answers. They generate responses by producing new text based on statistical patterns learned from large amounts of human written language. This is a different mechanism from the one used in earlier systems.
+      </p>
+      <p>
+        It is also useful to be precise about the terms. AI is the broadest category and includes many different kinds of systems, such as recommendation engines, fraud detection tools, image classifiers, and medical decision support systems. GenAI is a more specific category within AI. It refers to systems that generate new content rather than simply classifying, ranking, or retrieving information. Large language models, or LLMs, are a further subset within GenAI. They are models designed to generate language based on patterns learned from large amounts of text. Systems such as ChatGPT or Claude are best understood in this way: they are GenAI systems built on LLMs.
+      </p>
+    </div>
+
+
+    <!-- Figure 2 from Yenduri et al. -->
+    <div class="figure-box">
+      <div class="figure-img">
+        <!-- Inline SVG representation of the GPT roadmap timeline -->
+        <svg viewBox="0 0 780 280" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;">
+          <!-- Timeline spine -->
+          <path d="M 40 200 Q 200 180 390 160 Q 580 140 740 100" stroke="#2b5d63" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+          <!-- Nodes and labels -->
+          <!-- ELIZA 1960 -->
+          <circle cx="60" cy="198" r="8" fill="#2b5d63"/>
+          <text x="60" y="228" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#0f2f33" font-weight="600">ELIZA</text>
+          <text x="60" y="240" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#5b6668">1960</text>
+          <text x="60" y="172" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">Pattern</text>
+          <text x="60" y="182" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">matching</text>
+
+          <!-- PARRY 1970 -->
+          <circle cx="140" cy="190" r="8" fill="#2b5d63"/>
+          <text x="140" y="220" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#0f2f33" font-weight="600">PARRY</text>
+          <text x="140" y="232" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#5b6668">1970</text>
+          <text x="140" y="164" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">Psychological</text>
+          <text x="140" y="174" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">concepts</text>
+
+          <!-- ALICE 1995 -->
+          <circle cx="240" cy="178" r="8" fill="#2b5d63"/>
+          <text x="240" y="208" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#0f2f33" font-weight="600">ALICE</text>
+          <text x="240" y="220" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#5b6668">1995</text>
+          <text x="240" y="152" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">Language</text>
+          <text x="240" y="162" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">analysis</text>
+
+          <!-- Siri 2010 -->
+          <circle cx="370" cy="163" r="8" fill="#2b5d63"/>
+          <text x="370" y="193" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#0f2f33" font-weight="600">Siri</text>
+          <text x="370" y="205" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#5b6668">2010</text>
+          <text x="370" y="137" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">Personal</text>
+          <text x="370" y="147" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">assistant</text>
+
+          <!-- Google Now 2012 -->
+          <circle cx="470" cy="152" r="8" fill="#2b5d63"/>
+          <text x="470" y="182" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#0f2f33" font-weight="600">Google Now</text>
+          <text x="470" y="194" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#5b6668">2012</text>
+          <text x="470" y="126" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">Answers &amp;</text>
+          <text x="470" y="136" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">actions</text>
+
+          <!-- Alexa 2014 -->
+          <circle cx="570" cy="136" r="8" fill="#2b5d63"/>
+          <text x="570" y="166" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#0f2f33" font-weight="600">Alexa</text>
+          <text x="570" y="178" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#5b6668">2014</text>
+          <text x="570" y="110" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">Intelligent</text>
+          <text x="570" y="120" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5b6668">assistant</text>
+
+          <!-- ChatGPT 2022 — highlighted -->
+          <circle cx="700" cy="104" r="11" fill="#022f35" stroke="#c9a96e" stroke-width="2.5"/>
+          <text x="700" y="136" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10.5" fill="#0f2f33" font-weight="700">ChatGPT</text>
+          <text x="700" y="149" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#5b6668">2022</text>
+          <text x="700" y="76" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8.5" fill="#2b5d63" font-weight="600">Generates</text>
+          <text x="700" y="88" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8.5" fill="#2b5d63" font-weight="600">human-like text</text>
+
+          <!-- Bracket: "Retrieval / Rule-based" -->
+          <line x1="40" y1="256" x2="590" y2="256" stroke="#d8dfde" stroke-width="1"/>
+          <text x="310" y="270" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#9ab0af">Retrieval and rule-based systems</text>
+
+          <!-- Bracket: "Generative" -->
+          <line x1="650" y1="256" x2="750" y2="256" stroke="#c9a96e" stroke-width="1.5"/>
+          <text x="700" y="270" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#c9a96e" font-weight="600">Generative AI</text>
+
+          <!-- Dividing marker -->
+          <line x1="620" y1="90" x2="620" y2="265" stroke="#d8dfde" stroke-width="1" stroke-dasharray="4 3"/>
+        </svg>
+      </div>
+      <div class="figure-caption">
+        <strong>Figure 1.</strong> The developmental stream from rule-based conversational systems to Generative AI (adapted from Yenduri et al., 2024, Figure 2). The qualitative shift occurs at ChatGPT (2022): for the first time, the system generates new text rather than retrieving or matching pre-written responses. <em>Source: Yenduri, G. et al. (2024). GPT — A Comprehensive Review on Enabling Technologies, Potential Applications, Emerging Challenges, and Future Directions. IEEE Access, 12, 54608–54649. DOI: 10.1109/ACCESS.2024.3389497</em>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: ANATOMY -->
+  <section class="section section-alt" id="section-2">
+    <div class="section-tag">Section 2</div>
+    <h3>What is GenAI made of?</h3>
+
+    <div class="anatomy-intro section-body">
+      <p>
+        When a response sounds fluent or well targeted, it is easy to start anthropomorphizing the system, that is, treating it as if it were a mind or an entity that understands in the human sense. This reaction is natural, but this diagram is meant to interrupt that intuition. Its purpose is not to make you memorize every component one by one. Rather, it is to help you see GenAI more clearly as a system made up of physical and informational parts that work together to produce each response. Clearing away that fog is an important first step toward understanding GenAI and using it more appropriately.
+      </p>
+    </div>
+
+    <!--
+    ============================================================
+    ANATOMY DIAGRAM PLACEHOLDER
+    ============================================================
+    Replace this entire comment block and the div below with
+    the interactive anatomy diagram.
+
+    DESIGN SPEC:
+    - Two cycles side by side: Training (left) and Inference (right)
+    - Both cycles share the same components but with different flows:
+        Training: weights are ADJUSTING (loop arrow, iterative)
+        Inference: weights are FROZEN (padlock visual)
+    - Two categories of components:
+
+    PHYSICAL (heavier, material feel):
+      1. Local Device — laptop/phone icon (interface only)
+      2. Cloud Server — server rack icon (GPU clusters, real hardware)
+
+    INFORMATIONAL — Training cycle (left, green palette):
+      3. Training Data — stacked documents/papers icon
+      4. Tokenisation — text fragmenting into numbers (e.g. "Hel"→128, "lo"→84)
+      5. Positional Encoding — numbered slots in sequence
+      6. Algorithm + Weights — tunnel/pathway with varying line weights
+      7. Loss and Backpropagation — circular loop arrow with adjustment dial
+      8. Fine-tuning and RLHF — human figure with thumbs up feeding back into model
+
+    INFORMATIONAL — Inference cycle (right, terracotta/orange palette):
+      9. User Prompt — chat input box with cursor
+      10. Tokenisation — same as above (same process)
+      11. Positional Encoding — same as above
+      12. Algorithm — Weights Frozen — same tunnel but with PADLOCK overlay
+      13. Logits / Softmax — probability bar chart (multiple bars, different heights)
+      14. Output Sampling — options list with one item selected/highlighted
+      15. Response and Interface — chat screen showing decoded text
+
+    ICON STYLE: Clean geometric flat design, SVG, no gradients
+    COLOR TOKENS (from CSS variables):
+      --accent: #2b5d63  (physical layer)
+      Training green: #2a7a35
+      Inference terracotta: #8b3a1a
+      --gold: #c9a96e  (highlight accents)
+
+    COMPONENT DATA (for tooltips or labels):
+    Each component should show: name + one-line description
+    Full descriptions are listed in the HTML comments below.
+
+    Training Data:
+      Billions of tokens from books, websites, papers, and code.
+      Raw material. Vast, varied, frozen at a point in time.
+
+    Tokenisation:
+      Text split into subword units, converted to numbers.
+      Like standardisation before a statistical model — preprocessing,
+      not part of the algorithm itself.
+
+    Positional Encoding:
+      Transformers have no inherent sense of order.
+      Position is injected into each token before processing.
+
+    Algorithm + Weights (training):
+      Transformer architecture. Weights adjusted continuously
+      to minimise prediction error. Path width = connection strength.
+
+    Loss and Backpropagation:
+      Error calculated, propagated back, weights adjusted.
+      Repeats billions of times across the corpus.
+
+    Fine-tuning and RLHF:
+      Human evaluators rate outputs. Model trained toward
+      helpfulness and accuracy. Why ChatGPT differs from a raw model.
+
+    User Prompt:
+      You type. Natural language enters the system.
+      Device sends it to the server.
+
+    Tokenisation (inference):
+      Same process as training. Message becomes numbers.
+
+    Positional Encoding (inference):
+      Same as training. Order encoded before transformer.
+
+    Algorithm — Weights Frozen:
+      Same transformer runs, but weights are fixed.
+      No learning. Applies what was learned during training.
+
+    Logits / Softmax:
+      Final layer scores every vocabulary token.
+      Softmax converts to probability distribution.
+      The model knows likelihoods, not answers.
+
+    Output Sampling:
+      Token selected probabilistically from the distribution.
+      Most likely is not always chosen.
+      Same prompt can produce different responses.
+
+    Response and Interface:
+      Tokens decoded back to language.
+      First moment language exists again.
+      Everything before this was numbers.
+    ============================================================
+    -->
+
+    <iframe
+      src="aiwise-c1-anatomy-2d.html"
+      style="
+        width: 100%;
+        height: 620px;
+        border: none;
+        border-radius: 16px;
+        display: block;
+        margin-bottom: 48px;
+      "
+      title="GenAI System Map"
+      loading="lazy"
+    ></iframe>
+
+  </section>
+
+  <!-- SECTION 3: STRENGTHS AND LIMITATIONS -->
+  <section class="section" id="section-3">
+    <div class="section-tag">Section 3</div>
+    <h3>What GenAI is good at — and where it structurally falls short</h3>
+    <div class="section-body" style="margin-bottom: 32px;">
+      <p>
+        Knowing how GenAI works makes its strengths and limitations predictable rather than surprising. Each limitation below is not a design flaw — it follows directly from the mechanism described in Section 2.
+      </p>
+    </div>
+
+    <div class="sl-grid">
+
+      <!-- STRENGTHS -->
+      <div class="sl-col">
+        <div class="sl-col-header sl-header-strength">
+          <span class="sl-col-icon">↑</span>
+          Strengths
+        </div>
+        <div class="sl-col-body">
+          <div class="sl-card sl-card-strength">
+            <div class="sl-item-title">Brainstorming and idea generation</div>
+            <div class="sl-item-body">GenAI samples broadly across its training distribution, which makes it effective at producing a wide range of starting points quickly. When you are unsure where to begin a research question or essay argument, it can surface angles you had not considered. Use it to generate options, not to select among them.</div>
+          </div>
+          <div class="sl-card sl-card-strength">
+            <div class="sl-item-title">Structuring and outlining</div>
+            <div class="sl-item-body">Because GenAI has processed enormous quantities of academic writing, it has strong pattern-matching over conventional structures — argument flow, section sequencing, paragraph organisation. It can draft a plausible skeleton for a literature review or discussion section. Treat the output as a scaffold to critique and rebuild, not a final form.</div>
+          </div>
+          <div class="sl-card sl-card-strength">
+            <div class="sl-item-title">Paraphrasing and reformulating</div>
+            <div class="sl-item-body">Restating a concept in different words or at a different level of complexity is a core strength. If you understand something but cannot articulate it clearly, GenAI can help you find the phrasing. This is most useful after you have already worked through the source material yourself.</div>
+          </div>
+          <div class="sl-card sl-card-strength">
+            <div class="sl-item-title">Summarising large volumes of text</div>
+            <div class="sl-item-body">GenAI can compress a long document into key points quickly. For an initial orientation to an unfamiliar topic or body of literature, this can save time. The risk is that compression always involves selection — you cannot verify what was left out without reading the original.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIMITATIONS -->
+      <div class="sl-col">
+        <div class="sl-col-header sl-header-limit">
+          <span class="sl-col-icon">↓</span>
+          Limitations
+        </div>
+        <div class="sl-col-body">
+          <div class="sl-card sl-card-limit">
+            <div class="sl-item-title">Sourcing and citation</div>
+            <div class="sl-item-body">Hallucination is not a bug — it is a structural consequence of the generation mechanism. The model produces the most statistically plausible next token, and a plausible-sounding citation is often more likely than an admission of uncertainty. References produced by GenAI must be verified against actual databases before use. Never cite a source you have not read.<div class="sl-mechanism">Why: logits/softmax assigns high probability to fluent, confident-sounding output — including fictional references (Shanahan, 2024; Huang et al., 2025)</div></div>
+          </div>
+          <div class="sl-card sl-card-limit">
+            <div class="sl-item-title">Critical analysis and original argumentation</div>
+            <div class="sl-item-body">GenAI has no genuine position on anything. What appears to be an argument is a statistically likely sequence of tokens associated with argument-shaped text. For tasks requiring you to evaluate evidence, take a stance, or construct an original claim, GenAI output is a starting point for thinking — not a substitute for it.<div class="sl-mechanism">Why: output is sampled from a distribution over training text — there is no reasoning agent holding a view (Shanahan, 2024)</div></div>
+          </div>
+          <div class="sl-card sl-card-limit">
+            <div class="sl-item-title">Multi-step reasoning</div>
+            <div class="sl-item-body">Each token is generated conditioned on previous tokens, which means early errors propagate and compound. For tasks involving calculation, logical chains, or sequential inference — such as working through a statistical method or a philosophical argument step by step — errors in early steps often go uncorrected. Always verify reasoning-intensive outputs manually.<div class="sl-mechanism">Why: autoregressive generation has no backtracking mechanism — errors in the sequence condition all subsequent tokens (Naveed et al., 2025)</div></div>
+          </div>
+          <div class="sl-card sl-card-limit">
+            <div class="sl-item-title">Specialist and current knowledge</div>
+            <div class="sl-item-body">Training data has a cutoff date, and rarer domains are underrepresented in the corpus. GenAI may produce confident-sounding output on recent publications, niche subfields, or local institutional knowledge that is partially or wholly inaccurate. For literature searches and factual claims in your field, always go to primary sources and verified databases.<div class="sl-mechanism">Why: model weights encode a fixed snapshot of training data — post-cutoff and low-frequency knowledge is absent or unreliable (Yenduri et al., 2024)</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SOURCES -->
+  <div class="sources">
+    <p>
+      <strong>Sources:</strong> Shanahan, M. (2024). Talking about Large Language Models. <em>Communications of the ACM</em>, 67(2), 68–79. · Naveed, H. et al. (2025). A Comprehensive Overview of Large Language Models. <em>ACM Transactions on Intelligent Systems and Technology</em>. · Yenduri, G. et al. (2024). GPT — A Comprehensive Review on Enabling Technologies, Potential Applications, Emerging Challenges, and Future Directions. <em>IEEE Access</em>, 12, 54608–54649. · Huang, L. et al. (2025). A Survey on Hallucination in Large Language Models. <em>ACM Transactions on Information Systems</em>. · Vaswani, A. et al. (2017). Attention Is All You Need. <em>NeurIPS 2017</em>. · Ouyang, L. et al. (2022). Training Language Models to Follow Instructions with Human Feedback. <em>NeurIPS 2022</em>.
+    </p>
+  </div>
+
+
+</main>
+
+<!-- RIGHT STICKY NAV -->
+<aside class="side-nav-rail">
+  <div class="side-nav" id="sideNav" data-current-block="c1">
+    <div class="side-nav-title">Core Blocks</div>
+    <div class="core-nav-list" id="coreNavDesktop"></div>
+    <div class="side-nav-extras">
+      <a class="home-link" href="lobby.html">← Back to Home</a>
+    </div>
+  </div>
+</aside>
+</div><!-- /page-layout -->
+
+<!-- NEXT BAR: outside page-layout so the dark bar spans the full viewport width -->
+<div class="next-bar">
+  <a class="next-btn" href="lobby.html" style="background:transparent;border-color:rgba(255,255,255,0.2);">← Back to Home</a>
+  <div class="next-bar-text" style="text-align:right;">
+    <h4>Next</h4>
+    <p>C2 · What is AI for us?</p>
+  </div>
+  <a class="next-btn" href="aiwise-c2-final.html">Continue to C2 →</a>
+</div>
+
+<script src="course-loader.js?v=5"></script>
+<script>
+// Core block navigation with subsection awareness
+(function() {
+  var desktopRoot = document.getElementById('coreNavDesktop');
+  var mobileRoot = document.getElementById('mobileCoreNav');
+  var navRoot = document.getElementById('sideNav');
+  if (!desktopRoot || !navRoot) return;
+
+  var currentBlock = navRoot.getAttribute('data-current-block') || 'c1';
+  var blocks = [
+    {
+      id: 'c1',
+      title: 'C1: What is AI?',
+      href: 'aiwise-c1-final.html',
+      sections: [
+        { id: 'section-1', label: 'History & Development' },
+        { id: 'section-2', label: 'Anatomy of GenAI' },
+        { id: 'section-3', label: 'GenAI Output Traits' }
+      ]
+    },
+    {
+      id: 'c2',
+      title: 'C2: What is AI for us?',
+      href: 'aiwise-c2-final.html',
+      sections: [
+        { id: 'section-1', label: 'AI vs Human Intelligence' },
+        { id: 'section-2', label: 'Human vs GenAI' },
+        { id: 'section-3', label: 'Collaboration Framework' }
+      ]
+    },
+    {
+      id: 'c3',
+      title: 'C3: How do we use AI?',
+      href: 'aiwise-c3-final.html',
+      sections: [
+        { id: 'section-1', label: 'Prompt' },
+        { id: 'section-2', label: 'Critique' },
+        { id: 'section-3', label: 'Integrate' }
+      ]
+    }
+  ];
+
+  function makeBlock(block) {
+    var blockEl = document.createElement('div');
+    blockEl.className = 'core-nav-block' + (block.id === currentBlock ? ' current' : ' collapsed');
+
+    var header = document.createElement('div');
+    header.className = 'core-nav-block-header';
+
+    var title = document.createElement('a');
+    title.className = 'core-nav-block-title';
+    title.href = block.href;
+    title.textContent = block.title;
+
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'core-nav-toggle';
+    toggle.setAttribute('aria-label', block.title + ' subsections toggle');
+    toggle.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l4 4 4-4"/></svg>';
+    toggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      blockEl.classList.toggle('collapsed');
+    });
+
+    header.appendChild(title);
+    header.appendChild(toggle);
+    blockEl.appendChild(header);
+
+    var subs = document.createElement('div');
+    subs.className = 'core-nav-subsections';
+
+    block.sections.forEach(function(section) {
+      var sub = document.createElement('a');
+      sub.className = 'core-nav-sub';
+      sub.textContent = section.label;
+      sub.setAttribute('data-block', block.id);
+      sub.setAttribute('data-section', section.id);
+      sub.href = block.id === currentBlock ? ('#' + section.id) : (block.href + '#' + section.id);
+      subs.appendChild(sub);
+    });
+
+    blockEl.appendChild(subs);
+    return blockEl;
+  }
+
+  blocks.forEach(function(block) {
+    desktopRoot.appendChild(makeBlock(block));
+    if (mobileRoot) mobileRoot.appendChild(makeBlock(block));
+  });
+
+  var current = blocks.find(function(block) { return block.id === currentBlock; });
+  if (!current) return;
+  var sectionEls = current.sections
+    .map(function(section) { return document.getElementById(section.id); })
+    .filter(Boolean);
+  if (!sectionEls.length) return;
+
+  function setActiveSection(sectionId) {
+    document.querySelectorAll('.core-nav-sub[data-block="' + currentBlock + '"]').forEach(function(link) {
+      link.classList.toggle('active', link.getAttribute('data-section') === sectionId);
+    });
+  }
+
+  function syncActiveFromScroll() {
+    var activeId = sectionEls[0].id;
+    sectionEls.forEach(function(section) {
+      if (section.getBoundingClientRect().top <= 170) activeId = section.id;
+    });
+    setActiveSection(activeId);
+  }
+
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function() {
+      syncActiveFromScroll();
+      ticking = false;
+    });
+  }, { passive: true });
+
+  window.addEventListener('resize', syncActiveFromScroll);
+  document.querySelectorAll('.core-nav-sub[data-block="' + currentBlock + '"]').forEach(function(link) {
+    link.addEventListener('click', function() {
+      setActiveSection(this.getAttribute('data-section'));
+    });
+  });
+
+  var hash = window.location.hash.replace('#', '');
+  if (hash) setActiveSection(hash);
+  syncActiveFromScroll();
+})();
+</script>
+<script>
+// ─── Accordion cards ───
+document.querySelectorAll('.sl-item-title').forEach(function(title) {
+  title.addEventListener('click', function() {
+    this.parentElement.classList.toggle('open');
+  });
+});
+</script>
+<script src="ui-effects.js"></script>
+<script src="feedback-widget.js" defer></script>
+
+</body>
+</html>

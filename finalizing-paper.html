@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI-Wise Module - Finalizing the Paper</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-stage="finalizing">
+<header class="main-header">
+  <div class="header-inner">
+    <a href="lobby.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;">
+      <img src="erasmus-logo.png" alt="Erasmus University Rotterdam" class="header-logo">
+      <h1>AI-Wise</h1>
+    </a>
+    <span class="header-step-badge" id="header_step_badge"></span>
+  </div>
+</header>
+
+<section>
+  <div class="page-content pageShell">
+    <h2>Finalizing the Paper</h2>
+    <div class="stage-intro">
+      <p>At this stage, the goal is to finalize your paper by checking how well it meets the rubric. Rather than focusing only on improving language, you review your work systematically to identify whether any important requirements are still missing or insufficiently developed.</p>
+      <p style="margin-bottom: 0;">If a clear issue is identified, you are expected to return to the relevant earlier step, gather or refine what is needed, and then come back to check again.</p>
+    </div>
+
+    <div style="max-width: 920px; margin: 18px auto 16px auto;">
+      <div class="canvas-card">
+        <span class="canvas-card-title">Literature Report Review criteria</span>
+        <div class="canvas-card-actions">
+          <a class="canvas-card-action" href="https://canvas.eur.nl/courses/51313/pages/rubric-and-minimum-requirements-literature-report?module_item_id=1415975" target="_blank" rel="noopener">View on Canvas &rarr;</a>
+          <span class="canvas-card-sep">&middot;</span>
+          <a class="canvas-card-download" href="CanvasMaterial_AWSI_2026/UK_Rubric_Literature%20Report%20Review%20criteria.docx" download>&darr; Download .docx</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="genai_description_card" class="genaiIntro softCard" style="margin-top: 52px;">
+      <div class="genaiIntroHeader">
+        <div class="genaiIntroPill">Using GenAI in AWSI</div>
+        <h3 class="genaiIntroTitle">Final Check of your paper using the Rubric</h3>
+      </div>
+      <p class="genaiIntroText">In this activity, you go through your paper using the rubric as a checklist. Instead of trying to improve everything at once, you focus on one criterion at a time and check whether your paper sufficiently meets that requirement.</p>
+      <p class="genaiIntroText">With GenAI, the goal is not to rewrite your work, but to support this checking process. For each criterion, you provide the relevant part of your paper and ask GenAI to determine whether a substantial issue is present.</p>
+      <p class="genaiIntroText">Importantly, GenAI's feedback is based on general patterns. This means it produces responses that are typically reasonable, but not necessarily the most precise judgment for your paper. The final evaluation should be based on a combination of your own understanding of the rubric and GenAI's feedback.</p>
+      <p class="genaiIntroText" style="margin-bottom: 0;">GenAI is particularly useful for detecting clear and substantial issues, rather than refining your paper to the highest possible level. For more nuanced improvements, discuss your work with peers, tutors, or the course coordinator.</p>
+    </div>
+
+    <div class="pre-prompt-space genai-flow-gap" id="pre_prompt_space"></div>
+
+    <div id="section_prompt_panel" class="prompt-box section-prompt-panel">
+      <div class="promptHeader">
+        <h3 class="promptTitle">Using the preset prompts</h3>
+        <p class="prompt-box-intro">The preset prompts are designed to structure your interaction with GenAI. They are not templates for a final answer, but tools to guide your reasoning process.</p>
+        <p class="prompt-box-intro">You will find two types of prompts below: a Course preset prompt and an Activity preset prompt. They serve different purposes.</p>
+        <p class="prompt-box-intro" style="margin-bottom: 0;">
+          <strong>Practical use</strong><br>
+          1. Copy the Course preset prompt first.<br>
+          2. Add the Activity preset prompt below it.<br>
+          3. Insert your own research idea where indicated.<br>
+          4. Use the output critically and refine your work based on the logic.
+        </p>
+      </div>
+      <div class="promptGrid">
+        <div class="promptBlock">
+          <p class="promptBlockTitle">Course Preset Prompts:</p>
+          <div class="promptButtonRow">
+            <button id="btn_copy_course_prompt" type="button">Copy course preset prompt</button>
+            <button id="btn_download_course_prompt" type="button">Download course preset prompt (.txt)</button>
+          </div>
+          <details class="prompt-details">
+            <summary>View full course preset prompt</summary>
+            <pre id="course_prompt_text" class="prompt-pre"></pre>
+          </details>
+        </div>
+        <div id="section_activity_prompt" class="promptBlock activity-box">
+          <p class="promptBlockTitle">Activity Preset Prompt for this section:</p>
+          <div class="promptButtonRow">
+            <button id="btn_copy_activity_prompt" type="button">Copy activity preset prompt</button>
+            <button id="btn_download_activity_prompt" type="button">Download activity preset prompt (.txt)</button>
+          </div>
+          <details class="prompt-details">
+            <summary>View full activity preset prompt</summary>
+            <pre id="activity_prompt_text" class="prompt-pre"></pre>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <a class="back-link" href="diagnostic-questionnaire-final.html">Back to Diagnostic Questionnaire</a>
+  </div>
+</section>
+
+<script src="preset-prompts.js"></script>
+<script src="activity-common.js"></script>
+<script>
+(function () {
+  var presets = window.AIWISE_PRESETS || {};
+  var course = presets.course || "";
+  var activity = (presets.activities || {}).finalizing || "";
+  var C = window.AIWISE_COMMON;
+
+  C.wirePromptBlock(course, "course_prompt_text", "btn_copy_course_prompt", "btn_download_course_prompt", "course-preset-prompt.txt");
+  C.wirePromptBlock(activity, "activity_prompt_text", "btn_copy_activity_prompt", "btn_download_activity_prompt", "activity-preset-prompt.txt");
+})();
+</script>
+<script src="analytics.js"></script>
+<script src="ui-effects.js"></script>
+<script src="feedback-widget.js" defer></script>
+</body>
+</html>

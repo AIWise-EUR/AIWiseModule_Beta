@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Wise · GenAI System Map</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:         #fafbfb;
+  --panel:      rgba(15,47,51,0.04);
+  --border:     rgba(15,47,51,0.12);
+  --physical:   #2563eb;
+  --training:   #16a34a;
+  --inference:  #ea580c;
+  --governance: #7c3aed;
+  --data-sub:   #ca8a04;
+  --bridge:     #a07d39;
+  --muted:      rgba(15,47,51,0.55);
+  --text:       #0f2f33;
+}
+
+body {
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* UI TRANSITIONS — opacity only so body can remain a viable containing-block root for fixed widgets */
+.ui-transition-target { transition: opacity 0.38s ease; }
+.ui-transition-target.ui-entering { opacity: 0; }
+.ui-transition-target.ui-mounted { opacity: 1; }
+.ui-transition-target.ui-leaving { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .ui-transition-target,
+  .ui-transition-target.ui-entering,
+  .ui-transition-target.ui-mounted,
+  .ui-transition-target.ui-leaving { transition: none; opacity: 1; }
+}
+
+/* TOOLBAR */
+.toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: rgba(250,251,251,0.95);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+}
+.toolbar-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 10px;
+}
+.tb-btn {
+  padding: 5px 13px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+.tb-btn:hover { color: var(--text); background: rgba(15,47,51,0.06); }
+.tb-btn.active { color: var(--text); border-color: rgba(15,47,51,0.18); background: rgba(15,47,51,0.08); }
+.tb-sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+.tb-hint {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+}
+
+/* CANVAS AREA */
+.canvas-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+}
+.canvas-wrap:active { cursor: grabbing; }
+
+svg#diagram {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  overflow: visible;
+}
+
+/* LEGEND */
+.legend {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(250,251,251,0.92);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+.leg-section {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(15,47,51,0.42);
+  margin-top: 6px;
+  margin-bottom: 1px;
+}
+.leg-section:first-child { margin-top: 0; }
+.leg-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.leg-shape { flex-shrink: 0; }
+
+/* TOOLTIP */
+#tooltip {
+  position: fixed;
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0;
+  transition: opacity 0.12s;
+  max-width: 220px;
+}
+#tooltip.show { opacity: 1; }
+.tt-inner {
+  background: #0d1e35;
+  border: 1px solid rgba(201,169,110,0.25);
+  border-radius: 10px;
+  padding: 11px 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+.tt-tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+.tt-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #c9a96e;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.tt-body {
+  font-size: 11px;
+  color: rgba(255,255,255,0.62);
+  line-height: 1.55;
+  font-weight: 300;
+}
+</style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <span class="toolbar-title">GenAI System Map</span>
+  <button class="tb-btn active" onclick="setView('full')">Full System</button>
+  <button class="tb-btn" onclick="setView('training')">Training Cycle</button>
+  <button class="tb-btn" onclick="setView('inference')">Inference Cycle</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="resetView()">Reset</button>
+  <span class="tb-hint">Pinch or ⌘ / Ctrl + scroll to zoom · Drag to pan · Hover to inspect</span>
+</div>
+
+<!-- CANVAS -->
+<div class="canvas-wrap" id="wrap">
+  <svg id="diagram" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Arrow markers (tuned for light background) -->
+      <marker id="arr-physical" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+        <polygon points="0 0, 7 3.5, 0 7" fill="#2563eb" opacity="0.85"/>
+      </marker>
+      <marker id="arr-training" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+        <polygon points="0 0, 7 3.5, 0 7" fill="#16a34a" opacity="0.85"/>
+      </marker>
+      <marker id="arr-inference" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+        <polygon points="0 0, 7 3.5, 0 7" fill="#ea580c" opacity="0.85"/>
+      </marker>
+      <marker id="arr-feedback" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+        <polygon points="0 0, 7 3.5, 0 7" fill="#22c55e" opacity="0.9"/>
+      </marker>
+      <marker id="arr-governance" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+        <polygon points="0 0, 7 3.5, 0 7" fill="#7c3aed" opacity="0.7"/>
+      </marker>
+      <!-- Glow filter -->
+      <filter id="glow-blue" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-gold" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <!-- Grid pattern -->
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(15,47,51,0.05)" stroke-width="1"/>
+      </pattern>
+    </defs>
+
+    <!-- Background grid -->
+    <rect width="4000" height="3000" x="-1000" y="-800" fill="url(#grid)"/>
+
+    <!-- Main group — pan/zoom applied here -->
+    <g id="root"></g>
+  </svg>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg-section">Nodes</div>
+  <div class="leg-row">
+    <svg class="leg-shape" width="18" height="18"><rect x="2" y="2" width="14" height="14" rx="2" fill="none" stroke="#2563eb" stroke-width="1.5"/></svg>
+    Physical (cube)
+  </div>
+  <div class="leg-row">
+    <svg class="leg-shape" width="18" height="18"><rect x="2" y="2" width="14" height="14" rx="2" fill="none" stroke="#7c3aed" stroke-width="1.5"/></svg>
+    AI Company
+  </div>
+  <div class="leg-row">
+    <svg class="leg-shape" width="18" height="18"><circle cx="9" cy="9" r="6" fill="none" stroke="#16a34a" stroke-width="1.5"/></svg>
+    Training component
+  </div>
+  <div class="leg-row">
+    <svg class="leg-shape" width="18" height="18"><circle cx="9" cy="9" r="6" fill="none" stroke="#ea580c" stroke-width="1.5"/></svg>
+    Inference component
+  </div>
+  <div class="leg-row">
+    <svg class="leg-shape" width="18" height="18"><circle cx="9" cy="9" r="4" fill="none" stroke="#ca8a04" stroke-width="1.5"/></svg>
+    Training data subtype
+  </div>
+  <div class="leg-row">
+    <svg class="leg-shape" width="18" height="18"><circle cx="9" cy="9" r="7" fill="none" stroke="#a07d39" stroke-width="2"/></svg>
+    Algorithm (bridge)
+  </div>
+  <div class="leg-section">Connections</div>
+  <div class="leg-row">
+    <svg class="leg-shape" width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke="#2563eb" stroke-width="1.8"/></svg>
+    Physical / data flow
+  </div>
+  <div class="leg-row">
+    <svg class="leg-shape" width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3"/></svg>
+    Feedback loop
+  </div>
+  <div class="leg-row">
+    <svg class="leg-shape" width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke="#7c3aed" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.7"/></svg>
+    Governance
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<div id="tooltip">
+  <div class="tt-inner">
+    <div class="tt-tag" id="tt-tag"></div>
+    <div class="tt-title" id="tt-title"></div>
+    <div class="tt-body" id="tt-body"></div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// LAYOUT CONSTANTS
+// ─────────────────────────────────────────────────────────────
+// All positions in SVG coordinate space
+// Physical row: y=300 (horizontal spine)
+// Training track: y=120
+// Inference track: y=480
+// Data sub-fan: y=30..90, fanning in z-axis → use y positions above training track
+
+const C = {
+  // Physical spine y — middle of the canvas
+  PHYS_Y: 380,
+
+  // Physical x — well spaced left to right
+  USER_X:    80,
+  DEVICE_X:  280,
+  SERVER_X:  560,
+  COMPANY_X: 560,
+  COMPANY_Y: 160,
+
+  // Training track — clearly above physical spine
+  TR_Y: 230,
+
+  // Training x — start at server, step right with generous spacing
+  TR_DATA_X:   760,
+  TR_TOKEN_X:  940,
+  TR_POSENC_X: 1110,
+  ALGO_X:      1290,  // Algorithm sits on physical spine
+  LOSS_X:      1470,
+  RLHF_X:      1290,
+  RLHF_Y:       80,   // RLHF floats well above training track
+
+  // Inference track — clearly below physical spine
+  INF_Y: 530,
+  INF_PROMPT_X:  760,
+  INF_TOKEN_X:   940,
+  INF_POSENC_X: 1110,
+  INF_LOGITS_X: 1470,
+  INF_SAMP_X:   1650,
+  INF_IFACE_X:  1830,
+
+  // Sub-fan: arc above training data, fanning upward and sideways
+  // Centre of fan is tr_data node, fan spans above it
+  SUB_FAN_CX: 760,
+  SUB_FAN_CY: 230,
+};
+
+// Node sizes
+const SZ = {
+  physical: 32,   // half-width of cube
+  small:    16,   // radius of informational sphere
+  tiny:     10,   // radius of data sub sphere
+  bridge:   20,   // radius of algorithm sphere
+};
+
+// ─────────────────────────────────────────────────────────────
+// NODE DATA
+// ─────────────────────────────────────────────────────────────
+const NODES = [
+  // ── PHYSICAL ─────────────────────────────────────────────
+  { id:'user',    label:'User',              x:C.USER_X,    y:C.PHYS_Y,   type:'physical',   color:'#2563eb', tag:'Physical',
+    desc:'The human who types prompts and receives responses. The starting and ending point of every inference cycle.' },
+  { id:'device',  label:'Local Device',      x:C.DEVICE_X,  y:C.PHYS_Y,   type:'physical',   color:'#2563eb', tag:'Physical',
+    desc:'Your laptop or phone. Only the interface — sends prompts and displays responses. No computation happens here.' },
+  { id:'server',  label:'Cloud Server\nData Centre', x:C.SERVER_X, y:C.PHYS_Y, type:'physical', color:'#2563eb', tag:'Physical',
+    desc:'Remote GPU clusters in physical buildings. This is where all computation actually runs — vast electrical infrastructure.' },
+  { id:'company', label:'AI Company',        x:C.COMPANY_X, y:C.COMPANY_Y, type:'governance', color:'#7c3aed', tag:'AI Company',
+    desc:'e.g. OpenAI, Anthropic, Google DeepMind. Controls training data selection, model architecture, and alignment decisions.' },
+
+  // ── TRAINING ─────────────────────────────────────────────
+  { id:'tr_data',   label:'Training Data',       x:C.TR_DATA_X,   y:C.TR_Y,   type:'training', color:'#16a34a', tag:'Training',
+    desc:'Billions of tokens from diverse sources, collected and curated before training begins.' },
+  { id:'tr_token',  label:'Tokenisation',        x:C.TR_TOKEN_X,  y:C.TR_Y,   type:'training', color:'#16a34a', tag:'Training',
+    desc:'Text split into subword units and converted to numbers. Language becomes a numerical sequence.' },
+  { id:'tr_posenc', label:'Positional\nEncoding', x:C.TR_POSENC_X, y:C.TR_Y,   type:'training', color:'#16a34a', tag:'Training',
+    desc:'Transformers process tokens in parallel and have no inherent sense of order. Positional encodings inject sequence position into each token.' },
+  { id:'algorithm', label:'Algorithm\n+ Weights', x:C.ALGO_X,      y:C.PHYS_Y, type:'bridge',   color:'#a07d39', tag:'Bridge',
+    desc:'The transformer architecture. During training, weights adjust continuously. During inference, weights are frozen. Same architecture — different mode.' },
+  { id:'loss',      label:'Loss +\nBackprop',    x:C.LOSS_X,      y:C.TR_Y,   type:'training', color:'#16a34a', tag:'Training',
+    desc:'Prediction error is calculated and propagated back through the network. Weights are adjusted. This loop repeats billions of times.' },
+  { id:'rlhf',      label:'Fine-tuning\n/ RLHF', x:C.RLHF_X,     y:C.RLHF_Y, type:'training', color:'#16a34a', tag:'Training',
+    desc:'Human evaluators rate outputs. The model is trained toward helpfulness and accuracy. Consented user input feeds here, shaping alignment.' },
+
+  // ── TRAINING DATA SUB-NODES — arc fanning upward from tr_data ─
+  // 6 nodes arranged in a semicircle above tr_data, radius ~130px
+  { id:'sub_web',      label:'Web Crawl',           x:C.TR_DATA_X-130, y:C.TR_Y-80,  type:'data_sub', color:'#ca8a04', tag:'Training Data',
+    desc:'Publicly indexed web pages. Common Crawl is the primary source — the majority of training volume by token count.' },
+  { id:'sub_books',    label:'Books',                x:C.TR_DATA_X-100, y:C.TR_Y-160, type:'data_sub', color:'#ca8a04', tag:'Training Data',
+    desc:'Digitised books and long-form text. BooksCorpus, Project Gutenberg. Gives the model coherent long-range structure.' },
+  { id:'sub_papers',   label:'Academic\nPapers',     x:C.TR_DATA_X-10,  y:C.TR_Y-210, type:'data_sub', color:'#ca8a04', tag:'Training Data',
+    desc:'arXiv, PubMed, academic databases. Domain-specific knowledge and scientific reasoning.' },
+  { id:'sub_code',     label:'Code\nRepositories',   x:C.TR_DATA_X+100, y:C.TR_Y-200, type:'data_sub', color:'#ca8a04', tag:'Training Data',
+    desc:'GitHub and similar. Programming corpora giving the model structured logical reasoning ability.' },
+  { id:'sub_wiki',     label:'Encyclopaedic\nCurated', x:C.TR_DATA_X+170, y:C.TR_Y-130, type:'data_sub', color:'#ca8a04', tag:'Training Data',
+    desc:'Wikipedia, news archives, structured reference material. High quality, reliable baseline knowledge.' },
+  { id:'sub_licensed', label:'Licensed\nData',       x:C.TR_DATA_X+50,  y:C.TR_Y-240, type:'data_sub', color:'#ca8a04', tag:'Training Data',
+    desc:'Data purchased or licensed from third-party publishers, news organisations, and data providers.' },
+
+  // ── INFERENCE ────────────────────────────────────────────
+  { id:'inf_prompt',   label:'User Prompt',          x:C.INF_PROMPT_X,  y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
+    desc:'You type a message. Natural language enters the system. Your device sends it to the server via the internet.' },
+  { id:'inf_token',    label:'Tokenisation',         x:C.INF_TOKEN_X,   y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
+    desc:'Your prompt is split using the same token format as training. From this point, your message is a sequence of numbers.' },
+  { id:'inf_posenc',   label:'Positional\nEncoding', x:C.INF_POSENC_X,  y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
+    desc:'Token order is encoded before entering the transformer. Same step as training.' },
+  { id:'inf_logits',   label:'Logits /\nSoftmax',    x:C.INF_LOGITS_X,  y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
+    desc:'The final layer scores every token in the vocabulary. Softmax converts scores into a probability distribution — likelihoods, not answers.' },
+  { id:'inf_sampling', label:'Output\nSampling',     x:C.INF_SAMP_X,    y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
+    desc:'A token is selected probabilistically. Same prompt can produce different responses — generation is not deterministic by default.' },
+  { id:'inf_iface',    label:'Response /\nInterface',x:C.INF_IFACE_X,   y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
+    desc:'Tokens decoded back into language. This is the first moment language exists again — everything before this was numbers.' },
+];
+
+// ─────────────────────────────────────────────────────────────
+// EDGE DATA
+// ─────────────────────────────────────────────────────────────
+const EDGES = [
+  // Physical
+  { from:'user',    to:'device',     type:'physical',  animated:true },
+  { from:'device',  to:'server',     type:'internet',  animated:true },
+  { from:'server',  to:'tr_data',    type:'physical',  animated:true },
+  { from:'server',  to:'inf_prompt', type:'physical',  animated:true },
+
+  // Governance (AI company)
+  { from:'company', to:'server',    type:'governance', animated:true },
+  { from:'company', to:'tr_data',   type:'governance', animated:true },
+  { from:'company', to:'rlhf',      type:'governance', animated:true },
+  { from:'company', to:'algorithm', type:'governance', animated:true },
+
+  // Training data sub-fan
+  { from:'tr_data', to:'sub_web',      type:'data_sub', animated:false },
+  { from:'tr_data', to:'sub_books',    type:'data_sub', animated:false },
+  { from:'tr_data', to:'sub_papers',   type:'data_sub', animated:false },
+  { from:'tr_data', to:'sub_code',     type:'data_sub', animated:false },
+  { from:'tr_data', to:'sub_wiki',     type:'data_sub', animated:false },
+  { from:'tr_data', to:'sub_licensed', type:'data_sub', animated:false },
+
+  // Training chain
+  { from:'tr_data',   to:'tr_token',  type:'training', animated:true },
+  { from:'tr_token',  to:'tr_posenc', type:'training', animated:true },
+  { from:'tr_posenc', to:'algorithm', type:'training', animated:true },
+  { from:'algorithm', to:'loss',      type:'training', animated:true },
+
+  // Feedback loops
+  { from:'loss', to:'algorithm', type:'feedback', animated:true, curved:true },
+  { from:'loss', to:'rlhf',      type:'feedback', animated:true },
+  { from:'rlhf', to:'algorithm', type:'feedback', animated:true },
+
+  // Inference chain
+  { from:'inf_prompt',  to:'inf_token',    type:'inference', animated:true },
+  { from:'inf_token',   to:'inf_posenc',   type:'inference', animated:true },
+  { from:'inf_posenc',  to:'algorithm',    type:'inference', animated:true },
+  { from:'algorithm',   to:'inf_logits',   type:'inference', animated:true },
+  { from:'inf_logits',  to:'inf_sampling', type:'inference', animated:true },
+  { from:'inf_sampling',to:'inf_iface',    type:'inference', animated:true },
+  { from:'inf_iface',   to:'user',         type:'inference', animated:true, curved:true },
+];
+
+// Edge style map
+const ESTYLES = {
+  physical:   { stroke:'#2563eb', width:1.8, dash:'',       opacity:0.75, marker:'arr-physical' },
+  internet:   { stroke:'#2563eb', width:2.2, dash:'',       opacity:0.85, marker:'arr-physical' },
+  governance: { stroke:'#7c3aed', width:1.2, dash:'5,4',    opacity:0.5,  marker:'arr-governance' },
+  training:   { stroke:'#16a34a', width:1.8, dash:'',       opacity:0.7,  marker:'arr-training' },
+  inference:  { stroke:'#ea580c', width:1.8, dash:'',       opacity:0.7,  marker:'arr-inference' },
+  feedback:   { stroke:'#22c55e', width:1.4, dash:'5,3',    opacity:0.8,  marker:'arr-feedback' },
+  data_sub:   { stroke:'#ca8a04', width:1.1, dash:'',       opacity:0.55, marker:'' },
+};
+
+// ─────────────────────────────────────────────────────────────
+// ICON DRAWING
+// ─────────────────────────────────────────────────────────────
+function iconSVG(type, color, size) {
+  const h = size * 0.55;
+  switch(type) {
+    case 'user':
+      return `<circle cx="0" cy="${-h*0.4}" r="${h*0.38}" stroke="${color}" stroke-width="1.4" fill="none"/>
+              <path d="M${-h*0.6} ${h*0.55} Q${-h*0.6} ${h*0.1} 0 ${h*0.1} Q${h*0.6} ${h*0.1} ${h*0.6} ${h*0.55}" stroke="${color}" stroke-width="1.4" fill="none"/>`;
+    case 'device':
+      return `<rect x="${-h*0.65}" y="${-h*0.5}" width="${h*1.3}" height="${h*0.85}" rx="2" stroke="${color}" stroke-width="1.4" fill="none"/>
+              <rect x="${-h*0.2}" y="${h*0.35}" width="${h*0.4}" height="${h*0.15}" rx="1" fill="${color}" opacity="0.5"/>
+              <rect x="${-h*0.4}" y="${h*0.5}" width="${h*0.8}" height="${h*0.1}" rx="1" fill="${color}" opacity="0.3"/>`;
+    case 'server':
+      return `<rect x="${-h*0.65}" y="${-h*0.55}" width="${h*1.3}" height="${h*0.35}" rx="1.5" stroke="${color}" stroke-width="1.3" fill="none"/>
+              <rect x="${-h*0.65}" y="${-h*0.12}" width="${h*1.3}" height="${h*0.35}" rx="1.5" stroke="${color}" stroke-width="1.3" fill="none"/>
+              <rect x="${-h*0.65}" y="${h*0.3}" width="${h*1.3}" height="${h*0.35}" rx="1.5" stroke="${color}" stroke-width="1.3" fill="none"/>
+              <circle cx="${h*0.4}" cy="${-h*0.375}" r="${h*0.1}" fill="${color}" opacity="0.6"/>
+              <circle cx="${h*0.4}" cy="${h*0.075}" r="${h*0.1}" fill="${color}" opacity="0.6"/>
+              <circle cx="${h*0.4}" cy="${h*0.475}" r="${h*0.1}" fill="${color}" opacity="0.4"/>`;
+    case 'company':
+      return `<rect x="${-h*0.65}" y="${-h*0.2}" width="${h*1.3}" height="${h*0.75}" rx="1.5" stroke="${color}" stroke-width="1.4" fill="none"/>
+              <path d="M${-h*0.65} ${-h*0.2} L0 ${-h*0.65} L${h*0.65} ${-h*0.2}" stroke="${color}" stroke-width="1.4" fill="none"/>
+              <rect x="${-h*0.18}" y="${h*0.1}" width="${h*0.36}" height="${h*0.45}" rx="1" stroke="${color}" stroke-width="1.1" fill="none"/>`;
+    case 'data':
+      return `<rect x="${-h*0.55}" y="${-h*0.55}" width="${h*0.8}" height="${h*1.0}" rx="1.5" stroke="${color}" stroke-width="1.3" fill="none"/>
+              <rect x="${-h*0.25}" y="${-h*0.7}" width="${h*0.8}" height="${h*1.0}" rx="1.5" stroke="${color}" stroke-width="1.3" fill="none" opacity="0.5"/>
+              <line x1="${-h*0.4}" y1="${-h*0.2}" x2="${h*0.15}" y2="${-h*0.2}" stroke="${color}" stroke-width="1" opacity="0.5"/>
+              <line x1="${-h*0.4}" y1="0" x2="${h*0.15}" y2="0" stroke="${color}" stroke-width="1" opacity="0.5"/>
+              <line x1="${-h*0.4}" y1="${h*0.2}" x2="${h*0.0}" y2="${h*0.2}" stroke="${color}" stroke-width="1" opacity="0.5"/>`;
+    case 'web':
+      return `<circle cx="0" cy="0" r="${h*0.6}" stroke="${color}" stroke-width="1.2" fill="none"/>
+              <ellipse cx="0" cy="0" rx="${h*0.25}" ry="${h*0.6}" stroke="${color}" stroke-width="1.1" fill="none"/>
+              <line x1="${-h*0.6}" y1="0" x2="${h*0.6}" y2="0" stroke="${color}" stroke-width="1" opacity="0.6"/>`;
+    case 'books':
+      return `<rect x="${-h*0.55}" y="${-h*0.55}" width="${h*0.45}" height="${h*1.0}" rx="1" stroke="${color}" stroke-width="1.2" fill="none"/>
+              <rect x="${-h*0.1}" y="${-h*0.5}" width="${h*0.45}" height="${h*1.0}" rx="1" stroke="${color}" stroke-width="1.2" fill="none" opacity="0.7"/>
+              <rect x="${h*0.12}" y="${-h*0.6}" width="${h*0.45}" height="${h*1.0}" rx="1" stroke="${color}" stroke-width="1.2" fill="none" opacity="0.4"/>`;
+    case 'papers':
+      return `<rect x="${-h*0.5}" y="${-h*0.6}" width="${h*0.9}" height="${h*1.1}" rx="1.5" stroke="${color}" stroke-width="1.2" fill="none"/>
+              <line x1="${-h*0.3}" y1="${-h*0.2}" x2="${h*0.25}" y2="${-h*0.2}" stroke="${color}" stroke-width="1" opacity="0.5"/>
+              <line x1="${-h*0.3}" y1="0" x2="${h*0.25}" y2="0" stroke="${color}" stroke-width="1" opacity="0.5"/>
+              <line x1="${-h*0.3}" y1="${h*0.2}" x2="${h*0.1}" y2="${h*0.2}" stroke="${color}" stroke-width="1" opacity="0.5"/>`;
+    case 'code':
+      return `<path d="M${-h*0.2} ${-h*0.4} L${-h*0.6} 0 L${-h*0.2} ${h*0.4}" stroke="${color}" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+              <path d="M${h*0.2} ${-h*0.4} L${h*0.6} 0 L${h*0.2} ${h*0.4}" stroke="${color}" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
+    case 'wiki':
+      return `<rect x="${-h*0.6}" y="${-h*0.6}" width="${h*1.2}" height="${h*1.2}" rx="1.5" stroke="${color}" stroke-width="1.2" fill="none"/>
+              <line x1="${-h*0.38}" y1="${-h*0.25}" x2="${h*0.38}" y2="${-h*0.25}" stroke="${color}" stroke-width="1" opacity="0.5"/>
+              <line x1="${-h*0.38}" y1="0" x2="${h*0.38}" y2="0" stroke="${color}" stroke-width="1" opacity="0.5"/>
+              <line x1="${-h*0.38}" y1="${h*0.25}" x2="${h*0.15}" y2="${h*0.25}" stroke="${color}" stroke-width="1" opacity="0.5"/>`;
+    case 'licensed':
+      return `<rect x="${-h*0.42}" y="${h*0.05}" width="${h*0.84}" height="${h*0.6}" rx="1.5" stroke="${color}" stroke-width="1.2" fill="none"/>
+              <path d="M${-h*0.22} ${h*0.05} L${-h*0.22} ${-h*0.2} A${h*0.22} ${h*0.22} 0 0 1 ${h*0.22} ${-h*0.2} L${h*0.22} ${h*0.05}" stroke="${color}" stroke-width="1.2" fill="none"/>
+              <circle cx="0" cy="${h*0.35}" r="${h*0.1}" fill="${color}" opacity="0.7"/>`;
+    case 'token':
+      return `<text x="${-h*0.55}" y="${-h*0.05}" font-size="${h*0.55}" font-family="DM Mono,monospace" fill="${color}" font-weight="500">Hi</text>
+              <line x1="${h*0.05}" y1="${-h*0.1}" x2="${h*0.35}" y2="${-h*0.1}" stroke="${color}" stroke-width="1.2"/>
+              <polygon points="${h*0.28},${-h*0.22} ${h*0.5},${-h*0.1} ${h*0.28},${h*0.02}" fill="${color}"/>
+              <text x="${h*0.54}" y="${-h*0.18}" font-size="${h*0.44}" font-family="DM Mono,monospace" fill="${color}" opacity="0.85">42</text>
+              <text x="${h*0.54}" y="${h*0.12}" font-size="${h*0.44}" font-family="DM Mono,monospace" fill="${color}" opacity="0.65">18</text>`;
+    case 'posenc':
+      return `<rect x="${-h*0.6}" y="${-h*0.35}" width="${h*0.28}" height="${h*0.6}" rx="1" stroke="${color}" stroke-width="1.1" fill="none"/>
+              <rect x="${-h*0.28}" y="${-h*0.35}" width="${h*0.28}" height="${h*0.6}" rx="1" stroke="${color}" stroke-width="1.1" fill="none"/>
+              <rect x="${h*0.04}" y="${-h*0.35}" width="${h*0.28}" height="${h*0.6}" rx="1" stroke="${color}" stroke-width="1.1" fill="none"/>
+              <rect x="${h*0.36}" y="${-h*0.35}" width="${h*0.28}" height="${h*0.6}" rx="1" stroke="${color}" stroke-width="1.1" fill="none"/>
+              <text x="${-h*0.51}" y="${h*0.12}" font-size="${h*0.38}" font-family="DM Mono,monospace" fill="${color}" opacity="0.7">1</text>
+              <text x="${-h*0.19}" y="${h*0.12}" font-size="${h*0.38}" font-family="DM Mono,monospace" fill="${color}" opacity="0.7">2</text>
+              <text x="${h*0.13}" y="${h*0.12}" font-size="${h*0.38}" font-family="DM Mono,monospace" fill="${color}" opacity="0.7">3</text>
+              <text x="${h*0.45}" y="${h*0.12}" font-size="${h*0.38}" font-family="DM Mono,monospace" fill="${color}" opacity="0.7">4</text>`;
+    case 'algorithm':
+      return `<ellipse cx="${-h*0.35}" cy="0" rx="${h*0.18}" ry="${h*0.5}" stroke="${color}" stroke-width="1.3" fill="none"/>
+              <ellipse cx="${h*0.35}" cy="0" rx="${h*0.18}" ry="${h*0.5}" stroke="${color}" stroke-width="1.3" fill="none"/>
+              <line x1="${-h*0.17}" y1="${-h*0.3}" x2="${h*0.17}" y2="${-h*0.3}" stroke="${color}" stroke-width="2.2" opacity="0.8"/>
+              <line x1="${-h*0.17}" y1="0" x2="${h*0.17}" y2="0" stroke="${color}" stroke-width="1.4" opacity="0.5"/>
+              <line x1="${-h*0.17}" y1="${h*0.3}" x2="${h*0.17}" y2="${h*0.3}" stroke="${color}" stroke-width="0.7" opacity="0.25"/>`;
+    case 'loss':
+      return `<path d="M0 ${-h*0.55} A${h*0.55} ${h*0.55} 0 1 1 ${-h*0.45} ${h*0.35}" stroke="${color}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+              <polygon points="${-h*0.58},${h*0.18} ${-h*0.38},${h*0.55} ${-h*0.18},${h*0.18}" fill="${color}"/>
+              <line x1="0" y1="${-h*0.22}" x2="0" y2="${h*0.22}" stroke="${color}" stroke-width="1.3"/>
+              <line x1="${-h*0.22}" y1="0" x2="${h*0.22}" y2="0" stroke="${color}" stroke-width="1.3"/>`;
+    case 'rlhf':
+      return `<circle cx="${-h*0.22}" cy="${-h*0.28}" r="${h*0.3}" stroke="${color}" stroke-width="1.2" fill="none"/>
+              <path d="M${-h*0.52} ${h*0.35} Q${-h*0.22} ${h*0.02} ${h*0.08} ${h*0.35}" stroke="${color}" stroke-width="1.2" fill="none"/>
+              <path d="M${h*0.25} ${h*0.2} L${h*0.45} ${h*0.45} L${h*0.7} ${-h*0.05}" stroke="#86efac" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    case 'prompt':
+      return `<rect x="${-h*0.65}" y="${-h*0.48}" width="${h*1.3}" height="${h*0.88}" rx="2" stroke="${color}" stroke-width="1.3" fill="none"/>
+              <line x1="${-h*0.42}" y1="${-h*0.1}" x2="${h*0.3}" y2="${-h*0.1}" stroke="${color}" stroke-width="1" opacity="0.5"/>
+              <rect x="${h*0.35}" y="${-h*0.25}" width="${h*0.12}" height="${h*0.3}" rx="1" fill="${color}" opacity="0.7"/>`;
+    case 'logits':
+      return `<rect x="${-h*0.55}" y="${h*0.1}" width="${h*0.22}" height="${h*0.35}" rx="1" fill="${color}" opacity="0.3"/>
+              <rect x="${-h*0.28}" y="${-h*0.15}" width="${h*0.22}" height="${h*0.6}" rx="1" fill="${color}" opacity="0.5"/>
+              <rect x="${h*0.0}" y="${-h*0.42}" width="${h*0.22}" height="${h*0.87}" rx="1" fill="${color}" opacity="0.85"/>
+              <rect x="${h*0.28}" y="${-h*0.05}" width="${h*0.22}" height="${h*0.5}" rx="1" fill="${color}" opacity="0.4"/>
+              <line x1="${-h*0.6}" y1="${h*0.46}" x2="${h*0.55}" y2="${h*0.46}" stroke="${color}" stroke-width="0.9" opacity="0.4"/>`;
+    case 'sampling':
+      return `<rect x="${-h*0.55}" y="${-h*0.55}" width="${h*0.75}" height="${h*0.35}" rx="1.5" stroke="${color}" stroke-width="1.1" fill="none" opacity="0.4"/>
+              <rect x="${-h*0.55}" y="${-h*0.12}" width="${h*0.75}" height="${h*0.35}" rx="1.5" stroke="${color}" stroke-width="1.1" fill="none" opacity="0.4"/>
+              <rect x="${-h*0.55}" y="${h*0.3}" width="${h*0.75}" height="${h*0.35}" rx="1.5" fill="${color}" opacity="0.75"/>
+              <line x1="${h*0.28}" y1="${h*0.48}" x2="${h*0.6}" y2="${h*0.48}" stroke="${color}" stroke-width="1.2"/>
+              <polygon points="${h*0.5},${h*0.3} ${h*0.7},${h*0.48} ${h*0.5},${h*0.65}" fill="${color}"/>`;
+    case 'interface':
+      return `<rect x="${-h*0.65}" y="${-h*0.5}" width="${h*1.3}" height="${h*0.9}" rx="2" stroke="${color}" stroke-width="1.3" fill="none"/>
+              <rect x="${-h*0.42}" y="${-h*0.22}" width="${h*0.65}" height="${h*0.1}" rx="1" fill="${color}" opacity="0.45"/>
+              <rect x="${-h*0.42}" y="${h*0.05}" width="${h*0.4}" height="${h*0.1}" rx="1" fill="${color}" opacity="0.3"/>
+              <line x1="${-h*0.1}" y1="${h*0.42}" x2="${-h*0.1}" y2="${h*0.65}" stroke="${color}" stroke-width="1.1" opacity="0.4"/>
+              <line x1="${-h*0.4}" y1="${h*0.65}" x2="${h*0.2}" y2="${h*0.65}" stroke="${color}" stroke-width="1.1" opacity="0.4"/>`;
+    default:
+      return `<circle cx="0" cy="0" r="${h*0.5}" stroke="${color}" stroke-width="1.2" fill="none"/>`;
+  }
+}
+
+// Icon type map
+const ICON_MAP = {
+  user:'user', device:'device', server:'server', company:'company',
+  tr_data:'data', tr_token:'token', tr_posenc:'posenc',
+  algorithm:'algorithm', loss:'loss', rlhf:'rlhf',
+  sub_web:'web', sub_books:'books', sub_papers:'papers',
+  sub_code:'code', sub_wiki:'wiki', sub_licensed:'licensed',
+  inf_prompt:'prompt', inf_token:'token', inf_posenc:'posenc',
+  inf_logits:'logits', inf_sampling:'sampling', inf_iface:'interface',
+};
+
+// ─────────────────────────────────────────────────────────────
+// BUILD SVG
+// ─────────────────────────────────────────────────────────────
+
+const root = document.getElementById('root');
+const nodeById = {};
+NODES.forEach(n => nodeById[n.id] = n);
+
+function getR(node) {
+  if (node.type === 'physical' || node.type === 'governance') return SZ.physical;
+  if (node.type === 'bridge') return SZ.bridge;
+  if (node.type === 'data_sub') return SZ.tiny;
+  return SZ.small;
+}
+
+// Helper: edge endpoint offset toward target
+function edgeEndpoints(from, to) {
+  const dx = to.x - from.x, dy = to.y - from.y;
+  const d = Math.sqrt(dx*dx + dy*dy) || 1;
+  const rf = getR(from), rt = getR(to);
+  // for cubes, use half-size; for circles use radius
+  const scaleF = (from.type === 'physical' || from.type === 'governance') ? rf * 1.0 / d : rf / d;
+  const scaleT = (to.type === 'physical' || to.type === 'governance') ? rt * 1.0 / d : rt / d;
+  return {
+    x1: from.x + dx * scaleF,
+    y1: from.y + dy * scaleF,
+    x2: to.x - dx * scaleT,
+    y2: to.y - dy * scaleT,
+  };
+}
+
+// ── EDGES ──────────────────────────────────────────────────
+
+const edgeGroup = document.createElementNS('http://www.w3.org/2000/svg','g');
+edgeGroup.setAttribute('id','edges');
+root.appendChild(edgeGroup);
+
+const animatedEdgeDots = [];
+
+EDGES.forEach(e => {
+  const from = nodeById[e.from], to = nodeById[e.to];
+  if (!from || !to) return;
+  const es = ESTYLES[e.type] || ESTYLES.physical;
+  const ep = edgeEndpoints(from, to);
+
+  if (e.curved) {
+    // Curved return edge (feedback or inference return to user)
+    const mx = (from.x + to.x) / 2;
+    const my = Math.max(from.y, to.y) + 80;
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', `M${ep.x1},${ep.y1} Q${mx},${my} ${ep.x2},${ep.y2}`);
+    path.setAttribute('stroke', es.stroke);
+    path.setAttribute('stroke-width', es.width);
+    path.setAttribute('stroke-dasharray', es.dash || '');
+    path.setAttribute('opacity', es.opacity);
+    path.setAttribute('fill','none');
+    if (es.marker) path.setAttribute('marker-end', `url(#${es.marker})`);
+    edgeGroup.appendChild(path);
+  } else {
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', ep.x1); line.setAttribute('y1', ep.y1);
+    line.setAttribute('x2', ep.x2); line.setAttribute('y2', ep.y2);
+    line.setAttribute('stroke', es.stroke);
+    line.setAttribute('stroke-width', es.width);
+    line.setAttribute('stroke-dasharray', es.dash || '');
+    line.setAttribute('opacity', es.opacity);
+    if (es.marker) line.setAttribute('marker-end', `url(#${es.marker})`);
+    edgeGroup.appendChild(line);
+  }
+
+  // Animated dots — one per directed edge, speed varies by type
+  if (e.animated) {
+    const speed = {
+      internet: 0.55, physical: 0.32, training: 0.38,
+      inference: 0.42, feedback: 0.28, governance: 0.18,
+    }[e.type] || 0.3;
+    const dotColor = {
+      internet: '#ffffff', physical: '#93c5fd', training: '#86efac',
+      inference: '#fdba74', feedback: '#bbf7d0', governance: '#c4b5fd',
+    }[e.type] || '#ffffff';
+    const dotCount = e.type === 'internet' ? 3 : 2;
+    for (let i = 0; i < dotCount; i++) {
+      const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('r', e.type === 'internet' ? '3.5' : '2.5');
+      dot.setAttribute('fill', dotColor);
+      dot.setAttribute('opacity', e.type === 'governance' ? '0.5' : '0.85');
+      edgeGroup.appendChild(dot);
+      animatedEdgeDots.push({
+        dot, from, to,
+        offset: i / dotCount,
+        speed,
+        curved: e.curved || false,
+        // For curved edges store control point
+        cpx: e.curved ? (from.x + to.x) / 2 : 0,
+        cpy: e.curved ? Math.max(from.y, to.y) + 80 : 0,
+      });
+    }
+  }
+});
+
+// Internet label
+const internetMidX = (nodeById['device'].x + nodeById['server'].x) / 2;
+const internetMidY = nodeById['device'].y;
+const inetG = document.createElementNS('http://www.w3.org/2000/svg','g');
+inetG.setAttribute('transform', `translate(${internetMidX},${internetMidY - 22})`);
+const inetBg = document.createElementNS('http://www.w3.org/2000/svg','rect');
+inetBg.setAttribute('x','-30'); inetBg.setAttribute('y','-11');
+inetBg.setAttribute('width','60'); inetBg.setAttribute('height','18');
+inetBg.setAttribute('rx','5'); inetBg.setAttribute('fill','rgba(250,251,251,0.92)');
+inetBg.setAttribute('stroke','rgba(37,99,235,0.45)'); inetBg.setAttribute('stroke-width','1');
+const inetTxt = document.createElementNS('http://www.w3.org/2000/svg','text');
+inetTxt.setAttribute('text-anchor','middle'); inetTxt.setAttribute('y','3');
+inetTxt.setAttribute('font-size','10'); inetTxt.setAttribute('font-family','DM Sans,sans-serif');
+inetTxt.setAttribute('fill','#2563eb'); inetTxt.setAttribute('font-weight','600');
+inetTxt.setAttribute('letter-spacing','0.06em');
+inetTxt.textContent = 'Internet';
+inetG.appendChild(inetBg); inetG.appendChild(inetTxt);
+root.appendChild(inetG);
+
+// Bridge pillar label
+const bpG = document.createElementNS('http://www.w3.org/2000/svg','g');
+bpG.setAttribute('transform', `translate(${C.ALGO_X + 26},${C.PHYS_Y})`);
+const bpBg = document.createElementNS('http://www.w3.org/2000/svg','rect');
+bpBg.setAttribute('x','0'); bpBg.setAttribute('y','-18');
+bpBg.setAttribute('width','120'); bpBg.setAttribute('height','34');
+bpBg.setAttribute('rx','6'); bpBg.setAttribute('fill','rgba(250,251,251,0.92)');
+bpBg.setAttribute('stroke','rgba(160,125,57,0.45)'); bpBg.setAttribute('stroke-width','1');
+const bpT1 = document.createElementNS('http://www.w3.org/2000/svg','text');
+bpT1.setAttribute('x','60'); bpT1.setAttribute('y','-3');
+bpT1.setAttribute('text-anchor','middle'); bpT1.setAttribute('font-size','9.5');
+bpT1.setAttribute('font-family','DM Sans,sans-serif'); bpT1.setAttribute('fill','#a07d39');
+bpT1.setAttribute('font-weight','600'); bpT1.textContent = 'same architecture';
+const bpT2 = document.createElementNS('http://www.w3.org/2000/svg','text');
+bpT2.setAttribute('x','60'); bpT2.setAttribute('y','10');
+bpT2.setAttribute('text-anchor','middle'); bpT2.setAttribute('font-size','9.5');
+bpT2.setAttribute('font-family','DM Sans,sans-serif'); bpT2.setAttribute('fill','rgba(160,125,57,0.7)');
+bpT2.textContent = 'different mode';
+bpG.appendChild(bpBg); bpG.appendChild(bpT1); bpG.appendChild(bpT2);
+root.appendChild(bpG);
+
+// Cycle track labels
+function trackLabel(text, x, y, color) {
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('transform',`translate(${x},${y})`);
+  const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+  t.setAttribute('text-anchor','middle');
+  t.setAttribute('font-size','9.5');
+  t.setAttribute('font-family','DM Sans,sans-serif');
+  t.setAttribute('fill',color);
+  t.setAttribute('font-weight','700');
+  t.setAttribute('letter-spacing','0.13em');
+  t.textContent = text;
+  g.appendChild(t);
+  root.appendChild(g);
+}
+trackLabel('TRAINING CYCLE', (C.TR_DATA_X + C.LOSS_X) / 2, C.TR_Y - 265, '#16a34a');
+trackLabel('INFERENCE CYCLE', (C.INF_PROMPT_X + C.INF_IFACE_X) / 2, C.INF_Y + 90, '#ea580c');
+
+// ── NODES ──────────────────────────────────────────────────
+
+const nodeGroup = document.createElementNS('http://www.w3.org/2000/svg','g');
+nodeGroup.setAttribute('id','nodes');
+root.appendChild(nodeGroup);
+
+const nodeSVGEls = {};
+
+NODES.forEach(node => {
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('transform',`translate(${node.x},${node.y})`);
+  g.setAttribute('class','node');
+  g.setAttribute('data-id', node.id);
+  g.style.cursor = 'pointer';
+
+  const r = getR(node);
+  const isBox = node.type === 'physical' || node.type === 'governance';
+  const isBridge = node.type === 'bridge';
+
+  // Body
+  let body;
+  if (isBox) {
+    body = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    body.setAttribute('x',-r); body.setAttribute('y',-r);
+    body.setAttribute('width', r*2); body.setAttribute('height', r*2);
+    body.setAttribute('rx','4');
+    body.setAttribute('fill', node.color + '18');
+    body.setAttribute('stroke', node.color);
+    body.setAttribute('stroke-width', isBridge ? '2.2' : '1.8');
+    body.setAttribute('filter', 'url(#glow-blue)');
+  } else {
+    body = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    body.setAttribute('cx',0); body.setAttribute('cy',0); body.setAttribute('r',r);
+    body.setAttribute('fill', node.color + '14');
+    body.setAttribute('stroke', node.color);
+    body.setAttribute('stroke-width', isBridge ? '2.2' : '1.4');
+    if (isBridge) body.setAttribute('filter','url(#glow-gold)');
+  }
+  g.appendChild(body);
+
+  // Icon
+  const iconType = ICON_MAP[node.id] || 'default';
+  const iconSize = isBox ? r * 1.1 : r * 1.4;
+  const iconG = document.createElementNS('http://www.w3.org/2000/svg','g');
+  iconG.setAttribute('transform',`translate(0,${isBox ? -4 : 0})`);
+  iconG.innerHTML = iconSVG(iconType, node.color, iconSize);
+  g.appendChild(iconG);
+
+  // Label
+  const labelLines = node.label.split('\n');
+  const labelY = isBox ? r + 14 : r + 13;
+  labelLines.forEach((line, i) => {
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('x', 0);
+    t.setAttribute('y', labelY + i * 12);
+    t.setAttribute('font-size', isBox ? '11' : node.type === 'data_sub' ? '9' : '10');
+    t.setAttribute('font-family','DM Sans,sans-serif');
+    t.setAttribute('fill', node.color);
+    t.setAttribute('font-weight','600');
+    t.setAttribute('opacity', isBox ? '0.9' : '0.8');
+    t.textContent = line;
+    g.appendChild(t);
+  });
+
+  // Hover hit area (invisible, larger than node)
+  const hit = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  hit.setAttribute('cx',0); hit.setAttribute('cy',0);
+  hit.setAttribute('r', Math.max(r, 20) + 8);
+  hit.setAttribute('fill','transparent');
+  hit.setAttribute('class','hit');
+  hit.setAttribute('data-id', node.id);
+  g.appendChild(hit);
+
+  nodeGroup.appendChild(g);
+  nodeSVGEls[node.id] = { g, body, isBox, r };
+});
+
+// ─────────────────────────────────────────────────────────────
+// TOOLTIP
+// ─────────────────────────────────────────────────────────────
+
+const tooltip = document.getElementById('tooltip');
+const ttTag = document.getElementById('tt-tag');
+const ttTitle = document.getElementById('tt-title');
+const ttBody = document.getElementById('tt-body');
+
+const TAG_COLORS = {
+  'Physical':     '#3b82f6',
+  'AI Company':   '#8b5cf6',
+  'Training':     '#22c55e',
+  'Inference':    '#f97316',
+  'Training Data':'#d97706',
+  'Bridge':       '#c9a96e',
+};
+
+let activeNode = null;
+
+function showTooltip(nodeId, mx, my) {
+  const node = nodeById[nodeId];
+  if (!node) return;
+  ttTag.textContent = node.tag;
+  ttTag.style.background = (TAG_COLORS[node.tag] || '#555') + '22';
+  ttTag.style.color = TAG_COLORS[node.tag] || '#aaa';
+  ttTitle.textContent = node.label.replace('\n', ' ');
+  ttBody.textContent = node.desc;
+  tooltip.style.left = (mx + 14) + 'px';
+  tooltip.style.top = (my - 10) + 'px';
+  tooltip.classList.add('show');
+}
+
+function hideTooltip() {
+  tooltip.classList.remove('show');
+}
+
+// Node hover highlight
+document.getElementById('nodes').addEventListener('mouseover', e => {
+  const id = e.target.dataset.id;
+  if (!id || !nodeSVGEls[id]) return;
+  const el = nodeSVGEls[id];
+  el.body.setAttribute('fill', nodeById[id].color + '38');
+  activeNode = id;
+  showTooltip(id, e.clientX, e.clientY);
+});
+document.getElementById('nodes').addEventListener('mousemove', e => {
+  if (activeNode) {
+    tooltip.style.left = (e.clientX + 14) + 'px';
+    tooltip.style.top = (e.clientY - 10) + 'px';
+  }
+});
+document.getElementById('nodes').addEventListener('mouseout', e => {
+  const id = e.target.dataset.id;
+  if (!id || !nodeSVGEls[id]) return;
+  nodeSVGEls[id].body.setAttribute('fill', nodeById[id].color + '14');
+  activeNode = null;
+  hideTooltip();
+});
+
+// ─────────────────────────────────────────────────────────────
+// PAN + ZOOM
+// ─────────────────────────────────────────────────────────────
+
+let vx = 0, vy = 0, scale = 1;
+let baseScale = 1; // the fit-to-view scale — zoom out floor
+let isDragging = false, lastX = 0, lastY = 0;
+
+function applyTransform() {
+  root.setAttribute('transform', `translate(${vx},${vy}) scale(${scale})`);
+}
+
+const wrap = document.getElementById('wrap');
+
+// Fit-to-view: measure SVG content bbox, then scale/center to fill viewport
+function fitToView() {
+  // Temporarily reset transform so getBBox returns true content bounds
+  root.setAttribute('transform', 'translate(0,0) scale(1)');
+  const bbox = root.getBBox();
+  const rect = wrap.getBoundingClientRect();
+  const pad = 24; // px padding around edges
+  const sw = (rect.width  - pad * 2) / bbox.width;
+  const sh = (rect.height - pad * 2) / bbox.height;
+  baseScale = Math.min(sw, sh);
+  scale = baseScale;
+  vx = (rect.width  - bbox.width  * scale) / 2 - bbox.x * scale;
+  vy = (rect.height - bbox.height * scale) / 2 - bbox.y * scale;
+  applyTransform();
+}
+
+// Run fit after first paint so layout is ready
+requestAnimationFrame(() => requestAnimationFrame(fitToView));
+window.addEventListener('resize', fitToView);
+
+// Mouse drag pan
+wrap.addEventListener('mousedown', e => {
+  if (e.button !== 0) return;
+  isDragging = true; lastX = e.clientX; lastY = e.clientY;
+});
+window.addEventListener('mouseup', () => isDragging = false);
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  vx += e.clientX - lastX; vy += e.clientY - lastY;
+  lastX = e.clientX; lastY = e.clientY;
+  applyTransform();
+});
+
+// Wheel: zoom only when the user signals intent to zoom
+//   • Cmd/Ctrl + scroll (on a physical mouse or trackpad)
+//   • Pinch on a trackpad (browsers emit wheel with ctrlKey = true)
+// A plain scroll is left alone so the page can scroll past the map naturally.
+wrap.addEventListener('wheel', e => {
+  if (!e.ctrlKey && !e.metaKey) return;   // plain scroll → let the page scroll
+  e.preventDefault();
+
+  // Smooth, magnitude-aware factor. deltaY is clamped so one aggressive
+  // wheel tick can't jump the view; exp gives continuous trackpad zooming.
+  const delta = Math.max(-100, Math.min(100, e.deltaY));
+  const factor = Math.exp(-delta * 0.0015);
+
+  const rect = wrap.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  const newScale = Math.min(3, Math.max(baseScale, scale * factor));
+  if (newScale === scale) return;
+  const f = newScale / scale;
+  vx = mx - (mx - vx) * f;
+  vy = my - (my - vy) * f;
+  scale = newScale;
+  applyTransform();
+}, { passive: false });
+
+// Touch pan (single finger)
+let lastTouchX = 0, lastTouchY = 0;
+wrap.addEventListener('touchstart', e => { lastTouchX = e.touches[0].clientX; lastTouchY = e.touches[0].clientY; });
+wrap.addEventListener('touchmove', e => {
+  e.preventDefault();
+  vx += e.touches[0].clientX - lastTouchX; vy += e.touches[0].clientY - lastTouchY;
+  lastTouchX = e.touches[0].clientX; lastTouchY = e.touches[0].clientY;
+  applyTransform();
+}, { passive: false });
+
+// ─────────────────────────────────────────────────────────────
+// VIEW MODES
+// ─────────────────────────────────────────────────────────────
+
+const wrap_el = document.getElementById('wrap');
+
+function animateTo(tx, ty, ts, duration=500) {
+  const startX = vx, startY = vy, startS = scale;
+  const t0 = performance.now();
+  function step(now) {
+    const p = Math.min((now - t0) / duration, 1);
+    const e = p < 0.5 ? 2*p*p : -1+(4-2*p)*p; // ease in-out quad
+    vx = startX + (tx - startX) * e;
+    vy = startY + (ty - startY) * e;
+    scale = startS + (ts - startS) * e;
+    applyTransform();
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+const VIEWS = {
+  full:      () => { fitToView(); },
+  training:  () => animateTo(-380, 100, 0.72),
+  inference: () => animateTo(-380, -80, 0.72),
+};
+
+window.setView = function(v) {
+  document.querySelectorAll('.tb-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (VIEWS[v]) VIEWS[v]();
+};
+
+window.resetView = function() {
+  document.querySelectorAll('.tb-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.tb-btn').classList.add('active');
+  animateTo(-20, 60, 0.58);
+};
+
+// ─────────────────────────────────────────────────────────────
+// ANIMATED DOTS (internet wire)
+// ─────────────────────────────────────────────────────────────
+
+let lastFrame = null;
+function animateLoop(ts) {
+  if (!lastFrame) lastFrame = ts;
+  const dt = Math.min((ts - lastFrame) / 1000, 0.05); // cap delta to avoid jumps
+  lastFrame = ts;
+
+  animatedEdgeDots.forEach(d => {
+    d.offset = (d.offset + dt * d.speed) % 1;
+    const t = d.offset;
+    let x, y;
+    if (d.curved) {
+      // Quadratic bezier: B(t) = (1-t)²P0 + 2(1-t)tP1 + t²P2
+      const mt = 1 - t;
+      x = mt*mt*d.from.x + 2*mt*t*d.cpx + t*t*d.to.x;
+      y = mt*mt*d.from.y + 2*mt*t*d.cpy + t*t*d.to.y;
+    } else {
+      x = d.from.x + (d.to.x - d.from.x) * t;
+      y = d.from.y + (d.to.y - d.from.y) * t;
+    }
+    d.dot.setAttribute('cx', x);
+    d.dot.setAttribute('cy', y);
+  });
+
+  requestAnimationFrame(animateLoop);
+}
+requestAnimationFrame(animateLoop);
+</script>
+<script src="ui-effects.js"></script>
+</body>
+</html>

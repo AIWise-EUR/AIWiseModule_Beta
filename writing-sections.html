@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI-Wise Module - Writing Sections</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-stage="writing">
+<header class="main-header">
+  <div class="header-inner">
+    <a href="lobby.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;">
+      <img src="erasmus-logo.png" alt="Erasmus University Rotterdam" class="header-logo">
+      <h1>AI-Wise</h1>
+    </a>
+    <span class="header-step-badge" id="header_step_badge"></span>
+  </div>
+</header>
+
+<section>
+  <div class="page-content pageShell">
+    <h2>Writing Sections of the Literature Review</h2>
+    <div class="stage-intro">
+      <p>
+        A literature report consists of a title, abstract, introduction, main body, discussion and reference list. In addition, there are a number of general aspects that you should note. This concerns the general structure, the coherence, the depth of content, the writing style and the references in the text. Below you will find a brief explanation of the various elements.
+      <p>
+        The links below lead to course materials related to this stage. Please read them before using the GenAI activity on this page, since the activity assumes that you are already familiar with the basic content. A basic understanding is also necessary to use GenAI appropriately and critically.
+      </p>
+      </p>
+    </div>
+
+    <section id="writing-handout" style="max-width: 920px; line-height: 1.55; margin: 18px auto 0 auto; color: #626c6e;">
+      <div class="canvas-card-grid">
+        <div class="canvas-card">
+          <span class="canvas-card-title">Appendix VII: Components of a literature report</span>
+          <div class="canvas-card-actions">
+            <a class="canvas-card-action" href="https://canvas.eur.nl/courses/51313/pages/annex-7-components-of-a-literature-report?module_item_id=1415996" target="_blank" rel="noopener">View on Canvas &rarr;</a>
+            <span class="canvas-card-sep">&middot;</span>
+            <a class="canvas-card-download" href="CanvasMaterial_AWSI_2026/Annex%207.docx" download>&darr; Download .docx</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="genai_description_card" class="genaiIntro softCard" style="margin-top: 28px;">
+      <div class="genaiIntroHeader">
+        <div class="genaiIntroPill">Using GenAI in AWSI</div>
+        <h3 class="genaiIntroTitle">Adjusting Your Sentences to Match Your Intention</h3>
+      </div>
+      <p class="genaiIntroText">This activity helps you polish your sentences so that they accurately reflect your intended meaning and the reading experience you want to create.</p>
+      <p class="genaiIntroText">It is divided into two parts. First, Grammar Check focuses on identifying and correcting clear grammatical issues at the sentence level. Second, Terminology Options allows you to explore alternative word choices to better match your intention, tone, and level of precision.</p>
+      <p class="genaiIntroText">The focus is on working at a small scale. You revise one or two sentences at a time, then place them back into your paragraph and evaluate how they fit.</p>
+      <p class="genaiIntroText" style="margin-bottom: 0;">Rather than rewriting your work, this activity supports you by providing possible options. You decide which changes to accept and how they integrate into your text.</p>
+    </div>
+
+    <div class="pre-prompt-space" id="pre_prompt_space"></div>
+
+    <div id="section_prompt_panel" class="prompt-box section-prompt-panel">
+      <div class="promptHeader">
+        <h3 class="promptTitle">Using the preset prompts</h3>
+        <p class="prompt-box-intro">The preset prompts are designed to structure your interaction with GenAI. They are not templates for a final answer, but tools to guide your reasoning process.</p>
+        <p class="prompt-box-intro">You will find two types of prompts below: a Course preset prompt and two Activity preset prompts (Grammar Check and Terminology Options).</p>
+        <p class="prompt-box-intro" style="margin-bottom: 0;">
+          <strong>Practical use</strong><br>
+          1. Copy the Course preset prompt first.<br>
+          2. Add the Activity preset prompt below it.<br>
+          3. Insert your own research idea where indicated.<br>
+          4. Use the output critically and refine your work based on the logic.
+        </p>
+      </div>
+
+      <div class="promptGrid">
+        <div class="promptBlock">
+          <p class="promptBlockTitle">Course Preset Prompts:</p>
+          <div class="promptButtonRow">
+            <button id="btn_copy_course_prompt" type="button">Copy course preset prompt</button>
+            <button id="btn_download_course_prompt" type="button">Download course preset prompt (.txt)</button>
+          </div>
+          <details class="prompt-details">
+            <summary>View full course preset prompt</summary>
+            <pre id="course_prompt_text" class="prompt-pre"></pre>
+          </details>
+        </div>
+
+        <div id="section_activity_prompt" class="promptBlock activity-box">
+          <p class="promptBlockTitle">Activity Preset Prompts for this section:</p>
+
+          <div id="writing_grammar_prompt_block" style="margin-bottom: 16px;">
+            <p style="margin: 0 0 8px 0; font-weight: 600;">Grammar Check</p>
+            <div class="promptButtonRow">
+              <button id="btn_copy_grammar_prompt" type="button">Copy Grammar Check prompt</button>
+              <button id="btn_download_grammar_prompt" type="button">Download Grammar Check prompt (.txt)</button>
+            </div>
+            <details class="prompt-details">
+              <summary>View full Grammar Check prompt</summary>
+              <pre id="grammar_prompt_text" class="prompt-pre"></pre>
+            </details>
+          </div>
+
+          <div id="writing_terminology_prompt_block">
+            <p style="margin: 0 0 8px 0; font-weight: 600;">Terminology Options</p>
+            <div class="promptButtonRow">
+              <button id="btn_copy_terminology_prompt" type="button">Copy Terminology Options prompt</button>
+              <button id="btn_download_terminology_prompt" type="button">Download Terminology Options prompt (.txt)</button>
+            </div>
+            <details class="prompt-details">
+              <summary>View full Terminology Options prompt</summary>
+              <pre id="terminology_prompt_text" class="prompt-pre"></pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a class="back-link" href="diagnostic-questionnaire-final.html">Back to Diagnostic Questionnaire</a>
+  </div>
+</section>
+
+<script src="preset-prompts.js"></script>
+<script src="activity-common.js"></script>
+<script>
+(function () {
+  var presets = window.AIWISE_PRESETS || {};
+  var course = presets.course || "";
+  var raw = (presets.activities || {}).writing || "";
+  var grammar = (typeof raw === "object" && raw !== null) ? (raw.grammarCheck || "") : "";
+  var terminology = (typeof raw === "object" && raw !== null) ? (raw.terminologyOptions || "") : "";
+  var C = window.AIWISE_COMMON;
+
+  C.wirePromptBlock(course, "course_prompt_text", "btn_copy_course_prompt", "btn_download_course_prompt", "course-preset-prompt.txt");
+  C.wirePromptBlock(grammar, "grammar_prompt_text", "btn_copy_grammar_prompt", "btn_download_grammar_prompt", "activity-preset-prompt-grammar-check.txt");
+  C.wirePromptBlock(terminology, "terminology_prompt_text", "btn_copy_terminology_prompt", "btn_download_terminology_prompt", "activity-preset-prompt-terminology-options.txt");
+})();
+</script>
+<script src="analytics.js"></script>
+<script src="ui-effects.js"></script>
+<script src="feedback-widget.js" defer></script>
+</body>
+</html>
