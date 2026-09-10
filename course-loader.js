@@ -1,6 +1,7 @@
 /**
  * course-loader.js
- * Fills course specific slots in a page from courses/<id>.json.
+ * Fills course specific slots from authoring/course-specific-content_aws1.json
+ * for AWS1, and courses/<id>.json for other courses.
  *
  * Which course:
  *   0. data-force-course on <html> (single-course deployments; wins over everything)
@@ -251,7 +252,10 @@
     seen = seen || {};
     if (seen[id]) return Promise.reject(new Error("circular extends: " + id));
     seen[id] = true;
-    return fetch("courses/" + encodeURIComponent(id) + ".json", { cache: "no-cache" })
+    var path = id === "aws1"
+      ? "authoring/course-specific-content_aws1.json"
+      : "courses/" + encodeURIComponent(id) + ".json";
+    return fetch(path, { cache: "no-cache" })
       .then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();
