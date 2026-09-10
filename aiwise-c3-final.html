@@ -643,6 +643,81 @@ body {
 .amd-reason { font-size: 12px; color: var(--muted); line-height: 1.55; margin-top: 4px; }
 
 /* CHECKLIST CARD */
+/* ── ESSB responsible-use notice ─────────────────────────── */
+.essb-notice {
+  position: relative;
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: #fff;
+  border: 2px solid #7b2d3e;
+  border-radius: var(--radiusLg);
+  padding: 26px 28px 24px;
+  box-shadow: 0 12px 32px rgba(74,21,34,0.18);
+  animation: essb-vibrate 5s ease-in-out infinite;
+}
+.essb-notice.essb-quiet { animation: none; }
+.essb-quiet .essb-notice-hint { display: none; }
+@keyframes essb-vibrate {
+  0%, 7%, 100% { transform: translateX(0) rotate(0); }
+  1%  { transform: translateX(-2px) rotate(-0.25deg); }
+  2%  { transform: translateX(2px) rotate(0.25deg); }
+  3%  { transform: translateX(-2px) rotate(-0.2deg); }
+  4%  { transform: translateX(2px) rotate(0.2deg); }
+  5%  { transform: translateX(-1px); }
+  6%  { transform: translateX(1px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .essb-notice { animation: none; }
+}
+.essb-notice-hint {
+  position: absolute;
+  top: 8px; right: 14px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #b8c0bf;
+  animation: essb-blink 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes essb-blink {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.95; }
+}
+.essb-notice-icon {
+  flex: 0 0 auto;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(123,45,62,0.08);
+  border: 1px solid rgba(123,45,62,0.45);
+  border-radius: 10px;
+}
+.essb-notice-icon svg { width: 22px; height: 22px; stroke: #7b2d3e; }
+.essb-notice-text {
+  flex: 1 1 260px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #4a1522;
+  line-height: 1.6;
+}
+.essb-notice-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  background: #7b2d3e;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 999px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.essb-notice-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(123,45,62,0.4); }
+
 .checklist-card { max-width: 960px; margin: 36px auto 0; padding: 28px 32px; background: var(--nav-bg); border-radius: var(--radiusLg); border-left: 4px solid var(--gold); }
 .checklist-card-title { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
 .checklist-items { list-style: none; padding: 0; }
@@ -1077,6 +1152,20 @@ details.collapsible .collapsible-body { padding: 20px 22px; background: #f4f7f6;
       <ul class="checklist-items"><li>Are the core ideas and judgments in this work my own?</li><li>Have I verified all AI-generated content that I adopted?</li><li>Can I explain and defend every part of this work?</li><li>Can I transparently disclose how AI was used?</li></ul>
       <div class="checklist-source">Based on the Author Checklist from Cheng, Calhoun, & Reedy (2025). Advances in Simulation, 10, 22.</div>
     </div>
+
+    <div class="essb-notice wide-content">
+      <span class="essb-notice-hint" aria-hidden="true">double click to stop the alert</span>
+      <div class="essb-notice-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3 L20 6 V11 C20 16 16.5 19.7 12 21 C7.5 19.7 4 16 4 11 V6 Z"/>
+          <path d="M9 12 L11 14 L15 9.5"/>
+        </svg>
+      </div>
+      <div class="essb-notice-text">
+        Use GenAI responsibly during your study work, make sure you adhere to the ESSB principles and Guidelines.
+      </div>
+      <a class="essb-notice-btn" href="https://my.eur.nl/nl/essb/generative-ai-education" target="_blank" rel="noopener noreferrer">ESSB GenAI Guidelines&nbsp;↗</a>
+    </div>
   </section>
 
   <!-- CLOSING: PROMPT TEMPLATE -->
@@ -1204,7 +1293,14 @@ details.collapsible .collapsible-body { padding: 20px 22px; background: #f4f7f6;
   <a class="next-btn" href="sub-lobby.html">Continue →</a>
 </div>
 
-<script src="course-loader.js?v=5"></script>
+<script src="course-loader.js?v=6"></script>
+<script>
+  // ESSB notice: double click stops the vibration and the blinking hint.
+  (function () {
+    var n = document.querySelector('.essb-notice');
+    if (n) n.addEventListener('dblclick', function () { n.classList.add('essb-quiet'); });
+  })();
+</script>
 <script>
 // Core block navigation with subsection awareness
 (function() {

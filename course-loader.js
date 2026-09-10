@@ -3,6 +3,7 @@
  * Fills course specific slots in a page from courses/<id>.json.
  *
  * Which course:
+ *   0. data-force-course on <html> (single-course deployments; wins over everything)
  *   1. ?course=<id> in the URL (also remembered for later pages)
  *   2. previously remembered course (localStorage)
  *   3. data-default-course on <html>, else "aws1"
@@ -31,6 +32,10 @@
 
   /* ── course id ─────────────────────────────────────────── */
   function resolveCourseId() {
+    /* data-force-course on <html> pins the course for single-course
+       deployments; URL and remembered choices are ignored */
+    var forced = document.documentElement.getAttribute("data-force-course");
+    if (forced) return forced;
     var fromUrl = null;
     try { fromUrl = new URLSearchParams(window.location.search).get("course"); } catch (e) {}
     if (fromUrl) {

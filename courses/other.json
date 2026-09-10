@@ -1,0 +1,8 @@
+{
+  "extends": "aws1",
+  "course": {
+    "id": "other",
+    "short_name": "Your Course",
+    "full_name": "Other Courses"
+  }
+}

@@ -1,0 +1,232 @@
+{
+  "course": {
+    "id": "aws1",
+    "short_name": "AWS I",
+    "full_name": "Academic Writing Skills I"
+  },
+  "c2": {
+    "examples": [
+      {
+        "title": "Connecting studies in a literature review",
+        "thinking": "I need to find a way to connect these two studies for my literature review. One is about social media and self esteem, the other is about screen time and sleep. My professor said the transition between paragraphs matters a lot. I tried linking them through \"adolescent wellbeing\" but it felt too vague. I want something more specific but I am not sure what that would look like.",
+        "typing_note": "[uploads two PDFs]",
+        "typing": "\"How do I connect these two studies in my literature review?\"",
+        "processing": "Full text of both papers is processed. Themes, findings, methodologies, theoretical frameworks all extracted. The most statistically likely \"helpful\" response pattern for \"connect these two studies\" is activated. → Generate a comprehensive answer covering multiple possible connection points: shared constructs, overlapping populations, complementary findings, theoretical alignment. Present them as options. Sound confident and thorough."
+      },
+      {
+        "title": "Creating practice questions",
+        "thinking": "My exam is next week and I want to test myself on chapter 4. The professor always writes tricky MCQs where two options look almost the same and you have to know the exact definition to tell them apart. I need questions that are at that level, not the easy ones where you can guess by elimination.",
+        "typing_note": "[pastes chapter 4 text]",
+        "typing": "\"Make me some MCQs on chapter 4.\"",
+        "processing": "Full chapter text is processed. Key concepts, definitions, and relationships identified. \"MCQ\" triggers a default format: one correct answer, three distractors, medium difficulty, recall focused. → Generate questions that cover the chapter evenly, make distractors plausible but clearly distinguishable from the correct answer."
+      },
+      {
+        "title": "Summarizing a paper",
+        "thinking": "I read this paper but I am not sure I understood the method section. I think they used a between subjects design but the way they describe the groups is confusing. I do not need a full summary, I just need someone to explain the design so I can figure out whether their conclusion actually follows from it.",
+        "typing_note": "[uploads PDF]",
+        "typing": "\"Can you summarize this paper?\"",
+        "processing": "Full paper is processed. All sections weighted. \"Summarize\" triggers a default structure: background, aim, method, key findings, conclusion. Roughly equal coverage across sections. → Produce something that reads like a complete, balanced overview. Sound clear and organized."
+      },
+      {
+        "title": "Understanding a concept",
+        "thinking": "The professor used the term \"ecological validity\" in the lecture today and I kind of got it from context, but when I tried to explain it to my friend I couldn't. I think it has something to do with how realistic a study is, but I am not sure if it is about the setting, the task, or both. And I am confused about how it is different from external validity because they sound like they overlap.",
+        "typing": "\"What is ecological validity?\"",
+        "processing": "A definition request. \"Ecological validity\" is a well represented concept in the training data. → Generate a clear, textbook style definition. Add an example. Possibly mention related terms. Present a self contained explanation, covering the concept broadly rather than targeting any specific point of confusion."
+      },
+      {
+        "title": "Asking for feedback on your writing",
+        "thinking": "I spent two hours on this introduction and I think the argument flows okay, but the last sentence feels weak. My tutor told me last time that I tend to state things too broadly without committing to a clear position. I want to know if I am doing that again here, specifically in the last two sentences.",
+        "typing_note": "[pastes paragraph]",
+        "typing": "\"What do you think of this? Any feedback?\"",
+        "processing": "A paragraph is provided. Feedback requested with no specific focus. → Scan for grammar, clarity, structure, and argument strength across the entire paragraph. Generate a balanced set of comments covering multiple aspects. Highlight positives first, then suggest improvements. Distribute attention evenly across the whole text."
+      },
+      {
+        "title": "Writing a motivation letter",
+        "thinking": "I am applying for this internship at a research lab and I really want it because the supervisor published a paper I referenced in my thesis. I have some relevant experience from my stats course and a small project I did with a classmate, but I am not sure if that counts. The deadline is tomorrow and I saw that they value \"independent thinkers\" but I do not want to sound arrogant.",
+        "typing": "\"Help me write a motivation letter for a research internship.\"",
+        "processing": "A motivation letter for a research internship. No specific lab, no field, no applicant background, no deadline pressure, no tone preference. → Generate a polished, general purpose motivation letter template. Use broadly applicable language about \"passion for research\" and \"eagerness to learn.\" Structure it in a standard format. Sound professional and enthusiastic."
+      }
+    ]
+  },
+  "c3": {
+    "techniques": {
+      "clear_instruction": {
+        "bad": "\"Summarize this paper\"",
+        "good": "\"Summarize this paper's main argument and research methodology in two sentences each. This is for an undergraduate psychology class presentation.\""
+      },
+      "role": {
+        "bad": "\"Check my Boolean search string\"",
+        "good": "\"You are a search strategy advisor for academic databases. Review the Boolean search string I wrote. If there are logical errors, don't fix them directly — ask me questions about what went wrong.\""
+      },
+      "task_decomposition": {
+        "bad": "\"Build my literature review outline\"",
+        "good": "Step 1: \"Extract the common themes from the five papers I read\" → Step 2: \"Map the relationships between those themes\" → Step 3: \"Suggest possible outline structures based on those relationships\""
+      },
+      "few_shot": {
+        "good": "\"Summarize each paper's core claim in one sentence, like this:\nSmith (2022): Social media use is positively associated with anxiety in adolescents, mediated by sleep disruption.\nDo the same for the remaining three papers.\""
+      },
+      "chain_of_thought": {
+        "bad": "\"Are the conclusions of these two papers contradictory?\"",
+        "good": "\"Determine whether the conclusions of these two papers contradict each other. First, summarize each paper's core claim. Then compare where they overlap and where they differ. Finally, explain step by step whether the difference is a genuine contradiction or a difference in scope or conditions.\""
+      },
+      "output_format": {
+        "bad": "\"Compare these three papers\"",
+        "good": "\"Create a comparison table for these three papers. Columns: author/year, research question, methodology, key findings, limitations. One sentence per cell.\""
+      }
+    },
+    "critique": {
+      "read": "Student asked \"Extract the common themes from these three papers.\" AI returned three paragraphs. Observation: AI identified three themes, assigned papers to each, and wrote in paragraph form.",
+      "question": "Are these three themes actually from the papers, or did AI generalize? Is the third theme too broad? Paper B is assigned to two themes — is that accurate? I only asked for common themes, but AI added \"implications\" — did it exceed my request scope?",
+      "verify": "Checking Paper A: AI's first theme is correct but was a secondary point, not the core finding. The third theme uses phrasing that doesn't appear in any original paper — AI generalized. The \"implications\" section covers a stage I haven't reached yet.",
+      "decide": "Themes 1 and 2 are usable as starting points. Theme 3 is discarded. The implications section is deleted. Theme 2's paper assignment needs verification — may re-prompt after checking the original."
+    },
+    "amd_example": {
+      "title": "Worked example — Common theme extraction",
+      "intro": "Student asked AI to extract common themes from three papers. AI presented three themes:",
+      "items": [
+        {
+          "text": "Theme 1: \"Sleep disruption as a mediator between screen time and adolescent anxiety\"",
+          "tag": "adopt",
+          "reason": "Matches the original papers. Usable as an outline starting point. Placed as starting point for first outline section."
+        },
+        {
+          "text": "Theme 2: \"The role of parental monitoring in mitigating digital harm\"",
+          "tag": "modify",
+          "reason": "Direction is correct but AI generalized \"social media exposure\" into \"digital harm.\" Corrected to \"social media exposure.\" Original paper re-checked."
+        },
+        {
+          "text": "Theme 3: \"Broader implications for public health policy\"",
+          "tag": "discard",
+          "reason": "I asked for common themes, not implications. This topic does not appear in the papers. AI fabricated it. Deleted. Record: \"AI exceeded request scope by adding implications.\""
+        }
+      ]
+    },
+    "template_compare": {
+      "md": [
+        {
+          "heading": "Role",
+          "lines": [
+            "You are a literature analysis assistant."
+          ]
+        },
+        {
+          "heading": "Task",
+          "lines": [
+            "Identify common themes across three papers."
+          ]
+        },
+        {
+          "heading": "Context",
+          "lines": [
+            "I am writing a literature review for AWS."
+          ]
+        },
+        {
+          "heading": "Constraints",
+          "lines": [
+            "- Do not summarize each paper individually",
+            "- Stay at theme identification only"
+          ]
+        },
+        {
+          "heading": "Output Format",
+          "lines": [
+            "Numbered list, one sentence per theme."
+          ]
+        }
+      ],
+      "xml": [
+        {
+          "tag": "role",
+          "lines": [
+            "You are a literature analysis assistant."
+          ]
+        },
+        {
+          "tag": "task",
+          "lines": [
+            "Identify common themes across three papers."
+          ]
+        },
+        {
+          "tag": "context",
+          "lines": [
+            "I am writing a literature review for AWS."
+          ]
+        },
+        {
+          "tag": "constraints",
+          "lines": [
+            "Do not summarize each paper individually.",
+            "Stay at theme identification only."
+          ]
+        },
+        {
+          "tag": "output_format",
+          "lines": [
+            "Numbered list, one sentence per theme."
+          ]
+        }
+      ]
+    },
+    "full_example_title": "Full worked example — Common theme extraction from three papers",
+    "full_example": [
+      {
+        "tag": "role",
+        "lines": [
+          "You are an academic literature analysis assistant",
+          "for a first-year psychology student."
+        ]
+      },
+      {
+        "tag": "task",
+        "lines": [
+          "Identify the common themes across the following",
+          "three journal articles. Focus on overlapping",
+          "research topics, not methodological similarities."
+        ]
+      },
+      {
+        "tag": "context",
+        "lines": [
+          "I am writing a literature review for my Academic",
+          "Writing Skills course. I have read all three papers.",
+          "I am currently at the stage of organizing my sources",
+          "before drafting an outline."
+        ]
+      },
+      {
+        "tag": "constraints",
+        "lines": [
+          "Do not summarize each paper individually.",
+          "Do not suggest an outline or structure.",
+          "Stay at the level of theme identification only."
+        ]
+      },
+      {
+        "tag": "steps",
+        "lines": [
+          "1. Read the three abstracts I provide below.",
+          "2. Identify recurring topics or constructs.",
+          "3. Group them into distinct themes."
+        ]
+      },
+      {
+        "tag": "examples",
+        "lines": [
+          "Example theme format:",
+          "\"Sleep disruption as a mediator between screen time",
+          "and adolescent anxiety (Paper A, Paper C)\""
+        ]
+      },
+      {
+        "tag": "output_format",
+        "lines": [
+          "A numbered list of 3–5 common themes.",
+          "Each theme in one sentence, with the relevant",
+          "paper(s) noted in parentheses."
+        ]
+      }
+    ]
+  }
+}

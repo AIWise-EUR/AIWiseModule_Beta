@@ -1,0 +1,7 @@
+# macOS Finder cache
+.DS_Store
+**/.DS_Store
+
+# Uncompressed source-of-truth video; the compressed sibling is
+# what actually gets served via GitHub Pages.
+assets/videos/AI-Wise_VideoGuide_Ver.2.mov

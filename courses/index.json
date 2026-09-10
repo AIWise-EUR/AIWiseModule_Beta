@@ -1,0 +1,5 @@
+[
+  { "id": "aws1", "short_name": "AWS I", "full_name": "Academic Writing Skills I" },
+  { "id": "ped", "short_name": "PED", "full_name": "Pedagogical Sciences" },
+  { "id": "other", "short_name": "Others", "full_name": "All other courses" }
+]
