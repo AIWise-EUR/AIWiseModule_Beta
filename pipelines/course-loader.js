@@ -1,7 +1,7 @@
 /**
  * course-loader.js
- * Fills course specific slots from authoring/course-specific-content_aws1.json
- * for AWS1, and courses/<id>.json for other courses.
+ * Fills course specific slots from course-specific/<id>/ JSON files.
+ * Shared course defaults and the manifest live in common/courses/.
  *
  * Which course:
  *   0. data-force-course on <html> (single-course deployments; wins over everything)
@@ -19,7 +19,7 @@
  *
  * The loader also injects the course chooser UI on every page that
  * includes it: a fixed "Course" pill (bottom left) and a modal listing
- * the courses from courses/index.json. The modal opens automatically on
+ * the courses from common/courses/index.json. The modal opens automatically on
  * a first visit (no remembered course, none in the URL). Opt out per
  * page with  <html data-no-course-ui>.
  *
@@ -28,6 +28,7 @@
  * depend on slot content (e.g. the carousel) should wait for that.
  */
 (function () {
+  var ROOT_URL = new URL("../", document.currentScript.src);
   var STORAGE_KEY = "aiwise-course";
   var DEFAULT_ID = document.documentElement.getAttribute("data-default-course") || "aws1";
 
@@ -253,9 +254,11 @@
     if (seen[id]) return Promise.reject(new Error("circular extends: " + id));
     seen[id] = true;
     var path = id === "aws1"
-      ? "authoring/course-specific-content_aws1.json"
-      : "courses/" + encodeURIComponent(id) + ".json";
-    return fetch(path, { cache: "no-cache" })
+      ? "course-specific/aws1/course-specific-content_aws1.json"
+      : id === "other"
+        ? "common/courses/other.json"
+        : "course-specific/" + encodeURIComponent(id) + "/" + encodeURIComponent(id) + ".json";
+    return fetch(new URL(path, ROOT_URL), { cache: "no-cache" })
       .then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();
@@ -289,7 +292,7 @@
   var manifestCache = null;
   function fetchManifest() {
     if (manifestCache) return Promise.resolve(manifestCache);
-    return fetch("courses/index.json", { cache: "no-cache" })
+    return fetch(new URL("common/courses/index.json", ROOT_URL), { cache: "no-cache" })
       .then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();

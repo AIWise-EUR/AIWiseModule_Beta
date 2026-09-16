@@ -77,7 +77,7 @@
     var links = '<div class="fast-track-divider"></div>'
       + '<a class="fast-track-diag-link" href="diagnostic-questionnaire-final.html">\u2190 Diagnostic Questionnaire</a>'
       + '<a class="fast-track-diag-link" href="aws-i-materials.html">AWS I Materials</a>'
-      + '<a class="fast-track-diag-link" href="lobby.html">\u2302 Home</a>';
+      + '<a class="fast-track-diag-link" href="../../common/lobby.html">\u2302 Home</a>';
 
     panel.innerHTML = heading + steps + links;
     return panel;
