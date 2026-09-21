@@ -127,6 +127,11 @@
   function route(focus=true) {
     pendingFetch?.abort(); pendingFetch=null;
     const [area='home',part='']=(location.hash.slice(1)||'home').split('/');
+    const activeArea = area === 'records' ? part : area;
+    document.querySelectorAll('[data-area]').forEach(link => {
+      if (link.dataset.area === activeArea) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
     const isHome=area==='home';home.hidden=!isHome;room.hidden=isHome;
     if(isHome) document.title='AI-Wise Workspace';
     else {
@@ -142,4 +147,6 @@
     if(focus){document.getElementById(isHome?'main':'room-title')?.focus({preventScroll:true});window.scrollTo(0,0);}
   }
   window.addEventListener('hashchange',()=>route()); route(false);
+  // Native fragment scrolling must not hide the header on direct #home links.
+  window.addEventListener('load', () => requestAnimationFrame(() => window.scrollTo(0, 0)));
 })();

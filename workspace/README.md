@@ -8,6 +8,8 @@ The map and list views open Course Profiler, Content Studio, Control Tower, Beta
 
 The map uses inline SVG building and product illustrations, following the approved 2D campus concept. Beta and Published sit on a horizontal release path within Product Review & Release. Small screens start with the list view; the full map remains available by horizontal scrolling.
 
+The workspace and its entry screens follow the Course Profiler visual theme: warm paper background, dark header, Space Grotesk headings, Inter body text, JetBrains Mono labels, and compact cards and controls. Shared tokens and navigation styles live in `theme.css`, also loaded by Course Profiler. The area navigation marks the current area, including nested pages and Records Office. The student module previews retain their existing design.
+
 Course Profiler opens the supplied `course_profiler_11(1).html` prototype at `course-profiler/`. It supports course editing, browser local storage, and JSON / Markdown exports. Its existing wording, sample content, and storage keys are preserved. A Workspace link returns to the map, and Current prompts / Current activities links retain access to the existing AWS1 previews. Legacy `#profiler` and `#profiler/profile` links also open the editor. Course profiles are saved only in the current browser; they are not submitted to Control Tower or synchronized to GitHub.
 
 Content Studio reads existing AWS1 C2 examples. Beta links to the working Common pages and course previews. These previews read the current files, not fixed historical snapshots.

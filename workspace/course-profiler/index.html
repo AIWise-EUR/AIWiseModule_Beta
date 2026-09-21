@@ -240,16 +240,9 @@ input[type=text]:focus,textarea:focus{border-color:var(--signal);background:#fff
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.bexp .wd{opacity:1!important}}
 
 </style>
+<link rel="stylesheet" href="../theme.css">
 </head>
-<body>
-<nav aria-label="Workspace navigation" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;padding:10px 24px;font-size:13px;border-bottom:1px solid var(--line)">
-  <a href="../#home" style="color:var(--signal)">← Workspace</a>
-  <a href="../#profiler/prompts" style="color:var(--signal)">Current prompts</a>
-  <a href="../#profiler/activities" style="color:var(--signal)">Current activities</a>
-  <span style="color:var(--ink-3)">Profiles are saved in this browser only.</span>
-</nav>
-
-
+<body class="profiler-page">
 <div class="top">
   <span class="mark">Course Profiler</span><span class="sub">AI-Wise</span>
   <span class="sp"></span>
@@ -261,6 +254,13 @@ input[type=text]:focus,textarea:focus{border-color:var(--signal);background:#fff
   <button class="tb on" id="bMd">Export MD</button>
   <input type="file" id="fileIn" accept="application/json" style="display:none">
 </div>
+<nav class="workspace-navigation" aria-label="Workspace navigation">
+  <a href="../#home">← Workspace</a>
+  <a href="./" aria-current="page">Course Profile</a>
+  <a href="../#profiler/prompts">Current prompts</a>
+  <a href="../#profiler/activities">Current activities</a>
+  <span class="nav-note">Profiles are saved in this browser only.</span>
+</nav>
 <div class="shell" id="shell"></div>
 <div class="mod" id="patMod"><div class="mcard">
   <div class="mh"><h3>Choose a task shape</h3><p>Pick the pattern this task follows. The nodes are laid out for you, half filled in. You then answer the rest.</p></div>
