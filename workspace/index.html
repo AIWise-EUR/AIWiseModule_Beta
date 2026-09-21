@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI-Wise Workspace</title>
+  <link rel="stylesheet" href="workspace.css">
+  <script src="../course-specific/aws1/preset-prompts.js" defer></script>
+  <script src="workspace.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to workspace</a>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="AI-Wise workspace home"><strong>AI-Wise</strong><span>Workspace</span></a>
+    <div class="header-actions"><span class="badge">Prototype</span><a class="module-link" href="../common/lobby.html">Open Beta module <span aria-hidden="true">↗</span></a></div>
+  </header>
+  <main id="main" tabindex="-1">
+    <section id="home" aria-labelledby="home-title">
+      <div class="home-heading"><div><p class="eyebrow">Your workspace</p><h1 id="home-title">From course ideas to student learning.</h1><p>Create, review, and release. Select an area to enter.</p></div>
+        <div class="view-switch" role="group" aria-label="Workspace view"><button id="map-view" type="button" aria-pressed="true">▦ Map</button><button id="list-view" type="button" aria-pressed="false">☷ List</button></div>
+      </div>
+      <div id="map-container" class="map-container" role="region" aria-label="Campus map. Scroll horizontally on small screens." tabindex="0">
+        <div class="campus">
+          <div class="product-zone"><span>Product Review &amp; Release</span></div>
+          <svg class="roads" viewBox="0 0 1200 510" preserveAspectRatio="none" aria-hidden="true">
+            <path class="road-border" d="M200 155 C290 155 310 255 420 255 M200 370 C290 370 310 255 420 255 M420 255 H1080"/>
+            <path class="road" d="M200 155 C290 155 310 255 420 255 M200 370 C290 370 310 255 420 255 M420 255 H1080"/>
+            <path class="road-dash" d="M200 155 C290 155 310 255 420 255 M200 370 C290 370 310 255 420 255 M420 255 H1080"/>
+            <g class="parcel" transform="translate(285 185)"><rect width="19" height="19" rx="4"/><path d="M9 0v8m-9 1h19"/></g>
+            <g class="parcel teal" transform="translate(285 319)"><rect width="19" height="19" rx="4"/><path d="M9 0v8m-9 1h19"/></g>
+            <path class="direction" d="m956 248 8 7-8 7"/>
+          </svg>
+          <a class="destination profiler" href="#profiler"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#profiler-building"/></svg><strong>Course Profiler</strong><span>Profiles, prompts &amp; activities</span></a>
+          <a class="destination studio" href="#studio"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#studio-building"/></svg><strong>Content Studio</strong><span>Course specific orientation</span></a>
+          <a class="destination tower" href="#tower"><svg viewBox="0 0 180 240" aria-hidden="true"><use href="#tower-building"/></svg><strong>Control Tower</strong><span>Package exchange &amp; approval</span></a>
+          <a class="destination beta" href="#beta"><svg viewBox="0 0 270 200" aria-hidden="true"><use href="#beta-screen"/></svg><strong>AI-Wise Beta</strong><span>Showcase &amp; review</span></a>
+          <a class="approval-gate" href="#tower/release" aria-label="Review Beta to Published release submissions"><span>Approval</span><svg viewBox="0 0 85 60" aria-hidden="true"><rect x="8" y="15" width="18" height="40" rx="3"/><path d="M26 29h47v10H26z"/><path class="gate-stripes" d="m35 29-7 10m23-10-7 10m23-10-7 10"/></svg></a>
+          <a class="destination published" href="#published"><svg viewBox="0 0 270 200" aria-hidden="true"><use href="#published-product"/></svg><strong>AI-Wise Published</strong><span>Student release</span></a>
+        </div>
+      </div>
+      <div id="area-list" class="area-list" hidden></div>
+      <div class="map-caption"><span><i class="status-dot"></i> A place for each part of the process</span><span>Course Profiler &amp; Content Studio → Beta → approval → Published</span></div>
+    </section>
+    <section id="room" hidden aria-labelledby="room-title"></section>
+    <noscript><p>This navigation prototype requires JavaScript. You can still <a href="../common/lobby.html">open the Beta module</a>.</p></noscript>
+  </main>
+  <footer><span>AI-Wise · Learning stays with the student.</span><span>Workspace navigation prototype</span></footer>
+  <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="wall" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#edf4fc"/></linearGradient>
+      <symbol id="profiler-building" viewBox="0 0 240 180">
+        <ellipse cx="120" cy="171" rx="105" ry="8" fill="#dbe9e9"/>
+        <path d="M28 66h184v101H28z" fill="url(#wall)" stroke="#275881" stroke-width="2"/>
+        <path d="M17 69 41 30h158l25 39z" fill="#559ad1" stroke="#275881" stroke-width="2"/>
+        <path d="m77 64 43-43 43 43v103H77z" fill="#f8fbff" stroke="#275881" stroke-width="2"/>
+        <path d="M101 167v-38h38v38" fill="#82b9dd" stroke="#275881" stroke-width="2"/>
+        <path d="M120 130v37" stroke="#275881" stroke-width="2"/>
+        <g fill="#a8d6f3" stroke="#427ba6" stroke-width="2"><path d="M42 83h20v23H42zM178 83h20v23h-20zM42 122h20v23H42zM178 122h20v23h-20z"/></g>
+        <rect x="92" y="65" width="57" height="46" rx="5" fill="#e6f0fa"/>
+        <g stroke="#4b95cc" stroke-width="4" stroke-linecap="round"><path d="M101 78h39m-39 11h39m-39 11h39"/></g>
+        <g fill="#268c91"><circle cx="128" cy="78" r="5"/><circle cx="111" cy="89" r="5"/><circle cx="131" cy="100" r="5"/></g>
+      </symbol>
+      <symbol id="studio-building" viewBox="0 0 240 180">
+        <ellipse cx="120" cy="171" rx="105" ry="8" fill="#dbe9e9"/>
+        <path d="M28 66h184v101H28z" fill="url(#wall)" stroke="#275881" stroke-width="2"/>
+        <path d="M17 69 41 30h158l25 39z" fill="#65a9c1" stroke="#275881" stroke-width="2"/>
+        <path d="m77 64 43-43 43 43v52H77z" fill="#f8fbff" stroke="#275881" stroke-width="2"/>
+        <path d="M44 119h84v39H44zM146 119h43v48h-43z" fill="#b8deeb" stroke="#427ba6" stroke-width="2"/>
+        <path d="M72 119v39m28-39v39m-56-20h84m39-20v48" stroke="#427ba6" stroke-width="2"/>
+        <path d="m104 91 22-36 10 6-22 36-15 9z" fill="#32899e" stroke="#275881" stroke-width="2"/><path d="m99 106 5-15 10 6z" fill="#f2d9b6"/>
+      </symbol>
+      <symbol id="tower-building" viewBox="0 0 180 240">
+        <ellipse cx="90" cy="228" rx="68" ry="8" fill="#dbe9e9"/>
+        <path d="M90 18v38" stroke="#275881" stroke-width="3"/><circle cx="90" cy="16" r="5" fill="#4b95cc" stroke="#275881" stroke-width="2"/>
+        <path d="M58 116h64v111H58z" fill="url(#wall)" stroke="#275881" stroke-width="2"/>
+        <path d="M34 69h112l-16 50H50z" fill="#a8d6f3" stroke="#275881" stroke-width="2"/>
+        <path d="M31 63h118v12H31zM62 53h56v10H62z" fill="#edf4fc" stroke="#275881" stroke-width="2"/>
+        <path d="m62 75 6 41m50-41-6 41M90 75v42" stroke="#5990b6" stroke-width="2"/>
+        <path d="M79 132h22v23H79zM78 185h24v42H78z" fill="#92c3e3" stroke="#275881" stroke-width="2"/>
+        <rect x="46" y="207" width="89" height="7" rx="2" fill="#fff" stroke="#275881" stroke-width="2"/><path d="m62 207-6 7m28-7-6 7m28-7-6 7m28-7-6 7" stroke="#275881" stroke-width="3"/>
+      </symbol>
+      <symbol id="beta-screen" viewBox="0 0 270 200">
+        <rect x="13" y="17" width="244" height="131" rx="3" fill="#fff" stroke="#275881" stroke-width="3"/>
+        <path d="M9 11h252v9H9z" fill="#4386b7" stroke="#275881" stroke-width="2"/>
+        <path d="M135 149v18m-30 0h60" stroke="#275881" stroke-width="4"/>
+        <rect x="28" y="34" width="102" height="96" rx="6" fill="#deedfb"/><rect x="140" y="34" width="102" height="96" rx="6" fill="#dff3ef"/>
+        <path d="m61 62 18-10 18 10-18 11zM61 62v21l18 10V73m18-11v21L79 93" fill="#76b7e8" stroke="#fff" stroke-width="1.4"/>
+        <path d="M177 53h24l7 8v29h-31z" fill="#32a4a5"/><path d="M183 66h18m-18 7h18m-18 7h13" stroke="#fff" stroke-width="2"/>
+        <g fill="#275881" font-family="system-ui,sans-serif" text-anchor="middle"><text x="79" y="116" font-size="12">Common</text><text x="191" y="116" font-size="11">Course Specific</text></g>
+        <path d="m38 174-10-33 102-8-54 41z" fill="#b2dbf8" opacity=".45"/><rect x="29" y="169" width="46" height="20" rx="4" fill="#4386b7" stroke="#275881" stroke-width="2"/><circle cx="62" cy="178" r="4" fill="#dff1ff"/>
+        <g fill="#94b8d2"><circle cx="136" cy="173" r="8"/><path d="M120 196q0-17 16-17t16 17z"/><circle cx="178" cy="173" r="8"/><path d="M162 196q0-17 16-17t16 17z"/><circle cx="220" cy="173" r="8"/><path d="M204 196q0-17 16-17t16 17z"/></g>
+      </symbol>
+      <symbol id="published-product" viewBox="0 0 270 200">
+        <rect x="24" y="27" width="222" height="138" rx="9" fill="#4287bb" stroke="#275881" stroke-width="3"/>
+        <rect x="33" y="37" width="204" height="117" rx="4" fill="#fff"/>
+        <path d="M10 165h250v11q-2 10-13 10H23q-11 0-13-10z" fill="#d8eafa" stroke="#275881" stroke-width="3"/>
+        <path d="m61 72 35-16 35 16-35 16z" fill="#3b90ca"/><path d="M75 81v15q21 12 42 0V81m13-9v29" fill="#80b5de" stroke="#3b90ca" stroke-width="2"/>
+        <path d="M60 118h72m-72 13h49" stroke="#8dc3e9" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="186" cy="95" r="26" fill="#24a6a0"/><path d="m173 95 9 9 18-21" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+    </defs>
+  </svg>
+</body>
+</html>
