@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Wise Course Profiler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --paper:#F4F2EC;--paper-2:#EAE7DE;--card:#FFFFFF;
+  --ink:#15121D;--ink-2:#3A3448;--ink-3:#6B6478;
+  --mut:#8A8478;--mut-2:#A8A192;
+  --line:#D6D0C3;--line-2:#E8E3D8;
+  --light-tone:#7E97A2;--pu-tone:#5F6D9C;--dark-tone:#453573;--fb-tone:#A87C1D;
+  --signal:#35617F;--danger:#A6432F;--ok:#41663F;
+  --r:8px;--sh:0 1px 2px rgba(21,18,29,.04),0 4px 14px rgba(21,18,29,.05);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--paper);color:var(--ink-2);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.dsp{font-family:'Space Grotesk','Inter',sans-serif;color:var(--ink);letter-spacing:-.015em}
+.mn{font-family:'JetBrains Mono',ui-monospace,monospace}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:40;background:var(--ink);color:var(--paper);display:flex;align-items:center;gap:16px;padding:13px 24px}
+.top .mark{font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff}
+.top .sub{font-family:'JetBrains Mono';font-size:11px;color:#9E97AD}
+.top .sp{flex:1}
+.tb{font-size:13px;font-weight:500;background:transparent;color:var(--paper);border:1px solid #443E56;border-radius:5px;padding:7px 13px;cursor:pointer}
+.tb:hover{background:#241E32;border-color:#5C5474}
+.tb.on{background:var(--paper);color:var(--ink);border-color:var(--paper);font-weight:600}
+.saved{font-family:'JetBrains Mono';font-size:11px;color:#8E86A0;min-width:66px;text-align:right}
+
+/* ---------- shell ---------- */
+.shell{max-width:1480px;margin:0 auto;padding:26px 28px 90px}
+.crumb{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-3);margin-bottom:16px}
+.crumb button{background:none;border:none;color:var(--signal);font-size:13px;font-weight:600;cursor:pointer;padding:4px 0}
+.crumb button:hover{text-decoration:underline}
+.crumb .sep{color:var(--mut-2)}
+
+/* ---------- intro ---------- */
+.intro{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:26px 30px;margin-bottom:22px}
+.intro h1{margin:0 0 10px;font-size:26px}
+.intro .lead{font-size:16px;line-height:1.62;color:var(--ink-2);max-width:820px;margin:0 0 20px}
+.intro .lead b{color:var(--ink);font-weight:600}
+.isteps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.istep{display:flex;gap:11px;background:var(--paper);border:1px solid var(--line-2);border-radius:6px;padding:13px}
+.istep .n{width:23px;height:23px;border-radius:50%;background:var(--ink);color:#fff;font-family:'Space Grotesk';font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.istep b{display:block;font-size:14px;color:var(--ink);margin-bottom:2px}
+.istep span{font-size:12.5px;color:var(--ink-3);line-height:1.4}
+.inote{font-size:13.5px;color:#5C5334;background:#F5EDD8;border:1px solid #E3D3A6;border-radius:6px;padding:11px 14px}
+.inote b{color:#463F22}
+.ix{float:right;font-size:12.5px;color:var(--mut);background:none;border:1px solid var(--line);border-radius:5px;padding:5px 11px;cursor:pointer}
+.ix:hover{border-color:var(--signal);color:var(--signal)}
+
+/* ---------- cards / panels ---------- */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:22px}
+.ph{display:flex;align-items:center;gap:12px;padding:15px 20px;border-bottom:1px solid var(--line-2);cursor:pointer}
+.ph h2{margin:0;font-size:16px}
+.eyebrow{font-family:'JetBrains Mono';font-size:10.5px;color:#6A6354;background:var(--paper-2);padding:3px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.06em}
+.ph .car{margin-left:auto;color:var(--mut-2)}
+.panel.col .pb{display:none}
+.panel.col .car{transform:rotate(-90deg)}
+.pb{padding:22px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px 26px}
+.grid2 .full{grid-column:1/-1}
+.f{display:flex;flex-direction:column;gap:6px}
+.f>label{font-family:'JetBrains Mono';font-size:11px;color:#6A6354;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.f .hint{font-size:12.5px;color:var(--ink-3);text-transform:none;letter-spacing:0;font-weight:400;font-family:'Inter'}
+input[type=text],textarea{font-family:'Inter';font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:5px;padding:8px 10px;width:100%}
+input[type=text]:focus,textarea:focus{border-color:var(--signal);background:#fff}
+::placeholder{color:#B6AF9F}
+
+
+.goals{display:flex;flex-direction:column;gap:7px}
+.gr{display:flex;gap:9px}
+.gr .gn{font-family:'JetBrains Mono';font-size:12.5px;color:var(--mut);padding-top:9px;min-width:18px}
+.gr .rm{background:none;border:none;color:var(--danger);cursor:pointer;font-size:17px;padding:4px 6px;line-height:1}
+.addln{font-family:'JetBrains Mono';font-size:12.5px;color:var(--signal);background:none;border:1px dashed var(--line);border-radius:5px;padding:8px 12px;cursor:pointer;width:100%;text-align:left;margin-top:5px}
+.addln:hover{border-color:var(--signal);background:#EEF3F6}
+
+/* ---------- overview: week cards ---------- */
+.wkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.wkcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:16px 18px;cursor:pointer;transition:border-color .25s ease,transform .2s ease,box-shadow .25s ease}
+.wkcard:hover{border-color:var(--signal);transform:translateY(-2px);box-shadow:0 6px 20px rgba(53,97,127,.16)}
+.wkcard .wh{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.wkcard .wn{font-family:'Space Grotesk';font-weight:700;font-size:17px;color:var(--ink)}
+.wkcard .wm{font-family:'JetBrains Mono';font-size:10px;padding:2px 7px;border-radius:3px;background:var(--paper-2);color:var(--mut)}
+.wkcard .wm.meet{background:#E3EDF2;color:var(--signal)}
+.wkcard .wtp{font-size:12.5px;color:var(--ink-3);margin-bottom:10px;min-height:18px}
+.wkcard .tl{display:flex;flex-direction:column;gap:3px;margin-bottom:11px}
+.wkcard .tl div{font-size:12.5px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wkcard .tl .ti{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut-2);margin-right:5px}
+.wkstat{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono';font-size:11px;color:var(--mut)}
+.bar{flex:1;height:5px;background:var(--paper-2);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:3px}
+.wkadd{background:var(--paper);border:1px dashed var(--line);border-radius:var(--r);padding:16px;cursor:pointer;color:var(--signal);font-family:'JetBrains Mono';font-size:13px;display:flex;align-items:center;justify-content:center;min-height:140px}
+.wkadd:hover{border-color:var(--signal);background:#EEF3F6}
+
+/* ---------- week view ---------- */
+.wkhead{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:18px 22px;margin-bottom:18px}
+.wkhead .r1{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.wkhead h2{margin:0;font-size:22px;display:flex;align-items:center;gap:8px}
+.wkhead h2 input{width:54px;font-size:20px;font-family:'Space Grotesk';font-weight:700;padding:4px 6px}
+.wkhead .meta{display:grid;grid-template-columns:auto 1fr 1fr;gap:14px}
+@media(max-width:760px){.wkhead .meta{grid-template-columns:1fr}}
+.tg{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-3);cursor:pointer}
+
+.task{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:14px}
+.th{display:flex;align-items:center;gap:11px;padding:13px 16px;border-bottom:1px solid var(--line-2);background:#FCFBF8;border-radius:var(--r) var(--r) 0 0}
+.tid{font-family:'JetBrains Mono';font-weight:600;font-size:13px;color:var(--ink-2);background:var(--paper-2);border-radius:3px;padding:4px 9px}
+.tnm{flex:1;font-weight:600;font-size:15.5px;border:1px solid transparent;background:transparent;padding:5px 6px;border-radius:4px}
+.tnm:focus{border-color:var(--signal);background:#fff}
+.tpat{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut);background:var(--paper-2);padding:4px 9px;border-radius:3px}
+.ib{background:none;border:none;color:var(--mut-2);cursor:pointer;font-size:16px;padding:5px 7px;border-radius:4px}
+.ib:hover{background:var(--paper-2);color:var(--danger)}
+.tgoals{padding:11px 16px;border-bottom:1px solid var(--line-2);background:#FDFCFA}
+.tgoals>label{font-family:'JetBrains Mono';font-size:11px;color:#6A6354;text-transform:uppercase;letter-spacing:.05em;font-weight:600;display:block;margin-bottom:7px}
+.tgoals .hint{font-size:12.5px;color:var(--ink-3);text-transform:none;letter-spacing:0;font-weight:400;font-family:'Inter'}
+.gchips{display:flex;flex-wrap:wrap;gap:6px}
+.gchip{font-family:'Inter';font-size:12.5px;color:var(--ink-2);background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:5px 11px;cursor:pointer;transition:border-color .25s ease,background .25s ease,color .25s ease}
+.gchip:hover{border-color:var(--ink-3)}
+.gchip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.gchip .gnum{font-family:'JetBrains Mono';font-size:10.5px;opacity:.65;margin-right:5px}
+.gnone{font-size:12.5px;color:var(--mut-2);font-style:italic}
+.gcov{font-size:13px;color:var(--mut);background:var(--paper-2);border:1px solid var(--line-2);border-radius:6px;padding:9px 13px;margin-bottom:12px}
+.nodes{padding:10px 14px 14px}
+
+.node{display:grid;grid-template-columns:6px 46px 1fr;border:1px solid var(--line-2);border-radius:6px;margin-bottom:8px;background:#fff;overflow:hidden;cursor:pointer;transition:border-color .25s ease,box-shadow .25s ease}
+.node:hover{border-color:var(--signal);box-shadow:0 2px 8px rgba(53,97,127,.1)}
+.node .sp{width:6px}
+.node .nid{font-family:'JetBrains Mono';font-size:11px;color:var(--mut);display:flex;align-items:center;justify-content:center;background:#FAF8F3;border-right:1px solid var(--line-2)}
+.nrow{padding:12px 14px;display:flex;align-items:center;gap:12px}
+.nrow .ns{font-size:14.5px;font-weight:600;color:var(--ink);flex:1;min-width:0}
+.nrow .ns.emp{color:var(--mut-2);font-weight:400;font-style:italic}
+.ntags{display:flex;gap:5px;flex:0 0 auto}
+.ntag{font-family:'JetBrains Mono';font-size:10.5px;padding:3px 7px;border-radius:3px;background:var(--paper-2);color:#5A5346}
+.ntag.lv{color:#fff}
+.ntag.miss{background:#F6E7E3;color:var(--danger)}
+.ned{font-family:'JetBrains Mono';font-size:10.5px;color:var(--signal);opacity:0;transition:opacity .25s ease}
+.node:hover .ned{opacity:1}
+.addn,.addt{font-family:'JetBrains Mono';font-size:12.5px;color:var(--signal);background:none;border:1px dashed var(--line);border-radius:6px;padding:9px 13px;cursor:pointer;width:100%;text-align:left}
+.addn:hover,.addt:hover{border-color:var(--signal);background:#EEF3F6}
+
+/* ---------- builder ---------- */
+.bsteps{display:flex;margin-bottom:16px}
+.bstep{flex:1;padding:11px 14px 12px 26px;font-size:13.5px;font-weight:600;color:var(--mut);background:var(--paper-2);border:1px solid var(--line);border-right:none;clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);margin-right:-11px}
+.bstep:first-child{clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%);border-radius:5px 0 0 5px;padding-left:16px}
+.bstep:last-child{margin-right:0;border-right:1px solid var(--line);border-radius:0 5px 5px 0}
+.bstep .n{font-family:'JetBrains Mono';font-size:11px;opacity:.6;margin-right:7px}
+.bstep.done{background:#E2E9EC;color:#56707D}
+.bstep.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.btop{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-bottom:16px}
+@media(max-width:900px){.btop{grid-template-columns:1fr}}
+.bsent{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:22px 24px;display:flex;flex-direction:column;justify-content:center;min-height:262px}
+.bsent .lb{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut-2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+.sline{font-family:'Space Grotesk';font-size:23px;font-weight:600;line-height:1.5;display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;min-height:66px}
+.slot{transition:all .6s ease;border-radius:3px}
+.slot.bl{color:#C6BFB0;border-bottom:2px dashed #D8D1C2;min-width:62px;font-weight:400;font-size:19px}
+.slot.fi{color:var(--ink)}
+.slot.cur{background:#FFF1C8;box-shadow:0 0 0 5px #FFF1C8}
+.slot.pop{animation:pp .8s ease}
+@keyframes pp{0%{background:#FFE49A;box-shadow:0 0 0 7px #FFE49A;transform:translateY(-3px)}100%{background:transparent;box-shadow:0 0 0 7px transparent;transform:none}}
+.bsent .fin{margin-top:18px;display:flex;align-items:center;gap:9px}
+.bsent .fin label{font-family:'JetBrains Mono';font-size:10px;color:var(--mut-2);text-transform:uppercase;white-space:nowrap}
+.bexp{background:#FBFAF6;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:22px 24px;height:262px;overflow-y:auto;overscroll-behavior:contain}
+.bexp .wd{display:inline-block;opacity:0;animation:wordin .5s ease forwards}
+@keyframes wordin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.bexp .lb{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut-2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.bexp .et{font-family:'Space Grotesk';font-weight:700;font-size:17px;color:var(--ink);margin-bottom:7px}
+.bexp .eb{font-size:14.5px;line-height:1.62;color:var(--ink-2)}
+.bexp .ee{margin-top:13px;padding-top:12px;border-top:1px solid var(--line-2);font-size:13.5px;line-height:1.55;color:var(--ink-3)}
+.bexp .ee b{color:var(--ink-2)}
+
+.bq{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:22px 24px;min-height:330px}
+.bq.anim{animation:qin 1s cubic-bezier(.22,.61,.36,1) both}
+@keyframes qin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.shell.vin{animation:vin .9s cubic-bezier(.22,.61,.36,1) both}
+@keyframes vin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.nb.pri.nudge{animation:nud .7s ease}
+@keyframes nud{0%{transform:none}35%{transform:translateY(-2px);box-shadow:0 5px 14px rgba(21,18,29,.28)}100%{transform:none}}
+.bq .qt{font-family:'Space Grotesk';font-size:20px;font-weight:700;color:var(--ink);margin-bottom:5px}
+.bq .qs{font-size:13.5px;color:var(--ink-3);margin-bottom:18px}
+.qg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.qo{position:relative;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:13px 14px;cursor:pointer;transition:border-color .25s ease,box-shadow .25s ease,background .25s ease,transform .15s ease}
+.qo:hover{border-color:var(--signal);box-shadow:0 2px 9px rgba(53,97,127,.14)}
+.qo.on{border-color:var(--ink);background:var(--ink);box-shadow:0 3px 11px rgba(21,18,29,.24)}
+.qo .qc{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut);display:block;margin-bottom:3px}
+.qo.on .qc{color:#B9B1C9}
+.qo .qn{font-weight:600;font-size:14.5px;line-height:1.3;color:var(--ink)}
+.qo.on .qn{color:#fff}
+.qo .bb{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:7px 0 0 7px}
+.qo.hb{padding-left:17px}
+.qoth{grid-column:1/-1;display:flex;gap:10px;align-items:center;background:var(--paper);border:1px dashed var(--line);border-radius:7px;padding:11px 14px}
+.qoth label{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut);text-transform:uppercase}
+
+.bnav{display:flex;align-items:center;gap:12px;margin-top:18px}
+.bnav .ct{font-family:'JetBrains Mono';font-size:12.5px;color:var(--mut)}
+.bnav .sp{flex:1}
+.nb{font-size:14px;font-weight:600;padding:10px 20px;border-radius:6px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.nb:hover{border-color:var(--signal);color:var(--signal)}
+.nb.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+.nb.pri:hover{background:#241E32;color:#fff}
+.nb:disabled{opacity:.32;cursor:not-allowed}
+
+/* modal only for pattern choice */
+.mod{position:fixed;inset:0;background:rgba(21,18,29,.5);display:none;align-items:flex-start;justify-content:center;z-index:60;padding:40px 20px;overflow:auto}
+.mod.show{display:flex;animation:mfade .7s ease both}
+.mod.show .mcard{animation:mup .8s cubic-bezier(.22,.61,.36,1) both}
+.mod.hide{display:flex;animation:mfadeout .6s ease both;pointer-events:none}
+.mod.hide .mcard{animation:mdown .6s ease both}
+@keyframes mfade{from{opacity:0}to{opacity:1}}
+@keyframes mfadeout{from{opacity:1}to{opacity:0}}
+@keyframes mup{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes mdown{from{opacity:1;transform:none}to{opacity:0;transform:translateY(10px) scale(.99)}}
+.mcard{background:#fff;border-radius:var(--r);max-width:640px;width:100%;box-shadow:0 16px 50px rgba(0,0,0,.3)}
+.mh{padding:18px 22px;border-bottom:1px solid var(--line-2)}
+.mh h3{margin:0;font-size:18px}
+.mh p{margin:5px 0 0;font-size:13px;color:var(--ink-3)}
+.mb{padding:16px 22px 22px;display:flex;flex-direction:column;gap:8px}
+.pat{border:1px solid var(--line);border-radius:6px;padding:12px 14px;cursor:pointer}
+.pat:hover{border-color:var(--signal);background:#FBFAF6}
+.pat .pt{font-weight:600;font-size:14.5px;display:flex;justify-content:space-between;color:var(--ink)}
+.pat .pt .tg2{font-family:'JetBrains Mono';font-size:10px;color:var(--mut);font-weight:400}
+.pat .pd{font-size:12.5px;color:var(--ink-3);margin-top:4px;line-height:1.4}
+.pat .pc{font-family:'JetBrains Mono';font-size:11px;color:var(--signal);margin-top:6px}
+
+.status{position:fixed;bottom:0;left:0;right:0;background:var(--ink);color:var(--paper);padding:9px 24px;display:flex;gap:22px;font-family:'JetBrains Mono';font-size:12px;z-index:30}
+.status .s{color:#B8B0C8}.status .s b{color:#fff}
+.status .nt{margin-left:auto;color:#7E7694}
+.empty{color:var(--mut-2);font-style:italic;padding:26px;text-align:center}
+@media(max-width:820px){.shell{padding:18px 16px 90px}.isteps{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.bexp .wd{opacity:1!important}}
+
+</style>
+</head>
+<body>
+<nav aria-label="Workspace navigation" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;padding:10px 24px;font-size:13px;border-bottom:1px solid var(--line)">
+  <a href="../#home" style="color:var(--signal)">← Workspace</a>
+  <a href="../#profiler/prompts" style="color:var(--signal)">Current prompts</a>
+  <a href="../#profiler/activities" style="color:var(--signal)">Current activities</a>
+  <span style="color:var(--ink-3)">Profiles are saved in this browser only.</span>
+</nav>
+
+
+<div class="top">
+  <span class="mark">Course Profiler</span><span class="sub">AI-Wise</span>
+  <span class="sp"></span>
+  <span class="saved" id="savedTag">saved</span>
+  <button class="tb" id="bNew">New</button>
+  <button class="tb" id="bSample">Sample</button>
+  <button class="tb" id="bImp">Import</button>
+  <button class="tb" id="bJson">Export JSON</button>
+  <button class="tb on" id="bMd">Export MD</button>
+  <input type="file" id="fileIn" accept="application/json" style="display:none">
+</div>
+<div class="shell" id="shell"></div>
+<div class="mod" id="patMod"><div class="mcard">
+  <div class="mh"><h3>Choose a task shape</h3><p>Pick the pattern this task follows. The nodes are laid out for you, half filled in. You then answer the rest.</p></div>
+  <div class="mb" id="patList"></div>
+</div></div>
+<div class="status">
+  <span class="s">nodes <b id="sN">0</b></span><span class="s">tasks <b id="sT">0</b></span>
+  <span class="s">weeks <b id="sW">0</b></span><span class="s">unfinished <b id="sU">0</b></span>
+  <span class="nt">derived layer (fingerprint, checks, coverage): next version</span>
+</div>
+
+<script>
+const GROUPS=[
+ {g:'G0',name:'Receive / Consume',band:'light',lv:'K',desc:'Take in content whole. Nothing is produced.',verbs:[['Read','take in a text'],['Watch','take in a video'],['Study','work through given material']]},
+ {g:'G1',name:'Retrieve',band:'light',lv:'K',desc:'Locate information already in the text. The answer exists in the source.',verbs:[['Identify','name what is there'],['Extract','pull it out'],['Classify','sort into given categories'],['Look up','find a stated rule or fact'],['Note','record what appears']]},
+ {g:'G2',name:'Execute',band:'light',lv:'Ps',desc:'Run a given rule as stated. The correct output is fixed by the rule.',verbs:[['Apply','carry out a procedure'],['Complete','finish a set exercise'],['Ensure','verify against a checklist'],['Check','self check against rules'],['Create','build from a fixed rule, e.g. an APA reference']]},
+ {g:'G3',name:'Structure',band:'dial',lv:'Pu',desc:'Arrange elements. The one group that shifts Light to Dark depending on whether a template is supplied. This is the dial.',verbs:[['Place','position an element'],['Order','sequence elements'],['Label','name a group'],['Connect','draw relations'],['Build','assemble a structure'],['Arrange','order within a frame']]},
+ {g:'G4',name:'Judge',band:'dark',lv:'Pu',desc:'Judge, assess, or derive on your own. Criteria may be given, the verdict is the student.',verbs:[['Judge','reach a verdict'],['Assess','weigh against aspects'],['Evaluate','rate own work or a method'],['Derive','reason out a conclusion'],['Determine','settle by judgement'],['Keep track','monitor own process']]},
+ {g:'G5',name:'Commit',band:'dark',lv:'Cr',desc:'Settle on one option among several. A decision that is hard to reverse.',verbs:[['Decide','commit to a direction'],['Select','pick from a pool'],['Choose','commit to one'],['Find','seek out what is needed'],['Group','decide what belongs together']]},
+ {g:'G6',name:'Generate',band:'dark',lv:'Cr',desc:'Produce something new. The form may be given, the content is generated by the student.',verbs:[['Formulate','put into words'],['Draft','produce a first version'],['Write','compose a text'],['Construct','build an argument or interpretation'],['Prepare','produce for a purpose'],['Set out','lay out reasoning']]},
+ {g:'G7',name:'Revise',band:'dark',lv:'Cr',desc:'Return to your own work and rework it using feedback. Present only in loop-back courses.',verbs:[['Revise','rework using feedback'],['Adjust','change from feedback'],['Improve','raise quality from feedback']]},
+ {g:'G8',name:'Evaluate existing work',band:'fb',lv:'FB',desc:'Evaluate an artifact that already exists. A Feedback stage property, not a Work difficulty.',verbs:[['Give','give feedback'],['Receive','receive feedback'],['Compare','compare to a model'],['Check','check against a model'],['Assess','assess a peer or sample'],['Ask','seek tutor input']]},
+];
+const LEVELS=[{v:'K',t:'Knowledge',d:'Know it or take it in.',band:'light'},{v:'Ps',t:'Practice, skill',d:'Execute a rule as practice.',band:'light'},{v:'Pu',t:'Practice, use',d:'Apply judgement while using it in context.',band:'pu'},{v:'Cr',t:'Create',d:'Produce something that did not exist.',band:'dark'},{v:'FB',t:'Feedback',d:'Evaluate existing work. Off the level axis.',band:'fb'}];
+const CYCLES=[{v:'W',t:'Work',d:'Producing the artifact.'},{v:'F',t:'Feedback',d:'Evaluating or exchanging the artifact.'},{v:'R',t:'Reflection',d:'Looking back on one own process.'}];
+const INSTRUMENTS=[{v:'none',t:'none',d:'Nothing supplied. An empty instrument with only a criterion is the signature of a Dark node.'},{v:'template',t:'template',d:'A form that fills in the structure. Takes over the structuring decision. Typical Work stage over-lighting.'},{v:'procedure script',t:'procedure script',d:'A step by step procedure, demonstrated or spelled out in order.'},{v:'criteria / rubric',t:'criteria / rubric',d:'A list of criteria. Bounds the space without filling it.'},{v:'answer model',t:'answer model',d:'A model answer. The answer already exists, so the node is Light by definition. Feedback stage over-lighting signal.'},{v:'source text',t:'source text',d:'A text to draw from.'},{v:'platform engine',t:'platform engine',d:'An automated system that processes the input.'}];
+const SUBJECTS=[{v:'Student',t:'Student',d:'The student acts. Default, leave unmarked in exports.'},{v:'Tutor',t:'Tutor',d:'The trainer acts. A coach intervention.'},{v:'Peer',t:'Peer',d:'A fellow student acts.'},{v:'Course',t:'Course',d:'The course supplies the action. An over-lighting candidate.'}];
+const ACTORS=[{v:'Peer',t:'Peer',d:'A fellow student evaluates.'},{v:'Tutor',t:'Tutor',d:'The trainer evaluates.'}];
+const DIRECTIONS=[{v:'give',t:'give',d:'The student gives feedback on other work.'},{v:'receive',t:'receive',d:'The student receives feedback on own work.'},{v:'both',t:'both',d:'Give and receive in one session.'},{v:'receive (give unstated)',t:'receive, give unstated',d:'Guide grade material states only receiving. Known artifact.'}];
+/* object / criterion common pools (seed; course-specific values accrete) */
+const OBJECT_SEED=['the article','own question','the overview','the structure','the introduction','the main body','the discussion','the summary','the essay','peer work','own work','received feedback','the sources','literature','a conclusion','the reasoning','learning goals','discussion points'];
+const CRITERION_SEED=['none','naive-reader test','own words','in your own words','to the letter','relevance to own question','max word count','clear and specific','follows from the arguments','at least two sources'];
+
+const EX={
+ subject:{
+  Student:'The default. The student is the one doing the action. Leave it here unless someone else clearly does it.',
+  Tutor:'The trainer does it, not the student. e.g. the trainer draws the class mind map on the board.',
+  Peer:'A fellow student does it, e.g. in a peer feedback session.',
+  Course:'The course itself does the work the student would otherwise do. A warning sign of over-lighting.'
+ },
+ group:{
+  G0:'Just taking something in, nothing is made. Reading, watching, studying. e.g. "Study Annexes I to IV."',
+  G1:'Finding something that is already there in the text. e.g. "Identify the central question." The answer exists, you just locate it.',
+  G2:'Following a fixed rule that decides the answer for you. e.g. "Apply the APA guidelines." There is a right output.',
+  G3:'Arranging or structuring. This is the flexible one: with a template it is easy (Light), without one it is real thinking (Dark). e.g. "Build the overview" vs "Label each subgroup."',
+  G4:'Judging or working something out yourself. e.g. "Judge which sources are relevant." Criteria may help, but the call is the student\'s.',
+  G5:'Committing to one choice among several, hard to undo. e.g. "Choose your research focus."',
+  G6:'Making something new that was not there before. e.g. "Write the main body." The content comes from the student.',
+  G7:'Going back to your own work and reworking it after feedback. e.g. "Revise your introduction." Only appears when feedback loops back.',
+  G8:'Evaluating work that already exists, giving or getting feedback. e.g. "Give feedback on your peers." This is feedback, not making.'
+ },
+ verb:{},
+ object:{},
+ criterion:{},
+ instrument:{
+  none:'Nothing is handed over. The student works from scratch. This plus a lone criterion is the classic sign of a Dark node.',
+  template:'A ready-made form that lays out the structure. It quietly does the arranging for the student. e.g. the Literature Overview template.',
+  'procedure script':'A step by step recipe, shown or written out in order. e.g. the demonstrated Scopus search.',
+  'criteria / rubric':'A list of standards to aim for. It says what good looks like without producing the work.',
+  'answer model':'A finished example answer to check against. Because the answer already exists, the node is Light. e.g. the DISKIT expert version.',
+  'source text':'A text the student reads from, e.g. the assigned article.',
+  'platform engine':'An automated system that runs or checks the work, e.g. the online exercises.'
+ },
+ level:{
+  K:'Knowledge. Knowing or taking something in. e.g. reading a chapter.',
+  Ps:'Practice a skill. Running a rule to get the hang of it. e.g. applying APA formatting.',
+  Pu:'Use in context. Making judgements while you apply something. e.g. deciding if a source is relevant.',
+  Cr:'Create. Producing something that did not exist yet. e.g. writing an argument.',
+  FB:'Feedback. Evaluating work that already exists. This sits outside the difficulty scale.'
+ },
+ cycle:{
+  W:'Work. The student is making the thing. e.g. writing a draft.',
+  F:'Feedback. Giving or receiving comments on the thing. e.g. a peer feedback session.',
+  R:'Reflection. Looking back on how it went. e.g. rating the reading strategy they used.'
+ },
+ light:{
+  none:'Nothing is pre-supplied here.',
+  'content pre-given':'The material itself is handed over, e.g. an annex to read.',
+  'procedure fully given':'Every step is laid out, e.g. the reading rounds.',
+  'criteria given':'The standards are listed, but the student still has to meet them.',
+  'template fills the structure':'The structure is pre-built, e.g. the overview template.',
+  'model supplied':'A model answer is provided to check against.'
+ },
+ dark:{
+  none:'Nothing is left for the student to figure out here.',
+  'the judgement':'The student has to make the call. e.g. is this source relevant.',
+  'the content':'The student has to generate what goes in. e.g. the argument itself.',
+  'the structure':'The student has to work out the arrangement. e.g. how to group and label.',
+  'the commitment':'The student has to decide and commit. e.g. choosing the focus.',
+  'the reworking':'The student has to revise it themselves after feedback.'
+ },
+ actor:{
+  Peer:'A fellow student gives the feedback.',
+  Tutor:'The trainer gives the feedback.'
+ },
+ direction:{
+  give:'The student is giving feedback on someone else\'s work.',
+  receive:'The student is receiving feedback on their own work.',
+  both:'Both giving and receiving happen in one session.',
+  'receive (give unstated)':'Only receiving is written down, though giving probably happens too. A known gap in guide-level material.'
+ }
+};
+const LV_BAND={K:'light',Ps:'light',Pu:'pu',Cr:'dark',FB:'fb'};
+const BAND={light:'var(--light-tone)',pu:'var(--pu-tone)',dark:'var(--dark-tone)',fb:'var(--fb-tone)',dial:'linear-gradient(var(--light-tone),var(--dark-tone))'};
+
+/* ===== task patterns (from re-analysis) ===== */
+/* each proto node: {verb,group,instrument,level,cycle,flags} partly filled */
+const PATTERNS=[
+ {id:'loopback',name:'Loop-back component',tag:'WSI part 2',desc:'Write a product, exchange peer feedback, then revise the same product. Used for report components in loop-back courses.',
+  chain:'write → self-localize → give → receive → revise',
+  nodes:[
+   {verb:'Write',group:'G6',instrument:'criteria / rubric',level:'Cr',cycle:'W'},
+   {verb:'Prepare',group:'G6',instrument:'none',level:'Pu',cycle:'W',flags:{rec:'selfloc'}},
+   {verb:'Give',group:'G8',instrument:'procedure script',level:'FB',cycle:'F',flags:{actor:'Peer',direction:'give'}},
+   {verb:'Receive',group:'G8',instrument:'procedure script',level:'FB',cycle:'F',flags:{actor:'Peer',direction:'receive'}},
+   {verb:'Revise',group:'G7',instrument:'none',level:'Cr',cycle:'W'},
+ ]},
+ {id:'feedfwd',name:'Feed-forward assignment',tag:'SS home assignment',desc:'Produce a one-shot assignment; feedback arrives next meeting and informs the next product, not this one. No revision node.',
+  chain:'read → produce → hand in → receive (next turn)',
+  nodes:[
+   {verb:'Read',group:'G0',instrument:'source text',level:'K',cycle:'W'},
+   {verb:'Write',group:'G6',instrument:'template',level:'Pu',cycle:'W'},
+   {verb:'Receive',group:'G8',instrument:'none',level:'FB',cycle:'F',flags:{actor:'Tutor',direction:'receive (give unstated)'}},
+ ]},
+ {id:'diskit',name:'DISKIT / practice',tag:'both courses',desc:'Read a chapter, complete online exercises, compare to the expert version. The compare node carries the answer-model over-lighting signature.',
+  chain:'read → complete → compare to model',
+  nodes:[
+   {verb:'Read',group:'G0',instrument:'source text',level:'K',cycle:'W'},
+   {verb:'Complete',group:'G2',instrument:'platform engine',level:'Ps',cycle:'W'},
+   {verb:'Compare',group:'G8',instrument:'answer model',level:'FB',cycle:'F',flags:{actor:'Course-answer-model',direction:'give'}},
+ ]},
+ {id:'overview',name:'Overview / extract-and-build',tag:'SS HA1, HA2',desc:'Extract stated parts of a text, derive its conclusions, then build one overview. The build node is the dial: template makes it Light, no template makes it Dark.',
+  chain:'extract → extract → derive → write overview',
+  nodes:[
+   {verb:'Extract',group:'G1',instrument:'source text',level:'K',cycle:'W'},
+   {verb:'Extract',group:'G1',instrument:'source text',level:'K',cycle:'W'},
+   {verb:'Derive',group:'G4',instrument:'source text',level:'Pu',cycle:'W'},
+   {verb:'Write',group:'G6',instrument:'template',level:'Pu',cycle:'W'},
+ ]},
+ {id:'readeval',name:'Read-and-evaluate',tag:'WSI meeting 1',desc:'Study given material, identify stated features of a text several times, then formulate one critical comment. The critique node is the Dark payload.',
+  chain:'study → identify×N → formulate critique',
+  nodes:[
+   {verb:'Study',group:'G0',instrument:'source text',level:'K',cycle:'W'},
+   {verb:'Identify',group:'G1',instrument:'source text',level:'K',cycle:'W'},
+   {verb:'Identify',group:'G1',instrument:'source text',level:'K',cycle:'W'},
+   {verb:'Formulate',group:'G6',instrument:'criteria / rubric',level:'Cr',cycle:'W'},
+ ]},
+ {id:'reflect',name:'Reflection',tag:'SS reflection',desc:'Choose aspects to focus on, place yourself on a given scale, then formulate goals. All nodes are meta and sit in the Reflection stage.',
+  chain:'choose aspects → determine level → formulate goals',
+  nodes:[
+   {verb:'Choose',group:'G5',instrument:'menu',level:'Pu',cycle:'R',flags:{meta:true}},
+   {verb:'Determine',group:'G4',instrument:'criteria / rubric',level:'Pu',cycle:'R',flags:{meta:true}},
+   {verb:'Formulate',group:'G6',instrument:'none',level:'Cr',cycle:'R',flags:{meta:true}},
+ ]},
+ {id:'blank',name:'Custom / blank',tag:'',desc:'Start with one empty node and build the task by MCQ from scratch.',chain:'one empty node',nodes:[{}]},
+];
+
+
+const WSI_SEED={"course": {"name": "Academic Writing Skills I", "code": "BSc Psychology Y1, period 1.4", "source": "2025 UK Trainers Manual, trainer manual grade, full node grain, zero GRAIN", "goals": ["Identify and complete the stages of the writing process.", "Formulate a specific research question.", "Systematically search scientific literature using academic search engines.", "Assess literature on its relevance for the question.", "Analyze, integrate, and critically evaluate source material.", "Draft a structural framework with focused, logical arguments.", "Apply APA standards.", "Apply a scientific writing style.", "Provide constructive peer feedback.", "Adequately process feedback received."], "cycleunit": "One Work, Feedback, Reflection turn per product: question, draft structure, introduction, main body, discussion and abstract, full report", "topology": "loop-back", "reflection": "in-cycle", "ceiling": "standard", "optional": "DISKITs (T0), recommended not mandatory, the only answer-model loop", "objectPool": ["own question", "the introduction", "the main body", "the discussion", "the abstract", "the draft structure", "the full report", "peer outlines", "the reading strategy"], "critPool": ["clear, specific, open, single, right scope", "max 250 words", "broad to specific, relevance, roadmap", "author may ignore"]}, "weeks": [{"n": "0", "meeting": false, "timeplace": "at home via book website; DISKIT 1-2 before meeting 1", "goals": "7, 8", "tasks": [{"name": "Practice writing rules of thumb in the DISKITs", "pattern": "diskit", "purpose": "Internalize the writing rules of thumb before they are needed in the report.", "setting": "solo, at home", "anchor": "", "digest": "", "nodes": [{"sentence": "Complete the DISKIT exercises on the writing rules of thumb.", "subject": "Student", "verb": "Complete", "group": "G2", "object": "DISKIT exercises", "instrument": "platform engine", "criterion": "rules of thumb given", "level": "Ps", "cycle": "W", "light": "rules and exercises pre-given", "dark": "none", "flags": {"meta": false, "opt": true, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Compare your answers to the expert version.", "subject": "Student", "verb": "Compare", "group": "G8", "object": "own answers", "instrument": "answer model", "criterion": "none", "level": "FB", "cycle": "F", "light": "model supplied", "dark": "none", "flags": {"meta": false, "opt": true, "rec": "", "actor": "Course-answer-model", "direction": "give"}}], "goals": [6, 7]}]}, {"n": "1", "meeting": true, "timeplace": "Meeting 1, Wednesday, PBL rooms, 2h", "goals": "1, 4, 5", "tasks": [{"name": "Read and critically evaluate a scientific article", "pattern": "readeval", "purpose": "Learn to read scientific articles effectively and evaluate them critically by applying the strategy to one real article.", "setting": "groups of 2-3", "anchor": "", "digest": "", "nodes": [{"sentence": "Study Annexes I to IV.", "subject": "Student", "verb": "Study", "group": "G0", "object": "the four annexes", "instrument": "source text", "criterion": "none", "level": "K", "cycle": "W", "light": "content pre-given", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Apply the multiple reading rounds strategy to your assigned article.", "subject": "Student", "verb": "Apply", "group": "G2", "object": "the reading strategy", "instrument": "procedure script", "criterion": "to assigned article", "level": "Ps", "cycle": "W", "light": "procedure fully given", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Identify the central question of the article.", "subject": "Student", "verb": "Identify", "group": "G1", "object": "central question", "instrument": "source text", "criterion": "may be implicit", "level": "K", "cycle": "W", "light": "answer in text", "dark": "minor inference", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Identify the problem discussed and its relevance.", "subject": "Student", "verb": "Identify", "group": "G1", "object": "problem and relevance", "instrument": "source text", "criterion": "none", "level": "K", "cycle": "W", "light": "answer in text", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Identify the central terms and concepts of the article.", "subject": "Student", "verb": "Identify", "group": "G1", "object": "central concepts", "instrument": "source text", "criterion": "none", "level": "K", "cycle": "W", "light": "answer in text", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Identify the theories underlying the research question.", "subject": "Student", "verb": "Identify", "group": "G1", "object": "underlying theories", "instrument": "source text", "criterion": "none", "level": "K", "cycle": "W", "light": "answer in text", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Identify the article conclusion.", "subject": "Student", "verb": "Identify", "group": "G1", "object": "the conclusion", "instrument": "source text", "criterion": "none", "level": "K", "cycle": "W", "light": "answer in text", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Classify the basis of the conclusion as own research or existing literature.", "subject": "Student", "verb": "Classify", "group": "G1", "object": "basis of conclusion", "instrument": "source text", "criterion": "binary categories", "level": "K", "cycle": "W", "light": "categories given", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Formulate one critical comment about the article.", "subject": "Student", "verb": "Formulate", "group": "G6", "object": "a critical comment", "instrument": "criteria / rubric", "criterion": "exactly one", "level": "Cr", "cycle": "W", "light": "aspects listed", "dark": "the comment itself", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Evaluate the usefulness of the reading rounds strategy.", "subject": "Student", "verb": "Evaluate", "group": "G4", "object": "the strategy", "instrument": "none", "criterion": "none", "level": "Pu", "cycle": "R", "light": "question posed", "dark": "own judgement", "flags": {"meta": true, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [0, 3, 4]}, {"name": "Build the class mind map of the subject", "pattern": "blank", "purpose": "See the sub-areas of the shared subject mapped before choosing a focus.", "setting": "class-wide, trainer at smartboard", "anchor": "", "digest": "", "nodes": [{"sentence": "Extract the sub-areas and findings from your article.", "subject": "Student", "verb": "Extract", "group": "G1", "object": "sub-areas, findings", "instrument": "source text", "criterion": "none", "level": "K", "cycle": "W", "light": "content in article", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Place the findings on the class mind map around the subject.", "subject": "Tutor", "verb": "Place", "group": "G3", "object": "the findings", "instrument": "procedure script", "criterion": "subject central", "level": "Ps", "cycle": "W", "light": "format and lead given", "dark": "minor placement", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [4]}, {"name": "Choose the focus of your literature report", "pattern": "blank", "purpose": "Commit to a research interest worth a report.", "setting": "solo with plenary sharing", "anchor": "", "digest": "", "nodes": [{"sentence": "Generate ideas for the focus of your report.", "subject": "Student", "verb": "Generate", "group": "G6", "object": "focus ideas", "instrument": "menu", "criterion": "none", "level": "Cr", "cycle": "W", "light": "prompts bound the space", "dark": "the ideas", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Choose your research interest.", "subject": "Student", "verb": "Choose", "group": "G5", "object": "research interest", "instrument": "none", "criterion": "none", "level": "Cr", "cycle": "W", "light": "coach removes dead ends", "dark": "the commitment", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [1]}]}, {"n": "2", "meeting": true, "timeplace": "upload central question Tue 23:59 Canvas; Meeting 2 Wed, PBL rooms, 2h", "goals": "2, 3", "tasks": [{"name": "Formulate the central question and process feedback on it", "pattern": "blank", "purpose": "Arrive at a workable, specific central question through one full feedback loop.", "setting": "solo formulation; plenary discussion", "anchor": "", "digest": "", "nodes": [{"sentence": "Formulate a preliminary central question for your report.", "subject": "Student", "verb": "Formulate", "group": "G6", "object": "own question", "instrument": "source text", "criterion": "clear, specific, open, single, right scope", "level": "Cr", "cycle": "W", "light": "requirements and examples", "dark": "the question itself", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Check your question against the requirements.", "subject": "Student", "verb": "Check", "group": "G2", "object": "own question", "instrument": "criteria / rubric", "criterion": "six criteria", "level": "Pu", "cycle": "W", "light": "criteria pre-given", "dark": "honest self-application", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Discuss your central question in the group.", "subject": "Student", "verb": "Discuss", "group": "G8", "object": "own question", "instrument": "procedure script", "criterion": "5 min each", "level": "FB", "cycle": "F", "light": "criteria-guided session", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Peer", "direction": "both"}}, {"sentence": "Revise your central question using the feedback.", "subject": "Student", "verb": "Revise", "group": "G7", "object": "own question", "instrument": "none", "criterion": "none", "level": "Cr", "cycle": "W", "light": "feedback illuminates", "dark": "the reformulation", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [1]}, {"name": "Search literature in Scopus", "pattern": "blank", "purpose": "Retrieve candidate literature for the own report with a systematic search.", "setting": "trainer demo, then solo search", "anchor": "", "digest": "", "nodes": [{"sentence": "Apply the demonstrated Scopus search to your own topic.", "subject": "Student", "verb": "Apply", "group": "G2", "object": "the search procedure", "instrument": "procedure script", "criterion": "to own topic", "level": "Ps", "cycle": "W", "light": "procedure fully given", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Note new subtopics and synonyms from the search results.", "subject": "Student", "verb": "Note", "group": "G1", "object": "subtopics, synonyms", "instrument": "source text", "criterion": "none", "level": "K", "cycle": "W", "light": "content in results", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Judge which retrieved articles are relevant to your question.", "subject": "Student", "verb": "Judge", "group": "G4", "object": "retrieved articles", "instrument": "criteria / rubric", "criterion": "relevance to own question", "level": "Pu", "cycle": "W", "light": "heuristic given", "dark": "the relevance judgement", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [2, 3]}]}, {"n": "3", "meeting": true, "timeplace": "Meeting 3 Wed, PBL rooms, 2h; upload draft structure Sun 23:59 Canvas", "goals": "4, 5, 6", "tasks": [{"name": "Compile the literature overview and extend your set", "pattern": "overview", "purpose": "Consolidate the found literature into one working overview.", "setting": "solo, preparation", "anchor": "", "digest": "", "nodes": [{"sentence": "Find additional literature for your report.", "subject": "Student", "verb": "Find", "group": "G5", "object": "additional sources", "instrument": "platform engine", "criterion": "guided by revised question", "level": "Pu", "cycle": "W", "light": "mechanics given", "dark": "what counts as needed", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Build an overview of your literature using the provided template.", "subject": "Student", "verb": "Build", "group": "G3", "object": "literature overview", "instrument": "template", "criterion": "none", "level": "Ps", "cycle": "W", "light": "template fills the structuring", "dark": "none left", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [2, 3]}, {"name": "Make the outline of your report", "pattern": "blank", "purpose": "Externalize and test the report structure before writing it.", "setting": "pairs; A3 sheet and post-its", "anchor": "", "digest": "", "nodes": [{"sentence": "Place your central question in the middle of the sheet.", "subject": "Student", "verb": "Place", "group": "G3", "object": "central question", "instrument": "procedure script", "criterion": "position specified", "level": "Ps", "cycle": "W", "light": "fully scripted", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Write each idea, theory, or finding on a separate post-it.", "subject": "Student", "verb": "Write", "group": "G6", "object": "ideas, findings", "instrument": "procedure script", "criterion": "one item per note", "level": "Ps", "cycle": "W", "light": "procedure and source given", "dark": "marginal", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Group related post-its into subgroups.", "subject": "Student", "verb": "Group", "group": "G5", "object": "the post-its", "instrument": "none", "criterion": "relatedness", "level": "Cr", "cycle": "W", "light": "none", "dark": "what belongs together", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Label each subgroup.", "subject": "Student", "verb": "Label", "group": "G3", "object": "subgroups", "instrument": "none", "criterion": "fitting label", "level": "Cr", "cycle": "W", "light": "none", "dark": "the abstraction per label", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Arrange the information within each subgroup from general to specific.", "subject": "Student", "verb": "Arrange", "group": "G3", "object": "subgroup contents", "instrument": "none", "criterion": "hierarchy rule", "level": "Pu", "cycle": "W", "light": "rule given", "dark": "what counts as general", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Connect related ideas across subgroups by drawing lines.", "subject": "Student", "verb": "Connect", "group": "G3", "object": "ideas across subgroups", "instrument": "none", "criterion": "relatedness", "level": "Cr", "cycle": "W", "light": "none", "dark": "the relational structure", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Evaluate each other outlines.", "subject": "Student", "verb": "Evaluate", "group": "G8", "object": "peer outlines", "instrument": "criteria / rubric", "criterion": "none", "level": "FB", "cycle": "F", "light": "criteria given", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Peer", "direction": "both"}}], "goals": [5]}, {"name": "Scrutinize your selected sources", "pattern": "blank", "purpose": "Decide which sources can carry the report and why.", "setting": "solo, preparation", "anchor": "", "digest": "", "nodes": [{"sentence": "Assess whether each source evidence supports its conclusion.", "subject": "Student", "verb": "Assess", "group": "G4", "object": "evidence-conclusion link", "instrument": "criteria / rubric", "criterion": "none", "level": "Pu", "cycle": "W", "light": "aspects listed", "dark": "the verdict", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Judge each source relevance for answering your central question.", "subject": "Student", "verb": "Judge", "group": "G4", "object": "each source", "instrument": "criteria / rubric", "criterion": "own question", "level": "Pu", "cycle": "W", "light": "heuristic given", "dark": "the relevance judgement", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [3, 4]}, {"name": "Write the draft structure", "pattern": "blank", "purpose": "Close the preparatory phase with a reviewable plan of the whole report.", "setting": "solo; template on Canvas", "anchor": "", "digest": "", "nodes": [{"sentence": "Decide the conclusion you are working towards.", "subject": "Student", "verb": "Decide", "group": "G5", "object": "provisional conclusion", "instrument": "none", "criterion": "must follow from arguments", "level": "Cr", "cycle": "W", "light": "none", "dark": "the answer direction", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Set out the reasoning that links your findings to that conclusion.", "subject": "Student", "verb": "Set out", "group": "G6", "object": "line of reasoning", "instrument": "procedure script", "criterion": "logical, nuanced", "level": "Cr", "cycle": "W", "light": "argument form scaffolded", "dark": "the argument content", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Draft the structure of your report using the provided template.", "subject": "Student", "verb": "Draft", "group": "G6", "object": "draft structure", "instrument": "template", "criterion": "Annex VI components", "level": "Cr", "cycle": "W", "light": "template fixes form", "dark": "content placement and why", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [5]}]}, {"n": "4", "meeting": false, "timeplace": "trainer feedback on draft structures due Mon week 5, 12:00, Canvas", "goals": "6, 10", "tasks": [{"name": "Process trainer feedback on the draft structure", "pattern": "blank", "purpose": "Convert the trainer review into a corrected plan before writing begins.", "setting": "solo", "anchor": "", "digest": "", "nodes": [{"sentence": "Receive the trainer written feedback on your draft structure.", "subject": "Student", "verb": "Receive", "group": "G8", "object": "own draft structure", "instrument": "criteria / rubric", "criterion": "none", "level": "FB", "cycle": "F", "light": "criteria-based review", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Tutor", "direction": "receive"}}, {"sentence": "Study the feedback received.", "subject": "Student", "verb": "Study", "group": "G8", "object": "the feedback", "instrument": "none", "criterion": "none", "level": "FB", "cycle": "F", "light": "", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Tutor", "direction": "receive"}}, {"sentence": "Revise your draft structure using the feedback.", "subject": "Student", "verb": "Revise", "group": "G7", "object": "draft structure", "instrument": "none", "criterion": "none", "level": "Cr", "cycle": "W", "light": "feedback illuminates", "dark": "the reworking", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [5, 9]}]}, {"n": "5", "meeting": true, "timeplace": "Meeting 4 Wednesday, PBL rooms, 2h", "goals": "6, 7, 8, 9, 10", "tasks": [{"name": "Learn the assessment criteria (calibration session)", "pattern": "blank", "purpose": "Internalize the rubric by assessing a real sample report and comparing readings.", "setting": "groups of 3; sample report", "anchor": "", "digest": "", "nodes": [{"sentence": "Assess the calibration report using the rubric.", "subject": "Student", "verb": "Assess", "group": "G8", "object": "sample report", "instrument": "criteria / rubric", "criterion": "none", "level": "FB", "cycle": "F", "light": "rubric structures it", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Peer", "direction": "give"}}, {"sentence": "Derive the shared interpretation of the criteria from the guided discussion.", "subject": "Student", "verb": "Derive", "group": "G4", "object": "criteria interpretation", "instrument": "criteria / rubric", "criterion": "none", "level": "Pu", "cycle": "F", "light": "reference exists in advance", "dark": "own reading before convergence", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [8]}, {"name": "The introduction", "pattern": "loopback", "purpose": "Produce the report introduction and improve it through one peer loop.", "setting": "solo writing; feedback in groups of 3", "anchor": "", "digest": "", "nodes": [{"sentence": "Write the introduction of your report.", "subject": "Student", "verb": "Write", "group": "G6", "object": "the introduction", "instrument": "criteria / rubric", "criterion": "broad to specific, relevance, roadmap", "level": "Cr", "cycle": "W", "light": "form and function specified", "dark": "content and funnel", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Prepare a list of points to discuss in the feedback session.", "subject": "Student", "verb": "Prepare", "group": "G6", "object": "discussion points", "instrument": "none", "criterion": "focus on introduction", "level": "Pu", "cycle": "W", "light": "none", "dark": "locating own uncertainty", "flags": {"meta": false, "opt": false, "rec": "selfloc", "actor": "", "direction": ""}}, {"sentence": "Read the instructions for the feedback sessions.", "subject": "Student", "verb": "Read", "group": "G0", "object": "Annex IX", "instrument": "source text", "criterion": "none", "level": "K", "cycle": "W", "light": "content pre-given", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Give feedback on your peers introductions.", "subject": "Student", "verb": "Give", "group": "G8", "object": "peer introductions", "instrument": "procedure script", "criterion": "specific, criteria-linked", "level": "FB", "cycle": "F", "light": "script and guidelines", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Peer", "direction": "give"}}, {"sentence": "Receive feedback on your introduction.", "subject": "Student", "verb": "Receive", "group": "G8", "object": "own introduction", "instrument": "procedure script", "criterion": "none", "level": "FB", "cycle": "F", "light": "", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Peer", "direction": "receive"}}, {"sentence": "Revise your introduction using the feedback.", "subject": "Student", "verb": "Revise", "group": "G7", "object": "the introduction", "instrument": "none", "criterion": "author may ignore", "level": "Cr", "cycle": "W", "light": "feedback illuminates", "dark": "the reworking", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [5, 7, 8, 9]}]}, {"n": "6", "meeting": true, "timeplace": "introduction partial product Tue 23:59 Canvas; Meeting 5 Wed, PBL rooms, 2h", "goals": "5, 6, 7, 8, 9, 10", "tasks": [{"name": "The main body", "pattern": "loopback", "purpose": "Produce the report core argument and improve it through one peer loop.", "setting": "solo writing; feedback groups of 3; open trainer consultation", "anchor": "", "digest": "", "nodes": [{"sentence": "Write the main body of your report.", "subject": "Student", "verb": "Write", "group": "G6", "object": "the main body", "instrument": "criteria / rubric", "criterion": "integrate sources, coherent, relevant only, titled sections", "level": "Cr", "cycle": "W", "light": "rich form criteria", "dark": "the integration and argument", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Apply the APA referencing guidelines in your text.", "subject": "Student", "verb": "Apply", "group": "G2", "object": "APA guidelines", "instrument": "procedure script", "criterion": "to the letter", "level": "Ps", "cycle": "W", "light": "rules fully given", "dark": "none", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Prepare a list of points to discuss in the feedback session.", "subject": "Student", "verb": "Prepare", "group": "G6", "object": "discussion points", "instrument": "none", "criterion": "none", "level": "Pu", "cycle": "W", "light": "none", "dark": "locating own uncertainty", "flags": {"meta": false, "opt": false, "rec": "selfloc", "actor": "", "direction": ""}}, {"sentence": "Give feedback on your peers main bodies.", "subject": "Student", "verb": "Give", "group": "G8", "object": "peer main bodies", "instrument": "procedure script", "criterion": "rubric-linked", "level": "FB", "cycle": "F", "light": "", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Peer", "direction": "give"}}, {"sentence": "Receive feedback on your main body.", "subject": "Student", "verb": "Receive", "group": "G8", "object": "own main body", "instrument": "procedure script", "criterion": "none", "level": "FB", "cycle": "F", "light": "", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Peer", "direction": "receive"}}, {"sentence": "Ask the trainer your individual questions about your report.", "subject": "Student", "verb": "Ask", "group": "G8", "object": "own report issues", "instrument": "none", "criterion": "none", "level": "FB", "cycle": "F", "light": "slot reserved", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Tutor", "direction": "receive"}}, {"sentence": "Revise your main body using the feedback.", "subject": "Student", "verb": "Revise", "group": "G7", "object": "the main body", "instrument": "none", "criterion": "none", "level": "Cr", "cycle": "W", "light": "feedback illuminates", "dark": "the reworking", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [4, 6, 7, 8, 9]}]}, {"n": "7", "meeting": true, "timeplace": "main body partial product Tue 23:59 Canvas; Meeting 6 Wed, PBL rooms, 2h", "goals": "5, 6, 8, 9, 10", "tasks": [{"name": "The discussion and the abstract", "pattern": "loopback", "purpose": "Close the report argument and compress it, with one rubric-based peer loop on the whole.", "setting": "solo writing; rubric pre-assessment; feedback groups of 3", "anchor": "", "digest": "", "nodes": [{"sentence": "Write the discussion of your report.", "subject": "Student", "verb": "Write", "group": "G6", "object": "the discussion", "instrument": "criteria / rubric", "criterion": "answer, critical discussion, wider context", "level": "Cr", "cycle": "W", "light": "function specified", "dark": "conclusion and critique", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Write the abstract of your report.", "subject": "Student", "verb": "Write", "group": "G6", "object": "the abstract", "instrument": "criteria / rubric", "criterion": "max 250 words, elements listed", "level": "Cr", "cycle": "W", "light": "element checklist", "dark": "compression judgement", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Prepare a list of points to discuss in the feedback session.", "subject": "Student", "verb": "Prepare", "group": "G6", "object": "discussion points", "instrument": "none", "criterion": "none", "level": "Pu", "cycle": "W", "light": "none", "dark": "locating own uncertainty", "flags": {"meta": false, "opt": false, "rec": "selfloc", "actor": "", "direction": ""}}, {"sentence": "Assess your peers reports using the rubric.", "subject": "Student", "verb": "Assess", "group": "G8", "object": "peer reports", "instrument": "criteria / rubric", "criterion": "prior to session", "level": "FB", "cycle": "F", "light": "rubric structures it", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Peer", "direction": "give"}}, {"sentence": "Give feedback on the discussion, abstract, and overall coherence.", "subject": "Student", "verb": "Give", "group": "G8", "object": "peer reports", "instrument": "procedure script", "criterion": "rubric-linked", "level": "FB", "cycle": "F", "light": "", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Peer", "direction": "give"}}, {"sentence": "Receive feedback on your report.", "subject": "Student", "verb": "Receive", "group": "G8", "object": "own report", "instrument": "procedure script", "criterion": "none", "level": "FB", "cycle": "F", "light": "", "dark": "", "flags": {"meta": false, "opt": false, "rec": "", "actor": "Peer", "direction": "receive"}}], "goals": [5, 7, 8, 9]}]}, {"n": "8", "meeting": false, "timeplace": "upload final version Wednesday 23:59 Canvas", "goals": "1, 10", "tasks": [{"name": "Final revision", "pattern": "blank", "purpose": "Own the last pass: decide what to take, rework the whole, verify submission readiness.", "setting": "solo", "anchor": "", "digest": "", "nodes": [{"sentence": "Decide which feedback to incorporate.", "subject": "Student", "verb": "Decide", "group": "G5", "object": "received feedback", "instrument": "none", "criterion": "author purpose governs", "level": "Cr", "cycle": "W", "light": "none", "dark": "ownership of the agenda", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Revise the full report for structure, coherence, and style.", "subject": "Student", "verb": "Revise", "group": "G7", "object": "the full report", "instrument": "procedure script", "criterion": "none", "level": "Cr", "cycle": "W", "light": "attention points listed", "dark": "the reworking", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}, {"sentence": "Ensure your report meets the minimum requirements.", "subject": "Student", "verb": "Ensure", "group": "G2", "object": "the report", "instrument": "criteria / rubric", "criterion": "all components, acceptable language", "level": "Pu", "cycle": "W", "light": "checklist given", "dark": "honest self-application", "flags": {"meta": false, "opt": false, "rec": "", "actor": "", "direction": ""}}], "goals": [0, 9]}]}]};
+
+/* ================= state ================= */
+let S=null,VIEW={mode:'overview',wi:0,ti:0,ni:0,step:0};
+const KEY='aiwise_course_profile_v2';
+function blank(){return {course:{name:'',code:'',goals:[''],objectPool:[],critPool:[]},weeks:[]};}
+function load(){try{const r=localStorage.getItem(KEY);S=r?JSON.parse(r):JSON.parse(JSON.stringify(WSI_SEED));}catch(e){S=JSON.parse(JSON.stringify(WSI_SEED));}
+ if(!S.weeks)S.weeks=[];if(!S.course.objectPool)S.course.objectPool=[];if(!S.course.critPool)S.course.critPool=[];}
+let sT=null;
+function save(){clearTimeout(sT);document.getElementById('savedTag').textContent='saving';sT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));document.getElementById('savedTag').textContent='saved';}catch(e){document.getElementById('savedTag').textContent='save failed';}},250);}
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function trunc(s,n){s=(s==null?'':String(s));return s.length>n?s.slice(0,n)+'…':s;}
+function taskGoals(t){return Array.isArray(t.goals)?t.goals:[];}
+function goalsWithText(){return S.course.goals.map((g,i)=>({g:g,i:i})).filter(x=>x.g&&x.g.trim());}
+function taskLabel(wi,ti){let n=0;for(let i=0;i<wi;i++)n+=S.weeks[i].tasks.length;return 'T'+(n+ti+1);}
+function nodeLabel(wi,ti,ni){return taskLabel(wi,ti)+'.'+(ni+1);}
+function objectOpts(){return [...new Set(OBJECT_SEED.concat(S.course.objectPool))].map(v=>({v:v,t:v}));}
+function critOpts(){return [...new Set(CRITERION_SEED.concat(S.course.critPool))].map(v=>({v:v,t:v}));}
+function accrue(p,v){const seed=(p==='objectPool')?OBJECT_SEED:CRITERION_SEED;if(v&&!S.course[p].includes(v)&&!seed.includes(v))S.course[p].push(v);}
+function newTask(pat){return {name:'',pattern:pat||'',goals:[],nodes:[]};}
+function emptyNode(){return {sentence:'',subject:'Student',verb:'',group:'',object:'',instrument:'none',criterion:'',level:'',cycle:'W',light:'',dark:'',flags:{meta:false,opt:false,rec:'',actor:'',direction:''}};}
+function nodeFromProto(p){const n=emptyNode();['verb','group','instrument','level','cycle'].forEach(k=>{if(p[k]!==undefined)n[k]=p[k];});if(p.flags)Object.assign(n.flags,p.flags);n.sentence=autoSentence(n);return n;}
+function autoSentence(n){if(!n.verb)return '';let s=n.verb;if(n.object)s+=' '+n.object;if(n.criterion&&n.criterion!=='none')s+=' ('+n.criterion+')';return s.charAt(0).toUpperCase()+s.slice(1)+'.';}
+function nodeDone(n){return !!(n.group&&n.verb&&n.level);}
+function go(mode,wi,ti,ni){VIEW={mode:mode,wi:wi!==undefined?wi:VIEW.wi,ti:ti!==undefined?ti:VIEW.ti,ni:ni!==undefined?ni:VIEW.ni,step:0};window.scrollTo(0,0);render();const sh=document.getElementById('shell');sh.classList.remove('vin');void sh.offsetWidth;sh.classList.add('vin');}
+
+/* ================= render root ================= */
+function render(){
+  const sh=document.getElementById('shell');sh.innerHTML='';
+  if(VIEW.mode==='overview')renderOverview(sh);
+  else if(VIEW.mode==='week')renderWeek(sh);
+  else renderBuilder(sh);
+  let nodes=0,tasks=0,un=0;
+  S.weeks.forEach(w=>{tasks+=w.tasks.length;w.tasks.forEach(t=>{nodes+=t.nodes.length;t.nodes.forEach(n=>{if(!nodeDone(n))un++;});});});
+  document.getElementById('sN').textContent=nodes;document.getElementById('sT').textContent=tasks;
+  document.getElementById('sW').textContent=S.weeks.length;document.getElementById('sU').textContent=un;
+}
+
+/* ================= overview ================= */
+function renderOverview(sh){
+  if(localStorage.getItem('aiwise_intro_hidden')!=='1'){
+    const i=document.createElement('section');i.className='intro';
+    i.innerHTML='<button class="ix" id="ix">Hide guide</button><h1>Course Profiler</h1>'
+      +'<p class="lead">A course is broken into small <b>nodes</b>, one action each. For every node you record what kind of thinking it asks of the student, and how much the course hands over versus what it leaves them to work out. That map shows where AI can help safely and where it must not.</p>'
+      +'<div class="isteps">'
+      +'<div class="istep"><span class="n">1</span><div><b>Set up the course</b><span>Name it and say how feedback works, in the panel below.</span></div></div>'
+      +'<div class="istep"><span class="n">2</span><div><b>Open a week</b><span>Each week card shows what is in it and how far along it is.</span></div></div>'
+      +'<div class="istep"><span class="n">3</span><div><b>Build the nodes</b><span>A guided builder asks one question at a time and writes the sentence as you answer.</span></div></div>'
+      +'<div class="istep"><span class="n">4</span><div><b>Export</b><span>JSON to reuse, Markdown to read. Buttons are top right.</span></div></div>'
+      +'</div><p class="inote">Pre-filled with <b>Academic Writing Skills I</b> so you can see a finished profile. Press <b>New</b> up top to start your own.</p>';
+    sh.appendChild(i);
+    i.querySelector('#ix').addEventListener('click',()=>{localStorage.setItem('aiwise_intro_hidden','1');render();});
+  }
+  // course panel
+  const p=document.createElement('section');p.className='panel';
+  p.innerHTML='<div class="ph"><span class="eyebrow">the course</span><h2>'+esc(S.course.name||'Untitled course')+'</h2><span class="car">&#9662;</span></div><div class="pb"><div class="grid2" id="cg"></div></div>';
+  sh.appendChild(p);
+  p.querySelector('.ph').addEventListener('click',()=>p.classList.toggle('col'));
+  const cg=p.querySelector('#cg');
+  cg.appendChild(txtF('Course name','the full course title','name','e.g. Academic Writing Skills I'));
+  cg.appendChild(txtF('Code / period','course code and when it runs','code','e.g. BSc Psychology Y1, period 1.4'));
+  // goals
+  const gf=document.createElement('div');gf.className='f full';
+  gf.innerHTML='<label>Learning goals <span class="hint">what students should be able to do by the end. Copy them from the course guide.</span></label><div class="goals" id="gl"></div><button class="addln" id="ag">+ add goal</button>';
+  cg.appendChild(gf);
+  const gl=gf.querySelector('#gl');
+  S.course.goals.forEach((g,i)=>{
+    const r=document.createElement('div');r.className='gr';
+    r.innerHTML='<span class="gn">'+(i+1)+'</span><input type="text" value="'+esc(g)+'" placeholder="stated learning goal"><button class="rm">&times;</button>';
+    r.querySelector('input').addEventListener('input',e=>{S.course.goals[i]=e.target.value;save();});
+    r.querySelector('.rm').addEventListener('click',()=>{S.course.goals.splice(i,1);if(!S.course.goals.length)S.course.goals.push('');render();save();});
+    gl.appendChild(r);
+  });
+  gf.querySelector('#ag').addEventListener('click',()=>{S.course.goals.push('');render();save();});
+
+  // weeks
+  const hd=document.createElement('h2');hd.style.cssText='margin:26px 0 12px;font-size:18px';hd.textContent='Weeks';sh.appendChild(hd);
+  const linked=new Set();
+  S.weeks.forEach(w=>w.tasks.forEach(t=>taskGoals(t).forEach(i=>linked.add(i))));
+  const unlinked=goalsWithText().filter(x=>!linked.has(x.i));
+  if(unlinked.length){
+    const cv=document.createElement('div');cv.className='gcov';
+    cv.textContent='Not yet linked to any task: '+unlinked.map(x=>'goal '+(x.i+1)).join(', ');
+    sh.appendChild(cv);
+  }
+  const g=document.createElement('div');g.className='wkgrid';sh.appendChild(g);
+  if(!S.weeks.length)g.innerHTML='<div class="empty">No weeks yet. Add the first week to begin.</div>';
+  S.weeks.forEach((w,wi)=>{
+    let nodes=0,done=0;w.tasks.forEach(t=>{nodes+=t.nodes.length;t.nodes.forEach(n=>{if(nodeDone(n))done++;});});
+    const pct=nodes?Math.round(done/nodes*100):0;
+    const c=document.createElement('div');c.className='wkcard';
+    c.innerHTML='<div class="wh"><span class="wn">Week '+esc(w.n||(wi+1))+'</span><span class="wm'+(w.meeting?' meet':'')+'">'+(w.meeting?'meeting':'no meeting')+'</span></div>'
+      +'<div class="wtp">'+esc(w.timeplace||'')+'</div>'
+      +'<div class="tl">'+(w.tasks.length?w.tasks.map((t,ti)=>'<div><span class="ti">'+taskLabel(wi,ti)+'</span>'+esc(t.name||'untitled task')+'</div>').join(''):'<div style="color:#B6AF9F">no tasks yet</div>')+'</div>'
+      +'<div class="wkstat"><span>'+w.tasks.length+' tasks</span><span>'+nodes+' nodes</span><div class="bar"><i style="width:'+pct+'%"></i></div><span>'+pct+'%</span></div>';
+    c.addEventListener('click',()=>go('week',wi));
+    g.appendChild(c);
+  });
+  const a=document.createElement('div');a.className='wkadd';a.textContent='+ add week';
+  a.addEventListener('click',()=>{S.weeks.push({n:S.weeks.length+1,meeting:false,timeplace:'',goals:'',tasks:[]});save();go('week',S.weeks.length-1);});
+  g.appendChild(a);
+}
+function txtF(lab,hint,key,ph){
+  const f=document.createElement('div');f.className='f';
+  f.innerHTML='<label>'+esc(lab)+' <span class="hint">'+esc(hint)+'</span></label><input type="text" value="'+esc(S.course[key]||'')+'" placeholder="'+esc(ph)+'">';
+  f.querySelector('input').addEventListener('input',e=>{S.course[key]=e.target.value;save();});
+  return f;
+}
+
+/* ================= week view ================= */
+function renderWeek(sh){
+  const w=S.weeks[VIEW.wi];if(!w){go('overview');return;}
+  sh.appendChild(crumb([['All weeks',()=>go('overview')]],'Week '+(w.n||(VIEW.wi+1))));
+  const hd=document.createElement('div');hd.className='wkhead';
+  hd.innerHTML='<div class="r1"><h2>Week <input type="text" value="'+esc(w.n||(VIEW.wi+1))+'" id="wn"></h2>'
+    +'<label class="tg"><input type="checkbox" id="wm" '+(w.meeting?'checked':'')+'> has a meeting</label>'
+    +'<span style="flex:1"></span><button class="ib" id="wdel" title="delete week">&#128465;</button></div>'
+    +'<div class="meta"><div></div>'
+    +'<div class="f"><label>Time and place <span class="hint">deadlines, room, platform</span></label><input type="text" id="wtp" value="'+esc(w.timeplace)+'" placeholder="e.g. Meeting 2 Wednesday, PBL rooms, 2h"></div></div>';
+  sh.appendChild(hd);
+  hd.querySelector('#wn').addEventListener('input',e=>{w.n=e.target.value;save();});
+  hd.querySelector('#wm').addEventListener('change',e=>{w.meeting=e.target.checked;save();});
+  hd.querySelector('#wtp').addEventListener('input',e=>{w.timeplace=e.target.value;save();});
+  hd.querySelector('#wdel').addEventListener('click',()=>{if(confirm('Delete this week and its tasks?')){S.weeks.splice(VIEW.wi,1);save();go('overview');}});
+
+  w.tasks.forEach((t,ti)=>{
+    const el=document.createElement('div');el.className='task';
+    const pn=(PATTERNS.find(p=>p.id===t.pattern)||{}).name||'';
+    el.innerHTML='<div class="th"><span class="tid">'+taskLabel(VIEW.wi,ti)+'</span><input class="tnm" value="'+esc(t.name)+'" placeholder="task name"><span class="tpat">'+esc(pn)+'</span><button class="ib">&#128465;</button></div>'
+      +'<div class="tgoals"><label>serves goals <span class="hint">which learning goals this task works towards</span></label><div class="gchips"></div></div>'
+      +'<div class="nodes"></div>';
+    el.querySelector('.tnm').addEventListener('input',e=>{t.name=e.target.value;save();});
+    el.querySelector('.th .ib').addEventListener('click',()=>{if(confirm('Delete this task?')){w.tasks.splice(ti,1);save();render();}});
+    const cw=el.querySelector('.gchips'),gl=goalsWithText();
+    if(!gl.length)cw.innerHTML='<span class="gnone">Add learning goals in the course panel first.</span>';
+    else gl.forEach(x=>{
+      const b=document.createElement('button');
+      b.className='gchip'+(taskGoals(t).includes(x.i)?' on':'');
+      b.title=x.g;
+      b.innerHTML='<span class="gnum">'+(x.i+1)+'</span>'+esc(trunc(x.g,34));
+      b.addEventListener('click',()=>{
+        if(!Array.isArray(t.goals))t.goals=[];
+        const p=t.goals.indexOf(x.i);
+        if(p>=0)t.goals.splice(p,1);else t.goals.push(x.i);
+        t.goals.sort((a,c)=>a-c);save();b.classList.toggle('on');
+      });
+      cw.appendChild(b);
+    });
+    const nb=el.querySelector('.nodes');
+    t.nodes.forEach((n,ni)=>nb.appendChild(nodeRow(VIEW.wi,ti,n,ni,t)));
+    const an=document.createElement('button');an.className='addn';an.textContent='+ add node';
+    an.addEventListener('click',()=>{t.nodes.push(emptyNode());save();go('node',VIEW.wi,ti,t.nodes.length-1);});
+    nb.appendChild(an);
+    sh.appendChild(el);
+  });
+  const at=document.createElement('button');at.className='addt';at.textContent='+ add task';
+  at.addEventListener('click',()=>openPat(w));
+  sh.appendChild(at);
+}
+function crumb(links,cur){
+  const c=document.createElement('div');c.className='crumb';
+  links.forEach(l=>{const b=document.createElement('button');b.textContent=l[0];b.addEventListener('click',l[1]);c.appendChild(b);const s=document.createElement('span');s.className='sep';s.textContent='/';c.appendChild(s);});
+  const t=document.createElement('span');t.textContent=cur;c.appendChild(t);
+  return c;
+}
+function nodeRow(wi,ti,n,ni,t){
+  const el=document.createElement('div');el.className='node';
+  const grp=GROUPS.find(x=>x.g===n.group);const tags=[];
+  if(grp)tags.push('<span class="ntag">'+esc(grp.g)+'</span>');
+  if(n.level)tags.push('<span class="ntag lv" style="background:'+(BAND[LV_BAND[n.level]]||'var(--mut)')+'">'+esc(n.level)+'</span>');
+  if(n.cycle)tags.push('<span class="ntag">'+esc(n.cycle)+'</span>');
+  if(n.flags.meta)tags.push('<span class="ntag">meta</span>');
+  if(n.flags.opt)tags.push('<span class="ntag">opt</span>');
+  if(!nodeDone(n))tags.push('<span class="ntag miss">unfinished</span>');
+  const s=n.sentence||autoSentence(n);
+  el.innerHTML='<div class="sp"></div><div class="nid">'+nodeLabel(wi,ti,ni)+'</div><div class="nrow"><span class="ns'+(s?'':' emp')+'">'+esc(s||'empty node, click to build it')+'</span><span class="ntags">'+tags.join('')+'</span><span class="ned">edit</span><button class="ib nd">&#128465;</button></div>';
+  el.addEventListener('click',e=>{if(e.target.closest('.nd'))return;go('node',wi,ti,ni);});
+  el.querySelector('.nd').addEventListener('click',e=>{e.stopPropagation();t.nodes.splice(ni,1);save();render();});
+  let b;if(n.group==='G3')b='dial';else if(n.level)b=LV_BAND[n.level];
+  el.querySelector('.sp').style.background=b?BAND[b]:'var(--line-2)';
+  return el;
+}
+
+/* ================= pattern modal ================= */
+let patW=null;
+function closePat(){const m=document.getElementById('patMod');if(!m.classList.contains('show'))return;m.classList.remove('show');m.classList.add('hide');setTimeout(()=>m.classList.remove('hide'),620);}
+function openPat(w){patW=w;const l=document.getElementById('patList');l.innerHTML='';
+  PATTERNS.forEach(p=>{const d=document.createElement('div');d.className='pat';
+    d.innerHTML='<div class="pt">'+esc(p.name)+(p.tag?'<span class="tg2">'+esc(p.tag)+'</span>':'')+'</div><div class="pd">'+esc(p.desc)+'</div><div class="pc">'+esc(p.chain)+'</div>';
+    d.addEventListener('click',()=>{const t=newTask(p.id);t.nodes=p.nodes.map(nodeFromProto);w.tasks.push(t);closePat();save();render();});
+    l.appendChild(d);});
+  const m=document.getElementById('patMod');m.classList.remove('hide');m.classList.add('show');}
+
+
+/* ================= builder ================= */
+const STAGES=['the action','the material','the reading','what is given'];
+function bSteps(n){
+  const L=[
+   {st:0,k:'subject',q:'Who does this?',sub:'Usually the student. Pick someone else only if the course or the trainer does it for them.',ex:'subject',
+    exp:['Who acts','Most nodes are things the student does, so Student is the default. Change it when the work is done for them: the trainer demonstrating, a peer, or the course handing over a finished answer.','A non-student here is a signal. If the course does something the student could have done, that is a spot worth a second look.'],
+    opts:()=>SUBJECTS.map(x=>({v:x.v,t:x.v==='Student'?'Student (default)':x.t}))},
+   {st:0,k:'group',q:'What kind of action is it?',sub:'This is the big one. It decides how much thinking the student actually does.',ex:'group',
+    exp:['The kind of action','Some actions just move information around: reading, finding, following a rule. Others ask the student to judge, choose, or make something new. Pick the family this action belongs to.','Hover any option to see what it means and an example from a real course.'],
+    opts:()=>GROUPS.map(x=>({v:x.g,t:x.name,code:x.g,band:x.band}))},
+   {st:0,k:'verb',q:'Which verb exactly?',sub:'The word the course actually uses, from the family you just picked.',ex:'verb',
+    exp:['The exact verb','One node, one verb. If two verbs both fit, you probably have two nodes and should split them.','Use the wording from the course material where you can.'],
+    opts:()=>{const o=GROUPS.find(x=>x.g===bNode().group);return o?o.verbs.map(v=>({v:v[0],t:v[0],sub:v[1]})):[];}},
+   {st:1,k:'object',q:'What does the action work on?',sub:'The thing being read, written, judged, or chosen.',ex:'object',
+    exp:['The object','The same verb can be easy or hard depending on what it acts on. Writing a post-it note and writing an argument are both writing, but only one asks for real thinking.','Type your own if the list does not have it. It gets saved for reuse in this course.'],
+    opts:()=>objectOpts()},
+   {st:1,k:'instrument',q:'What does the course hand over to help?',sub:'A template, a rule, an example. Pick none if the student gets nothing.',ex:'instrument',
+    exp:['The tool','This is where help becomes visible. A template quietly does the arranging. A model answer means the answer already exists somewhere.','Nothing given, plus a rule that only limits the work, is the classic sign that the student is doing the real thinking here.'],
+    opts:()=>INSTRUMENTS.map(x=>({v:x.v,t:x.t}))},
+   {st:1,k:'criterion',q:'Any rule that limits the work?',sub:'Something that bounds it without doing it, like a word count or in your own words.',ex:'criterion',
+    exp:['The constraint','A criterion narrows the space without filling it. Max 250 words does not write the abstract for you.','A node can have strict rules and still ask for real thinking. Pick none if there is no rule.'],
+    opts:()=>critOpts()},
+   {st:2,k:'level',q:'How hard is the thinking?',sub:'Pre-set from the verb you picked. Change it if it feels wrong for this node.',ex:'level',
+    exp:['The level','Four steps: knowing, practising a skill, using it with judgement, and making something new. Feedback sits outside this scale.','The verb suggests the level, but the object and the tool can pull it up or down. Trust the node, not the verb.'],
+    opts:()=>LEVELS.map(x=>({v:x.v,t:x.t,code:x.v,band:x.band}))},
+   {st:2,k:'cycle',q:'Which part of the cycle is this?',sub:'Is the student making something, exchanging feedback, or looking back?',ex:'cycle',
+    exp:['The stage','Work is producing. Feedback is giving or getting comments. Reflection is looking back on how it went.','This is its own judgement. It does not follow from the level.'],
+    opts:()=>CYCLES.map(x=>({v:x.v,t:x.t,code:x.v}))},
+   {st:3,k:'light',q:'What is already given?',sub:'What the course hands over, so the student does not have to figure it out.',ex:'light',
+    exp:['Given by the course','Everything the student receives for free: the material, the steps, the standards, a ready-made structure.','Naming this makes the handover visible. The more that is given, the less is left to build.'],
+    opts:()=>[{v:'none',t:'none'},{v:'content pre-given',t:'content pre-given'},{v:'procedure fully given',t:'procedure fully given'},{v:'criteria given',t:'criteria given'},{v:'template fills the structure',t:'template fills structure'},{v:'model supplied',t:'model supplied'}]},
+   {st:3,k:'dark',q:'What is left to the student?',sub:'The part they have to work out on their own.',ex:'dark',
+    exp:['Left to the student','This is the point of the whole exercise. It is the thinking the course wants to happen.','Whatever you name here is what AI must never do for them. Protect it.'],
+    opts:()=>[{v:'none',t:'none'},{v:'the judgement',t:'the judgement'},{v:'the content',t:'the content'},{v:'the structure',t:'the structure'},{v:'the commitment',t:'the commitment'},{v:'the reworking',t:'the reworking'}]}
+  ];
+  if(n.group==='G8'){
+    L.push({st:3,k:'actor',q:'Who gives the feedback?',sub:'A peer, the trainer, or a model answer.',ex:'actor',flag:true,
+     exp:['The actor','Feedback nodes need to say who is doing the evaluating.','A model answer as the actor means the course is handing over the answer itself.'],
+     opts:()=>ACTORS.map(x=>({v:x.v,t:x.t}))});
+    L.push({st:3,k:'direction',q:'Giving or receiving?',sub:'Is the student commenting on others, or getting comments on their own work?',ex:'direction',flag:true,
+     exp:['The direction','Giving and receiving are different actions and often separate nodes.','If the material only mentions receiving, say so rather than inventing a giving node.'],
+     opts:()=>DIRECTIONS.map(x=>({v:x.v,t:x.t}))});
+  }
+  L.push({st:3,k:'_flags',q:'Any marks on this node?',sub:'Optional. Skip if none apply.',ex:'',flags:true,
+   exp:['Marks','meta means the node is about the student\'s own learning, not the subject. opt means the activity is optional.','Also name a repeating node type here if this same kind of node comes back in other weeks.'],
+   opts:()=>[]});
+  return L;
+}
+function bNode(){const t=S.weeks[VIEW.wi]&&S.weeks[VIEW.wi].tasks[VIEW.ti];return t?t.nodes[VIEW.ni]:null;}
+
+function renderBuilder(sh){
+  const n=bNode();if(!n){go('week');return;}
+  const w=S.weeks[VIEW.wi],t=w.tasks[VIEW.ti];
+  const steps=bSteps(n);if(VIEW.step>=steps.length)VIEW.step=steps.length-1;
+  const cur=steps[VIEW.step];
+  sh.appendChild(crumb([['All weeks',()=>go('overview')],['Week '+(w.n||(VIEW.wi+1)),()=>go('week',VIEW.wi)]],taskLabel(VIEW.wi,VIEW.ti)+' · node '+nodeLabel(VIEW.wi,VIEW.ti,VIEW.ni)));
+  // steps
+  const bs=document.createElement('div');bs.className='bsteps';
+  STAGES.forEach((s,i)=>{const d=document.createElement('div');d.className='bstep'+(i===cur.st?' on':(i<cur.st?' done':''));d.innerHTML='<span class="n">'+(i+1)+'</span>'+esc(s);bs.appendChild(d);});
+  sh.appendChild(bs);
+  // top
+  const top=document.createElement('div');top.className='btop';
+  top.innerHTML='<div class="bsent"><div class="lb">The node sentence</div><div class="sline" id="sline"></div>'
+    +'<div class="fin"><label>wording</label><input type="text" id="wording" value="'+esc(n.sentence||'')+'" placeholder="auto-written, edit if it reads awkwardly"></div></div>'
+    +'<div class="bexp"><div class="lb">Explanation</div><div class="et" id="et"></div><div class="eb" id="eb"></div><div class="ee" id="ee"></div></div>';
+  sh.appendChild(top);
+  top.querySelector('#wording').addEventListener('input',e=>{n.sentence=e.target.value;save();});
+  drawSent(null);
+  setExp(cur.exp[0],cur.exp[1],cur.exp[2]);
+  // question
+  const q=document.createElement('div');q.className='bq';
+  if(VIEW.anim){q.classList.add('anim');VIEW.anim=false;}
+  q.innerHTML='<div class="qt">'+esc(cur.q)+'</div><div class="qs">'+esc(cur.sub)+'</div><div class="qg" id="qg"></div>';
+  sh.appendChild(q);
+  const g=q.querySelector('#qg');
+  if(cur.flags){
+    ['meta','opt'].forEach(f=>{
+      const b=document.createElement('button');b.className='qo'+(n.flags[f]?' on':'');
+      b.innerHTML='<span class="qn">'+(f==='meta'?'meta · about their own learning':'opt · optional activity')+'</span>';
+      b.addEventListener('click',()=>{n.flags[f]=!n.flags[f];save();render();});
+      g.appendChild(b);
+    });
+    const r=document.createElement('div');r.className='qoth';
+    r.innerHTML='<label>repeating type</label><input type="text" value="'+esc(n.flags.rec||'')+'" placeholder="e.g. selfloc, if this node type comes back in other weeks">';
+    r.querySelector('input').addEventListener('input',e=>{n.flags.rec=e.target.value;save();});
+    g.appendChild(r);
+  } else {
+    const val=cur.flag?n.flags[cur.k]:n[cur.k];
+    const opts=cur.opts();
+    opts.forEach(o=>{
+      const bar=o.band?BAND[o.band]:'';
+      const b=document.createElement('button');b.className='qo'+(o.v===val?' on':'')+(bar?' hb':'');
+      b.innerHTML=(bar?'<span class="bb" style="background:'+bar+'"></span>':'')+(o.code?'<span class="qc">'+esc(o.code)+'</span>':'')+'<span class="qn">'+esc(o.t)+'</span>';
+      b.addEventListener('mouseenter',()=>{const e=(EX[cur.ex]||{})[o.v]||o.sub||cur.exp[1];setExp(o.t,e,'');});
+      b.addEventListener('mouseleave',()=>setExp(cur.exp[0],cur.exp[1],cur.exp[2]));
+      b.addEventListener('click',()=>pick(cur,o.v,b));
+      g.appendChild(b);
+    });
+    const isO=val&&!opts.some(o=>o.v===val)&&val!=='none';
+    const r=document.createElement('div');r.className='qoth';
+    r.innerHTML='<label>other</label><input type="text" value="'+esc(isO?val:'')+'" placeholder="type your own if none of these fit">';
+    const inp=r.querySelector('input');
+    const commit=()=>{const v=inp.value.trim();if(v&&v!==val)pick(cur,v);};
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();commit();}});
+    inp.addEventListener('blur',commit);
+    g.appendChild(r);
+  }
+  // nav
+  const nav=document.createElement('div');nav.className='bnav';
+  nav.innerHTML='<button class="nb" id="nBack">Back</button><span class="ct">'+(VIEW.step+1)+' of '+steps.length+'</span><span class="sp"></span>'
+    +'<button class="nb" id="nWeek">Save and close</button><button class="nb pri" id="nNext">'+(VIEW.step===steps.length-1?'Done':'Next')+'</button>';
+  sh.appendChild(nav);
+  const bk=nav.querySelector('#nBack');bk.disabled=VIEW.step===0;
+  bk.addEventListener('click',()=>{VIEW.step--;VIEW.anim=true;render();});
+  nav.querySelector('#nWeek').addEventListener('click',()=>go('week',VIEW.wi));
+  nav.querySelector('#nNext').addEventListener('click',()=>{if(VIEW.step<steps.length-1){VIEW.step++;VIEW.anim=true;render();}else go('week',VIEW.wi);});
+}
+function sentSlots(n){
+  return [
+   {k:'subject',txt:(n.subject&&n.subject!=='Student')?('['+n.subject+']'):'',bl:''},
+   {k:'verb',txt:n.verb||'',bl:'verb'},
+   {k:'object',txt:n.object||'',bl:'what'},
+   {k:'instrument',txt:(n.instrument&&n.instrument!=='none')?('using the '+n.instrument):'',bl:''},
+   {k:'criterion',txt:(n.criterion&&n.criterion!=='none')?('('+n.criterion+')'):'',bl:''}
+  ];
+}
+function drawSent(popKey){
+  const n=bNode(),host=document.getElementById('sline');if(!host||!n)return;
+  const steps=bSteps(n),cur=steps[VIEW.step];
+  host.innerHTML='';
+  sentSlots(n).forEach(s=>{
+    if(!s.txt&&!s.bl)return;
+    const sp=document.createElement('span');
+    const fi=!!s.txt;
+    sp.className='slot '+(fi?'fi':'bl')+((cur&&cur.k===s.k)?' cur':'')+(popKey===s.k?' pop':'');
+    sp.textContent=fi?s.txt:s.bl;
+    host.appendChild(sp);
+  });
+}
+function revealWords(el,text,start,step,prefixHTML){
+  el.innerHTML='';let i=0;
+  if(prefixHTML){const p=document.createElement('span');p.className='wd';p.innerHTML=prefixHTML;p.style.animationDelay=start+'ms';el.appendChild(p);el.appendChild(document.createTextNode(' '));i++;}
+  (text||'').split(/(\s+)/).forEach(w=>{
+    if(w==='')return;
+    if(/^\s+$/.test(w)){el.appendChild(document.createTextNode(w));return;}
+    const s=document.createElement('span');s.className='wd';s.textContent=w;s.style.animationDelay=(start+i*step)+'ms';el.appendChild(s);i++;
+  });
+  return i;
+}
+function setExp(t,b,e){
+  const et=document.getElementById('et'),eb=document.getElementById('eb'),ee=document.getElementById('ee');
+  if(!et)return;
+  if(et.dataset.t===(t||'')&&eb.dataset.b===(b||'')&&(ee.dataset.e||'')===(e||''))return;
+  et.dataset.t=t||'';eb.dataset.b=b||'';ee.dataset.e=e||'';
+  const wc=s=>((s||'').split(/\s+/).filter(Boolean).length);
+  const total=(wc(t)+wc(b)+(e?wc(e)+1:0))||1;
+  const step=Math.max(16,Math.min(46,Math.round(1200/total)));
+  let off=0;
+  off+=revealWords(et,t,off,step)*step+90;
+  off+=revealWords(eb,b,off,step)*step+90;
+  if(e){ee.style.display='';revealWords(ee,e,off,step,'<b>Tip.</b>');}
+  else{ee.style.display='none';ee.innerHTML='';}
+}
+function pick(cur,v,btn){
+  const n=bNode();
+  if(cur.flag)n.flags[cur.k]=v;
+  else{
+    n[cur.k]=v;
+    if(cur.k==='group'){const o=GROUPS.find(x=>x.g===v);if(o){n.level=o.lv;}n.verb='';}
+    if(cur.k==='object')accrue('objectPool',v);
+    if(cur.k==='criterion')accrue('critPool',v);
+  }
+  const auto=autoSentence(n);
+  if(!n.sentence||n.sentence===VIEW.lastAuto){n.sentence=auto;const wi=document.getElementById('wording');if(wi)wi.value=auto;}
+  VIEW.lastAuto=auto;
+  save();
+  const steps=bSteps(n);
+  const last=VIEW.step>=steps.length-1;
+  if(btn){
+    const g=btn.closest('.qg');
+    if(g)g.querySelectorAll('.qo').forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on');
+  }else{
+    render();
+  }
+  drawSent(cur.k);
+  if(!last){
+    const nx=document.getElementById('nNext');
+    if(nx){nx.classList.remove('nudge');void nx.offsetWidth;nx.classList.add('nudge');}
+  }
+}
+
+/* ================= export ================= */
+function md(s){return (s==null?'':String(s)).replace(/\|/g,'\\|').replace(/\n/g,' ');}
+function dl(b,n){const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),800);}
+function exportJSON(){dl(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),(S.course.name||'course').replace(/\s+/g,'_')+'_profile.json');}
+function exportMD(){
+  const c=S.course;let m='# Course Profile: '+(c.name||'Untitled')+'\n\n## Course-level\n- Name / code: '+(c.name||'')+' , '+(c.code||'')+'\n- Learning goals:\n';
+  c.goals.forEach((g,i)=>{if(g.trim())m+='  '+(i+1)+'. '+g+'\n';});
+  m+='\n';
+  S.weeks.forEach((w,wi)=>{
+    m+='## WEEK '+(w.n||(wi+1))+'  [meeting: '+(w.meeting?'yes':'no')+']\n- Time and place: '+(w.timeplace||'')+'\n- Active learning goals: '+(w.goals||'')+'\n\n';
+    w.tasks.forEach((t,ti)=>{
+      const pn=(PATTERNS.find(p=>p.id===t.pattern)||{}).name||'';
+      m+='### '+taskLabel(wi,ti)+'. '+(t.name||'')+(pn?'  ('+pn+')':'')+'\n\n';
+      const tg=taskGoals(t).slice().sort((a,b)=>a-b);
+      if(tg.length)m+='- Serves goals: '+tg.map(i=>i+1).join(', ')+'\n\n';
+      m+='| ID | Node sentence | S | V→G | O | I | C | Lv | Cyc | Light | Dark | Flags |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n';
+      t.nodes.forEach((n,ni)=>{
+        const f=[];if(n.flags.meta)f.push('[meta]');if(n.flags.opt)f.push('[opt]');
+        if(n.flags.rec)f.push('[rec:'+n.flags.rec+']');
+        if(n.group==='G8'){if(n.flags.actor)f.push('actor:'+n.flags.actor);if(n.flags.direction)f.push('dir:'+n.flags.direction);}
+        const vg=n.group?(n.verb?n.verb+'→'+n.group:n.group):'';
+        m+='| '+nodeLabel(wi,ti,ni)+' | '+md(n.sentence)+' | '+md(n.subject==='Student'?'':n.subject)+' | '+md(vg)+' | '+md(n.object)+' | '+md(n.instrument)+' | '+md(n.criterion)+' | '+md(n.level)+' | '+md(n.cycle)+' | '+md(n.light)+' | '+md(n.dark)+' | '+md(f.join('; '))+' |\n';
+      });
+      m+='\n';
+    });
+  });
+  dl(new Blob([m],{type:'text/markdown'}),(c.name||'course').replace(/\s+/g,'_')+'_profile.md');
+}
+function importJSON(file){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.course||!d.weeks)throw 0;S=d;if(!S.course.goals||!S.course.goals.length)S.course.goals=[''];if(!S.course.objectPool)S.course.objectPool=[];if(!S.course.critPool)S.course.critPool=[];save();go('overview');}catch(e){alert('Could not read that file. Expected a Course Profiler JSON export.');}};r.readAsText(file);}
+
+/* ================= wire ================= */
+document.getElementById('bNew').addEventListener('click',()=>{if(confirm('Start a blank profile? Export first if you want to keep this one.')){S=blank();save();go('overview');}});
+document.getElementById('bSample').addEventListener('click',()=>{if(confirm('Load the Academic Writing Skills I sample profile? It replaces what is on screen. Export first if you want to keep this one.')){S=JSON.parse(JSON.stringify(WSI_SEED));save();go('overview');}});
+document.getElementById('bJson').addEventListener('click',exportJSON);
+document.getElementById('bMd').addEventListener('click',exportMD);
+document.getElementById('bImp').addEventListener('click',()=>document.getElementById('fileIn').click());
+document.getElementById('fileIn').addEventListener('change',e=>{if(e.target.files[0])importJSON(e.target.files[0]);e.target.value='';});
+document.getElementById('patMod').addEventListener('click',e=>{if(e.target.id==='patMod')closePat();});
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('patMod').classList.contains('show')&&e.key==='Escape'){closePat();return;}
+  if(VIEW.mode!=='node'||e.target.tagName==='INPUT')return;
+  if(e.key==='Escape')go('week',VIEW.wi);
+  if(e.key==='ArrowRight'){const s=bSteps(bNode());if(VIEW.step<s.length-1){VIEW.step++;VIEW.anim=true;render();}}
+  if(e.key==='ArrowLeft'&&VIEW.step>0){VIEW.step--;VIEW.anim=true;render();}
+});
+load();render();
+
+</script>
+</body>
+</html>

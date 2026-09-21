@@ -50,6 +50,10 @@
     room.innerHTML = `<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#home">Workspace</a><span aria-hidden="true">/</span>${parent && title!==parent.name ? `<a href="#${area}">${parent.name}</a><span aria-hidden="true">/</span>` : ''}<span aria-current="page">${escape(title)}</span></nav><div class="room-heading"><div><p class="eyebrow">${parent ? parent.name : 'Workspace'}</p><h1 id="room-title" tabindex="-1">${escape(title)}</h1><p class="room-description">${escape(description)}</p></div>${records&&parent?button('Records Office','#records/'+area):''}</div>${body}`;
   }
   function renderProfiler(part) {
+    if (!part || part === 'profile') {
+      window.location.replace('course-profiler/');
+      return;
+    }
     if (part === 'prompts') {
       shell('profiler','AWS1 · Preset Prompts','Read the prompts currently used by the AWS1 Beta activities.',notice('This is a read-only view. Editing and package submission are not available in this prototype.')+'<div class="prompt-view"><label for="prompt-select">Choose a prompt</label><select id="prompt-select"></select><div class="toolbar"><button class="button" id="copy-prompt" type="button">Copy prompt</button><button class="button" id="download-prompt" type="button">Download prompt</button></div><p class="live-message" id="prompt-message" role="status"></p><pre id="prompt-text" tabindex="0" aria-label="Selected preset prompt"></pre></div>');
       setupPrompts(); return;
