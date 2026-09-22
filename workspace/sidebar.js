@@ -8,6 +8,7 @@
     ['home', 'Workspace', `${base}#home`, '▦'],
     ['profiler', 'Course Profiler', `${base}course-profiler/`, '◇'],
     ['studio', 'Content Studio', `${base}#studio`, '▤'],
+    ['common', 'Common Studio', `${base}#common`, '▥'],
     ['tower', 'Control Tower', `${base}#tower`, '⇄'],
     ['beta', 'Beta', `${base}#beta`, '▣'],
     ['published', 'Published ↗', 'https://aiwise-eur.github.io/AI-Wise/', '↗']

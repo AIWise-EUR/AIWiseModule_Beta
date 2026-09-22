@@ -4,6 +4,7 @@
   const areas = {
     profiler: {name: 'Course Profiler', icon: 'profiler-building', note: 'Design course profiles, preset prompts, and AI Activities.', action: 'Enter Course Profiler'},
     studio: {name: 'Content Studio', icon: 'studio-building', note: 'Shape the Course Specific content within AI Orientation.', action: 'Enter Content Studio'},
+    common: {name: 'Common Studio', icon: 'studio-building', note: 'Shape AI-Wise Common content shared across courses.', action: 'Enter Common Studio'},
     tower: {name: 'Control Tower', icon: 'tower-building', note: 'Review packages and record decisions between areas.', action: 'Open submissions'},
     beta: {name: 'AI-Wise Beta', icon: 'beta-screen', note: 'Explore Common and Course Specific working versions.', action: 'Enter Beta'},
     published: {name: 'AI-Wise Published', icon: 'published-product', note: 'Open the live AI-Wise module used by students.', action: 'Open student site'}
@@ -106,6 +107,13 @@
       target.innerHTML='<h2 class="section-label">C2 · Course examples</h2><div class="cards">'+(data.c2?.examples||[]).map((example,i)=>`<article class="card">${badge('Example '+(i+1))}<h3>${escape(example.title||'Course example')}</h3><p><strong>Student thinking</strong><br>${escape(example.thinking)}</p><p><strong>Student prompt</strong><br>${escape(example.typing)}</p><p><strong>Model processing</strong><br>${escape(example.processing)}</p></article>`).join('')+'</div>';
     } catch(error) { if(error.name!=='AbortError'){const target=document.getElementById('studio-examples');if(target)target.textContent='Course examples could not be loaded. You can open the Beta pages above.';} }
   }
+  function renderCommon() {
+    shell('common','Common Studio',areas.common.note,
+      '<p class="notice">This studio is for shared module content, structure, rules, and templates. Editing is not connected yet. You can inspect the current Common content in Beta below.</p>'+
+      '<h2 class="section-label">AI-Wise Common · Current Beta previews</h2><div class="cards">'+
+      ['c1','c2','c3'].map(id=>card(items[id].name,'Shared AI Orientation content.','#beta/'+id,'View in Beta')).join('')+
+      '</div><div class="toolbar">'+button('View Common Studio requests','#tower/common')+'</div>',false);
+  }
   function renderBeta(part) {
     const item=items[part];
     if(item) {
@@ -141,6 +149,7 @@
     else {
       if(area==='profiler')renderProfiler(part);
       else if(area==='studio')renderStudio(part);
+      else if(area==='common')renderCommon();
       else if(area==='beta')renderBeta(part);
       else if(area==='tower')renderTower(part);
       else if(area==='published')renderPublished();
