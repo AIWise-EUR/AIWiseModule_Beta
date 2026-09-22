@@ -2,11 +2,7 @@
 (() => {
   const profiler = document.body.classList.contains('profiler-page');
   const base = profiler ? '../' : '';
-  const media = matchMedia('(max-width: 1000px)');
-  const key = 'aiwise_sidebar_expanded_v1';
-  let desktopOpen = true;
-  try { desktopOpen = localStorage.getItem(key) !== 'false'; } catch {}
-  let open = !media.matches && desktopOpen;
+  let open = false;
   const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>';
   const areas = [
     ['home', 'Workspace', `${base}#home`, '▦'],
@@ -38,13 +34,12 @@
   function paint() {
     document.body.classList.add('has-sidebar');
     document.body.classList.toggle('sidebar-expanded', open);
-    document.body.classList.toggle('sidebar-modal', open && media.matches);
-    sidebar.hidden = !open;
-    rail.hidden = open;
-    backdrop.hidden = !(open && media.matches);
+    sidebar.inert = !open;
+    rail.inert = open;
+    backdrop.inert = !open;
     show.setAttribute('aria-expanded', String(open));
     hide.setAttribute('aria-expanded', String(open));
-    if (open && media.matches) {
+    if (open) {
       sidebar.setAttribute('role', 'dialog');
       sidebar.setAttribute('aria-modal', 'true');
       for (const el of document.body.children) {
@@ -61,10 +56,6 @@
   }
   function toggle(value, focus = true) {
     open = value;
-    if (!media.matches) {
-      desktopOpen = value;
-      try { localStorage.setItem(key, String(value)); } catch {}
-    }
     paint();
     if (focus) (open ? hide : show).focus({preventScroll: true});
   }
@@ -72,10 +63,13 @@
   hide.addEventListener('click', () => toggle(false));
   backdrop.addEventListener('click', () => toggle(false));
   sidebar.addEventListener('click', event => {
-    if (media.matches && event.target.closest('a')) toggle(false);
+    if (event.target.closest('a')) toggle(false);
   });
+  // Block background gestures without hiding the scrollbar or resizing the page.
+  backdrop.addEventListener('wheel', event => event.preventDefault(), {passive: false});
+  backdrop.addEventListener('touchmove', event => event.preventDefault(), {passive: false});
   document.addEventListener('keydown', event => {
-    if (!open || !media.matches) return;
+    if (!open) return;
     if (event.key === 'Escape') { event.preventDefault(); toggle(false); }
     if (event.key === 'Tab') {
       const links = [...sidebar.querySelectorAll('a, button')];
@@ -83,14 +77,6 @@
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     }
-  });
-  media.addEventListener('change', () => {
-    const focusedInside = sidebar.contains(document.activeElement);
-    const focusedToggle = document.activeElement === show;
-    open = !media.matches && desktopOpen;
-    paint();
-    if (focusedInside && !open) show.focus({preventScroll: true});
-    else if (focusedToggle && open) hide.focus({preventScroll: true});
   });
   function markCurrent() {
     const [area = 'home', part] = location.hash.slice(1).split('/');

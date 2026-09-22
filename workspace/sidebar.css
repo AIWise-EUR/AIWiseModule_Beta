@@ -1,8 +1,8 @@
-/* Shared collapsible navigation; the page continues to use normal window scrolling. */
+/* Overlay navigation: opening it never changes the page's available width. */
 .has-sidebar { --sidebar-width: 56px; padding-left: var(--sidebar-width); }
-.has-sidebar.sidebar-expanded { --sidebar-width: 248px; }
 .workspace-sidebar, .sidebar-rail, .sidebar-backdrop, .sidebar-toggle { box-sizing: border-box; }
-.workspace-sidebar { position: fixed; inset: 0 auto 0 0; width: 248px; z-index: 70; display: flex; flex-direction: column; padding: 18px 12px; background: var(--paper-2); border-right: 1px solid var(--line); overflow-y: auto; }
+.workspace-sidebar { position: fixed; inset: 0 auto 0 0; width: 248px; z-index: 72; display: flex; flex-direction: column; padding: 18px 12px; background: var(--paper-2); border-right: 1px solid var(--line); overflow-y: auto; overscroll-behavior: contain; box-shadow: var(--sh); transform: translateX(-100%); visibility: hidden; transition: transform .2s ease, visibility 0s linear .2s; }
+.sidebar-expanded .workspace-sidebar { transform: translateX(0); visibility: visible; transition-delay: 0s; }
 .sidebar-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 4px 26px 12px; }
 .workspace-sidebar .brand { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-decoration: none; }
 .workspace-sidebar .brand strong { color: var(--ink); font: 700 20px var(--font-heading); }
@@ -20,8 +20,8 @@
 .sidebar-module:hover { text-decoration: underline; }
 .sidebar-note { color: var(--ink-3); font: 10px var(--font-mono); }
 .sidebar-rail { position: fixed; inset: 0 auto 0 0; z-index: 70; width: 56px; padding: 18px 10px; background: var(--paper-2); border-right: 1px solid var(--line); }
-.sidebar-backdrop { position: fixed; inset: 0; z-index: 65; background: rgba(21,18,29,.3); border: 0; padding: 0; }
-.workspace-sidebar[hidden], .sidebar-rail[hidden], .sidebar-backdrop[hidden] { display: none !important; }
+.sidebar-backdrop { position: fixed; inset: 0; z-index: 71; background: rgba(21,18,29,.18); border: 0; padding: 0; opacity: 0; visibility: hidden; pointer-events: none; touch-action: none; transition: opacity .2s ease, visibility 0s linear .2s; }
+.sidebar-expanded .sidebar-backdrop { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
 .has-sidebar .skip { z-index: 90; }
 .has-sidebar main { min-height: calc(100vh - 42px); }
 .has-sidebar .ct-queue { scroll-margin-top: 20px; }
@@ -44,7 +44,9 @@
   .has-sidebar, .has-sidebar.sidebar-expanded { --sidebar-width: 0px; padding-left: 0; padding-top: 56px; }
   .sidebar-rail { inset: 8px auto auto 8px; padding: 2px; width: 40px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
   .workspace-sidebar { width: min(280px, calc(100vw - 48px)); box-shadow: var(--sh); }
-  .sidebar-modal { overflow: hidden; }
   .profiler-navigation { padding: 10px 16px; gap: 8px 16px; }
   .profiler-navigation .nav-note { flex-basis: 100%; margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-sidebar, .sidebar-backdrop { transition: none; }
 }
