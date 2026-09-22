@@ -4,7 +4,9 @@ The repository root opens this workspace. The existing Beta module remains avail
 
 ## Included
 
-The map and list views open Course Profiler, Content Studio, Control Tower, Beta, and Published. The Approval gate opens the Beta to Published submission route. Hash routes support browser back navigation and direct links.
+The map and list views open Course Profiler, Content Studio, Control Tower, and Beta. Published links open the live student site at `https://aiwise-eur.github.io/AI-Wise/` in the same tab. The legacy `#published` route redirects there too. This is a link to the existing student site, not a new Control Tower release or an approval record. The Approval gate opens the Beta to Published submission route. Hash routes support browser back navigation and direct links.
+
+Control Tower starts with a map and list toggle. Select Course Profiler → Beta, Content Studio → Beta, or Beta → Published to open that submission route. The tower itself opens all submissions; Published opens the student site. Small screens start in list view. The selected view is retained while navigating between the tower and its queues in the same page session.
 
 The map uses inline SVG building and product illustrations, following the approved 2D campus concept. Beta and Published sit on a horizontal release path within Product Review & Release. Small screens start with the list view; the full map remains available by horizontal scrolling.
 
@@ -16,7 +18,7 @@ Content Studio reads existing AWS1 C2 examples. Beta links to the working Common
 
 ## Not implemented
 
-Content Studio editing, package submission, approval actions, immutable version storage, release activation, restoration, and Records Office persistence are not implemented. Their entry screens state this explicitly. The Published screen does not claim that a student release is connected. No sample approvals, version histories, or live usage numbers are fabricated.
+Content Studio editing, package submission, approval actions, immutable version storage, release activation, restoration, and Records Office persistence are not implemented. Their entry screens state this explicitly. The live Published site is linked but is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
 
 This prototype has no authentication or access control. It should not be treated as a production administration console. No deployment configuration or Analytics collection is added.
 

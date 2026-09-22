@@ -1,11 +1,12 @@
 (() => {
   'use strict';
+  const publishedUrl = 'https://aiwise-eur.github.io/AI-Wise/';
   const areas = {
     profiler: {name: 'Course Profiler', icon: 'profiler-building', note: 'Design course profiles, preset prompts, and AI Activities.', action: 'Enter Course Profiler'},
     studio: {name: 'Content Studio', icon: 'studio-building', note: 'Shape the Course Specific content within AI Orientation.', action: 'Enter Content Studio'},
     tower: {name: 'Control Tower', icon: 'tower-building', note: 'Review packages and record decisions between areas.', action: 'Open submissions'},
     beta: {name: 'AI-Wise Beta', icon: 'beta-screen', note: 'Explore Common and Course Specific working versions.', action: 'Enter Beta'},
-    published: {name: 'AI-Wise Published', icon: 'published-product', note: 'Access approved student releases and their history.', action: 'View releases'}
+    published: {name: 'AI-Wise Published', icon: 'published-product', note: 'Open the live AI-Wise module used by students.', action: 'Open student site'}
   };
   const items = {
     c1: {name: 'C1 · What is GenAI?', area: 'Common', url: '../common/aiwise-c1-final.html'},
@@ -28,14 +29,15 @@
   });
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const badge = text => `<span class="badge">${escape(text)}</span>`;
-  const card = (title, text, href, label = 'Open', tag = '') => `<a class="card link" href="${href}">${tag ? badge(tag) : ''}<h3>${escape(title)}</h3><p>${escape(text)}</p><span class="arrow">${escape(label)} →</span></a>`;
+  const card = (title, text, href, label = 'Open', tag = '') => `<a class="card link" href="${href}">${tag ? badge(tag) : ''}<h3>${escape(title)}</h3><p>${escape(text)}</p><span class="arrow">${escape(label)} ${href.startsWith('https://')?'↗':'→'}</span></a>`;
   const notice = text => `<p class="notice">${escape(text)}</p>`;
   const empty = (title,text) => `<div class="empty-state"><h2>${escape(title)}</h2><p>${escape(text)}</p></div>`;
   const button = (title,href,primary=false) => `<a class="button${primary?' primary':''}" href="${href}">${escape(title)}</a>`;
   let pendingFetch;
   let currentPrompt = '';
+  let towerView = window.matchMedia('(max-width: 700px)').matches ? 'list' : 'map';
 
-  document.getElementById('area-list').innerHTML = Object.entries(areas).map(([id,a]) => `<a class="card link" href="#${id}"><svg viewBox="0 0 ${id==='tower'?'180 240':id==='beta'||id==='published'?'270 200':'240 180'}" aria-hidden="true"><use href="#${a.icon}"/></svg><h2>${a.name}</h2><p>${a.note}</p><span class="arrow">${a.action} →</span></a>`).join('');
+  document.getElementById('area-list').innerHTML = Object.entries(areas).map(([id,a]) => `<a class="card link" href="${id==='published'?publishedUrl:'#'+id}"><svg viewBox="0 0 ${id==='tower'?'180 240':id==='beta'||id==='published'?'270 200':'240 180'}" aria-hidden="true"><use href="#${a.icon}"/></svg><h2>${a.name}</h2><p>${a.note}</p><span class="arrow">${a.action} ${id==='published'?'↗':'→'}</span></a>`).join('');
   function setView(view) {
     document.getElementById('map-container').hidden = view !== 'map';
     document.getElementById('area-list').hidden = view !== 'list';
@@ -111,13 +113,51 @@
     }
     shell('beta','AI-Wise Beta',areas.beta.note,'<div class="toolbar">'+button('Open Beta module','../common/lobby.html',true)+'</div><h2 class="section-label">AI-Wise Common</h2><div class="cards">'+['c1','c2','c3'].map(id=>card(items[id].name,'Shared Orientation content.','#beta/'+id,'View item')).join('')+'</div><h2 class="section-label">AI-Wise Course Specific</h2><div class="cards">'+['aws1','ped','other'].map(id=>card(items[id].name,id==='other'?'Uses the shared Others configuration and inherits AWS1 content.':'Course content within the current module.','#beta/'+id,'View item')).join('')+'</div>');
   }
+  function renderTowerHome() {
+    const map = document.querySelector('#map-container .campus').cloneNode(true);
+    const routes = {
+      profiler: ['#tower/profiler', 'Course package → Beta'],
+      studio: ['#tower/studio', 'Orientation package → Beta'],
+      tower: ['#tower/all', 'View all submissions'],
+      beta: ['#tower/release', 'Release package → Published'],
+      published: [publishedUrl, 'Open student site ↗']
+    };
+    Object.entries(routes).forEach(([area, [href, label]]) => {
+      const link = map.querySelector('.destination.' + area);
+      link.href = href;
+      link.querySelector('span').textContent = label;
+      link.setAttribute('aria-label', areas[area].name + ': ' + label);
+    });
+    const gate = map.querySelector('.approval-gate');
+    gate.setAttribute('aria-label', 'Review Beta to Published submissions');
+    shell('tower', 'Control Tower', 'Select a package route to review its submissions.',
+      '<div class="toolbar tower-toolbar"><div class="view-switch" role="group" aria-label="Control Tower view"><button id="tower-map-view" type="button" aria-pressed="true">▦ Map</button><button id="tower-list-view" type="button" aria-pressed="false">☷ List</button></div>' + button('All submissions', '#tower/all') + '</div>' +
+      '<div id="tower-map" class="map-container" role="region" aria-label="Package exchange map. Scroll horizontally on small screens." tabindex="0">' + map.outerHTML + '</div>' +
+      '<div id="tower-list" class="cards" hidden>' +
+      card('Course Profiler → Beta', 'Course Profile, Preset Prompts, and AI Activity Configuration.', '#tower/profiler', 'Review course packages') +
+      card('Content Studio → Beta', 'Course Specific examples and materials within AI Orientation.', '#tower/studio', 'Review Orientation packages') +
+      card('Beta → Published', 'A fixed assembly of Common and Course Specific versions for release.', '#tower/release', 'Review release packages') +
+      card('All submissions', 'Browse submissions across every package route.', '#tower/all', 'View all submissions') +
+      card('AI-Wise Published', 'Open the live module used by students.', publishedUrl, 'Open student site') + '</div>' +
+      notice('Submission storage and approval actions are not connected yet. The map and list open the review screens for each route.'), false);
+    function setTowerView(view) {
+      towerView = view;
+      document.getElementById('tower-map').hidden = view !== 'map';
+      document.getElementById('tower-list').hidden = view !== 'list';
+      for (const mode of ['map', 'list']) document.getElementById('tower-' + mode + '-view').setAttribute('aria-pressed', String(mode === view));
+    }
+    setTowerView(towerView);
+    document.getElementById('tower-map-view').addEventListener('click', () => setTowerView('map'));
+    document.getElementById('tower-list-view').addEventListener('click', () => setTowerView('list'));
+  }
   function renderTower(part) {
+    if (!part) { renderTowerHome(); return; }
     const types={all:'All submissions',profiler:'Course Profiler → Beta',studio:'Content Studio → Beta',release:'Beta → Published'};
     const selected=types[part]?part:'all';
-    shell('tower','Control Tower',areas.tower.note,`<nav class="tabs" aria-label="Submission route">${Object.entries(types).map(([key,label])=>`<a href="#tower/${key}" ${key===selected?'aria-current="page"':''}>${label}</a>`).join('')}</nav>`+empty('Submission queue not connected','This view will show submitted packages, their exact versions, and the reasons for approval, rejection, or requested revision.')+`<div class="cards"><article class="card"><h3>Review a package</h3><p>Open the exact submitted versions and compare them with the previous versions.</p></article><article class="card"><h3>Record a decision</h3><p>Approve, reject, or request revision. Preserve the reason and link any resubmission.</p></article><article class="card"><h3>Release the reviewed version</h3><p>Only the approved assembly proceeds to Published. Later Beta edits remain separate.</p></article></div>`,false);
+    shell('tower',types[selected],areas.tower.note,'<div class="toolbar">'+button('Back to Control Tower','#tower')+'</div>'+`<nav class="tabs" aria-label="Submission route">${Object.entries(types).map(([key,label])=>`<a href="#tower/${key}" ${key===selected?'aria-current="page"':''}>${label}</a>`).join('')}</nav>`+empty('Submission queue not connected','This view will show submitted packages, their exact versions, and the reasons for approval, rejection, or requested revision.')+`<div class="cards"><article class="card"><h3>Review a package</h3><p>Open the exact submitted versions and compare them with the previous versions.</p></article><article class="card"><h3>Record a decision</h3><p>Approve, reject, or request revision. Preserve the reason and link any resubmission.</p></article><article class="card"><h3>Release the reviewed version</h3><p>Only the approved assembly proceeds to Published. Later Beta edits remain separate.</p></article></div>`,false);
   }
   function renderPublished() {
-    shell('published','AI-Wise Published',areas.published.note,empty('No approved release connected','This prototype is not connected to a Published release registry. The active student release, included versions, approval record, and release history will appear here.')+'<div class="toolbar">'+button('View Beta working versions','#beta')+button('View release submissions','#tower/release')+'</div>');
+    window.location.replace(publishedUrl);
   }
   function renderRecords(area) {
     if(!areas[area]) {renderNotFound();return;}
