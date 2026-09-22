@@ -4,13 +4,17 @@ The repository root opens this workspace. The existing Beta module remains avail
 
 ## Included
 
-The map and list views open Course Profiler, Content Studio, Common Studio, Control Tower, and Beta. Published links open the live student site at `https://aiwise-eur.github.io/AI-Wise/` in the same tab. The legacy `#published` route redirects there too. This is a link to the existing student site, not a new Control Tower release or an approval record. The Approval gate opens the Beta to Published submission route. Hash routes support browser back navigation and direct links.
+The map and list views open Course Profiler, Course Profiler Manager, Content Studio, Common Studio, Control Tower, and Beta. Published links open the live student site at `https://aiwise-eur.github.io/AI-Wise/` in the same tab. The legacy `#published` route redirects there too. This is a link to the existing student site, not a new Control Tower release or an approval record. The Approval gate opens the Beta to Published submission route. Hash routes support browser back navigation and direct links.
 
-Common Studio appears below Course Profiler and Content Studio on the home map, with a third road joining the route through Control Tower to Beta. It is also available in the list and shared sidebar. Its entry page describes the shared content scope, links to existing C1–C3 Beta previews, and opens the Common Studio request queue. Content editing is not implemented.
+Common Studio appears below Course Profiler Manager and Content Studio on the home map, with a third road joining the route through Control Tower to Beta. It is also available in the list and shared sidebar. Its entry page describes the shared content scope, links to existing C1–C3 Beta previews, and opens the Common Studio request queue. Content editing is not implemented.
+
+Course Profiler is the teacher's design tool, positioned to the left of the development team column. Course Profiler Manager sits above Content Studio and Common Studio in that column, between the teacher and Control Tower. Its entry screen at `#manager` describes review and package preparation, links the teacher tool and existing AWS1 prompt/activity previews, and opens the existing Control Tower queue. Manager does not approve transfers. Teacher intake, shared profile versions, and package assembly are not implemented. These role labels do not enforce permissions. Legacy `#profiler` and `#profiler/profile` still open the teacher editor; legacy prompt/activity links remain valid and appear under Manager.
+
+Control Tower displays Course Profiler Manager on the existing `profiler` and `rev-profiler` routes. Route IDs, saved requests, and event records are unchanged; those existing routes now represent the development team side of the process. Teacher-to-Manager intake is a conceptual map connection, with no transfer or new request lane implemented.
 
 Control Tower starts in map view at every screen size. The map stays above the request list when a route is selected, and list view is also available. Roads show pending, new, and urgent counts from records in this browser. Hovering or focusing a road opens a summary without marking requests as read; clicking the road or View requests opens its queue. The view choice is retained within the current page session.
 
-The tower supports Course Profiler, Content Studio, and Common Studio submissions to Beta, Beta revision requests back to those three spaces, and Beta release requests to Published. Common Studio is represented as a request destination here; its content editor is not yet built.
+The tower supports Course Profiler Manager, Content Studio, and Common Studio submissions to Beta, Beta revision requests back to those three spaces, and Beta release requests to Published. Common Studio is represented as a request destination here; its content editor is not yet built.
 
 ## Control Tower request prototype
 
@@ -36,7 +40,7 @@ Content Studio reads existing AWS1 C2 examples. Beta links to the working Common
 
 ## Not implemented
 
-Content Studio and Common Studio editing, shared package storage, authenticated manager permissions, immutable artifact storage, release activation, restoration, and general Records Office persistence are not implemented. Beta annotations, the Published window viewer, and the separate Course Profiler Manager remain upcoming work. Local request decisions are available, but the live Published site is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
+Content Studio and Common Studio editing, shared package storage, authenticated manager permissions, immutable artifact storage, release activation, restoration, and general Records Office persistence are not implemented. Beta annotations, the Published window viewer, and the full Course Profiler Manager workflow remain upcoming work. Local request decisions are available, but the live Published site is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
 
 This prototype has no authentication or access control. It should not be treated as a production administration console. No deployment configuration or Analytics collection is added.
 

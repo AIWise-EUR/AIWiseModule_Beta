@@ -8,13 +8,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="theme.css">
-  <link rel="stylesheet" href="workspace.css?v=common-studio-v1">
+  <link rel="stylesheet" href="workspace.css?v=profiler-manager-v1">
   <link rel="stylesheet" href="control-tower.css?v=requests-v1">
   <link rel="stylesheet" href="sidebar.css?v=sidebar-overlay-v2">
-  <script src="sidebar.js?v=common-studio-v1" defer></script>
+  <script src="sidebar.js?v=profiler-manager-v1" defer></script>
   <script src="../course-specific/aws1/preset-prompts.js" defer></script>
-  <script src="control-tower.js?v=requests-v1" defer></script>
-  <script src="workspace.js?v=common-studio-v1" defer></script>
+  <script src="control-tower.js?v=profiler-manager-v1" defer></script>
+  <script src="workspace.js?v=profiler-manager-v1" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to workspace</a>
@@ -26,16 +26,17 @@
       <div id="map-container" class="map-container" role="region" aria-label="Campus map. Scroll horizontally on small screens." tabindex="0">
         <div class="campus">
           <div class="product-zone"><span>Product Review &amp; Release</span></div>
-          <svg class="roads" viewBox="0 0 1200 660" preserveAspectRatio="none" aria-hidden="true">
-            <path class="road-border" d="M200 120 C300 120 310 330 420 330 M200 330 H420 M200 540 C300 540 310 330 420 330 M420 330 H1080"/>
-            <path class="road" d="M200 120 C300 120 310 330 420 330 M200 330 H420 M200 540 C300 540 310 330 420 330 M420 330 H1080"/>
-            <path class="road-dash" d="M200 120 C300 120 310 330 420 330 M200 330 H420 M200 540 C300 540 310 330 420 330 M420 330 H1080"/>
-            <g class="parcel" transform="translate(278 185)"><rect width="19" height="19" rx="4"/><path d="M9 0v8m-9 1h19"/></g>
-            <g class="parcel teal" transform="translate(278 320)"><rect width="19" height="19" rx="4"/><path d="M9 0v8m-9 1h19"/></g>
-            <g class="parcel" transform="translate(278 455)"><rect width="19" height="19" rx="4"/><path d="M9 0v8m-9 1h19"/></g>
-            <path class="direction" d="m956 323 8 7-8 7"/>
+          <svg class="roads" viewBox="0 0 1440 780" preserveAspectRatio="none" aria-hidden="true">
+            <path class="road-border" d="M115 145 H415 M430 145 C560 145 580 390 710 390 M430 390 H710 M430 635 C560 635 580 390 710 390 M710 390 H1295"/>
+            <path class="road" d="M115 145 H415 M430 145 C560 145 580 390 710 390 M430 390 H710 M430 635 C560 635 580 390 710 390 M710 390 H1295"/>
+            <path class="road-dash" d="M115 145 H415 M430 145 C560 145 580 390 710 390 M430 390 H710 M430 635 C560 635 580 390 710 390 M710 390 H1295"/>
+            <g class="parcel" transform="translate(548 210)"><rect width="19" height="19" rx="4"/><path d="M9 0v8m-9 1h19"/></g>
+            <g class="parcel teal" transform="translate(548 380)"><rect width="19" height="19" rx="4"/><path d="M9 0v8m-9 1h19"/></g>
+            <g class="parcel" transform="translate(548 550)"><rect width="19" height="19" rx="4"/><path d="M9 0v8m-9 1h19"/></g>
+            <path class="direction" d="m255 138 8 7-8 7 M1138 383 l8 7-8 7"/>
           </svg>
-          <a class="destination profiler" href="course-profiler/"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#profiler-building"/></svg><strong>Course Profiler</strong><span>Profiles, prompts &amp; activities</span></a>
+          <a class="destination profiler" href="course-profiler/"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#profiler-building"/></svg><strong>Course Profiler</strong><span>Teacher · Course design</span></a>
+          <a class="destination profiler-manager" href="#manager"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#profiler-building"/></svg><strong>Course Profiler Manager</strong><span>Development team · Course packages</span></a>
           <a class="destination studio" href="#studio"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#studio-building"/></svg><strong>Content Studio</strong><span>Course specific orientation</span></a>
           <a class="destination common-studio" href="#common"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#studio-building"/></svg><strong>Common Studio</strong><span>AI-Wise Common content</span></a>
           <a class="destination tower" href="#tower"><svg viewBox="0 0 180 240" aria-hidden="true"><use href="#tower-building"/></svg><strong>Control Tower</strong><span>Package exchange &amp; approval</span></a>
@@ -45,7 +46,7 @@
         </div>
       </div>
       <div id="area-list" class="area-list" hidden></div>
-      <div class="map-caption"><span><i class="status-dot"></i> A place for each part of the process</span><span>Course Profiler, Content Studio &amp; Common Studio → Beta → approval → Published</span></div>
+      <div class="map-caption"><span><i class="status-dot"></i> Teacher → Course Profiler → Course Profiler Manager</span><span>Development team → Control Tower → Beta → approval → Published</span></div>
     </section>
     <section id="room" hidden aria-labelledby="room-title"></section>
     <noscript><p>This navigation prototype requires JavaScript. You can still <a href="../common/lobby.html">open the Beta module</a>.</p></noscript>

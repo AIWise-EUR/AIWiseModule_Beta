@@ -2,7 +2,8 @@
   'use strict';
   const publishedUrl = 'https://aiwise-eur.github.io/AI-Wise/';
   const areas = {
-    profiler: {name: 'Course Profiler', icon: 'profiler-building', note: 'Design course profiles, preset prompts, and AI Activities.', action: 'Enter Course Profiler'},
+    profiler: {name: 'Course Profiler', icon: 'profiler-building', note: 'Teacher workspace for course information and educational intent.', action: 'Open teacher tool'},
+    manager: {name: 'Course Profiler Manager', icon: 'profiler-building', note: 'Development team workspace for reviewing teacher profiles and preparing course packages.', action: 'Enter Manager'},
     studio: {name: 'Content Studio', icon: 'studio-building', note: 'Shape the Course Specific content within AI Orientation.', action: 'Enter Content Studio'},
     common: {name: 'Common Studio', icon: 'studio-building', note: 'Shape AI-Wise Common content shared across courses.', action: 'Enter Common Studio'},
     tower: {name: 'Control Tower', icon: 'tower-building', note: 'Review packages and record decisions between areas.', action: 'Open submissions'},
@@ -58,16 +59,25 @@
       return;
     }
     if (part === 'prompts') {
-      shell('profiler','AWS1 · Preset Prompts','Read the prompts currently used by the AWS1 Beta activities.',notice('This is a read-only view. Editing and package submission are not available in this prototype.')+'<div class="prompt-view"><label for="prompt-select">Choose a prompt</label><select id="prompt-select"></select><div class="toolbar"><button class="button" id="copy-prompt" type="button">Copy prompt</button><button class="button" id="download-prompt" type="button">Download prompt</button></div><p class="live-message" id="prompt-message" role="status"></p><pre id="prompt-text" tabindex="0" aria-label="Selected preset prompt"></pre></div>');
+      shell('manager','AWS1 · Preset Prompts','Read the prompts currently used by the AWS1 Beta activities.',notice('This is a read-only view. Editing and package submission are not available in this prototype.')+'<div class="prompt-view"><label for="prompt-select">Choose a prompt</label><select id="prompt-select"></select><div class="toolbar"><button class="button" id="copy-prompt" type="button">Copy prompt</button><button class="button" id="download-prompt" type="button">Download prompt</button></div><p class="live-message" id="prompt-message" role="status"></p><pre id="prompt-text" tabindex="0" aria-label="Selected preset prompt"></pre></div>');
       setupPrompts(); return;
     }
     if (part === 'activities') {
-      shell('profiler','AWS1 · AI Activities','Inspect the current activity pages and their prompts before designing the next version.',notice('Activity configuration editing and submission are not connected yet.')+`<div class="item-list">${activityPages.map(([name,file])=>`<a class="item-link" href="../course-specific/aws1/${file}"><span>${name}</span><small>Open Beta page ↗</small></a>`).join('')}</div>`); return;
+      shell('manager','AWS1 · AI Activities','Inspect the current activity pages and their prompts before designing the next version.',notice('Activity configuration editing and submission are not connected yet.')+`<div class="item-list">${activityPages.map(([name,file])=>`<a class="item-link" href="../course-specific/aws1/${file}"><span>${name}</span><small>Open Beta page ↗</small></a>`).join('')}</div>`); return;
     }
-    if (part === 'profile') {
-      shell('profiler','AWS1 · Course Profile','Course context, goals, tasks, and the analysis underlying activity design.',empty('Profile editor not connected','The profile editor will live here. A completed profile, its prompts, and Activity configuration will be submitted together as one course package.')); return;
-    }
-    shell('profiler','Course Profiler',areas.profiler.note,`<p class="section-label">Academic Writing Skills I · AWS1</p><div class="cards">${card('Course Profile','Context, learning goals, tasks, and analysis.','#profiler/profile','View area','Planned')}${card('Preset Prompts','The current Course Preset and activity prompts.','#profiler/prompts','Read prompts','Available')}${card('AI Activity Configuration','Titles, entry points, sequence, visibility, and prompt connections.','#profiler/activities','Inspect current activities','Preview')}</div>`+notice('Course package: Course Profile + Preset Prompts + AI Activity Configuration. Save a checkpoint, then submit through Control Tower to Beta.'));
+    renderNotFound();
+  }
+  function renderManager(part) {
+    if (part === 'prompts' || part === 'activities') { renderProfiler(part); return; }
+    if (part) { renderNotFound(); return; }
+    shell('manager','Course Profiler Manager',areas.manager.note,
+      notice('The teacher uses Course Profiler to express course goals and context. The development team reviews and refines that output here. Control Tower handles approval and transfer between areas.')+
+      '<div class="cards">'+
+      card('Teacher course profile','Open the existing course design tool. Profiles currently stay in this browser.','course-profiler/','Open Course Profiler','Teacher tool')+
+      card('AWS1 · Preset Prompts','Inspect the current course and activity prompts.','#manager/prompts','Read prompts','Available')+
+      card('AWS1 · AI Activities','Inspect the current activity pages and prompt connections.','#manager/activities','View activities','Available')+
+      '</div>'+empty('Profile intake and package preparation are not connected yet','This is the development team entry point. Shared teacher submissions, managed versions, and package assembly will be added after their workflow is defined.')+
+      '<div class="toolbar">'+button('View package requests in Control Tower','#tower/profiler')+'</div>');
   }
   function setupPrompts() {
     const source = window.AIWISE_PRESETS;
@@ -139,7 +149,7 @@
     pendingFetch?.abort(); pendingFetch=null;
     const [area='home', ...segments]=(location.hash.slice(1)||'home').split('/');
     const part=segments.join('/');
-    const activeArea = area === 'records' ? part : area;
+    const activeArea = area === 'records' ? part : area === 'profiler' && ['prompts','activities'].includes(part) ? 'manager' : area;
     document.querySelectorAll('[data-area]').forEach(link => {
       if (link.dataset.area === activeArea) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
@@ -148,6 +158,7 @@
     if(isHome) document.title='AI-Wise Workspace';
     else {
       if(area==='profiler')renderProfiler(part);
+      else if(area==='manager')renderManager(part);
       else if(area==='studio')renderStudio(part);
       else if(area==='common')renderCommon();
       else if(area==='beta')renderBeta(part);
