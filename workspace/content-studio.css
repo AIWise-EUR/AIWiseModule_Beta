@@ -1,5 +1,20 @@
 .cs-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 18px 0 10px; }
-.cs-toolbar select { min-width: 0; max-width: 100%; padding: 9px; background: var(--card); border: 1px solid var(--line); border-radius: 5px; }
+.cs-example-nav { display: flex; align-items: center; gap: 5px; width: clamp(300px, 38vw, 490px); max-width: 100%; min-width: 0; }
+.cs-step { flex: 0 0 36px; width: 36px; padding: 7px; }
+.cs-example-nav svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.cs-picker { flex: 1; min-width: 0; position: relative; }
+#cs-example { display: grid; width: 100%; min-height: 60px; padding: 9px 34px 9px 13px; gap: 4px; text-align: left; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--sh); }
+#cs-example:hover, #cs-example[aria-expanded=true] { border-color: var(--signal); background: #F8FAFB; }
+#cs-example>svg { position: absolute; right: 11px; top: 22px; color: var(--signal); }
+#cs-example[aria-expanded=true]>svg { transform: rotate(180deg); }
+.cs-picker-meta { display: flex; justify-content: space-between; gap: 10px; color: var(--ink-3); font: 10px/1.4 var(--font-mono); }
+[data-cs-count] { color: var(--signal); }
+[data-cs-title] { font: 600 13px/1.5 var(--font-body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#cs-examples-menu { position: absolute; top: calc(100% + 7px); left: 0; right: 0; z-index: 30; max-height: 340px; overflow-y: auto; padding: 5px; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); box-shadow: 0 8px 26px #15121d20; }
+#cs-examples-menu button { display: flex; align-items: baseline; gap: 10px; width: 100%; padding: 11px 9px; border: 1px solid transparent; border-radius: 5px; background: none; text-align: left; color: var(--ink-2); font: 13px/1.5 var(--font-body); overflow-wrap: anywhere; }
+#cs-examples-menu button:hover { background: var(--paper); }
+#cs-examples-menu button[aria-pressed=true] { background: #EDF3F7; color: var(--signal); font-weight: 600; border-color: #CFDEE8; }
+.cs-option-number { flex: 0 0 20px; font: 11px/1.5 var(--font-mono); color: var(--ink-3); }
 .cs-toolbar .button, .cs-editor .button { min-height: 42px; }
 .cs-status { min-height: 25px; font-size: 13px; color: var(--ink-3); overflow-wrap: anywhere; }
 .cs-status[data-error=true] { color: var(--danger); }
@@ -20,6 +35,6 @@
 .cs-editor-foot .cs-status { margin: 0 0 10px; }
 .cs-editor-foot>div { display: flex; flex-wrap: wrap; gap: 8px; }
 @media (max-width: 600px) {
-  .cs-toolbar select { flex-basis: 100%; width: 100%; }
+  .cs-example-nav { flex-basis: 100%; width: 100%; }
   .cs-preview iframe { min-height: 420px; }
 }

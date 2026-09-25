@@ -73,6 +73,44 @@
     const target = s.frame.contentDocument.getElementById(id);
     if (target) s.frame.contentWindow.scrollTo({ top: target.getBoundingClientRect().top + s.frame.contentWindow.scrollY - 84, behavior: 'instant' });
   }
+  function closePicker(s, focus = false) {
+    s.host.querySelector('#cs-examples-menu').hidden = true;
+    const trigger = s.host.querySelector('#cs-example');
+    trigger.setAttribute('aria-expanded', 'false');
+    if (focus) trigger.focus({ preventScroll: true });
+  }
+  function setupPicker(s) {
+    const trigger = s.host.querySelector('#cs-example');
+    const menu = s.host.querySelector('#cs-examples-menu');
+    const open = () => {
+      menu.hidden = false; trigger.setAttribute('aria-expanded', 'true');
+      menu.children[s.index]?.focus({ preventScroll: true });
+    };
+    trigger.addEventListener('click', () => menu.hidden ? open() : closePicker(s));
+    trigger.addEventListener('keydown', event => {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); open(); }
+    });
+    menu.addEventListener('keydown', event => {
+      const buttons = [...menu.children], index = buttons.indexOf(document.activeElement);
+      let next;
+      if (event.key === 'ArrowDown') next = (index + 1) % buttons.length;
+      if (event.key === 'ArrowUp') next = (index - 1 + buttons.length) % buttons.length;
+      if (event.key === 'Home') next = 0;
+      if (event.key === 'End') next = buttons.length - 1;
+      if (next !== undefined) { event.preventDefault(); buttons[next].focus(); }
+    });
+    s.host.querySelector('.cs-picker').addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !menu.hidden) { event.preventDefault(); event.stopPropagation(); closePicker(s, true); }
+    });
+    s.host.querySelector('.cs-picker').addEventListener('focusout', event => {
+      if (!event.currentTarget.contains(event.relatedTarget)) closePicker(s);
+    });
+    document.addEventListener('pointerdown', event => {
+      if (!s.host.querySelector('.cs-picker').contains(event.target)) closePicker(s);
+    }, { signal: s.abort.signal });
+    s.host.querySelector('[data-cs-prev]').addEventListener('click', () => { selectSlide(s, s.index - 1); scrollPreview(s, 'carousel'); });
+    s.host.querySelector('[data-cs-next]').addEventListener('click', () => { selectSlide(s, s.index + 1); scrollPreview(s, 'carousel'); });
+  }
   function selectSlide(s, index) {
     s.index = Math.max(0, Math.min(index, s.examples.length - 1));
     const doc = s.frame.contentDocument;
@@ -87,16 +125,28 @@
     });
     doc.getElementById('carouselPrev').disabled = s.index === 0;
     doc.getElementById('carouselNext').disabled = s.index === s.examples.length - 1;
-    s.host.querySelector('#cs-example').value = String(s.index);
+    s.host.querySelector('[data-cs-prev]').disabled = s.index === 0;
+    s.host.querySelector('[data-cs-next]').disabled = s.index === s.examples.length - 1;
+    s.host.querySelector('[data-cs-count]').textContent = `${s.index + 1} / ${s.examples.length}`;
+    s.host.querySelector('[data-cs-title]').textContent = s.examples[s.index].title || 'Untitled example';
+    s.host.querySelector('#cs-example').setAttribute('aria-label', `Choose an example. Example ${s.index + 1} of ${s.examples.length}: ${s.examples[s.index].title || 'Untitled example'}`);
+    s.host.querySelectorAll('[data-cs-choice]').forEach((button, i) => button.setAttribute('aria-pressed', String(i === s.index)));
   }
   function updateExamples(s) {
     const doc = s.frame.contentDocument;
     const track = doc.getElementById('carouselTrack');
     const y = s.frame.contentWindow.scrollY;
     window.AIWiseCourseRenderer.carousel(track, s.examples);
-    const select = s.host.querySelector('#cs-example');
-    select.replaceChildren();
-    s.examples.forEach((item, i) => select.add(new Option(`${i + 1}. ${item.title || 'Untitled example'}`, String(i))));
+    const menu = s.host.querySelector('#cs-examples-menu');
+    menu.replaceChildren();
+    s.examples.forEach((item, i) => {
+      const button = document.createElement('button'); button.type = 'button'; button.dataset.csChoice = String(i);
+      const number = document.createElement('span'); number.className = 'cs-option-number'; number.textContent = String(i + 1).padStart(2, '0');
+      const title = document.createElement('span'); title.textContent = item.title || 'Untitled example';
+      button.append(number, title);
+      button.addEventListener('click', () => { selectSlide(s, i); scrollPreview(s, 'carousel'); closePicker(s, true); });
+      menu.appendChild(button);
+    });
     track.querySelectorAll('.carousel-card').forEach((card, i) => {
       card.tabIndex = 0; card.setAttribute('role', 'button');
       card.setAttribute('aria-label', `Edit example ${i + 1}: ${s.examples[i].title || 'Untitled example'}`);
@@ -112,6 +162,7 @@
     s.frame.contentWindow.scrollTo(0, y);
   }
   function openEditor(s, index) {
+    closePicker(s);
     selectSlide(s, index);
     scrollPreview(s, 'carousel');
     s.host.querySelector('#cs-editor-title').textContent = `Example ${index + 1}`;
@@ -130,6 +181,11 @@
       });
     });
     const base = doc.createElement('base'); base.href = url; doc.head.prepend(base);
+    // WebKit blocks parent-installed listeners without allow-scripts on the frame.
+    // CSP still prevents all scripts in the module (including inline handlers) from running.
+    const policy = doc.createElement('meta'); policy.httpEquiv = 'Content-Security-Policy';
+    policy.content = "script-src 'none'; object-src 'none'; frame-src 'none'; connect-src 'none'; form-action 'none'";
+    doc.head.prepend(policy);
     const style = doc.createElement('style');
     style.textContent = `
       #carousel { scroll-margin-top:84px; }
@@ -148,6 +204,7 @@
     if (session !== s || s.abort.signal.aborted) return;
     try {
       const doc = s.frame.contentDocument;
+      doc.addEventListener('pointerdown', () => closePicker(s));
       if (!doc.getElementById('carouselTrack')) throw Error('Missing carousel');
       window.AIWiseCourseRenderer.fillSlots(data, doc);
       window.AIWiseCourseRenderer.toggleRequired(data, doc);
@@ -193,6 +250,7 @@
       doc.addEventListener('submit', event => event.preventDefault());
       updateExamples(s);
       s.host.querySelectorAll('[data-cs-ready]').forEach(node => node.disabled = false);
+      selectSlide(s, s.index);
       controls(s);
       scrollPreview(s, 'carousel');
       s.ready = true;
@@ -204,7 +262,17 @@
       <div id="cs-studio">
         <p class="notice">C2 course examples · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p>
         <div class="cs-toolbar">
-          <label for="cs-example">Example</label><select id="cs-example" data-cs-ready disabled aria-label="Choose an example"></select>
+          <div class="cs-example-nav" role="group" aria-label="Course examples">
+            <button type="button" class="button cs-step" data-cs-prev disabled aria-label="Previous example"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg></button>
+            <div class="cs-picker">
+              <button type="button" id="cs-example" data-cs-ready disabled aria-expanded="false" aria-controls="cs-examples-menu" aria-label="Choose an example">
+                <span class="cs-picker-meta">Course example <span data-cs-count></span></span>
+                <span data-cs-title>Loading examples…</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 8 5 5 5-5"/></svg>
+              </button>
+              <div id="cs-examples-menu" role="group" aria-label="Choose an example" hidden></div>
+            </div>
+            <button type="button" class="button cs-step" data-cs-next disabled aria-label="Next example"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button>
+          </div>
           <button type="button" class="button" data-cs-edit data-cs-ready disabled>Edit example</button>
           <button type="button" class="button" data-cs-jump data-cs-ready disabled>Go to examples</button>
           <button type="button" class="button primary" data-cs-save disabled>Save draft</button>
@@ -215,7 +283,7 @@
         </div>
         <p class="cs-status" role="status">Loading C2 preview…</p>
         <div class="cs-preview"><div class="cs-preview-label">AI Orientation · C2 preview · Outlined cards are editable</div>
-          <iframe title="AWS1 C2 module editing preview" sandbox="allow-same-origin"></iframe>
+          <iframe title="AWS1 C2 module editing preview" sandbox="allow-same-origin allow-scripts"></iframe>
         </div>
         <dialog class="cs-editor" aria-labelledby="cs-editor-title" aria-describedby="cs-editor-help">
           <div class="cs-editor-head"><div><h2 id="cs-editor-title">Course example</h2><button type="button" class="button" data-cs-close autofocus>Close</button></div>
@@ -263,7 +331,7 @@
       host.querySelector('[data-cs-reset]').addEventListener('click', () => reset(s));
       host.querySelector('[data-cs-edit]').addEventListener('click', () => openEditor(s, s.index));
       host.querySelector('[data-cs-jump]').addEventListener('click', () => scrollPreview(s, 'carousel'));
-      host.querySelector('#cs-example').addEventListener('change', event => selectSlide(s, Number(event.target.value)));
+      setupPicker(s);
       host.querySelectorAll('[data-cs-close]').forEach(button => button.addEventListener('click', () => s.dialog.close()));
       s.dialog.addEventListener('close', () => {
         if (session === s) s.frame.contentDocument.querySelectorAll('.carousel-card')[s.index]?.focus({ preventScroll: true });
