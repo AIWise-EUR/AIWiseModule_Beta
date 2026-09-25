@@ -13,12 +13,23 @@
 @media (prefers-reduced-motion: reduce) {
   .cs-editor[open]::backdrop { animation: none; }
 }
-.cs-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 18px 0 10px; }
-.cs-example-nav { display: flex; align-items: center; gap: 5px; width: clamp(300px, 38vw, 490px); max-width: 100%; min-width: 0; }
-.cs-step { flex: 0 0 36px; width: 36px; padding: 7px; }
+.cs-toolbar { --cs-control-height: 60px; display: flex; flex-wrap: wrap; align-items: stretch; gap: 16px; margin: 18px 0 10px; }
+.cs-toolbar .button { height: var(--cs-control-height); border-radius: var(--r); }
+.cs-example-nav { display: flex; align-items: stretch; gap: 5px; width: clamp(300px, 38vw, 490px); max-width: 100%; min-width: 0; }
+.cs-step { flex: 0 0 40px; width: 40px; padding: 7px; }
+.cs-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-left: auto; max-width: 100%; }
+.cs-actions .button { white-space: nowrap; background: #EAF0F4; border-color: #C6D4DE; color: var(--signal); }
+.cs-actions .button:hover:not(:disabled) { background: #DEE8EF; border-color: var(--signal); }
+.cs-actions [data-cs-edit] { background: var(--signal); border-color: var(--signal); color: white; }
+.cs-actions [data-cs-edit]:hover:not(:disabled) { background: #294C63; border-color: #294C63; }
+.cs-actions [data-cs-save], .cs-editor [data-cs-save] { background: var(--ok); border-color: var(--ok); color: white; }
+.cs-actions [data-cs-save]:hover:not(:disabled), .cs-editor [data-cs-save]:hover:not(:disabled) { background: #345331; border-color: #345331; }
+.cs-actions [data-cs-save]:disabled, .cs-editor [data-cs-save]:disabled { background: #E2E7E1; border-color: #C9D3C6; color: #687463; opacity: 1; }
+.cs-actions [data-cs-reset] { background: #F5EBDF; border-color: #DBC4A7; color: #79562E; }
+.cs-actions [data-cs-reset]:hover:not(:disabled) { background: #EDE0CD; border-color: #B6946B; }
 .cs-example-nav svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .cs-picker { flex: 1; min-width: 0; position: relative; }
-#cs-example { display: grid; width: 100%; min-height: 60px; padding: 9px 34px 9px 13px; gap: 4px; text-align: left; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--sh); }
+#cs-example { display: grid; width: 100%; height: var(--cs-control-height); min-height: var(--cs-control-height); padding: 9px 34px 9px 13px; gap: 4px; text-align: left; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--sh); }
 #cs-example:hover, #cs-example[aria-expanded=true] { border-color: var(--signal); background: #F8FAFB; }
 #cs-example>svg { position: absolute; right: 11px; top: 22px; color: var(--signal); }
 #cs-example[aria-expanded=true]>svg { transform: rotate(180deg); }
@@ -57,5 +68,7 @@
 .cs-editor-foot>div { display: flex; flex-wrap: wrap; gap: 8px; }
 @media (max-width: 600px) {
   .cs-example-nav { flex-basis: 100%; width: 100%; }
+  .cs-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+  .cs-actions>a:last-child { grid-column: 1 / -1; }
   .cs-preview iframe { min-height: 420px; }
 }

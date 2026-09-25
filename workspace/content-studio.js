@@ -349,11 +349,13 @@
             </div>
             <button type="button" class="button cs-step" data-cs-next disabled aria-label="Next example"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button>
           </div>
+          <div class="cs-actions" role="group" aria-label="Content actions">
           <button type="button" class="button" data-cs-edit data-cs-ready disabled>Edit example</button>
           <button type="button" class="button" data-cs-jump data-cs-ready disabled>Go to examples</button>
           <button type="button" class="button primary" data-cs-save disabled>Save draft</button>
           <button type="button" class="button" data-cs-reset data-cs-ready disabled>Reset draft</button>
           <a class="button" href="../common/aiwise-c2-final.html?course=aws1" target="_blank" rel="noopener">Open C2 in Beta ↗</a>
+          </div>
         </div>
         <p class="cs-status" role="status">Loading C2 preview…</p>
         <div class="cs-preview"><div class="cs-preview-label">AI Orientation · C2 preview · Outlined cards are editable</div>
