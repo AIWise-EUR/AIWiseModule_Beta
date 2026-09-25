@@ -1,3 +1,18 @@
+.cs-toolbar, .cs-editor { --cs-motion-panel: 380ms; --cs-motion-menu: 300ms; --cs-motion-control: 200ms; --cs-motion-ease: ease; }
+/* Match the module: 380ms page fades, 300ms menus, 200ms control feedback. */
+.cs-toolbar .button, .cs-editor .button, #cs-example, #cs-examples-menu button { transition: background var(--cs-motion-control) var(--cs-motion-ease), color var(--cs-motion-control) var(--cs-motion-ease), border-color var(--cs-motion-control) var(--cs-motion-ease), box-shadow var(--cs-motion-control) var(--cs-motion-ease); }
+#cs-example>svg { transition: transform var(--cs-motion-menu) var(--cs-motion-ease); }
+#cs-examples-menu:not([hidden]) { animation: cs-menu-in var(--cs-motion-menu) var(--cs-motion-ease) both; }
+#cs-examples-menu.cs-closing { animation-name: cs-menu-out; pointer-events: none; }
+.cs-editor[open], .cs-editor[open]::backdrop { animation: cs-fade-in var(--cs-motion-panel, 380ms) ease both; }
+.cs-editor.cs-closing, .cs-editor.cs-closing::backdrop { animation-name: cs-fade-out; pointer-events: none; }
+@keyframes cs-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cs-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes cs-menu-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes cs-menu-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) {
+  .cs-editor[open]::backdrop { animation: none; }
+}
 .cs-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 18px 0 10px; }
 .cs-example-nav { display: flex; align-items: center; gap: 5px; width: clamp(300px, 38vw, 490px); max-width: 100%; min-width: 0; }
 .cs-step { flex: 0 0 36px; width: 36px; padding: 7px; }

@@ -61,24 +61,49 @@
     } catch { message(s, 'Draft could not be reset. The saved copy has been preserved.', true); }
   }
 
-  function scrollPreview(s, id) {
+  const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function finishAfterMotion(node, token, complete) {
+    let timer;
+    const finish = event => {
+      if (event && event.target !== node) return;
+      clearTimeout(timer); node.removeEventListener('animationend', finish);
+      complete();
+    };
+    node.addEventListener('animationend', finish);
+    timer = setTimeout(finish, parseFloat(getComputedStyle(node).getPropertyValue(token)) + 80);
+    return () => { clearTimeout(timer); node.removeEventListener('animationend', finish); };
+  }
+  function scrollPreview(s, id, animate = true) {
     const target = s.frame.contentDocument.getElementById(id);
-    if (target) s.frame.contentWindow.scrollTo({ top: target.getBoundingClientRect().top + s.frame.contentWindow.scrollY - 84, behavior: 'instant' });
+    if (target) s.frame.contentWindow.scrollTo({ top: target.getBoundingClientRect().top + s.frame.contentWindow.scrollY - 84, behavior: animate && !reduceMotion() ? 'smooth' : 'instant' });
   }
   function closePicker(s, focus = false) {
-    s.host.querySelector('#cs-examples-menu').hidden = true;
+    const menu = s.host.querySelector('#cs-examples-menu');
     const trigger = s.host.querySelector('#cs-example');
     trigger.setAttribute('aria-expanded', 'false');
+    if (!menu.hidden && !s.cancelPickerClose) {
+      const complete = () => {
+        menu.hidden = true; menu.inert = false; menu.classList.remove('cs-closing'); s.cancelPickerClose = null;
+      };
+      if (reduceMotion()) complete();
+      else {
+        menu.classList.add('cs-closing');
+        s.cancelPickerClose = finishAfterMotion(menu, '--cs-motion-menu', complete);
+        menu.inert = true;
+      }
+    }
     if (focus) trigger.focus({ preventScroll: true });
   }
   function setupPicker(s) {
     const trigger = s.host.querySelector('#cs-example');
     const menu = s.host.querySelector('#cs-examples-menu');
     const open = () => {
+      s.cancelPickerClose?.(); s.cancelPickerClose = null;
+      menu.classList.remove('cs-closing'); menu.inert = false;
       menu.hidden = false; trigger.setAttribute('aria-expanded', 'true');
       menu.children[s.index]?.focus({ preventScroll: true });
     };
-    trigger.addEventListener('click', () => menu.hidden ? open() : closePicker(s));
+    trigger.addEventListener('click', () => trigger.getAttribute('aria-expanded') === 'false' ? open() : closePicker(s));
     trigger.addEventListener('keydown', event => {
       if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); open(); }
     });
@@ -163,6 +188,16 @@
     s.host.querySelector('[name="title"]').focus({ preventScroll: true });
   }
 
+  function closeEditor(s) {
+    if (!s.dialog.open || s.cancelEditorClose) return;
+    if (reduceMotion()) { s.dialog.close(); return; }
+    s.dialog.classList.add('cs-closing');
+    s.cancelEditorClose = finishAfterMotion(s.dialog, '--cs-motion-panel', () => {
+      s.cancelEditorClose = null;
+      s.dialog.close(); s.dialog.classList.remove('cs-closing');
+    });
+  }
+
   function setupEditorResize(s) {
     const handle = s.host.querySelector('.cs-resize-handle');
     let width = 600, drag = null;
@@ -233,8 +268,10 @@
       .cs-edit-label { display:block; padding:8px 22px; color:#35617f; background:#edf3f7; font:600 12px/1.5 sans-serif; }
       .carousel-card p { white-space:pre-wrap; overflow-wrap:anywhere; }
       .carousel-card-header { overflow-wrap:anywhere; }
-      .carousel-track { transition:none !important; }
       html { scroll-behavior:auto !important; }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; }
+      }
     `;
     doc.head.appendChild(style);
     return '<!doctype html>\n' + doc.documentElement.outerHTML;
@@ -291,7 +328,7 @@
       s.host.querySelectorAll('[data-cs-ready]').forEach(node => node.disabled = false);
       selectSlide(s, s.index);
       controls(s);
-      scrollPreview(s, 'carousel');
+      scrollPreview(s, 'carousel', false);
       s.ready = true;
     } catch { message(s, 'The C2 preview could not be prepared. Reload to try again; saved drafts are unchanged.', true); }
   }
@@ -369,12 +406,13 @@
       host.querySelector('[data-cs-jump]').addEventListener('click', () => scrollPreview(s, 'carousel'));
       setupPicker(s);
       setupEditorResize(s);
-      host.querySelectorAll('[data-cs-close]').forEach(button => button.addEventListener('click', () => s.dialog.close()));
+      host.querySelectorAll('[data-cs-close]').forEach(button => button.addEventListener('click', () => closeEditor(s)));
+      s.dialog.addEventListener('cancel', event => { event.preventDefault(); closeEditor(s); });
       s.dialog.addEventListener('close', () => {
         if (session === s) s.frame.contentDocument.querySelectorAll('.carousel-card')[s.index]?.focus({ preventScroll: true });
       });
       s.dialog.addEventListener('click', event => {
-        if (event.target === s.dialog && event.clientX < s.dialog.getBoundingClientRect().left) s.dialog.close();
+        if (event.target === s.dialog && event.clientX < s.dialog.getBoundingClientRect().left) closeEditor(s);
       });
       s.dialog.addEventListener('input', event => {
         const key = event.target.name;
@@ -399,6 +437,7 @@
     dispose: () => {
       const old = session; session = null;
       old?.abort.abort();
+      old?.cancelPickerClose?.(); old?.cancelEditorClose?.();
       if (old?.dialog.open) old.dialog.close();
     }
   };
