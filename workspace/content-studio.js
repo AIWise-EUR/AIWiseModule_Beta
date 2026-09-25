@@ -113,6 +113,7 @@
   }
   function openEditor(s, index) {
     selectSlide(s, index);
+    scrollPreview(s, 'carousel');
     s.host.querySelector('#cs-editor-title').textContent = `Example ${index + 1}`;
     FIELDS.forEach(([key]) => s.host.querySelector(`[name="${key}"]`).value = s.examples[index][key] || '');
     s.dialog.showModal();
