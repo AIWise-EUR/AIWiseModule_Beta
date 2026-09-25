@@ -1,0 +1,299 @@
+/* Local authoring for AWS1 C2 examples. No writes to module data or release queues. */
+(() => {
+  'use strict';
+  const KEY = 'aiwise_content_studio_aws1_c2_v1';
+  const FIELDS = [
+    ['title', 'Example title'],
+    ['thinking', 'What you are actually thinking'],
+    ['typing_note', 'Context note (optional)'],
+    ['typing', 'What you type'],
+    ['processing', 'How the model actually processes this']
+  ];
+  const clone = value => JSON.parse(JSON.stringify(value));
+  const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  let session = null;
+  const dirty = () => !!session?.examples && !equal(session.examples, session.saved);
+  const valid = items => Array.isArray(items) && items.length > 0 && items.every(item =>
+    item && typeof item === 'object' && FIELDS.every(([key]) =>
+      typeof item[key] === 'string' || (key === 'typing_note' && item[key] === undefined)));
+
+  function message(s, text, error = false) {
+    s.host.querySelectorAll('.cs-status').forEach(node => {
+      node.textContent = text;
+      node.dataset.error = String(error);
+    });
+  }
+  function controls(s) {
+    s.host.querySelectorAll('[data-cs-save]').forEach(button => button.disabled = s.blocked || !dirty());
+  }
+  function record(s) {
+    return { schema: 1, course: 'aws1', slot: 'c2.examples', savedAt: new Date().toISOString(),
+      baseExamples: s.base, examples: s.examples };
+  }
+  function save(s) {
+    if (s !== session || s.blocked) return;
+    try {
+      if (localStorage.getItem(KEY) !== s.raw) {
+        message(s, 'Another tab changed this draft. Export your edits, then reload to review the saved version.', true);
+        return;
+      }
+      const raw = JSON.stringify(record(s));
+      localStorage.setItem(KEY, raw);
+      s.raw = raw;
+      s.saved = clone(s.examples);
+      message(s, 'Draft saved in this browser · ' + new Date().toLocaleTimeString() + '. Beta is unchanged.');
+      controls(s);
+    } catch {
+      message(s, 'Draft could not be saved. Your edits are still here; export them before leaving.', true);
+    }
+  }
+  function download(text, name) {
+    const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+    const link = document.createElement('a');
+    link.href = url; link.download = name;
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  function reset(s) {
+    if (!confirm('Discard this browser’s C2 draft and current edits? The preview will return to the current Beta content.')) return;
+    try {
+      if (!s.storageRead || localStorage.getItem(KEY) !== s.raw) {
+        message(s, 'The saved draft could not be safely reset. Export your edits and reload first.', true); return;
+      }
+      localStorage.removeItem(KEY);
+      s.raw = null; s.blocked = false;
+      s.examples = clone(s.base); s.saved = clone(s.base);
+      s.host.querySelector('[data-cs-export-saved]').hidden = true;
+      updateExamples(s); controls(s);
+      message(s, 'Draft reset to current Beta content.');
+    } catch { message(s, 'Draft could not be reset. The saved copy has been preserved.', true); }
+  }
+
+  function scrollPreview(s, id) {
+    const target = s.frame.contentDocument.getElementById(id);
+    if (target) s.frame.contentWindow.scrollTo({ top: target.getBoundingClientRect().top + s.frame.contentWindow.scrollY - 84, behavior: 'instant' });
+  }
+  function selectSlide(s, index) {
+    s.index = Math.max(0, Math.min(index, s.examples.length - 1));
+    const doc = s.frame.contentDocument;
+    doc.getElementById('carouselTrack').style.transform = `translateX(-${s.index * 100}%)`;
+    doc.querySelectorAll('.carousel-slide').forEach((slide, i) => {
+      slide.inert = i !== s.index;
+      slide.setAttribute('aria-hidden', String(i !== s.index));
+    });
+    doc.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+      dot.classList.toggle('active', i === s.index);
+      dot.setAttribute('aria-pressed', String(i === s.index));
+    });
+    doc.getElementById('carouselPrev').disabled = s.index === 0;
+    doc.getElementById('carouselNext').disabled = s.index === s.examples.length - 1;
+    s.host.querySelector('#cs-example').value = String(s.index);
+  }
+  function updateExamples(s) {
+    const doc = s.frame.contentDocument;
+    const track = doc.getElementById('carouselTrack');
+    const y = s.frame.contentWindow.scrollY;
+    window.AIWiseCourseRenderer.carousel(track, s.examples);
+    const select = s.host.querySelector('#cs-example');
+    select.replaceChildren();
+    s.examples.forEach((item, i) => select.add(new Option(`${i + 1}. ${item.title || 'Untitled example'}`, String(i))));
+    track.querySelectorAll('.carousel-card').forEach((card, i) => {
+      card.tabIndex = 0; card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', `Edit example ${i + 1}: ${s.examples[i].title || 'Untitled example'}`);
+      const label = doc.createElement('span');
+      label.className = 'cs-edit-label'; label.textContent = 'Edit course example';
+      card.prepend(label);
+      card.addEventListener('click', () => openEditor(s, i));
+      card.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openEditor(s, i); }
+      });
+    });
+    selectSlide(s, s.index);
+    s.frame.contentWindow.scrollTo(0, y);
+  }
+  function openEditor(s, index) {
+    selectSlide(s, index);
+    s.host.querySelector('#cs-editor-title').textContent = `Example ${index + 1}`;
+    FIELDS.forEach(([key]) => s.host.querySelector(`[name="${key}"]`).value = s.examples[index][key] || '');
+    s.dialog.showModal();
+    s.host.querySelector('[name="title"]').focus({ preventScroll: true });
+  }
+
+  // The real module HTML and renderers are reused, with scripts and navigation isolated.
+  function previewHTML(html, url) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('script, base, iframe, object, embed, meta[http-equiv]').forEach(node => node.remove());
+    doc.querySelectorAll('*').forEach(node => {
+      [...node.attributes].forEach(attr => {
+        if (/^on/i.test(attr.name) || (/^(href|src|action)$/i.test(attr.name) && /^\s*javascript:/i.test(attr.value))) node.removeAttribute(attr.name);
+      });
+    });
+    const base = doc.createElement('base'); base.href = url; doc.head.prepend(base);
+    const style = doc.createElement('style');
+    style.textContent = `
+      #carousel { scroll-margin-top:84px; }
+      .carousel-card { position:relative; cursor:pointer; outline:2px dashed #35617f; outline-offset:-3px; }
+      .carousel-card:hover,.carousel-card:focus-visible { outline:3px solid #35617f; }
+      .cs-edit-label { display:block; padding:8px 22px; color:#35617f; background:#edf3f7; font:600 12px/1.5 sans-serif; }
+      .carousel-card p { white-space:pre-wrap; overflow-wrap:anywhere; }
+      .carousel-card-header { overflow-wrap:anywhere; }
+      .carousel-track { transition:none !important; }
+      html { scroll-behavior:auto !important; }
+    `;
+    doc.head.appendChild(style);
+    return '<!doctype html>\n' + doc.documentElement.outerHTML;
+  }
+  function connectPreview(s, data) {
+    if (session !== s || s.abort.signal.aborted) return;
+    try {
+      const doc = s.frame.contentDocument;
+      if (!doc.getElementById('carouselTrack')) throw Error('Missing carousel');
+      window.AIWiseCourseRenderer.fillSlots(data, doc);
+      window.AIWiseCourseRenderer.toggleRequired(data, doc);
+      const dots = doc.getElementById('carouselDots'); dots.replaceChildren();
+      s.examples.forEach((_, i) => {
+        const dot = doc.createElement('button'); dot.className = 'carousel-dot'; dot.type = 'button';
+        dot.setAttribute('aria-label', `Show example ${i + 1}`);
+        dot.addEventListener('click', () => selectSlide(s, i)); dots.appendChild(dot);
+      });
+      doc.getElementById('carouselPrev').addEventListener('click', () => selectSlide(s, s.index - 1));
+      doc.getElementById('carouselNext').addEventListener('click', () => selectSlide(s, s.index + 1));
+      doc.querySelectorAll('.fn-card-title, .sources-toggle').forEach(node => {
+        node.tabIndex = 0;
+        if (node.tagName !== 'BUTTON') node.setAttribute('role', 'button');
+        node.setAttribute('aria-expanded', 'false');
+        const toggle = () => {
+          const target = node.matches('.fn-card-title') ? node.parentElement : node;
+          target.classList.toggle('open');
+          if (node.matches('.sources-toggle')) node.nextElementSibling.classList.toggle('open');
+          node.setAttribute('aria-expanded', String(target.classList.contains('open')));
+        };
+        node.addEventListener('click', toggle);
+        if (node.tagName !== 'BUTTON') node.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+        });
+      });
+      // Local section links keep the long preview usable without running module scripts.
+      doc.querySelectorAll('#coreNavDesktop, #mobileCoreNav').forEach(nav => {
+        doc.querySelectorAll('section[id]').forEach(section => {
+          const link = doc.createElement('a'); link.className = 'core-nav-sub';
+          link.href = '#' + section.id;
+          link.textContent = section.querySelector('h2, h3')?.textContent.trim() || section.id;
+          nav.appendChild(link);
+        });
+      });
+      doc.addEventListener('click', event => {
+        const link = event.target.closest('a'); if (!link) return;
+        event.preventDefault();
+        const href = link.getAttribute('href') || '';
+        if (href.startsWith('#')) scrollPreview(s, href.slice(1));
+        else message(s, 'This editor previews C2 only. Use “Open C2 in Beta” to browse the module.');
+      });
+      doc.addEventListener('submit', event => event.preventDefault());
+      updateExamples(s);
+      s.host.querySelectorAll('[data-cs-ready]').forEach(node => node.disabled = false);
+      controls(s);
+      scrollPreview(s, 'carousel');
+      s.ready = true;
+    } catch { message(s, 'The C2 preview could not be prepared. Reload to try again; saved drafts are unchanged.', true); }
+  }
+
+  async function render(shell) {
+    shell('studio', 'AWS1 · Content Studio', 'Select an outlined example in C2 to edit it in place.', `
+      <div id="cs-studio">
+        <p class="notice">C2 course examples · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p>
+        <div class="cs-toolbar">
+          <label for="cs-example">Example</label><select id="cs-example" data-cs-ready disabled aria-label="Choose an example"></select>
+          <button type="button" class="button" data-cs-edit data-cs-ready disabled>Edit example</button>
+          <button type="button" class="button" data-cs-jump data-cs-ready disabled>Go to examples</button>
+          <button type="button" class="button primary" data-cs-save disabled>Save draft</button>
+          <button type="button" class="button" data-cs-export data-cs-ready disabled>Export draft</button>
+          <button type="button" class="button" data-cs-reset data-cs-ready disabled>Reset draft</button>
+          <button type="button" class="button" data-cs-export-saved hidden>Export preserved draft</button>
+          <a class="button" href="../common/aiwise-c2-final.html?course=aws1" target="_blank" rel="noopener">Open C2 in Beta ↗</a>
+        </div>
+        <p class="cs-status" role="status">Loading C2 preview…</p>
+        <div class="cs-preview"><div class="cs-preview-label">AI Orientation · C2 preview · Outlined cards are editable</div>
+          <iframe title="AWS1 C2 module editing preview" sandbox="allow-same-origin"></iframe>
+        </div>
+        <dialog class="cs-editor" aria-labelledby="cs-editor-title" aria-describedby="cs-editor-help">
+          <div class="cs-editor-head"><div><h2 id="cs-editor-title">Course example</h2><button type="button" class="button" data-cs-close autofocus>Close</button></div>
+            <p id="cs-editor-help">Changes appear in the preview as you type. Save draft to keep them in this browser.</p></div>
+          <div class="cs-fields">${FIELDS.map(([key, label]) => `<label>${label}${key === 'title' || key === 'typing_note' ? `<input type="text" name="${key}">` : `<textarea name="${key}" rows="5"></textarea>`}</label>`).join('')}</div>
+          <div class="cs-editor-foot"><p class="cs-status" role="status"></p><div>
+            <button type="button" class="button primary" data-cs-save disabled>Save draft</button>
+            <button type="button" class="button" data-cs-export>Export draft</button>
+            <button type="button" class="button" data-cs-close>Back to preview</button>
+          </div></div>
+        </dialog>
+      </div>`, false);
+    const host = document.getElementById('cs-studio');
+    const s = session = { host, frame: host.querySelector('iframe'), dialog: host.querySelector('dialog'),
+      abort: new AbortController(), index: 0, raw: null, blocked: false, storageRead: false };
+    try {
+      const url = new URL('../common/aiwise-c2-final.html', location.href);
+      const [html, data] = await Promise.all([
+        fetch(url, { signal: s.abort.signal, cache: 'no-cache' }).then(r => { if (!r.ok) throw Error('Preview unavailable'); return r.text(); }),
+        fetch('../course-specific/aws1/course-specific-content_aws1.json', { signal: s.abort.signal, cache: 'no-cache' }).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); })
+      ]);
+      if (session !== s) return;
+      if (!valid(data.c2?.examples)) throw Error('Invalid examples');
+      s.base = clone(data.c2.examples); s.examples = clone(s.base);
+      let status = 'Current Beta content · No draft edits yet.';
+      try {
+        s.raw = localStorage.getItem(KEY); s.storageRead = true;
+        if (s.raw !== null) {
+          const saved = JSON.parse(s.raw);
+          if (saved.schema !== 1 || saved.course !== 'aws1' || saved.slot !== 'c2.examples' || !valid(saved.examples) || saved.examples.length !== s.base.length) throw Error('Invalid draft');
+          if (!equal(saved.baseExamples, s.base)) throw Error('Changed source');
+          s.examples = clone(saved.examples);
+          status = 'Saved browser draft restored. Beta is unchanged.';
+        }
+      } catch {
+        s.blocked = true;
+        status = 'Saved draft could not be restored or its Beta source has changed. It has been preserved. Export it before resetting; the preview shows current Beta content.';
+        host.querySelector('[data-cs-export-saved]').hidden = s.raw === null;
+      }
+      s.saved = clone(s.examples);
+      message(s, status, s.blocked);
+      host.querySelectorAll('[data-cs-save]').forEach(button => button.addEventListener('click', () => save(s)));
+      host.querySelectorAll('[data-cs-export]').forEach(button => button.addEventListener('click', () => download(JSON.stringify(record(s), null, 2), 'aws1-c2-draft.json')));
+      host.querySelector('[data-cs-export-saved]').addEventListener('click', () => download(s.raw, 'aws1-c2-preserved-draft.json'));
+      host.querySelector('[data-cs-reset]').addEventListener('click', () => reset(s));
+      host.querySelector('[data-cs-edit]').addEventListener('click', () => openEditor(s, s.index));
+      host.querySelector('[data-cs-jump]').addEventListener('click', () => scrollPreview(s, 'carousel'));
+      host.querySelector('#cs-example').addEventListener('change', event => selectSlide(s, Number(event.target.value)));
+      host.querySelectorAll('[data-cs-close]').forEach(button => button.addEventListener('click', () => s.dialog.close()));
+      s.dialog.addEventListener('close', () => {
+        if (session === s) s.frame.contentDocument.querySelectorAll('.carousel-card')[s.index]?.focus({ preventScroll: true });
+      });
+      s.dialog.addEventListener('click', event => {
+        if (event.target === s.dialog && event.clientX < s.dialog.getBoundingClientRect().left) s.dialog.close();
+      });
+      s.dialog.addEventListener('input', event => {
+        const key = event.target.name;
+        if (!FIELDS.some(([field]) => field === key)) return;
+        if (key === 'typing_note' && !event.target.value && !Object.hasOwn(s.base[s.index], key)) delete s.examples[s.index][key];
+        else s.examples[s.index][key] = event.target.value;
+        updateExamples(s); controls(s);
+        message(s, s.blocked ? 'Preview edits only. Saving is unavailable; export your edits before resetting the preserved draft.' : dirty() ? 'Unsaved edits · Preview only.' : 'No unsaved edits.', s.blocked);
+      });
+      s.frame.addEventListener('load', () => connectPreview(s, data), { once: true });
+      s.frame.srcdoc = previewHTML(html, url.href);
+    } catch (error) {
+      if (session === s && error.name !== 'AbortError') message(s, 'C2 could not be loaded. Reload to try again or open C2 in Beta. Saved drafts are unchanged.', true);
+    }
+  }
+  window.addEventListener('beforeunload', event => {
+    if (dirty()) { event.preventDefault(); event.returnValue = ''; }
+  });
+  window.AIWiseContentStudio = {
+    render,
+    canLeave: () => !dirty() || confirm('Leave Content Studio without saving your edits?'),
+    dispose: () => {
+      const old = session; session = null;
+      old?.abort.abort();
+      if (old?.dialog.open) old.dialog.close();
+    }
+  };
+})();

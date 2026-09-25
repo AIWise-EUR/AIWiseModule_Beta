@@ -105,18 +105,11 @@
   }
   async function renderStudio(part) {
     if(part !== 'aws1') {
-      shell('studio','Content Studio',areas.studio.note,notice('Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.')+`<div class="cards">${card('Academic Writing Skills I','Inspect the current course examples and their placement.','#studio/aws1','View content','Available')}${card('Pedagogical Sciences','View the PED Orientation in Beta.','#beta/ped','Open Beta preview','Preview')}</div>`); return;
+      shell('studio','Content Studio',areas.studio.note,notice('Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.')+`<div class="cards">${card('Academic Writing Skills I','Edit course examples in the C2 module preview.','#studio/aws1','Open editor','Available')}${card('Pedagogical Sciences','View the PED Orientation in Beta.','#beta/ped','Open Beta preview','Preview')}</div>`); return;
     }
-    shell('studio','AWS1 · Orientation content','Inspect the current examples inside the Common Orientation structure.',notice('Content editing and submission are not connected yet. This preview shows the existing course content.')+'<div class="toolbar">'+button('Open C2 in Beta','../common/aiwise-c2-final.html?course=aws1')+button('Open C3 in Beta','../common/aiwise-c3-final.html?course=aws1')+'</div><div id="studio-examples" aria-live="polite"><p>Loading course examples…</p></div>');
-    const controller=new AbortController(); pendingFetch=controller;
-    try {
-      const response=await fetch('../course-specific/aws1/course-specific-content_aws1.json',{signal:controller.signal});
-      if(!response.ok) throw Error('Unavailable');
-      const data=await response.json(); if(controller.signal.aborted)return;
-      const target=document.getElementById('studio-examples'); if(!target)return;
-      target.innerHTML='<h2 class="section-label">C2 · Course examples</h2><div class="cards">'+(data.c2?.examples||[]).map((example,i)=>`<article class="card">${badge('Example '+(i+1))}<h3>${escape(example.title||'Course example')}</h3><p><strong>Student thinking</strong><br>${escape(example.thinking)}</p><p><strong>Student prompt</strong><br>${escape(example.typing)}</p><p><strong>Model processing</strong><br>${escape(example.processing)}</p></article>`).join('')+'</div>';
-    } catch(error) { if(error.name!=='AbortError'){const target=document.getElementById('studio-examples');if(target)target.textContent='Course examples could not be loaded. You can open the Beta pages above.';} }
+    window.AIWiseContentStudio.render(shell);
   }
+
   function renderCommon() {
     shell('common','Common Studio',areas.common.note,
       '<p class="notice">This studio is for shared module content, structure, rules, and templates. Editing is not connected yet. You can inspect the current Common content in Beta below.</p>'+
@@ -143,8 +136,9 @@
   }
   function renderNotFound() {shell(null,'Area not found','That workspace address is not available.',button('Back to map','#home'),false);}
   function route(focus=true) {
-    if (!window.AIWiseControlTower.canLeave()) { history.replaceState(null, '', location.pathname + location.search + renderedHash); return; }
+    if (!window.AIWiseControlTower.canLeave() || !window.AIWiseContentStudio.canLeave()) { history.replaceState(null, '', location.pathname + location.search + renderedHash); return; }
     window.AIWiseControlTower.dispose();
+    window.AIWiseContentStudio.dispose();
     renderedHash = location.hash;
     pendingFetch?.abort(); pendingFetch=null;
     const [area='home', ...segments]=(location.hash.slice(1)||'home').split('/');

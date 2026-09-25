@@ -36,11 +36,19 @@ The workspace and its entry screens follow the Course Profiler visual theme: war
 
 Course Profiler opens the supplied `course_profiler_11(1).html` prototype at `course-profiler/`. It supports course editing, browser local storage, and JSON / Markdown exports. Its existing wording, sample content, and storage keys are preserved. A Workspace link returns to the map, and Current prompts / Current activities links retain access to the existing AWS1 previews. Legacy `#profiler` and `#profiler/profile` links also open the editor. Course profiles are saved only in the current browser; they are not submitted to Control Tower or synchronized to GitHub.
 
-Content Studio reads existing AWS1 C2 examples. Beta links to the working Common pages and course previews. These previews read the current files, not fixed historical snapshots.
+Content Studio offers a visual editor for AWS1 C2 examples, described below. Beta links to the working Common pages and course previews. These previews read the current files, not fixed historical snapshots.
+
+## Content Studio visual editor
+
+Open `#studio/aws1`. The actual C2 module page is shown inside a sandboxed preview, with only the six existing course example cards outlined for editing. Clicking a card or choosing an example and pressing Edit example opens a right-hand overlay. The preview width stays unchanged. Title, student thinking, context note, typed prompt, and model processing text update immediately. Common content remains read-only; adding, removing, or reordering examples is outside this version.
+
+`content-studio.js` fetches the existing C2 HTML and AWS1 JSON. Module scripts and inline event handlers are removed from the preview; the sandbox does not allow scripts. The parent uses the existing `course-loader.js` renderers through its explicit `data-render-only` mode, without starting the course chooser, changing course preferences, or collecting feedback. Preview carousel and section controls are connected by the editor. The separate Open C2 in Beta link opens the unmodified module in a new tab.
+
+Save draft stores only the C2 examples and their source baseline in `aiwise_content_studio_aws1_c2_v1`. This is one mutable browser draft, not version history, a shared package, or a Beta update. Export draft downloads that draft as JSON. Reset draft explicitly discards it and returns to the current Beta content. Unsaved edits trigger a warning before leaving. Storage failures and stale saves are reported; invalid or source-mismatched drafts are preserved for export before an explicit reset. No file, Control Tower request, or Published content is changed by editing or saving.
 
 ## Not implemented
 
-Content Studio and Common Studio editing, shared package storage, authenticated manager permissions, immutable artifact storage, release activation, restoration, and general Records Office persistence are not implemented. Beta annotations, the Published window viewer, and the full Course Profiler Manager workflow remain upcoming work. Local request decisions are available, but the live Published site is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
+Editing beyond AWS1 C2 examples, Common Studio editing, shared package storage, authenticated manager permissions, immutable artifact storage, release activation, restoration, and general Records Office persistence are not implemented. Beta annotations, the Published window viewer, and the full Course Profiler Manager workflow remain upcoming work. Local request decisions are available, but the live Published site is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
 
 This prototype has no authentication or access control. It should not be treated as a production administration console. No deployment configuration or Analytics collection is added.
 

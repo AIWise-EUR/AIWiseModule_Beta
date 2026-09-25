@@ -200,8 +200,8 @@
   };
 
   /* ── fill every slot ───────────────────────────────────── */
-  function fillSlots(data) {
-    var slots = document.querySelectorAll("[data-slot]");
+  function fillSlots(data, root) {
+    var slots = (root || document).querySelectorAll("[data-slot]");
     slots.forEach(function (node) {
       var path = node.getAttribute("data-slot");
       var value = getPath(data, path);
@@ -223,8 +223,8 @@
 
   /* elements with data-requires-slot="<path>" are shown only when the
      course JSON actually has a value at that path */
-  function toggleRequired(data) {
-    document.querySelectorAll("[data-requires-slot]").forEach(function (node) {
+  function toggleRequired(data, root) {
+    (root || document).querySelectorAll("[data-requires-slot]").forEach(function (node) {
       var has = data && getPath(data, node.getAttribute("data-requires-slot")) !== undefined;
       node.hidden = !has;
     });
@@ -430,6 +430,12 @@
     initUI(firstVisit);
   }
 
+
+  // Authoring reuses the module renderers without loading a course or changing preferences.
+  if (document.currentScript.hasAttribute("data-render-only")) {
+    window.AIWiseCourseRenderer = { fillSlots: fillSlots, toggleRequired: toggleRequired, carousel: RENDERERS.carousel };
+    return;
+  }
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", start);
