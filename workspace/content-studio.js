@@ -61,18 +61,8 @@
     } catch { message(s, 'Draft could not be reset. The saved copy has been preserved.', true); }
   }
 
-  const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function finishAfterMotion(node, token, complete) {
-    let timer;
-    const finish = event => {
-      if (event && event.target !== node) return;
-      clearTimeout(timer); node.removeEventListener('animationend', finish);
-      complete();
-    };
-    node.addEventListener('animationend', finish);
-    timer = setTimeout(finish, parseFloat(getComputedStyle(node).getPropertyValue(token)) + 80);
-    return () => { clearTimeout(timer); node.removeEventListener('animationend', finish); };
-  }
+  const reduceMotion = () => window.AIWiseMotion.reduced();
+  const finishAfterMotion = (node, token, complete) => window.AIWiseMotion.after(node, complete, token);
   function scrollPreview(s, id, animate = true) {
     const target = s.frame.contentDocument.getElementById(id);
     if (target) s.frame.contentWindow.scrollTo({ top: target.getBoundingClientRect().top + s.frame.contentWindow.scrollY - 84, behavior: animate && !reduceMotion() ? 'smooth' : 'instant' });

@@ -105,14 +105,14 @@
   function wireMap(selected) {
     let closeTimer;
     const popup = document.getElementById('ct-road-popup');
-    const close = () => { clearTimeout(closeTimer); popup.hidden = true; };
-    const keep = () => clearTimeout(closeTimer);
+    const close = () => { clearTimeout(closeTimer); window.AIWiseMotion.hide(popup); };
+    const keep = () => { clearTimeout(closeTimer); if (popup.classList.contains('aw-leaving')) window.AIWiseMotion.show(popup); };
     const later = () => { clearTimeout(closeTimer); closeTimer = setTimeout(close, 240); };
     function preview(anchor) {
       keep(); const id = anchor.dataset.road;
       const rows = db.requests.filter(r => r.route === id && r.status === 'pending').sort((a,b) => b.submittedAt.localeCompare(a.submittedAt)).slice(0,3);
       popup.innerHTML = `<button class="ct-popup-close" type="button" aria-label="Close route preview">×</button><h3>${esc(label(id))}</h3>${countHtml(id)}<ul>${rows.map(r => `<li><strong>${esc(r.title)}</strong><span>${esc(r.target)} · ${esc(r.version)}</span><small>${esc(date(r.submittedAt))}${unread(r)?' · New':''}${r.priority==='urgent'?' · Urgent':''}</small></li>`).join('') || '<li>No pending requests in this browser.</li>'}</ul>${link('View requests','#tower/'+id)}`;
-      popup.hidden = false;
+      window.AIWiseMotion.show(popup);
       const wrap = document.querySelector('.ct-map-wrap').getBoundingClientRect(), box = anchor.getBoundingClientRect();
       const width = Math.min(340, wrap.width - 24);
       popup.style.width = width + 'px';
@@ -131,11 +131,12 @@
     const escapePopup = e => { if (e.key === 'Escape') close(); };
     document.addEventListener('keydown', escapePopup);
     document.getElementById('ct-map').addEventListener('scroll', close);
-    cleanup.push(() => { clearTimeout(closeTimer); document.removeEventListener('keydown', escapePopup); });
+    cleanup.push(() => { clearTimeout(closeTimer); window.AIWiseMotion.cancel(popup); document.removeEventListener('keydown', escapePopup); });
     function setView(view) {
       mapView = view; close();
       document.querySelector('.ct-map-wrap').hidden = view !== 'map';
       document.getElementById('ct-route-list').hidden = view !== 'list';
+      window.AIWiseMotion.enter(document.querySelector(view === 'map' ? '.ct-map-wrap' : '#ct-route-list'));
       document.getElementById('ct-map-button').setAttribute('aria-pressed', String(view==='map'));
       document.getElementById('ct-list-button').setAttribute('aria-pressed', String(view==='list'));
     }

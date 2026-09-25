@@ -242,6 +242,8 @@ input[type=text]:focus,textarea:focus{border-color:var(--signal);background:#fff
 </style>
 <link rel="stylesheet" href="../theme.css">
 <link rel="stylesheet" href="../sidebar.css?v=sidebar-overlay-v2">
+<link rel="stylesheet" href="../motion.css?v=workspace-motion-v1">
+<script src="../motion.js?v=workspace-motion-v1"></script>
 <script src="../sidebar.js?v=profiler-manager-v1" defer></script>
 </head>
 <body class="profiler-page">
@@ -606,14 +608,14 @@ function nodeRow(wi,ti,n,ni,t){
 }
 
 /* ================= pattern modal ================= */
-let patW=null;
-function closePat(){const m=document.getElementById('patMod');if(!m.classList.contains('show'))return;m.classList.remove('show');m.classList.add('hide');setTimeout(()=>m.classList.remove('hide'),620);}
+let patW=null, cancelPatMotion=null;
+function closePat(){const m=document.getElementById('patMod');if(!m.classList.contains('show'))return;m.classList.remove('show');m.classList.add('hide');cancelPatMotion?.();if(window.AIWiseMotion.reduced()){m.classList.remove('hide');cancelPatMotion=null;}else{cancelPatMotion=window.AIWiseMotion.after(m,()=>{m.classList.remove('hide');cancelPatMotion=null;});}}
 function openPat(w){patW=w;const l=document.getElementById('patList');l.innerHTML='';
   PATTERNS.forEach(p=>{const d=document.createElement('div');d.className='pat';
     d.innerHTML='<div class="pt">'+esc(p.name)+(p.tag?'<span class="tg2">'+esc(p.tag)+'</span>':'')+'</div><div class="pd">'+esc(p.desc)+'</div><div class="pc">'+esc(p.chain)+'</div>';
     d.addEventListener('click',()=>{const t=newTask(p.id);t.nodes=p.nodes.map(nodeFromProto);w.tasks.push(t);closePat();save();render();});
     l.appendChild(d);});
-  const m=document.getElementById('patMod');m.classList.remove('hide');m.classList.add('show');}
+  cancelPatMotion?.();cancelPatMotion=null;const m=document.getElementById('patMod');m.classList.remove('hide');m.classList.add('show');}
 
 
 /* ================= builder ================= */
@@ -772,10 +774,10 @@ function setExp(t,b,e){
   et.dataset.t=t||'';eb.dataset.b=b||'';ee.dataset.e=e||'';
   const wc=s=>((s||'').split(/\s+/).filter(Boolean).length);
   const total=(wc(t)+wc(b)+(e?wc(e)+1:0))||1;
-  const step=Math.max(16,Math.min(46,Math.round(1200/total)));
+  const step=window.AIWiseMotion.duration('menu')/(total+4);
   let off=0;
-  off+=revealWords(et,t,off,step)*step+90;
-  off+=revealWords(eb,b,off,step)*step+90;
+  off+=revealWords(et,t,off,step)*step+step*2;
+  off+=revealWords(eb,b,off,step)*step+step*2;
   if(e){ee.style.display='';revealWords(ee,e,off,step,'<b>Tip.</b>');}
   else{ee.style.display='none';ee.innerHTML='';}
 }

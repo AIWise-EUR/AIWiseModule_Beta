@@ -1,4 +1,4 @@
-.cs-toolbar, .cs-editor { --cs-motion-panel: 380ms; --cs-motion-menu: 300ms; --cs-motion-control: 200ms; --cs-motion-ease: ease; }
+.cs-toolbar, .cs-editor { --cs-motion-panel: var(--aw-motion-page); --cs-motion-menu: var(--aw-motion-menu); --cs-motion-control: var(--aw-motion-control); --cs-motion-ease: var(--aw-motion-ease); }
 /* Match the module: 380ms page fades, 300ms menus, 200ms control feedback. */
 .cs-toolbar .button, .cs-editor .button, #cs-example, #cs-examples-menu button { transition: background var(--cs-motion-control) var(--cs-motion-ease), color var(--cs-motion-control) var(--cs-motion-ease), border-color var(--cs-motion-control) var(--cs-motion-ease), box-shadow var(--cs-motion-control) var(--cs-motion-ease); }
 #cs-example>svg { transition: transform var(--cs-motion-menu) var(--cs-motion-ease); }

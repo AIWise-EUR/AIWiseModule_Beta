@@ -43,6 +43,7 @@
   function setView(view) {
     document.getElementById('map-container').hidden = view !== 'map';
     document.getElementById('area-list').hidden = view !== 'list';
+    window.AIWiseMotion.enter(document.getElementById(view === 'map' ? 'map-container' : 'area-list'));
     for (const mode of ['map','list']) document.getElementById(mode+'-view').setAttribute('aria-pressed', String(mode===view));
   }
   setView(window.matchMedia('(max-width: 700px)').matches ? 'list' : 'map');
@@ -52,6 +53,7 @@
   function shell(area,title,description,body,records=true) {
     const parent = areas[area];
     room.innerHTML = `<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#home">Workspace</a><span aria-hidden="true">/</span>${parent && title!==parent.name ? `<a href="#${area}">${parent.name}</a><span aria-hidden="true">/</span>` : ''}<span aria-current="page">${escape(title)}</span></nav><div class="room-heading"><div><p class="eyebrow">${parent ? parent.name : 'Workspace'}</p><h1 id="room-title" tabindex="-1">${escape(title)}</h1><p class="room-description">${escape(description)}</p></div>${records&&parent?button('Records Office','#records/'+area):''}</div>${body}`;
+    window.AIWiseMotion.enter(room);
   }
   function renderProfiler(part) {
     if (!part || part === 'profile') {
@@ -149,7 +151,7 @@
       else link.removeAttribute('aria-current');
     });
     const isHome=area==='home';home.hidden=!isHome;room.hidden=isHome;
-    if(isHome) document.title='AI-Wise Workspace';
+    if(isHome) { document.title='AI-Wise Workspace'; window.AIWiseMotion.enter(home); }
     else {
       if(area==='profiler')renderProfiler(part);
       else if(area==='manager')renderManager(part);
