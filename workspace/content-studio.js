@@ -171,6 +171,53 @@
     s.host.querySelector('[name="title"]').focus({ preventScroll: true });
   }
 
+  function setupEditorResize(s) {
+    const handle = s.host.querySelector('.cs-resize-handle');
+    let width = 600, drag = null;
+    const apply = () => {
+      const max = document.documentElement.clientWidth, min = Math.min(360, max);
+      const actual = Math.max(min, Math.min(width, max));
+      s.dialog.style.setProperty('--cs-editor-width', actual + 'px');
+      handle.setAttribute('aria-valuemin', String(min));
+      handle.setAttribute('aria-valuemax', String(max));
+      handle.setAttribute('aria-valuenow', String(Math.round(actual)));
+      handle.setAttribute('aria-valuetext', Math.round(actual) + ' pixels wide');
+    };
+    const setWidth = next => {
+      const max = document.documentElement.clientWidth;
+      width = Math.max(Math.min(360, max), Math.min(next, max));
+      apply();
+    };
+    const stop = () => {
+      const pointer = drag?.id; drag = null;
+      s.dialog.classList.remove('cs-resizing');
+      if (pointer !== undefined && handle.hasPointerCapture(pointer)) handle.releasePointerCapture(pointer);
+    };
+    handle.addEventListener('pointerdown', event => {
+      if (!event.isPrimary || event.button !== 0) return;
+      event.preventDefault();
+      drag = { id: event.pointerId, x: event.clientX, width: s.dialog.getBoundingClientRect().width };
+      handle.setPointerCapture(event.pointerId);
+      handle.focus({ preventScroll: true });
+      s.dialog.classList.add('cs-resizing');
+    });
+    handle.addEventListener('pointermove', event => {
+      if (drag?.id === event.pointerId) setWidth(drag.width + drag.x - event.clientX);
+    });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => handle.addEventListener(type, stop));
+    // A drag ending on the backdrop must not be interpreted as a click outside the editor.
+    handle.addEventListener('click', event => event.stopPropagation());
+    handle.addEventListener('keydown', event => {
+      const step = event.shiftKey ? 50 : 20, current = s.dialog.getBoundingClientRect().width;
+      const next = { ArrowLeft: current + step, ArrowRight: current - step, Home: 360, End: document.documentElement.clientWidth }[event.key];
+      if (next !== undefined) { event.preventDefault(); setWidth(next); }
+    });
+    s.dialog.addEventListener('close', stop);
+    s.abort.signal.addEventListener('abort', stop, { once: true });
+    window.addEventListener('resize', apply, { signal: s.abort.signal });
+    apply();
+  }
+
   // The real module HTML and renderers are reused, with scripts and navigation isolated.
   function previewHTML(html, url) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -286,6 +333,8 @@
           <iframe title="AWS1 C2 module editing preview" sandbox="allow-same-origin allow-scripts"></iframe>
         </div>
         <dialog class="cs-editor" aria-labelledby="cs-editor-title" aria-describedby="cs-editor-help">
+          <div class="cs-resize-handle" role="separator" aria-orientation="vertical" aria-label="Resize editor" aria-controls="cs-editor-body" tabindex="0" title="Drag to resize. Use Left or Right arrow keys."></div>
+          <div class="cs-editor-body" id="cs-editor-body">
           <div class="cs-editor-head"><div><h2 id="cs-editor-title">Course example</h2><button type="button" class="button" data-cs-close autofocus>Close</button></div>
             <p id="cs-editor-help">Changes appear in the preview as you type. Save draft to keep them in this browser.</p></div>
           <div class="cs-fields">${FIELDS.map(([key, label]) => `<label>${label}${key === 'title' || key === 'typing_note' ? `<input type="text" name="${key}">` : `<textarea name="${key}" rows="5"></textarea>`}</label>`).join('')}</div>
@@ -294,6 +343,7 @@
             <button type="button" class="button" data-cs-export>Export draft</button>
             <button type="button" class="button" data-cs-close>Back to preview</button>
           </div></div>
+          </div>
         </dialog>
       </div>`, false);
     const host = document.getElementById('cs-studio');
@@ -332,6 +382,7 @@
       host.querySelector('[data-cs-edit]').addEventListener('click', () => openEditor(s, s.index));
       host.querySelector('[data-cs-jump]').addEventListener('click', () => scrollPreview(s, 'carousel'));
       setupPicker(s);
+      setupEditorResize(s);
       host.querySelectorAll('[data-cs-close]').forEach(button => button.addEventListener('click', () => s.dialog.close()));
       s.dialog.addEventListener('close', () => {
         if (session === s) s.frame.contentDocument.querySelectorAll('.carousel-card')[s.index]?.focus({ preventScroll: true });
