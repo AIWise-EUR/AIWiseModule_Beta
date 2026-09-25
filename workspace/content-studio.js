@@ -34,7 +34,7 @@
     if (s !== session || s.blocked) return;
     try {
       if (localStorage.getItem(KEY) !== s.raw) {
-        message(s, 'Another tab changed this draft. Export your edits, then reload to review the saved version.', true);
+        message(s, 'Another tab changed this draft. Your edits have not been saved. Copy any text you want to keep before reloading the saved version.', true);
         return;
       }
       const raw = JSON.stringify(record(s));
@@ -44,26 +44,18 @@
       message(s, 'Draft saved in this browser · ' + new Date().toLocaleTimeString() + '. Beta is unchanged.');
       controls(s);
     } catch {
-      message(s, 'Draft could not be saved. Your edits are still here; export them before leaving.', true);
+      message(s, 'Draft could not be saved. Your edits are still here. Keep this page open and try saving again.', true);
     }
-  }
-  function download(text, name) {
-    const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
-    const link = document.createElement('a');
-    link.href = url; link.download = name;
-    document.body.appendChild(link); link.click(); link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   function reset(s) {
     if (!confirm('Discard this browser’s C2 draft and current edits? The preview will return to the current Beta content.')) return;
     try {
       if (!s.storageRead || localStorage.getItem(KEY) !== s.raw) {
-        message(s, 'The saved draft could not be safely reset. Export your edits and reload first.', true); return;
+        message(s, 'The saved draft could not be safely reset. Copy any text you want to keep before reloading.', true); return;
       }
       localStorage.removeItem(KEY);
       s.raw = null; s.blocked = false;
       s.examples = clone(s.base); s.saved = clone(s.base);
-      s.host.querySelector('[data-cs-export-saved]').hidden = true;
       updateExamples(s); controls(s);
       message(s, 'Draft reset to current Beta content.');
     } catch { message(s, 'Draft could not be reset. The saved copy has been preserved.', true); }
@@ -323,9 +315,7 @@
           <button type="button" class="button" data-cs-edit data-cs-ready disabled>Edit example</button>
           <button type="button" class="button" data-cs-jump data-cs-ready disabled>Go to examples</button>
           <button type="button" class="button primary" data-cs-save disabled>Save draft</button>
-          <button type="button" class="button" data-cs-export data-cs-ready disabled>Export draft</button>
           <button type="button" class="button" data-cs-reset data-cs-ready disabled>Reset draft</button>
-          <button type="button" class="button" data-cs-export-saved hidden>Export preserved draft</button>
           <a class="button" href="../common/aiwise-c2-final.html?course=aws1" target="_blank" rel="noopener">Open C2 in Beta ↗</a>
         </div>
         <p class="cs-status" role="status">Loading C2 preview…</p>
@@ -340,7 +330,6 @@
           <div class="cs-fields">${FIELDS.map(([key, label]) => `<label>${label}${key === 'title' || key === 'typing_note' ? `<input type="text" name="${key}">` : `<textarea name="${key}" rows="5"></textarea>`}</label>`).join('')}</div>
           <div class="cs-editor-foot"><p class="cs-status" role="status"></p><div>
             <button type="button" class="button primary" data-cs-save disabled>Save draft</button>
-            <button type="button" class="button" data-cs-export>Export draft</button>
             <button type="button" class="button" data-cs-close>Back to preview</button>
           </div></div>
           </div>
@@ -370,14 +359,11 @@
         }
       } catch {
         s.blocked = true;
-        status = 'Saved draft could not be restored or its Beta source has changed. It has been preserved. Export it before resetting; the preview shows current Beta content.';
-        host.querySelector('[data-cs-export-saved]').hidden = s.raw === null;
+        status = 'Saved draft could not be restored or its Beta source has changed. The saved copy has not been changed; the preview shows current Beta content. Reset draft will discard the saved copy.';
       }
       s.saved = clone(s.examples);
       message(s, status, s.blocked);
       host.querySelectorAll('[data-cs-save]').forEach(button => button.addEventListener('click', () => save(s)));
-      host.querySelectorAll('[data-cs-export]').forEach(button => button.addEventListener('click', () => download(JSON.stringify(record(s), null, 2), 'aws1-c2-draft.json')));
-      host.querySelector('[data-cs-export-saved]').addEventListener('click', () => download(s.raw, 'aws1-c2-preserved-draft.json'));
       host.querySelector('[data-cs-reset]').addEventListener('click', () => reset(s));
       host.querySelector('[data-cs-edit]').addEventListener('click', () => openEditor(s, s.index));
       host.querySelector('[data-cs-jump]').addEventListener('click', () => scrollPreview(s, 'carousel'));
@@ -396,7 +382,7 @@
         if (key === 'typing_note' && !event.target.value && !Object.hasOwn(s.base[s.index], key)) delete s.examples[s.index][key];
         else s.examples[s.index][key] = event.target.value;
         updateExamples(s); controls(s);
-        message(s, s.blocked ? 'Preview edits only. Saving is unavailable; export your edits before resetting the preserved draft.' : dirty() ? 'Unsaved edits · Preview only.' : 'No unsaved edits.', s.blocked);
+        message(s, s.blocked ? 'Preview edits only. Saving is unavailable. Copy any text you want to keep before resetting the saved draft.' : dirty() ? 'Unsaved edits · Preview only.' : 'No unsaved edits.', s.blocked);
       });
       s.frame.addEventListener('load', () => connectPreview(s, data), { once: true });
       s.frame.srcdoc = previewHTML(html, url.href);
