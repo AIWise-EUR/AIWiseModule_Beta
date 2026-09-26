@@ -61,3 +61,11 @@ Route entry, map/list switches, road summaries, and Profiler views use the share
 ## Local review
 
 Serve the repository through a local HTTP server and open `/workspace/`. Also test beneath a repository prefix such as `/AIWiseModule_Beta/workspace/` to check relative paths. Test map and list navigation, all entry screens, prompt selection/copy/download, course examples, existing Beta links, narrow layouts, and keyboard focus.
+
+## Courses
+
+`#courses` is the shared course management entry, directly below Course Profiler in the sidebar. Course Profiler Manager and Content Studio list the registered courses, followed by an Add course card. Common Studio also links to registration with the same card; its C1–C3 items remain shared content, not per-course copies.
+
+`courses.js` loads existing courses from `common/courses/index.json`; the generic Others configuration is not treated as an individual course. Add course registers a unique, fixed ID and short/full names. Edit course details updates names. These changes are browser-local under `aiwise_workspace_courses_v1`; they do not modify runtime JSON, teacher profiles, content drafts, Control Tower records, or Published. New registrations appear in Manager and Content Studio with Setup needed until their content and editors are connected. The AWS1 C2 editor and PED Beta preview retain their existing destinations. Shared persistence and automatic content creation are not implemented.
+
+Invalid saved registration data is preserved with an error. Duplicate/reserved IDs, stale-tab saves, storage failures, and unsaved navigation are handled without claiming successful registration. Existing course name edits affect workspace registration views only; source module wording is unchanged.

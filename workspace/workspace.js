@@ -78,7 +78,7 @@
       card('Teacher course profile','Open the existing course design tool. Profiles currently stay in this browser.','course-profiler/','Open Course Profiler','Teacher tool')+
       card('AWS1 · Preset Prompts','Inspect the current course and activity prompts.','#manager/prompts','Read prompts','Available')+
       card('AWS1 · AI Activities','Inspect the current activity pages and prompt connections.','#manager/activities','View activities','Available')+
-      '</div>'+empty('Profile intake and package preparation are not connected yet','This is the development team entry point. Shared teacher submissions, managed versions, and package assembly will be added after their workflow is defined.')+
+      '</div><h2 class="section-label">Courses</h2><div class="cards">'+window.AIWiseCourses.cards('manager')+'</div>'+empty('Profile intake and package preparation are not connected yet','This is the development team entry point. Shared teacher submissions, managed versions, and package assembly will be added after their workflow is defined.')+
       '<div class="toolbar">'+button('View package requests in Control Tower','#tower/profiler')+'</div>');
   }
   function setupPrompts() {
@@ -105,18 +105,17 @@
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000);
     });
   }
-  async function renderStudio(part) {
-    if(part !== 'aws1') {
-      shell('studio','Content Studio',areas.studio.note,notice('Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.')+`<div class="cards">${card('Academic Writing Skills I','Edit course examples in the C2 module preview.','#studio/aws1','Open editor','Available')}${card('Pedagogical Sciences','View the PED Orientation in Beta.','#beta/ped','Open Beta preview','Preview')}</div>`); return;
-    }
-    window.AIWiseContentStudio.render(shell);
+  function renderStudio(part) {
+    if (part === 'aws1') { window.AIWiseContentStudio.render(shell); return; }
+    if (part) { window.AIWiseCourses.render(part, shell); return; }
+    shell('studio','Content Studio',areas.studio.note,notice('Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.')+'<div class="cards">'+window.AIWiseCourses.cards('studio')+'</div>');
   }
 
   function renderCommon() {
     shell('common','Common Studio',areas.common.note,
       '<p class="notice">This studio is for shared module content, structure, rules, and templates. Editing is not connected yet. You can inspect the current Common content in Beta below.</p>'+
       '<h2 class="section-label">AI-Wise Common · Current Beta previews</h2><div class="cards">'+
-      ['c1','c2','c3'].map(id=>card(items[id].name,'Shared AI Orientation content.','#beta/'+id,'View in Beta')).join('')+
+      ['c1','c2','c3'].map(id=>card(items[id].name,'Shared AI Orientation content.','#beta/'+id,'View in Beta')).join('')+window.AIWiseCourses.addCard()+
       '</div><div class="toolbar">'+button('View Common Studio requests','#tower/common')+'</div>',false);
   }
   function renderBeta(part) {
@@ -138,9 +137,10 @@
   }
   function renderNotFound() {shell(null,'Area not found','That workspace address is not available.',button('Back to map','#home'),false);}
   function route(focus=true) {
-    if (!window.AIWiseControlTower.canLeave() || !window.AIWiseContentStudio.canLeave()) { history.replaceState(null, '', location.pathname + location.search + renderedHash); return; }
+    if (!window.AIWiseControlTower.canLeave() || !window.AIWiseContentStudio.canLeave() || !window.AIWiseCourses.canLeave()) { history.replaceState(null, '', location.pathname + location.search + renderedHash); return; }
     window.AIWiseControlTower.dispose();
     window.AIWiseContentStudio.dispose();
+    window.AIWiseCourses.dispose();
     renderedHash = location.hash;
     pendingFetch?.abort(); pendingFetch=null;
     const [area='home', ...segments]=(location.hash.slice(1)||'home').split('/');
@@ -156,6 +156,7 @@
       if(area==='profiler')renderProfiler(part);
       else if(area==='manager')renderManager(part);
       else if(area==='studio')renderStudio(part);
+      else if(area==='courses')window.AIWiseCourses.render(part, shell);
       else if(area==='common')renderCommon();
       else if(area==='beta')renderBeta(part);
       else if(area==='tower')renderTower(part);
@@ -167,7 +168,7 @@
     if(focus){document.getElementById(isHome?'main':'room-title')?.focus({preventScroll:true});window.scrollTo(0,0);}
     if(focus && area==='tower' && part && !part.includes('/')) document.querySelector('.ct-queue')?.scrollIntoView({block:'start'});
   }
-  window.addEventListener('hashchange',()=>route()); route(false);
+  window.AIWiseCourses.ready.then(() => { window.addEventListener('hashchange',()=>route()); route(false); });
   // Native fragment scrolling must not hide the header on direct #home links.
   window.addEventListener('load', () => requestAnimationFrame(() => window.scrollTo(0, 0)));
 })();

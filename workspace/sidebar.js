@@ -7,6 +7,7 @@
   const areas = [
     ['home', 'Workspace', `${base}#home`, '▦'],
     ['profiler', 'Course Profiler', `${base}course-profiler/`, '◇'],
+    ['courses', 'Courses', `${base}#courses`, '▦'],
     ['manager', 'Course Profiler Manager', `${base}#manager`, '▧'],
     ['studio', 'Content Studio', `${base}#studio`, '▤'],
     ['common', 'Common Studio', `${base}#common`, '▥'],
