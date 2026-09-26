@@ -5,6 +5,13 @@
   const link = document.getElementById('workspace-update');
   const count = document.getElementById('workspace-update-count');
   const pause = document.getElementById('update-pause');
+  const trigger = document.getElementById('updates-open');
+  const dialog = document.createElement('dialog');
+  dialog.id = 'updates-dialog'; dialog.className = 'updates-dialog';
+  dialog.setAttribute('aria-labelledby', 'updates-title');
+  dialog.setAttribute('aria-describedby', 'updates-summary');
+  document.body.appendChild(dialog);
+  let cancelClose = null;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   let entries = [], index = 0, timer, home = false, paused = reduced.matches;
   function collect() {
@@ -41,7 +48,7 @@
   }
   function schedule() {
     clearTimeout(timer);
-    if (!home || paused || document.hidden || entries.length < 2 || row.matches(':hover') || row.contains(document.activeElement)) return;
+    if (!home || dialog.open || paused || document.hidden || entries.length < 2 || row.matches(':hover') || row.contains(document.activeElement)) return;
     timer = setTimeout(() => { index = (index + 1) % entries.length; paint(); schedule(); }, 6000);
   }
   function refresh() {
@@ -58,9 +65,45 @@
   document.addEventListener('visibilitychange', schedule);
   reduced.addEventListener('change', () => { paused = reduced.matches; paint(); schedule(); });
   window.addEventListener('storage', event => { if (home && (!event.key || ['aiwise_control_tower_v1','aiwise_content_studio_aws1_c2_v1'].includes(event.key))) refresh(); });
-  function render(shell) {
-    const data = collect();
-    shell(null, 'Workspace activity', data.summary, '<p class="course-local-note">Recent request states and saved drafts from this browser. Approvals do not indicate publication.</p>' + (data.entries.length ? '<div class="item-list">' + data.entries.map(item => `<a class="item-link" href="${esc(item.href)}"><span>${esc(item.title)}</span><small>${Number.isFinite(Date.parse(item.at)) ? esc(new Date(item.at).toLocaleString()) : 'Check workspace'}</small></a>`).join('') + '</div>' : '<div class="empty-state"><h2>No recorded activity yet</h2><p>Saved drafts and Control Tower requests will appear here.</p></div>'), false);
+  function closeNow(restore = true) {
+    cancelClose?.(); cancelClose = null;
+    window.AIWiseMotion.cancel(dialog); dialog.classList.remove('updates-closing');
+    if (dialog.open) dialog.close();
+    if (restore && home) trigger.focus({preventScroll:true});
+    schedule();
   }
-  window.AIWiseOverview = {setHome(value) { home = value; if (home) refresh(); else clearTimeout(timer); }, render};
+  function close() {
+    if (!dialog.open || cancelClose) return;
+    window.AIWiseMotion.cancel(dialog);
+    if (window.AIWiseMotion.reduced()) { closeNow(); return; }
+    dialog.classList.add('updates-closing');
+    cancelClose = window.AIWiseMotion.after(dialog, () => closeNow());
+  }
+  function open() {
+    cancelClose?.(); cancelClose = null;
+    window.AIWiseMotion.cancel(dialog); dialog.classList.remove('updates-closing');
+    const data = collect();
+    dialog.innerHTML = `<div class="updates-heading"><div><p class="eyebrow">Workspace activity</p><h2 id="updates-title">Recent activity</h2></div><button class="button" id="updates-close" type="button" aria-label="Close activity" autofocus>×</button></div><p id="updates-summary">${esc(data.summary)}</p><div class="updates-body">` +
+      (data.entries.length ? '<div class="item-list">' + data.entries.map(item => `<a class="item-link" href="${esc(item.href)}"><span>${esc(item.title)}<small>${item.href.startsWith('#tower/request/') ? 'Open request →' : item.href === '#studio/aws1' ? 'Open Content Studio →' : 'Open Control Tower →'}</small></span><small>${Number.isFinite(Date.parse(item.at)) ? esc(new Date(item.at).toLocaleString()) : 'Check workspace'}</small></a>`).join('') + '</div>' : '<div class="empty-state"><h3>No recorded activity yet</h3><p>Saved drafts and Control Tower requests will appear here.</p></div>') + '</div>';
+    document.getElementById('updates-close').addEventListener('click', close);
+    if (!dialog.open) dialog.showModal();
+    window.AIWiseMotion.enter(dialog);
+    document.getElementById('updates-close').focus({preventScroll:true});
+    schedule();
+  }
+  trigger.addEventListener('click', open);
+  dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
+  const outside = event => {
+    const rect = dialog.getBoundingClientRect();
+    return event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
+  };
+  let backdropDown = false;
+  dialog.addEventListener('pointerdown', event => { backdropDown = event.target === dialog && outside(event); });
+  dialog.addEventListener('click', event => {
+    if (event.target.closest('a')) { closeNow(false); return; }
+    if (backdropDown && event.target === dialog && outside(event)) close();
+    backdropDown = false;
+  });
+  dialog.addEventListener('wheel', event => { if (event.target === dialog && outside(event)) event.preventDefault(); }, {passive:false});
+  window.AIWiseOverview = {setHome(value) { home = value; if (home) refresh(); else { closeNow(false); clearTimeout(timer); } }, open};
 })();

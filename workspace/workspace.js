@@ -147,13 +147,15 @@
     pendingFetch?.abort(); pendingFetch=null;
     const [area='home', ...segments]=(location.hash.slice(1)||'home').split('/');
     const part=segments.join('/');
-    const activeArea = area === 'records' ? part : area === 'profiler' && ['prompts','activities'].includes(part) ? 'manager' : area;
+    const activeArea = area === 'updates' ? 'home' : area === 'records' ? part : area === 'profiler' && ['prompts','activities'].includes(part) ? 'manager' : area;
     document.querySelectorAll('[data-area]').forEach(link => {
       if (link.dataset.area === activeArea) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
     window.AIWiseSidebar.markCurrent();
-    const isHome=area==='home';home.hidden=!isHome;room.hidden=isHome;
+    const isUpdates = area === 'updates';
+    const isHome=area==='home' || isUpdates;home.hidden=!isHome;room.hidden=isHome;
+    if (isUpdates) { history.replaceState(null, '', location.pathname + location.search + '#home'); renderedHash = '#home'; window.AIWiseSidebar.markCurrent(); }
     window.AIWiseOverview.setHome(isHome);
     if(isHome) { document.title='AI-Wise Workspace'; window.AIWiseMotion.enter(home); }
     else {
@@ -161,7 +163,6 @@
       else if(area==='manager')renderManager(part);
       else if(area==='studio')renderStudio(part);
       else if(area==='courses')window.AIWiseCourses.render(part, shell);
-      else if(area==='updates')window.AIWiseOverview.render(shell);
       else if(area==='common')renderCommon();
       else if(area==='beta')renderBeta(part);
       else if(area==='tower')renderTower(part);
@@ -171,6 +172,7 @@
       document.title=(document.getElementById('room-title')?.textContent||'Workspace')+' · AI-Wise';
     }
     if(focus){document.getElementById(isHome?'main':'room-title')?.focus({preventScroll:true});window.scrollTo(0,0);}
+    if (isUpdates) window.AIWiseOverview.open();
     if(focus && area==='tower' && part && !part.includes('/')) document.querySelector('.ct-queue')?.scrollIntoView({block:'start'});
   }
   window.AIWiseCourses.ready.then(() => { window.addEventListener('hashchange',()=>route()); route(false); });

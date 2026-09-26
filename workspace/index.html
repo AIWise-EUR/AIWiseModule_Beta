@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="theme.css">
-  <link rel="stylesheet" href="workspace.css?v=course-maps-v1">
+  <link rel="stylesheet" href="workspace.css?v=activity-popup-v1">
   <link rel="stylesheet" href="content-studio.css?v=workspace-motion-v1">
   <link rel="stylesheet" href="control-tower.css?v=requests-v1">
   <link rel="stylesheet" href="sidebar.css?v=course-navigation-v2">
@@ -20,14 +20,14 @@
   <script src="control-tower.js?v=workspace-status-v1" defer></script>
   <script src="../pipelines/course-loader.js?v=studio-renderer-v1" data-render-only defer></script>
   <script src="content-studio.js?v=workspace-motion-v1" defer></script>
-  <script src="overview.js?v=workspace-status-v1" defer></script>
-  <script src="workspace.js?v=course-maps-v1" defer></script>
+  <script src="overview.js?v=activity-popup-v1" defer></script>
+  <script src="workspace.js?v=activity-popup-v1" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to workspace</a>
   <main id="main" tabindex="-1">
     <section id="home" aria-labelledby="home-title">
-      <div class="home-heading"><div class="home-status-heading"><p class="eyebrow">Your workspace</p><h1 id="home-title">Workspace status</h1><p id="workspace-status-summary">Loading local activity…</p><div class="home-update-row"><a id="workspace-update" href="#updates">View activity</a><span id="workspace-update-count"></span><div class="update-controls"><button class="button" id="update-prev" type="button" aria-label="Previous update">‹</button><button class="button" id="update-pause" type="button" aria-label="Pause automatic updates" aria-pressed="false">Pause</button><button class="button" id="update-next" type="button" aria-label="Next update">›</button><a class="button" href="#updates">View all</a></div></div></div>
+      <div class="home-heading"><div class="home-status-heading"><p class="eyebrow">Your workspace</p><h1 id="home-title">Workspace status</h1><p id="workspace-status-summary">Loading local activity…</p><div class="home-update-row"><a id="workspace-update" href="#updates">View activity</a><span id="workspace-update-count"></span><div class="update-controls"><button class="button" id="update-prev" type="button" aria-label="Previous update">‹</button><button class="button" id="update-pause" type="button" aria-label="Pause automatic updates" aria-pressed="false">Pause</button><button class="button" id="update-next" type="button" aria-label="Next update">›</button><button class="button" id="updates-open" type="button" aria-haspopup="dialog" aria-controls="updates-dialog">View all</button></div></div></div>
         <div class="view-switch" role="group" aria-label="Workspace view"><button id="map-view" type="button" aria-pressed="true">▦ Map</button><button id="list-view" type="button" aria-pressed="false">☷ List</button></div>
       </div>
       <div id="map-container" class="map-container" role="region" aria-label="Campus map. Scroll horizontally on small screens." tabindex="0">

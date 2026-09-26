@@ -73,7 +73,7 @@ Invalid saved registration data is preserved with an error. Duplicate/reserved I
 
 ## Workspace status
 
-The home header shows browser-local pending/urgent request counts and a single-line activity carousel instead of the introductory tagline. It reads current Control Tower request states and the saved AWS1 Content Studio draft timestamp without marking requests read. No team news or sample activity is fabricated. The line rotates every six seconds, pauses on hover, keyboard focus, page hiding, or explicit Pause, and starts paused for reduced motion. Previous/next and View all provide manual access; `#updates` shows the full local activity list. The timer stops away from Home. Courses are listed in the sidebar and their dashboard, not duplicated in the status header.
+The home header shows browser-local pending/urgent request counts and a single-line activity carousel instead of the introductory tagline. It reads current Control Tower request states and the saved AWS1 Content Studio draft timestamp without marking requests read. No team news or sample activity is fabricated. The line rotates every six seconds, pauses on hover, keyboard focus, page hiding, or explicit Pause, and starts paused for reduced motion. Previous/next provide manual access. View all opens a modal activity list over Home; requests link to their exact details and saved drafts link to their editor. Opening the list does not mark requests read. Escape, the close button, and the backdrop dismiss it with shared motion and return focus to View all. The ticker pauses while it is open. Legacy `#updates` links open the same popup over Home. The timer stops away from Home. Courses are listed in the sidebar and their dashboard, not duplicated in the status header.
 
 
 ## Course maps
