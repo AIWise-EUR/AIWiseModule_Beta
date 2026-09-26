@@ -3,7 +3,7 @@
   const publishedUrl = 'https://aiwise-eur.github.io/AI-Wise/';
   const areas = {
     profiler: {name: 'Course Profiler', icon: 'profiler-building', note: 'Teacher workspace for course information and educational intent.', action: 'Open teacher tool'},
-    courses: {name: 'Courses', icon: 'courses-building', note: 'Register courses and manage their basic information across the workspace.', action: 'Manage courses'},
+    courses: {name: 'Courses', icon: 'courses-notes', note: 'Register courses and manage their basic information across the workspace.', action: 'Manage courses'},
     manager: {name: 'Course Profiler Manager', icon: 'profiler-building', note: 'Development team workspace for reviewing teacher profiles and preparing course packages.', action: 'Enter Manager'},
     studio: {name: 'Content Studio', icon: 'studio-building', note: 'Shape the Course Specific content within AI Orientation.', action: 'Enter Content Studio'},
     common: {name: 'Common Studio', icon: 'studio-building', note: 'Shape AI-Wise Common content shared across courses.', action: 'Enter Common Studio'},

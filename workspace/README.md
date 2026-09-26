@@ -64,7 +64,7 @@ Serve the repository through a local HTTP server and open `/workspace/`. Also te
 
 ## Courses
 
-`#courses` is the shared course management entry, directly below Course Profiler in the sidebar and the left column of the home map. It also appears in the home list view. Course Profiler Manager and Content Studio list the registered courses, followed by an Add course card. Common Studio also links to registration with the same card; its C1–C3 items remain shared content, not per-course copies.
+`#courses` is the shared course management entry, directly below Course Profiler in the sidebar and the left column of the home map. Its icon is a stack of notebooks, with map paths to Course Profiler Manager, Content Studio, and Common Studio. These paths show access to shared course registration, not new approval routes. It also appears in the home list view. Course Profiler Manager and Content Studio list the registered courses, followed by an Add course card. Common Studio also links to registration with the same card; its C1–C3 items remain shared content, not per-course copies.
 
 `courses.js` loads existing courses from `common/courses/index.json`; the generic Others configuration is not treated as an individual course. Add course registers a unique, fixed ID and short/full names. Edit course details updates names. These changes are browser-local under `aiwise_workspace_courses_v1`; they do not modify runtime JSON, teacher profiles, content drafts, Control Tower records, or Published. New registrations appear in Manager and Content Studio with Setup needed until their content and editors are connected. The AWS1 C2 editor and PED Beta preview retain their existing destinations. Shared persistence and automatic content creation are not implemented.
 

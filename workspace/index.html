@@ -20,7 +20,7 @@
   <script src="../pipelines/course-loader.js?v=studio-renderer-v1" data-render-only defer></script>
   <script src="content-studio.js?v=workspace-motion-v1" defer></script>
   <script src="courses.js?v=courses-v1" defer></script>
-  <script src="workspace.js?v=courses-map-v1" defer></script>
+  <script src="workspace.js?v=courses-links-v1" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to workspace</a>
@@ -33,16 +33,16 @@
         <div class="campus">
           <div class="product-zone"><span>Product Review &amp; Release</span></div>
           <svg class="roads" viewBox="0 0 1440 780" preserveAspectRatio="none" aria-hidden="true">
-            <path class="road-border" d="M115 145 H415 M430 145 C560 145 580 390 710 390 M430 390 H710 M430 635 C560 635 580 390 710 390 M710 390 H1295"/>
-            <path class="road" d="M115 145 H415 M430 145 C560 145 580 390 710 390 M430 390 H710 M430 635 C560 635 580 390 710 390 M710 390 H1295"/>
-            <path class="road-dash" d="M115 145 H415 M430 145 C560 145 580 390 710 390 M430 390 H710 M430 635 C560 635 580 390 710 390 M710 390 H1295"/>
+            <path class="road-border" d="M195 390 H415 M195 390 H248 Q268 390 268 370 V165 Q268 145 288 145 H415 M195 390 H248 Q268 390 268 410 V615 Q268 635 288 635 H415 M115 145 H415 M430 145 C560 145 580 390 710 390 M430 390 H710 M430 635 C560 635 580 390 710 390 M710 390 H1295"/>
+            <path class="road" d="M195 390 H415 M195 390 H248 Q268 390 268 370 V165 Q268 145 288 145 H415 M195 390 H248 Q268 390 268 410 V615 Q268 635 288 635 H415 M115 145 H415 M430 145 C560 145 580 390 710 390 M430 390 H710 M430 635 C560 635 580 390 710 390 M710 390 H1295"/>
+            <path class="road-dash" d="M195 390 H415 M195 390 H248 Q268 390 268 370 V165 Q268 145 288 145 H415 M195 390 H248 Q268 390 268 410 V615 Q268 635 288 635 H415 M115 145 H415 M430 145 C560 145 580 390 710 390 M430 390 H710 M430 635 C560 635 580 390 710 390 M710 390 H1295"/>
             <g class="parcel" transform="translate(548 210)"><rect width="19" height="19" rx="4"/><path d="M9 0v8m-9 1h19"/></g>
             <g class="parcel teal" transform="translate(548 380)"><rect width="19" height="19" rx="4"/><path d="M9 0v8m-9 1h19"/></g>
             <g class="parcel" transform="translate(548 550)"><rect width="19" height="19" rx="4"/><path d="M9 0v8m-9 1h19"/></g>
             <path class="direction" d="m255 138 8 7-8 7 M1138 383 l8 7-8 7"/>
           </svg>
           <a class="destination profiler" href="course-profiler/"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#profiler-building"/></svg><strong>Course Profiler</strong><span>Teacher · Course design</span></a>
-          <a class="destination courses" href="#courses"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#courses-building"/></svg><strong>Courses</strong><span>Course registration &amp; management</span></a>
+          <a class="destination courses" href="#courses"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#courses-notes"/></svg><strong>Courses</strong><span>Course registration &amp; management</span></a>
           <a class="destination profiler-manager" href="#manager"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#profiler-building"/></svg><strong>Course Profiler Manager</strong><span>Development team · Course packages</span></a>
           <a class="destination studio" href="#studio"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#studio-building"/></svg><strong>Content Studio</strong><span>Course specific orientation</span></a>
           <a class="destination common-studio" href="#common"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#studio-building"/></svg><strong>Common Studio</strong><span>AI-Wise Common content</span></a>
@@ -74,16 +74,17 @@
         <g stroke="#5F6D9C" stroke-width="4" stroke-linecap="round"><path d="M101 78h39m-39 11h39m-39 11h39"/></g>
         <g fill="#453573"><circle cx="128" cy="78" r="5"/><circle cx="111" cy="89" r="5"/><circle cx="131" cy="100" r="5"/></g>
       </symbol>
-      <symbol id="courses-building" viewBox="0 0 240 180">
-        <ellipse cx="120" cy="171" rx="105" ry="8" fill="#D6D0C3"/>
-        <path d="M28 66h184v101H28z" fill="url(#wall)" stroke="#453573" stroke-width="2"/>
-        <path d="M17 69 41 30h158l25 39z" fill="#7E97A2" stroke="#453573" stroke-width="2"/>
-        <path d="m77 64 43-43 43 43v103H77z" fill="#FCFBF8" stroke="#453573" stroke-width="2"/>
-        <path d="M101 167v-38h38v38M120 130v37" fill="#AAA0BB" stroke="#453573" stroke-width="2"/>
-        <g fill="#D5CEE2" stroke="#6B6478" stroke-width="2"><path d="M42 83h20v23H42zM178 83h20v23h-20zM42 122h20v23H42zM178 122h20v23h-20z"/></g>
-        <rect x="94" y="65" width="52" height="49" rx="4" fill="#EAE7DE" stroke="#6B6478" stroke-width="2"/>
-        <path d="M109 65v49M116 77h21m-21 12h21m-21 12h14" fill="none" stroke="#5F6D9C" stroke-width="3" stroke-linecap="round"/>
-        <path d="M90 76h8m-8 13h8m-8 13h8" stroke="#453573" stroke-width="3" stroke-linecap="round"/>
+      <symbol id="courses-notes" viewBox="0 0 240 180">
+        <ellipse cx="120" cy="171" rx="94" ry="7" fill="#D6D0C3"/>
+        <g stroke="#453573" stroke-width="2.5" stroke-linejoin="round">
+          <rect x="34" y="21" width="112" height="132" rx="7" fill="#D5CEE2" transform="rotate(-9 90 87)"/>
+          <rect x="64" y="25" width="112" height="132" rx="7" fill="#7E97A2" transform="rotate(5 120 91)"/>
+          <rect x="87" y="37" width="112" height="132" rx="7" fill="#FCFBF8"/>
+          <path d="M108 38v130" fill="none" stroke="#AAA0BB"/>
+        </g>
+        <path d="M81 57h13m-13 25h13m-13 25h13m-13 25h13m-13 24h13" stroke="#453573" stroke-width="4" stroke-linecap="round"/>
+        <rect x="122" y="55" width="59" height="23" rx="4" fill="#EAE7DE"/>
+        <path d="M125 94h52m-52 17h52m-52 17h52m-52 17h34" stroke="#5F6D9C" stroke-width="3" stroke-linecap="round"/>
       </symbol>
       <symbol id="studio-building" viewBox="0 0 240 180">
         <ellipse cx="120" cy="171" rx="105" ry="8" fill="#D6D0C3"/>
