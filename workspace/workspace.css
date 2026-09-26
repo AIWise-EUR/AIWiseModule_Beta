@@ -48,6 +48,7 @@ p { line-height: 1.62; }
 .destination strong { font: 700 17px var(--font-heading); color: var(--ink); margin-top: 6px; }
 .destination span { font: 11px/1.5 var(--font-mono); color: var(--ink-3); margin-top: 5px; }
 .profiler { left: 0; top: 2%; width: 16.5%; }
+.courses { left: 0; top: 35%; width: 16.5%; }
 .profiler-manager { left: 20%; top: 2%; width: 18%; }
 .studio { left: 20%; top: 35%; width: 18%; }
 .common-studio { left: 20%; top: 68%; width: 18%; }

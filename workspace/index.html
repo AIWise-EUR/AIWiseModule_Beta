@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="theme.css">
-  <link rel="stylesheet" href="workspace.css?v=courses-v1">
+  <link rel="stylesheet" href="workspace.css?v=courses-map-v1">
   <link rel="stylesheet" href="content-studio.css?v=workspace-motion-v1">
   <link rel="stylesheet" href="control-tower.css?v=requests-v1">
   <link rel="stylesheet" href="sidebar.css?v=sidebar-overlay-v2">
@@ -20,7 +20,7 @@
   <script src="../pipelines/course-loader.js?v=studio-renderer-v1" data-render-only defer></script>
   <script src="content-studio.js?v=workspace-motion-v1" defer></script>
   <script src="courses.js?v=courses-v1" defer></script>
-  <script src="workspace.js?v=courses-v1" defer></script>
+  <script src="workspace.js?v=courses-map-v1" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to workspace</a>
@@ -42,6 +42,7 @@
             <path class="direction" d="m255 138 8 7-8 7 M1138 383 l8 7-8 7"/>
           </svg>
           <a class="destination profiler" href="course-profiler/"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#profiler-building"/></svg><strong>Course Profiler</strong><span>Teacher · Course design</span></a>
+          <a class="destination courses" href="#courses"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#courses-building"/></svg><strong>Courses</strong><span>Course registration &amp; management</span></a>
           <a class="destination profiler-manager" href="#manager"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#profiler-building"/></svg><strong>Course Profiler Manager</strong><span>Development team · Course packages</span></a>
           <a class="destination studio" href="#studio"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#studio-building"/></svg><strong>Content Studio</strong><span>Course specific orientation</span></a>
           <a class="destination common-studio" href="#common"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#studio-building"/></svg><strong>Common Studio</strong><span>AI-Wise Common content</span></a>
@@ -72,6 +73,17 @@
         <rect x="92" y="65" width="57" height="46" rx="5" fill="#EAE7DE"/>
         <g stroke="#5F6D9C" stroke-width="4" stroke-linecap="round"><path d="M101 78h39m-39 11h39m-39 11h39"/></g>
         <g fill="#453573"><circle cx="128" cy="78" r="5"/><circle cx="111" cy="89" r="5"/><circle cx="131" cy="100" r="5"/></g>
+      </symbol>
+      <symbol id="courses-building" viewBox="0 0 240 180">
+        <ellipse cx="120" cy="171" rx="105" ry="8" fill="#D6D0C3"/>
+        <path d="M28 66h184v101H28z" fill="url(#wall)" stroke="#453573" stroke-width="2"/>
+        <path d="M17 69 41 30h158l25 39z" fill="#7E97A2" stroke="#453573" stroke-width="2"/>
+        <path d="m77 64 43-43 43 43v103H77z" fill="#FCFBF8" stroke="#453573" stroke-width="2"/>
+        <path d="M101 167v-38h38v38M120 130v37" fill="#AAA0BB" stroke="#453573" stroke-width="2"/>
+        <g fill="#D5CEE2" stroke="#6B6478" stroke-width="2"><path d="M42 83h20v23H42zM178 83h20v23h-20zM42 122h20v23H42zM178 122h20v23h-20z"/></g>
+        <rect x="94" y="65" width="52" height="49" rx="4" fill="#EAE7DE" stroke="#6B6478" stroke-width="2"/>
+        <path d="M109 65v49M116 77h21m-21 12h21m-21 12h14" fill="none" stroke="#5F6D9C" stroke-width="3" stroke-linecap="round"/>
+        <path d="M90 76h8m-8 13h8m-8 13h8" stroke="#453573" stroke-width="3" stroke-linecap="round"/>
       </symbol>
       <symbol id="studio-building" viewBox="0 0 240 180">
         <ellipse cx="120" cy="171" rx="105" ry="8" fill="#D6D0C3"/>
