@@ -74,6 +74,7 @@
     if (part === 'prompts' || part === 'activities') { renderProfiler(part); return; }
     if (part) { renderNotFound(); return; }
     shell('manager','Course Profiler Manager',areas.manager.note,
+      '<div class="toolbar">'+button('Open Course Profiler','course-profiler/',true)+'</div>'+
       notice('The teacher uses Course Profiler to express course goals and context. The development team reviews and refines that output here. Control Tower handles approval and transfer between areas.')+
       '<div class="cards">'+
       card('Teacher course profile','Open the existing course design tool. Profiles currently stay in this browser.','course-profiler/','Open Course Profiler','Teacher tool')+
@@ -116,7 +117,7 @@
     shell('common','Common Studio',areas.common.note,
       '<p class="notice">This studio is for shared module content, structure, rules, and templates. Editing is not connected yet. You can inspect the current Common content in Beta below.</p>'+
       '<h2 class="section-label">AI-Wise Common · Current Beta previews</h2><div class="cards">'+
-      ['c1','c2','c3'].map(id=>card(items[id].name,'Shared AI Orientation content.','#beta/'+id,'View in Beta')).join('')+window.AIWiseCourses.addCard()+
+      ['c1','c2','c3'].map(id=>card(items[id].name,'Shared AI Orientation content.','#beta/'+id,'View in Beta')).join('')+
       '</div><div class="toolbar">'+button('View Common Studio requests','#tower/common')+'</div>',false);
   }
   function renderBeta(part) {

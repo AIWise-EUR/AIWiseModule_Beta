@@ -42,6 +42,46 @@
       }).join('') + addCard();
     } catch (error) { return `<p class="notice">${esc(error.message)}</p>` + addCard(); }
   }
+  function courseMap(course) {
+    const campus = document.querySelector('#home .campus').cloneNode(true);
+    campus.classList.add('course-campus');
+    const targets = {
+      'profiler-manager': {href: `#courses/${course.id}/manager`, note: `${course.short_name} · Course materials`},
+      studio: {href: course.id === 'aws1' ? '#studio/aws1' : '', note: course.id === 'aws1' ? `${course.short_name} · C2 examples` : 'Course editor not connected'},
+      'common-studio': {href:'#common', note:'Shared across all courses'},
+      tower: {href:'', note:'Course request view not connected'},
+      beta: {href:course.connected ? `#beta/${course.id}` : '', note:course.connected ? `${course.short_name} · Working version` : 'Course preview not connected'},
+      published: {href:course.id === 'aws1' ? 'https://aiwise-eur.github.io/AI-Wise/' : '', note:course.id === 'aws1' ? `${course.short_name} · Student site ↗` : 'Course release not connected'}
+    };
+    for (const [name, target] of Object.entries(targets)) {
+      const node = campus.querySelector('.destination.' + name);
+      node.querySelector('span').textContent = target.note;
+      if (name === 'common-studio') node.classList.add('course-shared');
+      if (target.href) node.setAttribute('href', target.href);
+      else {
+        const placeholder = document.createElement('div');
+        placeholder.className = node.className + ' course-unavailable';
+        placeholder.innerHTML = node.innerHTML;
+        placeholder.setAttribute('aria-label', node.querySelector('strong').textContent + ': ' + target.note);
+        node.replaceWith(placeholder);
+      }
+    }
+    // The existing student link is not an approval or release action for this course.
+    const gate = campus.querySelector('.approval-gate');
+    const gateNote = document.createElement('div'); gateNote.className = gate.className + ' course-unavailable';
+    gateNote.innerHTML = gate.innerHTML; gateNote.setAttribute('aria-label','Approval and release are not connected'); gate.replaceWith(gateNote);
+    return `<div id="course-map" class="map-container" role="region" aria-label="${esc(course.short_name)} course workspaces. Scroll horizontally on small screens." tabindex="0">${campus.outerHTML}</div>`;
+  }
+  function wireCourseViews() {
+    for (const view of ['map','list']) document.getElementById('course-' + view + '-view').addEventListener('click', () => {
+      for (const mode of ['map','list']) {
+        const selected = mode === view;
+        document.getElementById('course-' + mode + '-view').setAttribute('aria-pressed', String(selected));
+        document.getElementById(mode === 'map' ? 'course-map' : 'course-material-list').hidden = !selected;
+      }
+      window.AIWiseMotion.enter(document.getElementById(view === 'map' ? 'course-map' : 'course-material-list'));
+    });
+  }
   function values() { return form ? JSON.stringify([...new FormData(form).entries()]) : ''; }
   function dirty() { return !!form && values() !== initial; }
   function canLeave() { return !dirty() || window.confirm('Leave without saving these course details?'); }
@@ -80,15 +120,25 @@
       return;
     }
     if (part) {
-      const c = all.find(c => c.id === part);
-      if (!c) { missing(shell); return; }
+      const [id, view] = part.split('/');
+      const c = all.find(c => c.id === id);
+      if (!c || (view && view !== 'manager')) { missing(shell); return; }
+      if (view === 'manager') {
+        shell('courses', `${c.short_name} · Course Profiler Manager`, c.full_name,
+          `<div class="toolbar"><a class="button primary" href="course-profiler/">Open Course Profiler</a><a class="button" href="#courses/${c.id}">Back to course</a></div><p class="course-local-note">The teacher tool opens its current browser profile. It does not automatically load this course.</p>` +
+          (c.id === 'aws1' ? '<div class="cards"><a class="card link" href="#manager/prompts"><h3>Preset Prompts</h3><p>AWS1 course and activity prompts.</p><span class="arrow">Read prompts →</span></a><a class="card link" href="#manager/activities"><h3>AI Activities</h3><p>The seven AWS1 activity pages.</p><span class="arrow">View activities →</span></a></div>' : '<div class="empty-state"><h2>Course materials not connected</h2><p>This course does not yet have a connected profile, preset prompts, or activity package.</p></div>'), false);
+        return;
+      }
       const destination = (title, description, href, action) => `<div class="card"><h3>${title}</h3><p>${description}</p>${href ? `<a class="button" href="${href}">${action}</a>` : '<span class="badge">Setup needed</span>'}</div>`;
-      shell('courses', c.full_name, `${c.short_name} · Course workspace`, `<div class="toolbar"><a class="button" href="#courses/${c.id}/edit">Edit course details</a><a class="button" href="#courses">All courses</a></div><p class="course-local-note">Course registration is local to this browser. Open a connected workspace below.</p><div class="cards course-hub">` +
-        destination('Course Profiler Manager', c.id === 'aws1' ? 'Review the course and activity prompts.' : 'A course profile and activity package still need to be connected.', c.id === 'aws1' ? '#manager/prompts' : '', 'View preset prompts') +
+      shell('courses', c.full_name, `${c.short_name} · Course workspace`, `<div class="toolbar course-view-toolbar"><div class="view-switch" role="group" aria-label="Course view"><button id="course-map-view" type="button" aria-pressed="true">▦ Map</button><button id="course-list-view" type="button" aria-pressed="false">☷ List</button></div><a class="button" href="#courses/${c.id}/edit">Edit course details</a><a class="button" href="#courses">All courses</a></div>` + courseMap(c) + `<p class="course-local-note">${esc(c.short_name)} materials · Common Studio is shared across courses and shown in grayscale. Unconnected areas are labeled on the map.</p><div id="course-material-list" class="cards course-hub" hidden>` +
+        destination('Course Profiler Manager', c.id === 'aws1' ? 'Review the course and activity prompts.' : 'A course profile and activity package still need to be connected.', `#courses/${c.id}/manager`, 'Open course materials') +
         destination('Content Studio', c.id === 'aws1' ? 'Edit the course examples in AI Orientation.' : 'The Orientation editor is not connected for this course yet.', c.id === 'aws1' ? '#studio/aws1' : '', 'Open editor') +
         destination('AI Activities', c.id === 'aws1' ? 'Inspect the seven existing activity pages.' : 'Activity pages still need to be connected.', c.id === 'aws1' ? '#manager/activities' : '', 'View activities') +
         destination('AI-Wise Beta', c.connected ? 'Preview this course in the current Beta module.' : 'A Beta module is not connected yet.', c.connected ? '#beta/' + c.id : '', 'Open Beta') +
+        destination('Control Tower', 'The course request view is not connected yet.', '', '') +
+        destination('AI-Wise Published', c.id === 'aws1' ? 'Open the existing student site for AWS1.' : 'A student release is not connected for this course.', c.id === 'aws1' ? 'https://aiwise-eur.github.io/AI-Wise/' : '', 'Open student site') +
         destination('Common Studio', 'Shared content used across courses.', '#common', 'Open shared content') + '</div>', false);
+      wireCourseViews();
       return;
     }
     shell(null, 'Courses', 'Choose a course to open its workspace.', '<p class="course-local-note">Course registration and name changes are saved in this browser.</p><div class="cards course-dashboard">' + all.map((c, index) => `<a class="card link course-tile course-tone-${index % 3}" href="#courses/${c.id}"><div class="course-cover"><span>${esc(c.short_name)}</span></div><div class="course-tile-body"><span class="badge">${c.connected ? 'Connected workspaces' : 'Setup needed'}</span><h3>${esc(c.full_name)}</h3><p>${esc(c.id)}</p><span class="arrow">Open course →</span></div></a>`).join('') + addCard() + '</div>', false);
