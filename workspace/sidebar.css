@@ -50,3 +50,9 @@
 @media (prefers-reduced-motion: reduce) {
   .workspace-sidebar, .sidebar-backdrop { transition: none; }
 }
+.sidebar-section-label { margin: 0 12px 8px; color: var(--ink-3); font: 10px var(--font-mono); text-transform: uppercase; letter-spacing: .07em; }
+.workspace-sidebar .sidebar-courses { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 12px; }
+#sidebar-course-list { display: grid; gap: 3px; }
+.workspace-sidebar #sidebar-course-list a { margin-left: 20px; padding-left: 24px; font-size: 12px; overflow-wrap: anywhere; }
+.sidebar-course-status { margin: 8px 12px; color: var(--ink-3); font: 11px/1.5 var(--font-body); }
+.workspace-sidebar .sidebar-add-course { color: var(--signal); }

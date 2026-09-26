@@ -7,7 +7,6 @@
   const areas = [
     ['home', 'Workspace', `${base}#home`, '▦'],
     ['profiler', 'Course Profiler', `${base}course-profiler/`, '◇'],
-    ['courses', 'Courses', `${base}#courses`, '▦'],
     ['manager', 'Course Profiler Manager', `${base}#manager`, '▧'],
     ['studio', 'Content Studio', `${base}#studio`, '▤'],
     ['common', 'Common Studio', `${base}#common`, '▥'],
@@ -20,7 +19,8 @@
   sidebar.className = 'workspace-sidebar';
   sidebar.setAttribute('aria-label', 'Workspace sidebar');
   sidebar.innerHTML = `<div class="sidebar-heading"><a class="brand" href="${base}#home" aria-label="AI-Wise workspace home"><strong>AI-Wise</strong><span>Workspace</span></a><button type="button" class="sidebar-toggle" aria-label="Hide sidebar" aria-controls="workspace-sidebar">${icon}</button></div>
-    <nav class="workspace-navigation" aria-label="Workspace areas">${areas.map(([id, name, href, glyph]) => `<a href="${href}" data-area="${id}"><span class="sidebar-icon" aria-hidden="true">${glyph}</span><span>${name}</span></a>`).join('')}</nav>
+    <p class="sidebar-section-label">Workspaces</p><nav class="workspace-navigation" aria-label="Workspace areas">${areas.map(([id, name, href, glyph]) => `<a href="${href}" data-area="${id}"><span class="sidebar-icon" aria-hidden="true">${glyph}</span><span>${name}</span></a>`).join('')}</nav>
+    <nav class="workspace-navigation sidebar-courses" aria-label="Courses"><a href="${base}#courses" data-area="courses"><span class="sidebar-icon" aria-hidden="true">▦</span><span>Courses</span></a><div id="sidebar-course-list"><p class="sidebar-course-status">Loading courses…</p></div><a class="sidebar-add-course" href="${base}#courses/new"><span class="sidebar-icon" aria-hidden="true">+</span><span>Add course</span></a></nav>
     <div class="sidebar-bottom"><a class="sidebar-module" href="${base}../common/lobby.html">Open Beta module ↗</a><span class="sidebar-note">Prototype</span></div>`;
   const rail = document.createElement('div');
   rail.className = 'sidebar-rail';
@@ -59,6 +59,7 @@
   }
   function toggle(value, focus = true) {
     open = value;
+    if (value) renderCourses();
     paint();
     if (focus) (open ? hide : show).focus({preventScroll: true});
   }
@@ -88,7 +89,34 @@
       if (link.dataset.area === active) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
+    sidebar.querySelectorAll('[data-course-id]').forEach(link => {
+      if (!profiler && area === 'courses' && link.dataset.courseId === part) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
+    const add = sidebar.querySelector('.sidebar-add-course');
+    if (!profiler && area === 'courses' && part === 'new') add.setAttribute('aria-current', 'page');
+    else add.removeAttribute('aria-current');
   }
+  function renderCourses() {
+    const container = document.getElementById('sidebar-course-list');
+    try {
+      const nodes = window.AIWiseCourses.list().map(course => {
+        const link = document.createElement('a');
+        link.href = `${base}#courses/${course.id}`;
+        link.dataset.courseId = course.id; link.textContent = course.full_name;
+        link.title = `${course.short_name} · ${course.full_name}`; return link;
+      });
+      container.replaceChildren(...nodes);
+    } catch {
+      const message = document.createElement('p'); message.className = 'sidebar-course-status';
+      message.textContent = 'Course list unavailable. Open Courses for details.'; container.replaceChildren(message);
+    }
+    markCurrent();
+  }
+  window.AIWiseSidebar = {markCurrent};
+  window.AIWiseCourses.ready.then(renderCourses);
+  window.addEventListener('aiwise:courses-changed', renderCourses);
+  window.addEventListener('storage', event => { if (event.key === 'aiwise_workspace_courses_v1' || event.key === null) renderCourses(); });
   // The workspace router owns active state after its unsaved-change guard runs.
   paint();
   markCurrent();

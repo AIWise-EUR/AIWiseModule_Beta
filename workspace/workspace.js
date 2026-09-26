@@ -151,13 +151,16 @@
       if (link.dataset.area === activeArea) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
+    window.AIWiseSidebar.markCurrent();
     const isHome=area==='home';home.hidden=!isHome;room.hidden=isHome;
+    window.AIWiseOverview.setHome(isHome);
     if(isHome) { document.title='AI-Wise Workspace'; window.AIWiseMotion.enter(home); }
     else {
       if(area==='profiler')renderProfiler(part);
       else if(area==='manager')renderManager(part);
       else if(area==='studio')renderStudio(part);
       else if(area==='courses')window.AIWiseCourses.render(part, shell);
+      else if(area==='updates')window.AIWiseOverview.render(shell);
       else if(area==='common')renderCommon();
       else if(area==='beta')renderBeta(part);
       else if(area==='tower')renderTower(part);

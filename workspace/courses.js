@@ -5,7 +5,8 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let baseline = [], loadError = '', form = null, initial = '', snapshot = null;
   const valid = c => c && /^[a-z][a-z0-9-]{0,39}$/.test(c.id) && typeof c.short_name === 'string' && c.short_name.trim().length > 0 && c.short_name.length <= 40 && typeof c.full_name === 'string' && c.full_name.trim().length > 0 && c.full_name.length <= 160;
-  const ready = fetch('../common/courses/index.json').then(r => { if (!r.ok) throw Error(); return r.json(); }).then(data => {
+  const root = new URL('../', document.currentScript.src);
+  const ready = fetch(new URL('common/courses/index.json', root)).then(r => { if (!r.ok) throw Error(); return r.json(); }).then(data => {
     if (!Array.isArray(data) || !data.every(valid) || new Set(data.map(c => c.id)).size !== data.length) throw Error();
     baseline = data;
   }).catch(() => { loadError = 'The course list could not be loaded. Reload the page to try again.'; });
@@ -73,7 +74,7 @@
           const entries = current.entries.filter(c => c.id !== course.id).concat(course);
           try { localStorage.setItem(KEY, JSON.stringify({schema:1, courses:entries})); }
           catch { throw Error('The course could not be saved. Keep this form open and try again.'); }
-          initial = values(); location.hash = '#courses/' + course.id;
+          initial = values(); window.dispatchEvent(new Event('aiwise:courses-changed')); location.hash = '#courses/' + course.id;
         } catch (error) { message.textContent = error.message; }
       });
       return;
@@ -81,10 +82,16 @@
     if (part) {
       const c = all.find(c => c.id === part);
       if (!c) { missing(shell); return; }
-      shell(null, c.full_name, `${c.short_name} · ${c.id}`, notice + `<div class="toolbar"><a class="button primary" href="#courses/${c.id}/edit">Edit course details</a><a class="button" href="#courses">All courses</a></div><div class="cards"><div class="card"><h3>Course Profiler Manager</h3><p>${c.id === 'aws1' ? 'Existing AWS1 prompts and activities are available in Manager.' : 'A course profile and activity package still need to be connected.'}</p><a class="button" href="#manager">Open Manager</a></div><div class="card"><h3>Content Studio</h3><p>${c.id === 'aws1' ? 'The C2 example editor is connected.' : c.id === 'ped' ? 'A Beta preview is available. The editor is not connected yet.' : 'Orientation content and its editor still need to be connected.'}</p>${c.id === 'aws1' ? '<a class="button" href="#studio/aws1">Open editor</a>' : c.id === 'ped' ? '<a class="button" href="#beta/ped">Open Beta preview</a>' : '<span class="badge">Setup needed</span>'}</div></div>`, false);
+      const destination = (title, description, href, action) => `<div class="card"><h3>${title}</h3><p>${description}</p>${href ? `<a class="button" href="${href}">${action}</a>` : '<span class="badge">Setup needed</span>'}</div>`;
+      shell('courses', c.full_name, `${c.short_name} · Course workspace`, `<div class="toolbar"><a class="button" href="#courses/${c.id}/edit">Edit course details</a><a class="button" href="#courses">All courses</a></div><p class="course-local-note">Course registration is local to this browser. Open a connected workspace below.</p><div class="cards course-hub">` +
+        destination('Course Profiler Manager', c.id === 'aws1' ? 'Review the course and activity prompts.' : 'A course profile and activity package still need to be connected.', c.id === 'aws1' ? '#manager/prompts' : '', 'View preset prompts') +
+        destination('Content Studio', c.id === 'aws1' ? 'Edit the course examples in AI Orientation.' : 'The Orientation editor is not connected for this course yet.', c.id === 'aws1' ? '#studio/aws1' : '', 'Open editor') +
+        destination('AI Activities', c.id === 'aws1' ? 'Inspect the seven existing activity pages.' : 'Activity pages still need to be connected.', c.id === 'aws1' ? '#manager/activities' : '', 'View activities') +
+        destination('AI-Wise Beta', c.connected ? 'Preview this course in the current Beta module.' : 'A Beta module is not connected yet.', c.connected ? '#beta/' + c.id : '', 'Open Beta') +
+        destination('Common Studio', 'Shared content used across courses.', '#common', 'Open shared content') + '</div>', false);
       return;
     }
-    shell(null, 'Courses', 'Manage course registration and basic information across the workspace.', notice + '<div class="cards">' + all.map(c => `<a class="card link" href="#courses/${c.id}"><span class="badge">${c.connected ? 'Existing course' : 'Setup needed'}</span><h3>${esc(c.full_name)}</h3><p>${esc(c.short_name)} · ${esc(c.id)}</p><span class="arrow">Manage course →</span></a>`).join('') + addCard() + '</div>', false);
+    shell(null, 'Courses', 'Choose a course to open its workspace.', '<p class="course-local-note">Course registration and name changes are saved in this browser.</p><div class="cards course-dashboard">' + all.map((c, index) => `<a class="card link course-tile course-tone-${index % 3}" href="#courses/${c.id}"><div class="course-cover"><span>${esc(c.short_name)}</span></div><div class="course-tile-body"><span class="badge">${c.connected ? 'Connected workspaces' : 'Setup needed'}</span><h3>${esc(c.full_name)}</h3><p>${esc(c.id)}</p><span class="arrow">Open course →</span></div></a>`).join('') + addCard() + '</div>', false);
   }
   function missing(shell) { shell(null, 'Course not found', 'This course is not registered in this browser.', '<a class="button" href="#courses">All courses</a>', false); }
   window.addEventListener('beforeunload', event => { if (dirty()) { event.preventDefault(); event.returnValue = ''; } });

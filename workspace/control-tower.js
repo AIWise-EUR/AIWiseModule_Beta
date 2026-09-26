@@ -271,5 +271,11 @@
     if(dirty)fail(Error('Records changed in another tab. Your unsaved text is still here; reload before saving.'));
     else refresh();
   }});
-  window.AIWiseControlTower={render,dispose,canLeave:()=>!dirty||confirm('Leave without saving your changes?')};
+  function getOverview() {
+    const requests = read().requests;
+    return { pending: requests.filter(r => r.status === 'pending').length,
+      urgent: requests.filter(r => r.status === 'pending' && r.priority === 'urgent').length,
+      updates: requests.map(r => ({title: `${r.title || 'Untitled request'} · ${statuses[r.status]}`, href: href(r.id), at: r.events.at(-1)?.at || r.submittedAt || ''})) };
+  }
+  window.AIWiseControlTower={render,dispose,overview:getOverview,canLeave:()=>!dirty||confirm('Leave without saving your changes?')};
 })();
