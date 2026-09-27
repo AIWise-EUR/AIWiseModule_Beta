@@ -2,6 +2,14 @@
 
 The repository root opens this workspace. The existing Beta module remains available at `../common/lobby.html`.
 
+## Supabase connection foundation (27 September 2026)
+
+`supabase-config.js` contains the project's public URL and publishable key. `supabase-connection.js` exposes `AIWiseBackend.getClient()` (a lazy, shared Supabase JS 2.117.2 client) and `AIWiseBackend.checkConnection()` (a read-only Auth settings request). The latter verifies project reachability and public-key acceptance only; it does not verify table permissions or shared storage. These scripts are loaded by the workspace shell without starting requests on page load. The SDK is fetched from a pinned jsDelivr URL only when the client is requested.
+
+This is connection preparation, not an authenticated application or storage migration. All existing course registrations, drafts, and Control Tower records still use their original localStorage keys. No data is uploaded, no tables/policies are created, and no approval or publication behavior changes. Never add secret keys, service-role keys, database passwords, or access tokens to these browser files.
+
+Next: configure the team's login flow and allowed workspace URLs in Supabase; implement team membership, database tables and operation-specific RLS; then wire the first shared Beta review. Use the dedicated auth storage key and explicitly handle the selected login callback flow. Automatic URL session detection is disabled so it cannot consume the workspace's hash navigation. A login alone must not grant workspace membership. The Auth settings check currently reports email login enabled and public signup enabled; account admission still needs configuration for development-team use.
+
 ## Included
 
 The map and list views open Course Profiler, Course Profiler Manager, Content Studio, Common Studio, Control Tower, and Beta. Published links open the live student site at `https://aiwise-eur.github.io/AI-Wise/` in the same tab. The legacy `#published` route redirects there too. This is a link to the existing student site, not a new Control Tower release or an approval record. The Approval gate opens the Beta to Published submission route. Hash routes support browser back navigation and direct links.
