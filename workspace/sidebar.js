@@ -113,7 +113,7 @@
     }
     markCurrent();
   }
-  window.AIWiseSidebar = {markCurrent};
+  window.AIWiseSidebar = {markCurrent, close(focus = true) { toggle(false, focus); }};
   window.AIWiseCourses.ready.then(renderCourses);
   window.addEventListener('aiwise:courses-changed', renderCourses);
   window.addEventListener('storage', event => { if (event.key === 'aiwise_workspace_courses_v1' || event.key === null) renderCourses(); });

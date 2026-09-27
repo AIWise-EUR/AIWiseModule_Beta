@@ -6,9 +6,11 @@ The repository root opens this workspace. The existing Beta module remains avail
 
 `supabase-config.js` contains the project's public URL and publishable key. `supabase-connection.js` exposes `AIWiseBackend.getClient()` (a lazy, shared Supabase JS 2.117.2 client) and `AIWiseBackend.checkConnection()` (a read-only Auth settings request). The latter verifies project reachability and public-key acceptance only; it does not verify table permissions or shared storage. These scripts are loaded by the workspace shell without starting requests on page load. The SDK is fetched from a pinned jsDelivr URL only when the client is requested.
 
-This is connection preparation, not an authenticated application or storage migration. All existing course registrations, drafts, and Control Tower records still use their original localStorage keys. No data is uploaded, no tables/policies are created, and no approval or publication behavior changes. Never add secret keys, service-role keys, database passwords, or access tokens to these browser files.
+Email/password sign in and a development-team membership check are now available from the sidebar's Sign in button in both Workspace and Course Profiler. `auth.js` restores sessions, validates the user through Supabase Auth, and checks the administrator-managed `workspace_members` table. `auth-ui.js` provides the account dialog. Setup instructions and the required SQL migration are in `../supabase/README.md`; they still need to be applied by the project administrator. No application users are created automatically, and the UI does not offer public signup.
 
-Next: configure the team's login flow and allowed workspace URLs in Supabase; implement team membership, database tables and operation-specific RLS; then wire the first shared Beta review. Use the dedicated auth storage key and explicitly handle the selected login callback flow. Automatic URL session detection is disabled so it cannot consume the workspace's hash navigation. A login alone must not grant workspace membership. The Auth settings check currently reports email login enabled and public signup enabled; account admission still needs configuration for development-team use.
+Existing course registrations, drafts, and Control Tower records still use their original localStorage keys. Signing in does not upload them, and signing out does not erase them. The static prototype is still publicly accessible. The membership indicator does not protect existing static pages or local tools; future shared content operations must enforce membership and permissions in database RLS. Never add secret keys, service-role keys, database passwords, or access tokens to browser files.
+
+The password login has no redirect callback. Automatic URL session detection remains disabled so it cannot consume workspace hash navigation. Email-link login, password recovery, and OAuth are not implemented. Accounts and membership are separate: signing in alone does not grant membership. The initial project settings reported public signup enabled; administrator-only team enrollment is explained in the setup guide. No live Auth users, tables, or project settings were changed by adding these files.
 
 ## Included
 
@@ -58,7 +60,7 @@ Save draft stores only the C2 examples and their source baseline in `aiwise_cont
 
 Editing beyond AWS1 C2 examples, Common Studio editing, shared package storage, authenticated manager permissions, immutable artifact storage, release activation, restoration, and general Records Office persistence are not implemented. Beta annotations, the Published window viewer, and the full Course Profiler Manager workflow remain upcoming work. Local request decisions are available, but the live Published site is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
 
-This prototype has no authentication or access control. It should not be treated as a production administration console. No deployment configuration or Analytics collection is added.
+The account dialog adds authentication and a membership lookup, but local editing and request flows are not yet protected shared operations. This is not a production administration console. No Analytics collection is added.
 
 ## Shared workspace motion
 
