@@ -92,3 +92,11 @@
 .ct-previous summary { cursor:pointer; color:var(--signal); font-weight:600; margin-bottom:14px; }
 @media(max-width:1000px) { .ct-local,.ct-queue-head { align-items:start; flex-direction:column; gap:14px; } .ct-detail-grid { grid-template-columns:1fr; } }
 @media(max-width:600px) { .ct-filters,.ct-form-grid { grid-template-columns:1fr; } .ct-form,.ct-detail-card,.ct-previous { padding:18px; } .ct-local { padding:14px; } .ct-local form { min-width:0; width:100%; } .ct-local input { width:100%; } .ct-table { min-width:630px; } .ct-form-meta>span:last-child { margin-left:0; } .ct-overview>.toolbar { align-items:start; } .ct-overview .view-switch button { padding:8px 10px; font-size:12px; } }
+
+.ct-snapshot-item { padding:12px 0; border-bottom:1px solid var(--line); }
+.ct-snapshot-item summary { cursor:pointer; font-weight:600; font-size:13px; }
+.ct-snapshot-fields { margin:12px 0; }
+.ct-snapshot-fields dt { font-size:12px; font-weight:600; }
+.ct-snapshot-fields dd { margin:4px 0 14px; }
+.ct-snapshot-list { padding-left:22px; }
+.ct-snapshot-list > li { margin:12px 0; }

@@ -16,11 +16,11 @@ const server=http.createServer((req,res)=>{
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:process.env.STUDIO_TEST_MOTION || 'no-preference'});
  await context.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.abort());
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
- const ready=()=>page.waitForFunction(()=>document.querySelector('[data-cs-edit]')?.disabled===false && document.querySelector('iframe')?.title.includes((location.hash.split('/')[2] || 'c2').toUpperCase()));
+ const ready=()=>page.waitForFunction(()=>document.querySelector('#cs-example')?.disabled===false && document.querySelector('iframe')?.title.includes((location.hash.split('/')[2] || 'c2').toUpperCase()));
  const go=async(course,chapter)=>{await page.goto(`${origin}/workspace/#studio/${course}/${chapter}`);await ready();};
  const key=(id,ch)=>`aiwise_content_studio_${id}_${ch}_v1`;
  const stored=(id,ch)=>page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key(id,ch));
- const choose=async i=>{await page.locator('#cs-example').click();await page.locator(`[data-cs-choice="${i}"]`).click();await page.locator('[data-cs-edit]').click();};
+ const choose=async i=>{await page.locator('#cs-example').click();await page.locator(`[data-cs-choice="${i}"]`).click();await page.frameLocator('iframe').locator('#cs-item-'+(Number((await page.locator('[data-cs-count]').textContent()).match(/· (\d+)/)[1])-1)).click();};
  const saveClose=async()=>{await page.locator('.cs-editor [data-cs-save]').click();await page.locator('[data-cs-close]').first().click();};
  await go('ped','c2');
  assert.equal(await page.locator('nav[aria-label="Chapter"]').count(),0);

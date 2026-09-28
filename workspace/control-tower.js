@@ -28,12 +28,18 @@
   const badge = (text, style = '') => `<span class="ct-tag ${style}">${esc(text)}</span>`;
   const link = (text, url, primary = false) => `<a class="button${primary ? ' primary' : ''}" href="${url}">${esc(text)}</a>`;
   const note = text => `<p class="notice">${esc(text)}</p>`;
+  function validSnapshot(s) {
+    return s && s.schema === 1 && ['aws1','ped'].includes(s.course) && ['c2','c3'].includes(s.chapter) &&
+      Number.isFinite(Date.parse(s.savedAt)) && s.slots && typeof s.slots === 'object' && !Array.isArray(s.slots) &&
+      s.baseSlots && typeof s.baseSlots === 'object' && !Array.isArray(s.baseSlots) &&
+      Object.keys(s.slots).length > 0 && Object.keys(s.slots).every(path => path.startsWith(s.chapter + '.') && Object.hasOwn(s.baseSlots, path));
+  }
   function read() {
     const raw = localStorage.getItem(KEY);
     if (!raw) return { schema:1, requests:[] };
     let data;
     try { data = JSON.parse(raw); } catch { throw Error('Stored requests could not be read. Existing data has been left untouched.'); }
-    if (data.schema !== 1 || !Array.isArray(data.requests) || data.requests.some(r => !/^[a-f0-9-]{36}$/.test(r.id) || !Object.hasOwn(routes,r.route) || r.type !== routes[r.route].type || !Object.hasOwn(statuses,r.status) || !Array.isArray(r.events) || !r.seenBy || !r.author || !Number.isInteger(r.rev))) throw Error('Stored requests could not be read. Existing data has been left untouched.');
+    if (data.schema !== 1 || !Array.isArray(data.requests) || data.requests.some(r => !/^[a-f0-9-]{36}$/.test(r.id) || !Object.hasOwn(routes,r.route) || r.type !== routes[r.route].type || !Object.hasOwn(statuses,r.status) || !Array.isArray(r.events) || !r.seenBy || !r.author || !Number.isInteger(r.rev) || (r.contentSnapshot && !validSnapshot(r.contentSnapshot)))) throw Error('Stored requests could not be read. Existing data has been left untouched.');
     return data;
   }
   function write(operation) {
@@ -172,6 +178,7 @@
     const values = original || previous || {}, type=routes[route].type;
     show(original?'Edit draft':previous?'Resubmit request':'New request', label(route) + ' · ' + types[type],
       '<div class="toolbar">'+link('Back to requests','#tower/'+route)+(previous?link('Previous submission',href(previous.id)):'')+'</div>'+
+      (previous?.contentSnapshot ? note('The existing submitted content copy is retained here. To change the content itself, save and send a new draft from Content Studio.') + link('Open Content Studio', '#studio/' + previous.contentSnapshot.course + '/' + previous.contentSnapshot.chapter) : '')+
       (previous?note('This creates a new submission linked to the previous request. Explain the response to the review; the previous submission and decision remain unchanged.'):'')+
       `<form id="ct-request-form" class="ct-form"><div class="ct-form-meta">${badge(types[type])}<strong>${esc(label(route))}</strong><span>Requestor: ${esc(original?.author.name||person||'Set your name above')}</span></div>`+
       (!original&&!previous?`<label class="ct-field">Request route<select id="ct-route">${Object.keys(routes).map(id=>`<option value="${id}" ${id===route?'selected':''}>${esc(label(id))} · ${types[routes[id].type]}</option>`).join('')}</select></label>`:'')+
@@ -209,6 +216,7 @@
         }else{
           id=crypto.randomUUID();
           const request={...data,id,route,type,author:{name:person,key:personKey()},createdAt:now(),submittedAt:submit?now():null,status:submit?'pending':'draft',rev:1,parentId:previous?.id||null,seenBy:{},events:[]};
+          if (previous?.contentSnapshot) request.contentSnapshot = JSON.parse(JSON.stringify(previous.contentSnapshot));
           event(request,submit?'Submitted':'Draft saved');
           write(store=>{
             if(previous){const parent=store.requests.find(r=>r.id===previous.id);if(!parent||parent.status!=='revision')throw Error('The previous request is not awaiting revision.');if(store.requests.some(r=>r.parentId===previous.id))throw Error('A resubmission already exists. Open it from the previous request.');}
@@ -238,7 +246,7 @@
       '<div class="toolbar">'+link('Back to requests','#tower/'+request.route)+controls+'</div>'+
       `<div class="ct-detail-meta">${badge(statuses[request.status],request.status==='approved'?'ct-approved':'')}${request.priority==='urgent'?badge('Urgent','ct-urgent'):''}<span>Requested by <strong>${esc(request.author.name)}</strong></span><span>${esc(date(request.submittedAt))}</span></div>`+
       (parent?`<div class="ct-previous">${link('Previous submission',href(parent.id))}<p><strong>Previous decision</strong></p><p class="ct-preserve">${esc(parent.decision?.reason||'No decision reason recorded.')}</p><details><summary>Compare with the previous submission</summary>${textBlock('Previous target and version',parent.target+' · '+parent.version)}${textBlock('Previous request details',parent.details)}${textBlock('Previous expected outcome',parent.outcome)}</details></div>`:'')+
-      `<div class="ct-detail-grid"><article class="ct-detail-card">${fields.map(([title,value])=>textBlock(title,value)).join('')}${reference(request.targetRef)}</article><aside><section class="ct-detail-card"><h2>Review &amp; decision</h2>${request.status==='pending'?`<p>Review the target reference and request before recording a decision as <strong>${esc(person||'your local profile')}</strong>.</p><form id="ct-decision-form">${field('decisionReason','Decision reason','','For a revision request, specify exactly what needs to change.',true)}<p id="ct-decision-message" class="ct-message" role="alert" tabindex="-1"></p><div class="ct-decision-buttons"><button class="button primary" value="approved" type="submit">Approve</button><button class="button" value="revision" type="submit">Request revision</button><button class="button ct-reject" value="rejected" type="submit">Reject</button></div></form>`:request.decision?`<p><strong>${esc(statuses[request.status])}</strong> by ${esc(request.decision.by)}</p><p class="ct-preserve">${esc(request.decision.reason)}</p>`:'<p>Save and submit the draft to request a review.</p>'}</section><section class="ct-detail-card"><h2>Application</h2><p><strong>Not applied</strong></p><p>Content delivery is not connected. A local approval records a decision only; it does not change Beta or Published.</p></section><section class="ct-detail-card"><h2>Request history</h2><ol class="ct-history">${history}</ol></section></aside></div>`);
+      `<div class="ct-detail-grid"><article class="ct-detail-card">${submittedContent(request.contentSnapshot)}${fields.map(([title,value])=>textBlock(title,value)).join('')}${reference(request.targetRef)}</article><aside><section class="ct-detail-card"><h2>Review &amp; decision</h2>${request.status==='pending'?`<p>Review the target reference and request before recording a decision as <strong>${esc(person||'your local profile')}</strong>.</p><form id="ct-decision-form">${field('decisionReason','Decision reason','','For a revision request, specify exactly what needs to change.',true)}<p id="ct-decision-message" class="ct-message" role="alert" tabindex="-1"></p><div class="ct-decision-buttons"><button class="button primary" value="approved" type="submit">Approve</button><button class="button" value="revision" type="submit">Request revision</button><button class="button ct-reject" value="rejected" type="submit">Reject</button></div></form>`:request.decision?`<p><strong>${esc(statuses[request.status])}</strong> by ${esc(request.decision.by)}</p><p class="ct-preserve">${esc(request.decision.reason)}</p>`:'<p>Save and submit the draft to request a review.</p>'}</section><section class="ct-detail-card"><h2>Application</h2><p><strong>Not applied</strong></p><p>Content delivery is not connected. A local approval records a decision only; it does not change Beta or Published.</p></section><section class="ct-detail-card"><h2>Request history</h2><ol class="ct-history">${history}</ol></section></aside></div>`);
     const decisionForm=document.getElementById('ct-decision-form');
     decisionForm?.addEventListener('input',()=>{dirty=true;});
     decisionForm?.addEventListener('submit',e=>{
@@ -250,6 +258,55 @@
         dirty=false;refresh();document.getElementById('room-title').focus({preventScroll:true});
       }catch(error){fail(error,'ct-decision-message');}
     });
+  }
+  function submissionName() {
+    return window.AIWiseAuth?.snapshot().user?.displayName || localStorage.getItem(PERSON) || '';
+  }
+  function submitStudioDraft({course, chapter, courseName, raw, slots, baseSlots, summary, name}) {
+    if (!['aws1','ped'].includes(course) || !['c2','c3'].includes(chapter) || !raw) throw Error('Save a valid course draft before sending it.');
+    const key = `aiwise_content_studio_${course}_${chapter}_v1`;
+    if (localStorage.getItem(key) !== raw) throw Error('This draft changed in another tab. Reload the editor before sending it.');
+    const draft = JSON.parse(raw);
+    if (draft.schema !== 1 || draft.course !== course || !Number.isFinite(Date.parse(draft.savedAt)) ||
+        (chapter === 'c2' ? draft.slot !== 'c2.examples' : draft.chapter !== chapter)) throw Error('This saved draft cannot be submitted.');
+    if (!slots || !baseSlots || !Object.keys(slots).length || Object.keys(slots).some(path => !path.startsWith(chapter + '.') || !Object.hasOwn(baseSlots, path))) throw Error('The content copy could not be prepared.');
+    summary = String(summary || '').trim();
+    const account = window.AIWiseAuth?.snapshot().user;
+    name = (account?.displayName || String(name || '')).trim();
+    if (!name || name.length > 80) throw Error('Enter your name before sending this request.');
+    if (!summary || summary.length > 12000) throw Error('Describe the changes in 1–12,000 characters.');
+    const latest = read();
+    const existing = latest.requests.find(r => r.route === 'studio' && r.contentSnapshot?.course === course &&
+      r.contentSnapshot.chapter === chapter && r.contentSnapshot.savedAt === draft.savedAt &&
+      JSON.stringify(r.contentSnapshot.slots) === JSON.stringify(slots));
+    if (existing) return {id: existing.id, existing: true};
+    const stamp = now(), id = crypto.randomUUID();
+    const snapshot = JSON.parse(JSON.stringify({schema: 1, course, chapter, courseName, savedAt: draft.savedAt, slots, baseSlots}));
+    const request = {id, route:'studio', type:'submission', status:'pending', rev:1, parentId:null,
+      title:`${courseName} · ${chapter.toUpperCase()} content update`, target:`${courseName} · ${chapter.toUpperCase()}`,
+      version:`Saved draft · ${draft.savedAt}`, targetRef:`Attached content copy · ${id}`,
+      details:summary, changes:summary, outcome:'Review the attached course content for inclusion in Beta.',
+      references:'', priority:'normal', urgentReason:'',
+      author:{name, key:name.toLocaleLowerCase(), ...(account?.id ? {userId:account.id} : {})},
+      createdAt:stamp, submittedAt:stamp, seenBy:{}, events:[{at:stamp, by:name, action:'Submitted from Content Studio', reason:summary}],
+      contentSnapshot:snapshot};
+    latest.requests.push(request);
+    // Store the request and its content together; storage failure never leaves a partial request.
+    try { localStorage.setItem(KEY, JSON.stringify(latest)); }
+    catch { throw Error('The request could not be saved in this browser. Your saved content draft is unchanged. Check available browser storage and try again.'); }
+    db = latest;
+    return {id, existing:false};
+  }
+  function submittedContent(snapshot) {
+    if (!snapshot) return '';
+    const title = key => key.replace(/^c[23]\./, '').replace(/[._]/g, ' ').replace(/^./, c => c.toUpperCase());
+    function valueMarkup(value) {
+      if (value === null || typeof value !== 'object') return `<p class="ct-preserve">${esc(value)}</p>`;
+      if (Array.isArray(value)) return '<ol class="ct-snapshot-list">' + value.map(item => `<li>${valueMarkup(item)}</li>`).join('') + '</ol>';
+      return '<dl class="ct-snapshot-fields">' + Object.entries(value).map(([key, value]) => `<dt>${esc(title(key))}</dt><dd>${valueMarkup(value)}</dd>`).join('') + '</dl>';
+    }
+    return `<section class="ct-detail-section ct-submitted-content"><h2>Submitted content</h2><p>Saved ${esc(date(snapshot.savedAt))}. This copy stays with this request when the Content Studio draft changes.</p>` +
+      Object.entries(snapshot.slots).map(([path, value]) => `<details class="ct-snapshot-item"><summary>${esc(title(path))} ${JSON.stringify(value) !== JSON.stringify(snapshot.baseSlots?.[path]) ? badge('Changed') : ''}</summary>${valueMarkup(value)}</details>`).join('') + '</section>';
   }
   function dispose() { cleanup.forEach(fn=>fn());cleanup=[];dirty=false; }
   function render(part, shellFunction) {
@@ -280,5 +337,5 @@
       urgent: requests.filter(r => r.status === 'pending' && r.priority === 'urgent').length,
       updates: requests.map(r => ({title: `${r.title || 'Untitled request'} · ${statuses[r.status]}`, href: href(r.id), at: r.events.at(-1)?.at || r.submittedAt || ''})) };
   }
-  window.AIWiseControlTower={render,dispose,overview:getOverview,canLeave:()=>!dirty||confirm('Leave without saving your changes?')};
+  window.AIWiseControlTower={render,dispose,submissionName,submitStudioDraft,overview:getOverview,canLeave:()=>!dirty||confirm('Leave without saving your changes?')};
 })();

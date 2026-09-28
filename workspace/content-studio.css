@@ -21,8 +21,8 @@
 .cs-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-left: auto; max-width: 100%; }
 .cs-actions .button { white-space: nowrap; background: #EAF0F4; border-color: #C6D4DE; color: var(--signal); }
 .cs-actions .button:hover:not(:disabled) { background: #DEE8EF; border-color: var(--signal); }
-.cs-actions [data-cs-edit] { background: var(--signal); border-color: var(--signal); color: white; }
-.cs-actions [data-cs-edit]:hover:not(:disabled) { background: #294C63; border-color: #294C63; }
+.cs-actions [data-cs-submit] { background: var(--signal); border-color: var(--signal); color: white; }
+.cs-actions [data-cs-submit]:hover:not(:disabled) { background: #294C63; border-color: #294C63; }
 .cs-actions [data-cs-save], .cs-editor [data-cs-save] { background: var(--ok); border-color: var(--ok); color: white; }
 .cs-actions [data-cs-save]:hover:not(:disabled), .cs-editor [data-cs-save]:hover:not(:disabled) { background: #345331; border-color: #345331; }
 .cs-actions [data-cs-save]:disabled, .cs-editor [data-cs-save]:disabled { background: #E2E7E1; border-color: #C9D3C6; color: #687463; opacity: 1; }
@@ -79,3 +79,9 @@
 
 .cs-picker-heading { position: sticky; top: -5px; z-index: 1; padding: 10px 9px; background: var(--paper-2); color: var(--ink-3); font: 11px/1.5 var(--font-mono); }
 #cs-examples-menu [role="group"] + [role="group"] { margin-top: 8px; }
+
+.cs-submit-form { display:grid; gap:16px; }
+.cs-submit-form label { display:grid; gap:8px; font-weight:600; }
+.cs-submit-form input, .cs-submit-form textarea { box-sizing:border-box; width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); font:16px/1.5 var(--font-body); }
+.cs-submit-form textarea { resize:vertical; }
+.cs-submit-dialog [data-cs-submit-scope] { overflow-wrap:anywhere; }

@@ -40,7 +40,27 @@
     s.host.querySelectorAll('.cs-status').forEach(node => { node.textContent = text; node.dataset.error = String(error); });
   }
   function controls(s) {
-    s.host.querySelectorAll('[data-cs-save]').forEach(button => button.disabled = !s.ready || s.blocked || !dirty());
+    s.host.querySelectorAll('[data-cs-save]').forEach(button => button.disabled = !s.ready || s.blocked || (!dirty() && s.raw !== null));
+    s.host.querySelectorAll('[data-cs-submit]').forEach(button => {
+      button.disabled = !canSubmit(s);
+      button.title = button.disabled ? 'Save this chapter’s draft before sending it for review.' : 'Send the saved chapter to the review queue.';
+    });
+  }
+  const canSubmit = s => s.ready && !s.blocked && !!s.raw && !dirty();
+  function openSubmission(s) {
+    if (!canSubmit(s)) return;
+    try {
+      if (localStorage.getItem(s.key) !== s.raw) throw Error('This draft changed in another tab. Reload before sending it.');
+      s.cancelEditorClose?.(); s.cancelEditorClose = null; s.dialog.classList.remove('cs-closing');
+      if (s.dialog.open) s.dialog.close();
+      const panel = s.submitDialog;
+      panel.querySelector('[data-cs-submit-name]').value = window.AIWiseControlTower.submissionName();
+      panel.querySelector('[data-cs-submit-name]').readOnly = !!window.AIWiseAuth?.snapshot().user?.displayName;
+      panel.querySelector('[data-cs-submit-error]').textContent = '';
+      panel.querySelector('[data-cs-submit-scope]').textContent = `${COURSES[s.courseId].label} · ${s.chapter.toUpperCase()} · Saved ${new Date(JSON.parse(s.raw).savedAt).toLocaleString()}`;
+      panel.showModal(); window.AIWiseMotion.enter(panel);
+      panel.querySelector('[data-cs-submit-summary]').focus({preventScroll:true});
+    } catch (error) { message(s, error.message || 'The submission could not be prepared.', true); }
   }
   // Fixed source structure prevents malformed local records reaching the renderers.
   function valid(value, base, key = '') {
@@ -395,9 +415,7 @@
             </div>
           </div>
           <div class="cs-actions" role="group" aria-label="Content actions">
-            <button type="button" class="button" data-cs-edit data-cs-ready disabled>Edit item</button>
-            <button type="button" class="button" data-cs-jump data-cs-ready disabled>Go to item</button>
-            <button type="button" class="button primary" data-cs-save disabled>Save draft</button>
+            <button type="button" class="button primary" data-cs-save disabled>Save draft</button><button type="button" class="button" data-cs-submit disabled>Send to Control Tower</button>
             <button type="button" class="button" data-cs-reset data-cs-ready disabled>Reset draft</button>
             <a class="button" href="../common/aiwise-${chapter}-final.html?course=${courseId}" target="_blank" rel="noopener">Open ${chapterName} in Beta ↗</a>
           </div>
@@ -410,11 +428,21 @@
           <div class="cs-editor-body" id="cs-editor-body"><div class="cs-editor-head"><div><h2 id="cs-editor-title">Course item</h2><button type="button" class="button" data-cs-close autofocus>Close</button></div>
             <p id="cs-editor-help">Changes appear as you type. Save draft to keep them in this browser. Reset applies to this chapter only.</p></div>
             <div class="cs-fields"></div><div class="cs-editor-foot"><p class="cs-status" role="status"></p><div>
-              <button type="button" class="button primary" data-cs-save disabled>Save draft</button><button type="button" class="button" data-cs-close>Back to preview</button>
+              <button type="button" class="button primary" data-cs-save disabled>Save draft</button><button type="button" class="button" data-cs-submit disabled>Send to Control Tower</button><button type="button" class="button" data-cs-close>Back to preview</button>
             </div></div></div></dialog>
+        <dialog class="cs-submit-dialog aw-account-dialog" aria-labelledby="cs-submit-title">
+          <div class="aw-account-header"><h2 id="cs-submit-title">Send to Control Tower</h2><button type="button" class="aw-account-close" data-cs-submit-close aria-label="Close submission">×</button></div>
+          <div class="aw-account-body"><p data-cs-submit-scope></p><p class="aw-account-help">Send a fixed copy of this saved chapter to this browser’s review queue. Beta and Published stay unchanged.</p>
+            <form class="cs-submit-form">
+              <label>Your name<input data-cs-submit-name type="text" maxlength="80" required autocomplete="name"></label>
+              <label>What changed?<textarea data-cs-submit-summary rows="4" maxlength="12000" required placeholder="Briefly describe what should be reviewed."></textarea></label>
+              <p data-cs-submit-error role="alert" class="aw-account-error"></p>
+              <button type="submit" class="aw-account-button primary">Send for review</button>
+            </form></div>
+        </dialog>
       </div>`, false);
     const host = document.getElementById('cs-studio');
-    const s = session = {host, courseId, chapter, key: `aiwise_content_studio_${courseId}_${chapter}_v1`, frame: host.querySelector('iframe'), dialog: host.querySelector('dialog'),
+    const s = session = {host, courseId, chapter, key: `aiwise_content_studio_${courseId}_${chapter}_v1`, frame: host.querySelector('iframe'), dialog: host.querySelector('.cs-editor'), submitDialog: host.querySelector('.cs-submit-dialog'),
       abort: new AbortController(), index: itemIndex, slideIndex: 0, raw: null, blocked: false, storageRead: false, ready: false};
     try {
       const url = new URL(`../common/aiwise-${chapter}-final.html`, location.href);
@@ -479,8 +507,26 @@
       s.saved = clone(s.values); message(s, status, s.blocked);
       host.querySelectorAll('[data-cs-save]').forEach(button => button.addEventListener('click', () => save(s)));
       host.querySelector('[data-cs-reset]').addEventListener('click', () => reset(s));
-      host.querySelector('[data-cs-edit]').addEventListener('click', () => openEditor(s, s.index));
-      host.querySelector('[data-cs-jump]').addEventListener('click', () => selectItem(s, s.index, true));
+      host.querySelectorAll('[data-cs-submit]').forEach(button => button.addEventListener('click', () => openSubmission(s)));
+      const submission = s.submitDialog;
+      submission.querySelector('[data-cs-submit-close]').addEventListener('click', () => submission.close());
+      submission.querySelector('form').addEventListener('submit', event => {
+        event.preventDefault();
+        const button = submission.querySelector('[type="submit"]');
+        if (button.disabled) return;
+        button.disabled = true;
+        try {
+          if (!canSubmit(s)) throw Error('Save your latest changes before sending this chapter.');
+          const result = window.AIWiseControlTower.submitStudioDraft({course:s.courseId, chapter:s.chapter,
+            courseName:COURSES[s.courseId].label, raw:s.raw, slots:s.saved, baseSlots:s.base,
+            summary:submission.querySelector('[data-cs-submit-summary]').value,
+            name:submission.querySelector('[data-cs-submit-name]').value});
+          submission.close(); location.hash = '#tower/request/' + result.id;
+        } catch (error) {
+          submission.querySelector('[data-cs-submit-error]').textContent = error.message || 'The request could not be saved. Your draft has been preserved.';
+          button.disabled = false;
+        }
+      });
       host.querySelector('[data-cs-prev]').addEventListener('click', () => selectItem(s, s.index - 1, true));
       host.querySelector('[data-cs-next]').addEventListener('click', () => selectItem(s, s.index + 1, true));
       const trigger = host.querySelector('#cs-example'), menu = host.querySelector('#cs-examples-menu');
@@ -512,6 +558,6 @@
   window.addEventListener('beforeunload', event => { if (dirty()) { event.preventDefault(); event.returnValue = ''; } });
   window.AIWiseContentStudio = {render, supports,
     canLeave: () => !dirty() || confirm('Leave Content Studio without saving your edits?'),
-    dispose: () => { const old = session; session = null; old?.abort.abort(); old?.cancelPickerClose?.(); old?.cancelEditorClose?.(); if (old?.dialog.open) old.dialog.close(); }
+    dispose: () => { const old = session; session = null; old?.abort.abort(); old?.cancelPickerClose?.(); old?.cancelEditorClose?.(); if (old?.dialog.open) old.dialog.close(); if (old?.submitDialog.open) old.submitDialog.close(); }
   };
 })();
