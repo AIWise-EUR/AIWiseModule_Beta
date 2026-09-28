@@ -48,6 +48,9 @@
   }
   setView(window.matchMedia('(max-width: 700px)').matches ? 'list' : 'map');
   document.getElementById('map-view').addEventListener('click',()=>setView('map'));
+  // The home greeting names the signed-in person once accounts carry a display name; until then it stays a plain Hello.
+  const greeting = document.getElementById('home-greeting');
+  window.AIWiseAuth?.subscribe(auth => { const name = auth.user?.name?.trim(); greeting.textContent = name ? `Hello, ${name}` : 'Hello'; });
   document.getElementById('list-view').addEventListener('click',()=>setView('list'));
 
   // Explanations sit behind the ⓘ button beside the title; the page itself shows only what can be acted on.

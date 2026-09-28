@@ -101,3 +101,5 @@ Each course hub starts with a map using the home map layout and illustrations, p
 ## Page headings and help notes
 
 Area headings show the page title as plain text, without a card, and use full course names (Academic Writing Skills I rather than AWS1). Explanatory sentences, scope notes, and browser-only caveats no longer sit on the page. Each area passes them to the shared `shell()` as HTML for a help note: an ⓘ button beside the title opens it with the shared menu motion, and Escape, the button, or a click elsewhere closes it. Short context such as a request's route stays visible as a mono lead line, and error messages keep their visible notice style. Content Studio's coverage summary lives in the help note; its status line is hidden while it has nothing to report, and the preview no longer carries a caption. Control Tower keeps only the local name form above its queue.
+
+The workspace has no footer bar. The home heading greets the person with “Hello”, and adds the account's display name once `AIWiseAuth` exposes a `user.name`; the eyebrow element keeps the id `home-greeting`.

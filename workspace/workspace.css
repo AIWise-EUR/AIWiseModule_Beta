@@ -63,7 +63,6 @@ p { line-height: 1.62; }
 .gate-stripes { stroke-width: 3; }
 .map-caption { display: flex; justify-content: space-between; gap: 20px; color: var(--ink-3); font: 11px/1.6 var(--font-mono); margin: 16px 0 0; }
 .status-dot { display: inline-block; height: 6px; width: 6px; border-radius: 50%; background: var(--ok); margin-right: 7px; }
-footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px 24px; background: var(--ink); color: #B8B0C8; font: 11px/1.5 var(--font-mono); }
 .area-list, .cards { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin-top: 22px; }
 .card { display: block; min-width: 0; border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--sh); padding: 20px 22px; background: var(--card); text-align: left; text-decoration: none; transition: border-color .2s, transform .2s, box-shadow .2s; }
 .card.link:hover { border-color: var(--signal); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(53,97,127,.12); }
@@ -124,7 +123,6 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 22px; border: 1px
   .room-heading, .version-row { flex-direction: column; align-items: start; }
   .card { padding: 20px; }
   .item-link { flex-direction: column; align-items: start; gap: 6px; }
-  footer { padding: 14px 16px; flex-direction: column; gap: 6px; }
 }
 
 /* Course management uses the same card grid as studio course lists. */
