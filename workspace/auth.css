@@ -1,0 +1,34 @@
+.aw-account-trigger { display:flex; align-items:center; gap:10px; width:100%; min-height:44px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--r); background:var(--card); color:var(--ink); font:600 13px var(--font-body); cursor:pointer; }
+.aw-account-trigger:hover { border-color:var(--signal); }
+.aw-account-dot { width:8px; height:8px; border-radius:50%; background:var(--mut-2); }
+.aw-account-trigger[data-member="true"] .aw-account-dot { background:var(--ok); }
+.aw-account-dialog { box-sizing:border-box; width:min(480px, calc(100vw - 32px)); max-height:calc(100dvh - 32px); margin:auto; padding:0; overflow:auto; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--ink-2); box-shadow:0 20px 60px rgba(21,18,29,.22); font:14px/1.6 var(--font-body); }
+.aw-account-dialog::backdrop { background:rgba(21,18,29,.35); }
+.aw-account-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding:24px 24px 18px; border-bottom:1px solid var(--line); background:var(--paper); }
+.aw-account-eyebrow { margin:0 0 8px; font:11px var(--font-mono); color:var(--ink-3); }
+.aw-account-header h2 { margin:0; font:600 24px var(--font-heading); }
+.aw-account-close { flex-shrink:0; width:36px; height:36px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); font:24px var(--font-body); cursor:pointer; }
+.aw-account-body { padding:20px 24px 24px; }
+#aw-account-status { margin:0 0 16px; }
+.aw-account-dialog[data-status="member"] #aw-account-status { color:var(--ok); }
+#aw-account-email { padding:10px 12px; background:var(--paper); border-radius:6px; overflow-wrap:anywhere; }
+#aw-signin-form { display:grid; gap:8px; }
+#aw-signin-form[hidden], .aw-account-dialog [hidden] { display:none !important; }
+#aw-signin-form label { font-weight:600; }
+#aw-signin-form input { box-sizing:border-box; width:100%; min-width:0; height:44px; padding:10px 12px; margin-bottom:8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); font:16px var(--font-body); }
+.aw-account-button { min-height:44px; padding:10px 16px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--signal); font:600 13px var(--font-body); cursor:pointer; }
+.aw-account-button.primary { background:var(--signal); border-color:var(--signal); color:white; }
+.aw-account-button:disabled { opacity:.5; cursor:wait; }
+.aw-account-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
+.aw-account-help, .aw-account-local-note { font-size:12px; color:var(--ink-3); }
+.aw-account-local-note { margin:20px 0 0; padding-top:16px; border-top:1px solid var(--line); }
+.aw-account-error { color:var(--danger); margin:0 0 16px; }
+.aw-account-error:empty { display:none; }
+.aw-account-switch { margin-top:20px; padding-top:16px; border-top:1px solid var(--line); }
+.aw-account-switch p { margin:0 0 8px; color:var(--ink-3); }
+.aw-account-notice { padding:12px; border:1px solid var(--line); border-radius:6px; background:var(--paper); }
+#aw-confirm-field { display:grid; gap:8px; }
+.aw-auth-confirm-page { box-sizing:border-box; width:min(480px, calc(100% - 32px)); margin:10vh auto; padding:28px; border:1px solid var(--line); border-radius:12px; background:var(--card); }
+.aw-auth-confirm-page h1 { font:600 26px var(--font-heading); }
+.aw-auth-confirm-page a { display:inline-block; margin-top:12px; text-decoration:none; }
+.aw-account-trigger, .aw-account-button, .aw-account-close { transition:background-color var(--aw-motion-control) ease, border-color var(--aw-motion-control) ease; }

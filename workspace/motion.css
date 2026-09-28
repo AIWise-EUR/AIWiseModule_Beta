@@ -1,0 +1,39 @@
+/* Workspace motion follows the existing AI-Wise module, including embedded editors. */
+:root {
+  --aw-motion-page: 380ms;
+  --aw-motion-menu: 300ms;
+  --aw-motion-control: 200ms;
+  --aw-motion-carousel: 400ms;
+  --aw-motion-ease: ease;
+}
+@keyframes aw-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes aw-fade-out { from { opacity: 1; } to { opacity: 0; } }
+.aw-enter { animation: aw-fade-in var(--aw-enter-duration, var(--aw-motion-page)) var(--aw-motion-ease) both; }
+.aw-leaving { animation: aw-fade-out var(--aw-enter-duration, var(--aw-motion-page)) var(--aw-motion-ease) both; pointer-events: none; }
+/* Explicit properties keep layout changes and drag resizing immediate. */
+:where(.has-sidebar) :where(button, a, input, select, textarea, [role=button]) {
+  transition: color var(--aw-motion-control) var(--aw-motion-ease), background-color var(--aw-motion-control) var(--aw-motion-ease), border-color var(--aw-motion-control) var(--aw-motion-ease), box-shadow var(--aw-motion-control) var(--aw-motion-ease);
+}
+.destination, .card, .ct-road, .wkcard, .gchip, .node, .ned, .qo {
+  transition-duration: var(--aw-motion-control);
+  transition-timing-function: var(--aw-motion-ease);
+}
+.workspace-sidebar {
+  transition: transform var(--aw-motion-menu) var(--aw-motion-ease), visibility 0s linear var(--aw-motion-menu);
+}
+.sidebar-backdrop {
+  transition: opacity var(--aw-motion-menu) var(--aw-motion-ease), visibility 0s linear var(--aw-motion-menu);
+}
+.profiler-page .shell.vin, .profiler-page .bq.anim {
+  animation: aw-fade-in var(--aw-motion-page) var(--aw-motion-ease) both;
+}
+.profiler-page .mod.show { animation: aw-fade-in var(--aw-motion-page) var(--aw-motion-ease) both; }
+.profiler-page .mod.hide { animation: aw-fade-out var(--aw-motion-page) var(--aw-motion-ease) both; }
+.profiler-page .mod.show .mcard, .profiler-page .mod.hide .mcard { animation: none; }
+.profiler-page .bexp .wd { animation-duration: var(--aw-motion-page); animation-timing-function: var(--aw-motion-ease); }
+.profiler-page .slot { transition: background-color var(--aw-motion-control) var(--aw-motion-ease), color var(--aw-motion-control) var(--aw-motion-ease), box-shadow var(--aw-motion-control) var(--aw-motion-ease); }
+.profiler-page .slot.pop, .profiler-page .nb.pri.nudge { animation-duration: var(--aw-motion-menu); animation-timing-function: var(--aw-motion-ease); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after, dialog::backdrop { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .bexp .wd { opacity: 1 !important; }
+}
