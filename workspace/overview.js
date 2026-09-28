@@ -22,14 +22,16 @@
       summary += ` · ${data.pending} pending · ${data.urgent} urgent`;
       updates.push(...data.updates);
     } catch { notices.push({title:'Request records are unavailable. Open Control Tower for details.', href:'#tower/all', at:''}); }
-    try {
-      const raw = localStorage.getItem('aiwise_content_studio_aws1_c2_v1');
-      if (raw) {
-        const draft = JSON.parse(raw);
-        if (draft.schema !== 1 || draft.course !== 'aws1' || !Array.isArray(draft.examples) || !Number.isFinite(Date.parse(draft.savedAt))) throw Error();
-        updates.push({title:'AWS1 · Content Studio draft saved in this browser', href:'#studio/aws1', at:draft.savedAt});
-      }
-    } catch { notices.push({title:'The Content Studio draft could not be read. Open the editor for details.', href:'#studio/aws1', at:''}); }
+    for (const [id, label] of [['aws1', 'AWS1'], ['ped', 'PED']]) {
+      try {
+        const raw = localStorage.getItem(`aiwise_content_studio_${id}_c2_v1`);
+        if (raw) {
+          const draft = JSON.parse(raw);
+          if (draft.schema !== 1 || draft.course !== id || !Array.isArray(draft.examples) || !Number.isFinite(Date.parse(draft.savedAt))) throw Error();
+          updates.push({title:label + ' · Content Studio draft saved in this browser', href:'#studio/' + id, at:draft.savedAt});
+        }
+      } catch { notices.push({title:label + ' · Content Studio draft could not be read. Open the editor for details.', href:'#studio/' + id, at:''}); }
+    }
     updates.sort((a,b) => (Date.parse(b.at)||0)-(Date.parse(a.at)||0));
     return {summary, entries: [...notices, ...updates]};
   }
@@ -64,7 +66,7 @@
   row.addEventListener('focusin', schedule); row.addEventListener('focusout', () => queueMicrotask(schedule));
   document.addEventListener('visibilitychange', schedule);
   reduced.addEventListener('change', () => { paused = reduced.matches; paint(); schedule(); });
-  window.addEventListener('storage', event => { if (home && (!event.key || ['aiwise_control_tower_v1','aiwise_content_studio_aws1_c2_v1'].includes(event.key))) refresh(); });
+  window.addEventListener('storage', event => { if (home && (!event.key || ['aiwise_control_tower_v1','aiwise_content_studio_aws1_c2_v1','aiwise_content_studio_ped_c2_v1'].includes(event.key))) refresh(); });
   function closeNow(restore = true) {
     cancelClose?.(); cancelClose = null;
     window.AIWiseMotion.cancel(dialog); dialog.classList.remove('updates-closing');
@@ -84,7 +86,7 @@
     window.AIWiseMotion.cancel(dialog); dialog.classList.remove('updates-closing');
     const data = collect();
     dialog.innerHTML = `<div class="updates-heading"><div><p class="eyebrow">Workspace activity</p><h2 id="updates-title">Recent activity</h2></div><button class="button" id="updates-close" type="button" aria-label="Close activity" autofocus>×</button></div><p id="updates-summary">${esc(data.summary)}</p><div class="updates-body">` +
-      (data.entries.length ? '<div class="item-list">' + data.entries.map(item => `<a class="item-link" href="${esc(item.href)}"><span>${esc(item.title)}<small>${item.href.startsWith('#tower/request/') ? 'Open request →' : item.href === '#studio/aws1' ? 'Open Content Studio →' : 'Open Control Tower →'}</small></span><small>${Number.isFinite(Date.parse(item.at)) ? esc(new Date(item.at).toLocaleString()) : 'Check workspace'}</small></a>`).join('') + '</div>' : '<div class="empty-state"><h3>No recorded activity yet</h3><p>Saved drafts and Control Tower requests will appear here.</p></div>') + '</div>';
+      (data.entries.length ? '<div class="item-list">' + data.entries.map(item => `<a class="item-link" href="${esc(item.href)}"><span>${esc(item.title)}<small>${item.href.startsWith('#tower/request/') ? 'Open request →' : item.href.startsWith('#studio/') ? 'Open Content Studio →' : 'Open Control Tower →'}</small></span><small>${Number.isFinite(Date.parse(item.at)) ? esc(new Date(item.at).toLocaleString()) : 'Check workspace'}</small></a>`).join('') + '</div>' : '<div class="empty-state"><h3>No recorded activity yet</h3><p>Saved drafts and Control Tower requests will appear here.</p></div>') + '</div>';
     document.getElementById('updates-close').addEventListener('click', close);
     if (!dialog.open) dialog.showModal();
     window.AIWiseMotion.enter(dialog);

@@ -1,7 +1,11 @@
-/* Local authoring for AWS1 C2 examples. No writes to module data or release queues. */
+/* Local authoring for AWS1 and PED C2 examples. No writes to module data or release queues. */
 (() => {
   'use strict';
-  const KEY = 'aiwise_content_studio_aws1_c2_v1';
+  const COURSES = Object.freeze({
+    aws1: {label: 'AWS1', source: '../course-specific/aws1/course-specific-content_aws1.json'},
+    ped: {label: 'PED', source: '../course-specific/ped/ped.json'}
+  });
+  const supports = id => Object.hasOwn(COURSES, id);
   const FIELDS = [
     ['title', 'Example title'],
     ['thinking', 'What you are actually thinking'],
@@ -27,18 +31,18 @@
     s.host.querySelectorAll('[data-cs-save]').forEach(button => button.disabled = s.blocked || !dirty());
   }
   function record(s) {
-    return { schema: 1, course: 'aws1', slot: 'c2.examples', savedAt: new Date().toISOString(),
+    return { schema: 1, course: s.courseId, slot: 'c2.examples', savedAt: new Date().toISOString(),
       baseExamples: s.base, examples: s.examples };
   }
   function save(s) {
     if (s !== session || s.blocked) return;
     try {
-      if (localStorage.getItem(KEY) !== s.raw) {
+      if (localStorage.getItem(s.key) !== s.raw) {
         message(s, 'Another tab changed this draft. Your edits have not been saved. Copy any text you want to keep before reloading the saved version.', true);
         return;
       }
       const raw = JSON.stringify(record(s));
-      localStorage.setItem(KEY, raw);
+      localStorage.setItem(s.key, raw);
       s.raw = raw;
       s.saved = clone(s.examples);
       message(s, 'Draft saved in this browser · ' + new Date().toLocaleTimeString() + '. Beta is unchanged.');
@@ -50,10 +54,10 @@
   function reset(s) {
     if (!confirm('Discard this browser’s C2 draft and current edits? The preview will return to the current Beta content.')) return;
     try {
-      if (!s.storageRead || localStorage.getItem(KEY) !== s.raw) {
+      if (!s.storageRead || localStorage.getItem(s.key) !== s.raw) {
         message(s, 'The saved draft could not be safely reset. Copy any text you want to keep before reloading.', true); return;
       }
-      localStorage.removeItem(KEY);
+      localStorage.removeItem(s.key);
       s.raw = null; s.blocked = false;
       s.examples = clone(s.base); s.saved = clone(s.base);
       updateExamples(s); controls(s);
@@ -323,8 +327,10 @@
     } catch { message(s, 'The C2 preview could not be prepared. Reload to try again; saved drafts are unchanged.', true); }
   }
 
-  async function render(shell) {
-    shell('studio', 'AWS1', '', `
+  async function render(shell, courseId = 'aws1') {
+    if (!supports(courseId)) throw Error('Course editor not connected');
+    const config = COURSES[courseId];
+    shell('studio', config.label, '', `
       <div id="cs-studio">
         <p class="notice">C2 course examples · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p>
         <div class="cs-toolbar">
@@ -346,12 +352,12 @@
           <button type="button" class="button" data-cs-jump data-cs-ready disabled>Go to examples</button>
           <button type="button" class="button primary" data-cs-save disabled>Save draft</button>
           <button type="button" class="button" data-cs-reset data-cs-ready disabled>Reset draft</button>
-          <a class="button" href="../common/aiwise-c2-final.html?course=aws1" target="_blank" rel="noopener">Open C2 in Beta ↗</a>
+          <a class="button" href="../common/aiwise-c2-final.html?course=${courseId}" target="_blank" rel="noopener">Open C2 in Beta ↗</a>
           </div>
         </div>
         <p class="cs-status" role="status">Loading C2 preview…</p>
         <div class="cs-preview"><div class="cs-preview-label">AI Orientation · C2 preview · Outlined cards are editable</div>
-          <iframe title="AWS1 C2 module editing preview" sandbox="allow-same-origin allow-scripts"></iframe>
+          <iframe title="${config.label} C2 module editing preview" sandbox="allow-same-origin allow-scripts"></iframe>
         </div>
         <dialog class="cs-editor" aria-labelledby="cs-editor-title" aria-describedby="cs-editor-help">
           <div class="cs-resize-handle" role="separator" aria-orientation="vertical" aria-label="Resize editor" aria-controls="cs-editor-body" tabindex="0" title="Drag to resize. Use Left or Right arrow keys."></div>
@@ -367,23 +373,23 @@
         </dialog>
       </div>`, false);
     const host = document.getElementById('cs-studio');
-    const s = session = { host, frame: host.querySelector('iframe'), dialog: host.querySelector('dialog'),
+    const s = session = { host, courseId, key: `aiwise_content_studio_${courseId}_c2_v1`, frame: host.querySelector('iframe'), dialog: host.querySelector('dialog'),
       abort: new AbortController(), index: 0, raw: null, blocked: false, storageRead: false };
     try {
       const url = new URL('../common/aiwise-c2-final.html', location.href);
       const [html, data] = await Promise.all([
         fetch(url, { signal: s.abort.signal, cache: 'no-cache' }).then(r => { if (!r.ok) throw Error('Preview unavailable'); return r.text(); }),
-        fetch('../course-specific/aws1/course-specific-content_aws1.json', { signal: s.abort.signal, cache: 'no-cache' }).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); })
+        fetch(config.source, { signal: s.abort.signal, cache: 'no-cache' }).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); })
       ]);
       if (session !== s) return;
-      if (!valid(data.c2?.examples)) throw Error('Invalid examples');
+      if (data.course?.id !== s.courseId || !valid(data.c2?.examples)) throw Error('Invalid examples');
       s.base = clone(data.c2.examples); s.examples = clone(s.base);
       let status = 'Current Beta content · No draft edits yet.';
       try {
-        s.raw = localStorage.getItem(KEY); s.storageRead = true;
+        s.raw = localStorage.getItem(s.key); s.storageRead = true;
         if (s.raw !== null) {
           const saved = JSON.parse(s.raw);
-          if (saved.schema !== 1 || saved.course !== 'aws1' || saved.slot !== 'c2.examples' || !valid(saved.examples) || saved.examples.length !== s.base.length) throw Error('Invalid draft');
+          if (saved.schema !== 1 || saved.course !== s.courseId || saved.slot !== 'c2.examples' || !valid(saved.examples) || saved.examples.length !== s.base.length) throw Error('Invalid draft');
           if (!equal(saved.baseExamples, s.base)) throw Error('Changed source');
           s.examples = clone(saved.examples);
           status = 'Saved browser draft restored. Beta is unchanged.';
@@ -426,7 +432,7 @@
     if (dirty()) { event.preventDefault(); event.returnValue = ''; }
   });
   window.AIWiseContentStudio = {
-    render,
+    render, supports,
     canLeave: () => !dirty() || confirm('Leave Content Studio without saving your edits?'),
     dispose: () => {
       const old = session; session = null;

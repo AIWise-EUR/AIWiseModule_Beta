@@ -30,15 +30,15 @@
     entries.forEach(c => merged.set(c.id, {...c, connected: merged.has(c.id)}));
     return [...merged.values()];
   }
+  const hasStudio = id => !!window.AIWiseContentStudio?.supports(id);
   function get(id) { return list().find(c => c.id === id); }
   const addCard = () => '<a class="card link course-add" href="#courses/new"><span class="course-plus" aria-hidden="true">+</span><h3>Add course</h3><p>Register a course in Courses.</p><span class="arrow">Go to Courses →</span></a>';
   function cards(area) {
     try {
       return list().map(c => {
-        const editable = area === 'studio' && c.id === 'aws1';
-        const preview = area === 'studio' && c.id === 'ped';
-        const href = editable ? '#studio/aws1' : preview ? '#beta/ped' : '#courses/' + c.id;
-        return `<a class="card link" href="${href}"><span class="badge">${editable ? 'Available' : preview ? 'Preview' : c.connected ? 'Existing course' : 'Setup needed'}</span><h3>${esc(c.full_name)}</h3><p>${editable ? 'Edit course examples in the C2 module preview.' : preview ? 'View the PED Orientation in Beta.' : esc(c.short_name) + ' · Manage course information and connections.'}</p><span class="arrow">${editable ? 'Open editor' : preview ? 'Open Beta preview' : 'Manage course'} →</span></a>`;
+        const editable = area === 'studio' && hasStudio(c.id);
+        const href = editable ? '#studio/' + c.id : '#courses/' + c.id;
+        return `<a class="card link" href="${href}"><span class="badge">${editable ? 'Available' : c.connected ? 'Existing course' : 'Setup needed'}</span><h3>${esc(c.full_name)}</h3><p>${editable ? 'Edit course examples in the C2 module preview.' : esc(c.short_name) + ' · Manage course information and connections.'}</p><span class="arrow">${editable ? 'Open editor' : 'Manage course'} →</span></a>`;
       }).join('') + addCard();
     } catch (error) { return `<p class="notice">${esc(error.message)}</p>` + addCard(); }
   }
@@ -47,7 +47,7 @@
     campus.classList.add('course-campus');
     const targets = {
       'profiler-manager': {href: `#courses/${course.id}/manager`, note: `${course.short_name} · Course materials`},
-      studio: {href: course.id === 'aws1' ? '#studio/aws1' : '', note: course.id === 'aws1' ? `${course.short_name} · C2 examples` : 'Course editor not connected'},
+      studio: {href: hasStudio(course.id) ? '#studio/' + course.id : '', note: hasStudio(course.id) ? `${course.short_name} · C2 examples` : 'Course editor not connected'},
       'common-studio': {href:'#common', note:'Shared across all courses'},
       tower: {href:'', note:'Course request view not connected'},
       beta: {href:course.connected ? `#beta/${course.id}` : '', note:course.connected ? `${course.short_name} · Working version` : 'Course preview not connected'},
@@ -132,7 +132,7 @@
       const destination = (title, description, href, action) => `<div class="card"><h3>${title}</h3><p>${description}</p>${href ? `<a class="button" href="${href}">${action}</a>` : '<span class="badge">Setup needed</span>'}</div>`;
       shell('courses', c.full_name, `${c.short_name} · Course workspace`, `<div class="toolbar course-view-toolbar"><div class="view-switch" role="group" aria-label="Course view"><button id="course-map-view" type="button" aria-pressed="true">▦ Map</button><button id="course-list-view" type="button" aria-pressed="false">☷ List</button></div><a class="button" href="#courses/${c.id}/edit">Edit course details</a><a class="button" href="#courses">All courses</a></div>` + courseMap(c) + `<p class="course-local-note">${esc(c.short_name)} materials · Common Studio is shared across courses and shown in grayscale. Unconnected areas are labeled on the map.</p><div id="course-material-list" class="cards course-hub" hidden>` +
         destination('Course Profiler Manager', c.id === 'aws1' ? 'Review the course and activity prompts.' : 'A course profile and activity package still need to be connected.', `#courses/${c.id}/manager`, 'Open course materials') +
-        destination('Content Studio', c.id === 'aws1' ? 'Edit the course examples in AI Orientation.' : 'The Orientation editor is not connected for this course yet.', c.id === 'aws1' ? '#studio/aws1' : '', 'Open editor') +
+        destination('Content Studio', hasStudio(c.id) ? 'Edit the course examples in AI Orientation.' : 'The Orientation editor is not connected for this course yet.', hasStudio(c.id) ? '#studio/' + c.id : '', 'Open editor') +
         destination('AI Activities', c.id === 'aws1' ? 'Inspect the seven existing activity pages.' : 'Activity pages still need to be connected.', c.id === 'aws1' ? '#manager/activities' : '', 'View activities') +
         destination('AI-Wise Beta', c.connected ? 'Preview this course in the current Beta module.' : 'A Beta module is not connected yet.', c.connected ? '#beta/' + c.id : '', 'Open Beta') +
         destination('Control Tower', 'The course request view is not connected yet.', '', '') +
