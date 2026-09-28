@@ -1,7 +1,7 @@
 /* Overlay navigation: opening it never changes the page's available width. */
 .has-sidebar { --sidebar-width: 56px; padding-left: var(--sidebar-width); }
 .workspace-sidebar, .sidebar-rail, .sidebar-backdrop, .sidebar-toggle { box-sizing: border-box; }
-.workspace-sidebar { position: fixed; inset: 0 auto 0 0; width: 248px; z-index: 72; display: flex; flex-direction: column; padding: 18px 12px; background: var(--paper-2); border-right: 1px solid var(--line); overflow-y: auto; overscroll-behavior: contain; box-shadow: var(--sh); transform: translateX(-100%); visibility: hidden; transition: transform .2s ease, visibility 0s linear .2s; }
+.workspace-sidebar { position: fixed; inset: 0 auto 0 0; width: 300px; z-index: 72; display: flex; flex-direction: column; padding: 18px 12px; background: var(--paper-2); border-right: 1px solid var(--line); overflow-y: auto; overscroll-behavior: contain; box-shadow: var(--sh); transform: translateX(-100%); visibility: hidden; transition: transform .2s ease, visibility 0s linear .2s; }
 .sidebar-expanded .workspace-sidebar { transform: translateX(0); visibility: visible; transition-delay: 0s; }
 .sidebar-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 4px 26px 12px; }
 .workspace-sidebar .brand { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-decoration: none; }
@@ -43,13 +43,18 @@
 @media (max-width: 1000px) {
   .has-sidebar, .has-sidebar.sidebar-expanded { --sidebar-width: 0px; padding-left: 0; padding-top: 56px; }
   .sidebar-rail { inset: 8px auto auto 8px; padding: 2px; width: 40px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
-  .workspace-sidebar { width: min(280px, calc(100vw - 48px)); box-shadow: var(--sh); }
+  .workspace-sidebar { width: min(300px, calc(100vw - 48px)); box-shadow: var(--sh); }
   .profiler-navigation { padding: 10px 16px; gap: 8px 16px; }
   .profiler-navigation .nav-note { flex-basis: 100%; margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .workspace-sidebar, .sidebar-backdrop { transition: none; }
 }
+.sidebar-area { display: grid; gap: 2px; }
+.sidebar-subitems { display: grid; gap: 2px; margin-bottom: 4px; }
+.sidebar-subitems:empty { display: none; }
+.workspace-sidebar .sidebar-subitems a { margin-left: 20px; min-height: 36px; padding: 6px 12px 6px 24px; font-size: 12px; overflow-wrap: anywhere; }
+.workspace-sidebar .workspace-navigation a.sidebar-parent-open { color: var(--ink); font-weight: 600; }
 .sidebar-section-label { margin: 0 12px 8px; color: var(--ink-3); font: 10px var(--font-mono); text-transform: uppercase; letter-spacing: .07em; }
 .workspace-sidebar .sidebar-courses { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 12px; }
 #sidebar-course-list { display: grid; gap: 3px; }

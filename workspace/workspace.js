@@ -53,7 +53,8 @@
 
   function shell(area,title,description,body,records=true) {
     const parent = areas[area];
-    room.innerHTML = `<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#home">Workspace</a><span aria-hidden="true">/</span>${parent && title!==parent.name ? `<a href="#${area}">${parent.name}</a><span aria-hidden="true">/</span>` : ''}<span aria-current="page">${escape(title)}</span></nav><div class="room-heading"><div><p class="eyebrow">${parent ? parent.name : 'Workspace'}</p><h1 id="room-title" tabindex="-1">${escape(title)}</h1><p class="room-description">${escape(description)}</p></div>${records&&parent?button('Records Office','#records/'+area):''}</div>${body}`;
+    // Area context lives in the sidebar; the heading shows the page title only.
+    room.innerHTML = `<div class="room-heading"><div><h1 id="room-title" tabindex="-1">${escape(title)}</h1>${description ? `<p class="room-description">${escape(description)}</p>` : ''}</div>${records&&parent?button('Records Office','#records/'+area):''}</div>${body}`;
     window.AIWiseMotion.enter(room);
   }
   function renderProfiler(part) {

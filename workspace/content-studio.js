@@ -345,18 +345,24 @@
   async function render(shell, courseId = 'aws1', chapter = 'c2') {
     if (!supports(courseId) || !['c2','c3'].includes(chapter)) throw Error('Course editor not connected');
     const config = COURSES[courseId], chapterName = chapter.toUpperCase();
-    shell('studio', config.label + ' · Content Studio', 'Select an outlined course item to edit it in place.', `
+    shell('studio', config.label, '', `
       <div id="cs-studio">
         <nav class="toolbar" aria-label="Chapter">${['c2','c3'].map(id => `<a class="button${chapter === id ? ' primary' : ''}" ${chapter === id ? 'aria-current="page"' : ''} href="#studio/${courseId}/${id}">${id.toUpperCase()}</a>`).join('')}</nav>
         <p class="notice">${chapterName} course content · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p>
         <p data-cs-coverage></p>
         <div class="cs-toolbar">
-          <div class="cs-example-nav" role="group" aria-label="Course items">
-            <button type="button" class="button cs-step" data-cs-prev disabled aria-label="Previous item"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg></button>
-            <div class="cs-picker"><button type="button" id="cs-example" data-cs-ready disabled aria-expanded="false" aria-controls="cs-examples-menu" aria-label="Choose a course item">
-              <span class="cs-picker-meta">Course item <span data-cs-count></span></span><span data-cs-title>Loading items…</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 8 5 5 5-5"/></svg></button>
-              <div id="cs-examples-menu" role="group" aria-label="Choose a course item" hidden></div></div>
-            <button type="button" class="button cs-step" data-cs-next disabled aria-label="Next item"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button>
+          <div class="cs-example-block">
+            <p class="cs-picker-meta"><span>Course item</span><span data-cs-count></span></p>
+            <div class="cs-example-nav" role="group" aria-label="Course items">
+              <button type="button" class="button cs-step" data-cs-prev disabled aria-label="Previous item"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg></button>
+              <div class="cs-picker">
+                <button type="button" id="cs-example" data-cs-ready disabled aria-expanded="false" aria-controls="cs-examples-menu" aria-label="Choose a course item">
+                  <span data-cs-title>Loading items…</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 8 5 5 5-5"/></svg>
+                </button>
+                <div id="cs-examples-menu" role="group" aria-label="Choose a course item" hidden></div>
+              </div>
+              <button type="button" class="button cs-step" data-cs-next disabled aria-label="Next item"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button>
+            </div>
           </div>
           <div class="cs-actions" role="group" aria-label="Content actions">
             <button type="button" class="button" data-cs-edit data-cs-ready disabled>Edit item</button>
