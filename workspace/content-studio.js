@@ -545,7 +545,10 @@
         if (next !== undefined) { e.preventDefault(); buttons[next].focus(); }
       });
       host.querySelector('.cs-picker').addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); closePicker(s, true); } });
-      host.querySelector('.cs-picker').addEventListener('focusout', e => { if (!e.currentTarget.contains(e.relatedTarget)) closePicker(s); });
+      // Pressing a menu item must not move focus away first: Safari gives buttons no focus on click, so the
+      // focusout below would close and inert the menu before the click lands. Focus stays on the trigger.
+      menu.addEventListener('mousedown', e => e.preventDefault());
+      host.querySelector('.cs-picker').addEventListener('focusout', e => { if (e.relatedTarget && !e.currentTarget.contains(e.relatedTarget)) closePicker(s); });
       document.addEventListener('pointerdown', e => { if (!host.querySelector('.cs-picker').contains(e.target)) closePicker(s); }, {signal: s.abort.signal});
       setupEditorResize(s);
       host.querySelectorAll('[data-cs-close]').forEach(button => button.addEventListener('click', () => closeEditor(s)));
