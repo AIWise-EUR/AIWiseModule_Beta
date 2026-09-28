@@ -31,6 +31,7 @@ const session = {access_token:token,refresh_token:'test-refresh',expires_in:3600
     const page = await context.newPage(), calls = [], errors = [];
     page.on('pageerror', e => errors.push(e.message));
     let approved = false;
+    const remoteUser = options.remoteUser || structuredClone(user);
     await context.route('**/*', async route => {
       const req=route.request(), url=new URL(req.url());
       if (url.origin === origin) return route.continue();
@@ -41,12 +42,17 @@ const session = {access_token:token,refresh_token:'test-refresh',expires_in:3600
         if (url.pathname.endsWith('/signup')) {
           if (options.networkError) return route.abort();
           if (options.signupError) { body=options.signupError;status=options.status||422; }
-          else body=options.autoConfirm ? session : {...user,email_confirmed_at:undefined};
+          else { remoteUser.user_metadata = {...remoteUser.user_metadata, ...req.postDataJSON().data}; body=options.autoConfirm ? {...session,user:remoteUser} : {...remoteUser,email_confirmed_at:undefined}; }
         } else if (url.pathname.endsWith('/token')) {
           if (options.signInError) { body={code:'invalid_credentials',msg:'Invalid login credentials'}; status=400; }
-          else body=session;
+          else body={...session,user:remoteUser};
         }
-        else if (url.pathname.endsWith('/user')) body=user;
+        else if (url.pathname.endsWith('/user')) {
+          if (req.method() === 'PUT') {
+            if (options.updateError) { status=500;body={code:'unexpected_failure',msg:'Save unavailable'}; }
+            else { remoteUser.user_metadata = {...remoteUser.user_metadata, ...req.postDataJSON().data}; body=remoteUser; }
+          } else body=remoteUser;
+        }
         else if (url.pathname.includes('/rest/')) {
           assert.equal(req.method(),'GET','Browser must not write memberships');
           body=approved ? {user_id:user.id,active:true} : null;
@@ -63,6 +69,7 @@ const session = {access_token:token,refresh_token:'test-refresh',expires_in:3600
   }
   async function fill(page, confirm='Testing-password-8') {
     await page.locator('#aw-mode-signup').click();
+    await page.locator('#aw-signup-name').fill('Seyoon');
     await page.locator('#aw-auth-email').fill(user.email);
     await page.locator('#aw-auth-password').fill('Testing-password-8');
     await page.locator('#aw-auth-confirm').fill(confirm);
@@ -83,7 +90,7 @@ const session = {access_token:token,refresh_token:'test-refresh',expires_in:3600
       await page.locator('#aw-signin').evaluate(el=>{el.click();el.click();});
       await page.waitForFunction(()=>!document.querySelector('#aw-account-notice').hidden);
       assert.equal(f.calls.filter(c=>c.path.endsWith('/signup')).length,1);
-      assert.equal(f.calls[0].body.data && Object.keys(f.calls[0].body.data).length,0);
+      assert.deepEqual(f.calls[0].body.data,{display_name:'Seyoon'});
       assert.equal(await page.locator('#aw-auth-password').inputValue(),'');
       assert.equal(await page.locator('#aw-resend-confirmation').isDisabled(),true);
       assert.equal(await page.evaluate(()=>AIWiseAuth.snapshot().status),'signed-out');
@@ -104,6 +111,57 @@ const session = {access_token:token,refresh_token:'test-refresh',expires_in:3600
       await page.waitForFunction(()=>AIWiseAuth.snapshot().status==='signed-out');
       assert.equal(await page.evaluate(()=>localStorage.getItem('aiwise_test_draft')),'keep');
       assert.deepEqual(f.errors,[]); await f.context.close();
+    });
+    await run('Existing account name saves to Auth, persists in another session, and preserves membership',async()=>{
+      const remoteUser=structuredClone(user), options={remoteUser};
+      const f=await fixture(options), page=f.page;
+      await page.locator('#aw-auth-email').fill(user.email);await page.locator('#aw-auth-password').fill('Testing-password-8');await page.locator('#aw-signin').click();
+      await page.waitForFunction(()=>AIWiseAuth.snapshot().status==='not-member');
+      assert.equal(await page.locator('#aw-account-label').textContent(),'Account');
+      await page.locator('#aw-display-name').fill('  세윤 Chung  ');
+      await page.locator('#aw-save-name').evaluate(el=>{el.click();el.click();});
+      await page.waitForFunction(()=>document.querySelector('#aw-profile-status').textContent==='Name saved to your account.');
+      const updates=f.calls.filter(c=>c.method==='PUT');assert.equal(updates.length,1);assert.deepEqual(updates[0].body.data,{display_name:'세윤 Chung'});assert.deepEqual(Object.keys(updates[0].body).sort(),['code_challenge','code_challenge_method','data']);
+      assert.equal(await page.locator('#aw-account-label').textContent(),'세윤 Chung');
+      assert.equal(await page.locator('#home-greeting').textContent(),'Hello, 세윤 Chung');
+      assert.equal(await page.evaluate(()=>AIWiseAuth.snapshot().status),'not-member');
+      assert.ok(f.calls.filter(c=>c.path.includes('/rest/')).every(c=>c.method==='GET'));
+      await page.reload();await page.waitForFunction(()=>AIWiseAuth.snapshot().user?.displayName==='세윤 Chung');
+      // A separate browser context restores the server name after signing in.
+      const other=await fixture({remoteUser,profiler:true,mobile:true});
+      await other.page.locator('#aw-auth-email').fill(user.email);await other.page.locator('#aw-auth-password').fill('Testing-password-8');await other.page.locator('#aw-signin').click();
+      await other.page.waitForFunction(()=>AIWiseAuth.snapshot().user?.displayName==='세윤 Chung');
+      assert.equal(await other.page.locator('#aw-display-name').inputValue(),'세윤 Chung');
+      await other.page.screenshot({path:'/tmp/aiwise-account-name-mobile.png'});
+      await other.context.close();
+      await page.getByRole('button',{name:'Show sidebar',exact:true}).click();await page.locator('.aw-account-trigger').click();
+      await page.waitForFunction(()=>AIWiseAuth.snapshot().status==='not-member');
+      // Failed updates keep the typed name and old confirmed sidebar name.
+      options.updateError=true;await page.locator('#aw-display-name').fill('Unsaved name');await page.locator('#aw-save-name').click();
+      await page.waitForFunction(()=>document.querySelector('#aw-account-error').textContent.includes('could not be saved'));
+      assert.equal(await page.locator('#aw-display-name').inputValue(),'Unsaved name');assert.equal(await page.locator('#aw-account-label').textContent(),'세윤 Chung');
+      assert.equal(await page.locator('#home-greeting').textContent(),'Hello, 세윤 Chung');
+      assert.equal(await page.locator('#aw-profile-status').textContent(),'');
+      options.updateError=false;
+      await page.locator('#aw-display-name').fill('<img src=x onerror=alert(1)>');await page.locator('#aw-save-name').click();
+      await page.waitForFunction(()=>!!document.querySelector('#aw-profile-status').textContent);
+      assert.equal(await page.locator('#aw-account-label img').count(),0);assert.equal(await page.locator('#aw-account-label').textContent(),'<img src=x onerror=alert(1)>');
+      await page.locator('#aw-signout').click();await page.waitForFunction(()=>AIWiseAuth.snapshot().status==='signed-out');
+      assert.equal(await page.locator('#aw-profile-form').isVisible(),false);assert.equal(await page.locator('#aw-account-label').textContent(),'Sign in');
+      assert.deepEqual(f.errors,[]);await f.context.close();
+    });
+    await run('Name validation rejects blank/long values and refresh preserves unsaved name',async()=>{
+      const f=await fixture(),page=f.page;
+      const anonymous=await page.evaluate(()=>AIWiseAuth.updateDisplayName('Seyoon').then(()=>'',e=>e.message));assert.match(anonymous,/Sign in/);
+      await page.locator('#aw-auth-email').fill(user.email);await page.locator('#aw-auth-password').fill('Testing-password-8');await page.locator('#aw-signin').click();
+      await page.waitForFunction(()=>AIWiseAuth.snapshot().status==='not-member');
+      for(const name of ['   ','a'.repeat(51)]){
+        const message=await page.evaluate(name=>AIWiseAuth.updateDisplayName(name).then(()=>'',e=>e.message),name);assert.match(message,/1–50/);
+      }
+      assert.equal(f.calls.filter(c=>c.method==='PUT').length,0);
+      await page.locator('#aw-display-name').fill('Work in progress');await page.evaluate(()=>AIWiseAuth.refresh());
+      assert.equal(await page.locator('#aw-display-name').inputValue(),'Work in progress');
+      assert.deepEqual(f.errors,[]);await f.context.close();
     });
     await run('Auto-confirmed signup still requires independent membership approval',async()=>{
       const f=await fixture({autoConfirm:true}); await fill(f.page); await f.page.locator('#aw-signin').click();

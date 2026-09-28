@@ -17,7 +17,15 @@
       <p id="aw-account-email" hidden></p>
       <p id="aw-account-notice" class="aw-account-notice" role="status" hidden></p>
       <p id="aw-account-error" class="aw-account-error" role="alert"></p>
+      <form id="aw-profile-form" hidden>
+        <label for="aw-display-name">Display name</label>
+        <input id="aw-display-name" type="text" autocomplete="nickname" required maxlength="50" aria-describedby="aw-profile-help">
+        <p id="aw-profile-help" class="aw-account-help">Your name in AI-Wise. Use 1–50 characters.</p>
+        <button class="aw-account-button primary" type="submit" id="aw-save-name">Save name</button>
+        <p id="aw-profile-status" role="status" aria-live="polite"></p>
+      </form>
       <form id="aw-signin-form">
+        <div id="aw-signup-name-field" hidden><label for="aw-signup-name">Display name</label><input id="aw-signup-name" type="text" autocomplete="nickname" maxlength="50"></div>
         <label for="aw-auth-email">Email</label><input id="aw-auth-email" type="email" autocomplete="username" required maxlength="254">
         <label for="aw-auth-password">Password</label><input id="aw-auth-password" type="password" autocomplete="current-password" required>
         <div id="aw-confirm-field" hidden><label for="aw-auth-confirm">Confirm password</label><input id="aw-auth-confirm" type="password" autocomplete="new-password"></div>
@@ -34,10 +42,14 @@
       <p class="aw-account-local-note">Drafts and requests are still saved in this browser. Signing in does not upload them; signing out does not delete them.</p>
     </div>`;
   document.body.appendChild(dialog);
-  const form = dialog.querySelector('form'), email = dialog.querySelector('#aw-auth-email');
+  const form = dialog.querySelector('#aw-signin-form'), email = dialog.querySelector('#aw-auth-email');
   const password = dialog.querySelector('#aw-auth-password'), error = dialog.querySelector('#aw-account-error');
   const refreshButton = dialog.querySelector('#aw-auth-refresh'), signOutButton = dialog.querySelector('#aw-signout');
   const confirmPassword = dialog.querySelector('#aw-auth-confirm');
+  const signupName = dialog.querySelector('#aw-signup-name');
+  const profileForm = dialog.querySelector('#aw-profile-form'), nameInput = dialog.querySelector('#aw-display-name');
+  const saveNameButton = dialog.querySelector('#aw-save-name'), profileStatus = dialog.querySelector('#aw-profile-status');
+  let profileUserId = null, profileDirty = false;
   const modeButtons = [dialog.querySelector('#aw-mode-signin'), dialog.querySelector('#aw-mode-signup')];
   const notice = dialog.querySelector('#aw-account-notice'), resend = dialog.querySelector('#aw-resend-confirmation');
   let busy = false, state, cancelClose, mode = 'signin', resendAfter = 0, resendTimer, retrySignIn = false;
@@ -55,7 +67,7 @@
   function paint(value) {
     state = value;
     const signup = mode === 'signup';
-    trigger.querySelector('#aw-account-label').textContent = value.user ? 'Account' : 'Sign in';
+    trigger.querySelector('#aw-account-label').textContent = value.user ? value.user.displayName || 'Account' : 'Sign in';
     trigger.dataset.member = String(value.status === 'member');
     dialog.dataset.status = value.status;
     dialog.querySelector('#aw-account-title').textContent = value.user ? 'Your account' : signup ? 'Create your account' : retrySignIn ? 'Sign-in failed' : 'Team sign in';
@@ -64,6 +76,12 @@
     const accountEmail = dialog.querySelector('#aw-account-email');
     accountEmail.textContent = value.user?.email || ''; accountEmail.hidden = !value.user;
     form.hidden = !!value.user;
+    profileForm.hidden = !value.user;
+    if (profileUserId !== (value.user?.id || null)) {
+      profileUserId = value.user?.id || null; profileDirty = false; profileStatus.textContent = '';
+      nameInput.value = value.user?.displayName || '';
+    } else if (!profileDirty) nameInput.value = value.user?.displayName || '';
+    saveNameButton.textContent = busy ? 'Please wait…' : 'Save name';
     dialog.querySelector('#aw-account-modes').hidden = !!value.user;
     if (value.user) showNotice('');
     modeButtons[0].hidden = !signup;
@@ -71,6 +89,8 @@
     dialog.querySelector('#aw-account-switch-hint').textContent = signup ? 'Already have an account?' : 'Don’t have an account yet?';
     dialog.querySelector('#aw-confirm-field').hidden = !signup;
     confirmPassword.required = signup;
+    dialog.querySelector('#aw-signup-name-field').hidden = !signup;
+    signupName.required = signup;
     password.autocomplete = signup ? 'new-password' : 'current-password';
     password.minLength = signup ? 8 : 0;
     dialog.querySelector('#aw-signin').textContent = busy ? 'Please wait…' : signup ? 'Create account' : retrySignIn ? 'Retry' : 'Sign in';
@@ -80,10 +100,11 @@
     resend.hidden = signup;
     signOutButton.hidden = !value.user;
     refreshButton.hidden = !['error', 'access-error', 'setup-needed'].includes(value.status);
-    for (const control of [...form.elements, ...modeButtons, refreshButton, signOutButton]) {
+    for (const control of [...form.elements, ...profileForm.elements, ...modeButtons, refreshButton, signOutButton]) {
       control.disabled = busy || value.status === 'checking';
     }
-    if (!signup) confirmPassword.disabled = true;
+    if (!signup) { confirmPassword.disabled = true; signupName.disabled = true; }
+    saveNameButton.disabled ||= !value.user || !profileDirty;
     resend.disabled ||= Date.now() < resendAfter;
     resend.textContent = Date.now() < resendAfter ? 'Please wait before resending' : 'Resend confirmation';
   }
@@ -127,19 +148,32 @@
   [password, confirmPassword].forEach(input => input.addEventListener('input', () => confirmPassword.setCustomValidity('')));
   form.addEventListener('submit', event => {
     event.preventDefault();
-    const loginEmail = email.value, loginPassword = password.value;
+    const loginEmail = email.value, loginPassword = password.value, displayName = signupName.value;
     if (mode === 'signup' && loginPassword !== confirmPassword.value) {
       confirmPassword.setCustomValidity('Passwords do not match.'); confirmPassword.reportValidity(); return;
     }
     if (mode === 'signup') action(async () => {
-      const result = await window.AIWiseAuth.signUp(loginEmail, loginPassword);
-      mode = 'signin';
+      const result = await window.AIWiseAuth.signUp(loginEmail, loginPassword, displayName);
+      mode = 'signin'; signupName.value = '';
       if (result.confirmationRequired) {
         cooldown();
         showNotice('If this address can be registered, check your inbox and spam folder for a confirmation link, then sign in. If you already have an account, sign in with your existing password. Team access requires administrator approval.');
       }
     });
     else action(async () => { await window.AIWiseAuth.signIn(loginEmail, loginPassword); showNotice(''); }, true);
+  });
+  nameInput.addEventListener('input', () => {
+    profileDirty = nameInput.value !== (state.user?.displayName || '');
+    profileStatus.textContent = ''; error.textContent = ''; paint(state);
+  });
+  profileForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const name = nameInput.value;
+    action(async () => {
+      const saved = await window.AIWiseAuth.updateDisplayName(name);
+      nameInput.value = saved; profileDirty = false;
+      profileStatus.textContent = 'Name saved to your account.';
+    });
   });
   resend.addEventListener('click', () => {
     if (!email.reportValidity()) return;

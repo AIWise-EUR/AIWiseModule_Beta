@@ -13,14 +13,23 @@
       clientPromise = window.AIWiseBackend.getClient().then(value => {
         // Do not call async Auth methods inside this callback: the SDK holds a lock.
         value.auth.onAuthStateChange(event => {
+          if (event === 'SIGNED_OUT') { revision++; set(signedOut()); return; }
           if (changing || event === 'INITIAL_SESSION') return;
-          if (event === 'SIGNED_OUT') { revision++; set(signedOut()); }
-          else { clearTimeout(refreshTimer); refreshTimer = setTimeout(refresh, 0); }
+          clearTimeout(refreshTimer); refreshTimer = setTimeout(refresh, 0);
         });
         return value;
       }).catch(error => { clientPromise = null; throw error; });
     }
     return clientPromise;
+  }
+  function normalizeName(value) {
+    const name = typeof value === 'string' ? value.normalize('NFC').trim().replace(/\s+/g, ' ') : '';
+    if (!name || [...name].length > 50 || /[\u0000-\u001f\u007f]/.test(name))
+      throw new Error('Enter a display name using 1–50 characters.');
+    return name;
+  }
+  function displayName(user) {
+    try { return normalizeName(user.user_metadata?.display_name); } catch { return ''; }
   }
   async function refresh() {
     const current = ++revision;
@@ -35,7 +44,7 @@
       const verified = await backend.auth.getUser();
       if (verified.error) throw verified.error;
       if (!verified.data.user) { apply(signedOut()); return; }
-      const user = {id: verified.data.user.id, email: verified.data.user.email || ''};
+      const user = {id: verified.data.user.id, email: verified.data.user.email || '', displayName: displayName(verified.data.user), name: displayName(verified.data.user)};
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000);
       let result;
@@ -83,22 +92,42 @@
     if (error.code === 'user_already_exists' || error.code === 'email_exists') return new Error('Try signing in or checking your confirmation email instead.');
     return new Error('The request could not be completed. Check your connection or contact your project administrator.');
   }
-  async function signUp(email, password) {
+  async function signUp(email, password, name) {
     if (changing) throw new Error('An account action is already in progress.');
     if (state.user) throw new Error('Sign out before creating another account.');
+    const normalizedName = normalizeName(name);
     if (password.length < 8) throw new Error('Use at least 8 characters for your password.');
     changing = true; revision++; clearTimeout(refreshTimer);
     let hasSession = false;
     try {
       const backend = await client();
       const {data, error} = await backend.auth.signUp({email: email.trim(), password,
-        options: {emailRedirectTo: confirmationUrl}});
+        options: {emailRedirectTo: confirmationUrl, data: {display_name: normalizedName}}});
       if (error) throw registrationError(error);
       hasSession = !!data.session;
       // Registration never writes workspace_members or supplies role metadata.
     } finally { changing = false; }
     if (hasSession) await refresh();
     return {confirmationRequired: !hasSession};
+  }
+  async function updateDisplayName(name) {
+    if (changing) throw new Error('An account action is already in progress.');
+    if (!state.user || state.status === 'checking') throw new Error('Sign in before changing your display name.');
+    const normalizedName = normalizeName(name), userId = state.user.id;
+    changing = true; revision++; clearTimeout(refreshTimer);
+    try {
+      const backend = await client();
+      const verified = await backend.auth.getUser();
+      if (verified.error || verified.data.user?.id !== userId) throw new Error('Your account session has changed. Reopen this window and sign in again.');
+      const {data, error} = await backend.auth.updateUser({data: {display_name: normalizedName}});
+      if (error) throw new Error(error.status === 429 ? 'Too many requests. Please wait before trying again.' :
+        'Your name could not be saved. Check your connection and try again.');
+      if (state.user?.id !== userId || data.user?.id !== userId || displayName(data.user) !== normalizedName)
+        throw new Error('The saved name could not be confirmed. Reopen this window to check your account.');
+      // Display metadata is never used for membership or authorization.
+      set({...state, user: {...state.user, displayName: displayName(data.user), name: displayName(data.user)}});
+      return normalizedName;
+    } finally { changing = false; }
   }
   async function resendConfirmation(email) {
     if (changing) throw new Error('An account action is already in progress.');
@@ -120,7 +149,7 @@
       set(signedOut());
     } finally { changing = false; }
   }
-  window.AIWiseAuth = Object.freeze({snapshot, refresh, signIn, signOut, signUp, resendConfirmation,
+  window.AIWiseAuth = Object.freeze({snapshot, refresh, signIn, signOut, signUp, resendConfirmation, updateDisplayName,
     subscribe(fn) { listeners.add(fn); fn(snapshot()); return () => listeners.delete(fn); }});
   // Recheck revocation on return. Future data access must also be enforced by RLS.
   document.addEventListener('visibilitychange', () => {

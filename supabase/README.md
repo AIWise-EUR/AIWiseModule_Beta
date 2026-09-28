@@ -41,3 +41,10 @@ Automated browser tests exercise the real Supabase SDK against controlled Auth a
 ## Signup browser regression checks
 
 `workspace/tests/signup.browser.cjs` runs the real pinned Supabase SDK against intercepted HTTP responses. It never creates a live account or sends email. With Playwright installed, set `CHROMIUM_PATH` to a Chromium executable and `SUPABASE_TEST_SDK` to the downloaded `@supabase/supabase-js@2.117.2/dist/umd/supabase.js` file, then run `node workspace/tests/signup.browser.cjs`. Tests cover password mismatch, duplicate-submit prevention, signup without membership, session restoration, later membership approval, sign out preserving local drafts, signup errors, mobile/Course Profiler layout, and callback URL cleanup. Real email delivery and administrator setup must still be verified on the project.
+
+
+## Account display names
+
+Signup collects a required 1–50 character display name. Existing accounts can set or change it in the sidebar account dialog. The name is stored as Supabase Auth `user_metadata.display_name` through authenticated `auth.updateUser({data: ...})`; no new table or migration is required. Login continues to use email. Names are display labels, not unique usernames, and duplicate names are allowed. The sidebar and home greeting use the saved name after server-verified sign-in or session restore; accounts with no name show Account until they set one.
+
+Only display metadata is sent by this form. It never writes membership, roles or application metadata. Membership checks continue to use the immutable authenticated user ID and the `workspace_members` table. Name updates are shown as saved only after Auth confirms the updated user. The verified Auth snapshot exposes the same value as `user.displayName` and `user.name` for shared UI consumers. Other signed-in sessions obtain the name when account state is refreshed or the account dialog is reopened. Existing Control Tower browser-local profile names and historical records are not rewritten.

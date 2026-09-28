@@ -12,10 +12,10 @@
 #aw-account-status { margin:0 0 16px; }
 .aw-account-dialog[data-status="member"] #aw-account-status { color:var(--ok); }
 #aw-account-email { padding:10px 12px; background:var(--paper); border-radius:6px; overflow-wrap:anywhere; }
-#aw-signin-form { display:grid; gap:8px; }
+#aw-signin-form, #aw-profile-form { display:grid; gap:8px; }
 #aw-signin-form[hidden], .aw-account-dialog [hidden] { display:none !important; }
-#aw-signin-form label { font-weight:600; }
-#aw-signin-form input { box-sizing:border-box; width:100%; min-width:0; height:44px; padding:10px 12px; margin-bottom:8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); font:16px var(--font-body); }
+#aw-signin-form label, #aw-profile-form label { font-weight:600; }
+#aw-signin-form input, #aw-profile-form input { box-sizing:border-box; width:100%; min-width:0; height:44px; padding:10px 12px; margin-bottom:8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); font:16px var(--font-body); }
 .aw-account-button { min-height:44px; padding:10px 16px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--signal); font:600 13px var(--font-body); cursor:pointer; }
 .aw-account-button.primary { background:var(--signal); border-color:var(--signal); color:white; }
 .aw-account-button:disabled { opacity:.5; cursor:wait; }
@@ -27,8 +27,14 @@
 .aw-account-switch { margin-top:20px; padding-top:16px; border-top:1px solid var(--line); }
 .aw-account-switch p { margin:0 0 8px; color:var(--ink-3); }
 .aw-account-notice { padding:12px; border:1px solid var(--line); border-radius:6px; background:var(--paper); }
-#aw-confirm-field { display:grid; gap:8px; }
+#aw-confirm-field, #aw-signup-name-field { display:grid; gap:8px; }
 .aw-auth-confirm-page { box-sizing:border-box; width:min(480px, calc(100% - 32px)); margin:10vh auto; padding:28px; border:1px solid var(--line); border-radius:12px; background:var(--card); }
 .aw-auth-confirm-page h1 { font:600 26px var(--font-heading); }
 .aw-auth-confirm-page a { display:inline-block; margin-top:12px; text-decoration:none; }
 .aw-account-trigger, .aw-account-button, .aw-account-close { transition:background-color var(--aw-motion-control) ease, border-color var(--aw-motion-control) ease; }
+
+#aw-account-label { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.aw-account-dot { flex-shrink:0; }
+#aw-profile-help, #aw-profile-status { margin:0 0 8px; }
+#aw-profile-status { color:var(--ok); font-size:13px; }
+#aw-profile-status:empty { display:none; }
