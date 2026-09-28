@@ -1,4 +1,4 @@
-/* Course-slot authoring. Drafts are local; module sources and releases are unchanged. */
+/* Course-slot authoring: local drafts, team submissions and approved Beta baseline. */
 (() => {
   'use strict';
   const COURSES = Object.freeze({
@@ -43,10 +43,10 @@
     s.host.querySelectorAll('[data-cs-save]').forEach(button => button.disabled = !s.ready || s.blocked || (!dirty() && s.raw !== null));
     s.host.querySelectorAll('[data-cs-submit]').forEach(button => {
       button.disabled = !canSubmit(s);
-      button.title = button.disabled ? 'Save this chapter’s draft before sending it for review.' : 'Send the saved chapter to the review queue.';
+      button.title = window.AIWiseAuth?.snapshot().status !== 'member' ? 'Sign in with an approved team account to submit.' : button.disabled ? 'Save this chapter’s draft before sending it for review.' : 'Send the saved chapter to the review queue.';
     });
   }
-  const canSubmit = s => s.ready && !s.blocked && !!s.raw && !dirty();
+  const canSubmit = s => s.ready && !s.blocked && !!s.raw && !dirty() && window.AIWiseAuth?.snapshot().status === 'member';
   function openSubmission(s) {
     if (!canSubmit(s)) return;
     try {
@@ -55,7 +55,7 @@
       if (s.dialog.open) s.dialog.close();
       const panel = s.submitDialog;
       panel.querySelector('[data-cs-submit-name]').value = window.AIWiseControlTower.submissionName();
-      panel.querySelector('[data-cs-submit-name]').readOnly = !!window.AIWiseAuth?.snapshot().user?.displayName;
+      panel.querySelector('[data-cs-submit-name]').readOnly = true;
       panel.querySelector('[data-cs-submit-error]').textContent = '';
       panel.querySelector('[data-cs-submit-scope]').textContent = `${COURSES[s.courseId].label} · ${s.chapter.toUpperCase()} · Saved ${new Date(JSON.parse(s.raw).savedAt).toLocaleString()}`;
       panel.showModal(); window.AIWiseMotion.enter(panel);
@@ -76,7 +76,7 @@
       Object.keys(base).every(k => valid(value[k], base[k], k));
   }
   function record(s) {
-    const shared = {schema: 1, course: s.courseId, savedAt: new Date().toISOString()};
+    const shared = {schema: 1, course: s.courseId, baseRelease:s.baseRelease, savedAt: new Date().toISOString()};
     if (s.chapter === 'c2') {
       const extras = values => Object.fromEntries(Object.entries(values).filter(([k]) => k !== 'c2.examples'));
       return {...shared, slot: 'c2.examples', baseExamples: s.base['c2.examples'], examples: s.values['c2.examples'],
@@ -434,9 +434,9 @@
             </div></div></div></dialog>
         <dialog class="cs-submit-dialog aw-account-dialog" aria-labelledby="cs-submit-title">
           <div class="aw-account-header"><h2 id="cs-submit-title">Send to Control Tower</h2><button type="button" class="aw-account-close" data-cs-submit-close aria-label="Close submission">×</button></div>
-          <div class="aw-account-body"><p data-cs-submit-scope></p><p class="aw-account-help">Send a fixed copy of this saved chapter to this browser’s review queue. Beta and Published stay unchanged.</p>
+          <div class="aw-account-body"><p data-cs-submit-scope></p><p class="aw-account-help">Share a fixed copy of this chapter with the team. Administrator approval applies it to Beta. Published stays unchanged.</p>
             <form class="cs-submit-form">
-              <label>Your name<input data-cs-submit-name type="text" maxlength="80" required autocomplete="name"></label>
+              <label>Submitting as<input data-cs-submit-name type="text" maxlength="80" required autocomplete="name"></label>
               <label>What changed?<textarea data-cs-submit-summary rows="4" maxlength="12000" required placeholder="Briefly describe what should be reviewed."></textarea></label>
               <p data-cs-submit-error role="alert" class="aw-account-error"></p>
               <button type="submit" class="aw-account-button primary">Send for review</button>
@@ -449,12 +449,15 @@
     try {
       const url = new URL(`../common/aiwise-${chapter}-final.html`, location.href);
       const otherChapter = chapter === 'c2' ? 'c3' : 'c2';
-      const [html, data, otherHTML] = await Promise.all([
+      const [html, sourceData, otherHTML, releases] = await Promise.all([
         fetch(url, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Preview unavailable'); return r.text(); }),
         fetch(config.source, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); }),
-        fetch(new URL(`../common/aiwise-${otherChapter}-final.html`, location.href), {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Item list unavailable'); return r.text(); })
+        fetch(new URL(`../common/aiwise-${otherChapter}-final.html`, location.href), {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Item list unavailable'); return r.text(); }),
+        window.AIWiseBetaContent.read(courseId)
       ]);
       if (session !== s) return;
+      const data = window.AIWiseBetaContent.apply(sourceData, releases);
+      s.baseRelease = releases.find(r => r.chapter === chapter)?.submission_id || null;
       if (data.course?.id !== s.courseId) throw Error('Wrong course');
       s.source = data;
       const slotPaths = text => [...new DOMParser().parseFromString(text, 'text/html').querySelectorAll('[data-slot]')].map(node => node.dataset.slot);
@@ -484,7 +487,7 @@
         s.raw = localStorage.getItem(s.key); s.storageRead = true;
         if (s.raw !== null) {
           const saved = JSON.parse(s.raw);
-          if (saved.schema !== 1 || saved.course !== courseId) throw Error('Invalid draft');
+          if (saved.schema !== 1 || saved.course !== courseId || (saved.baseRelease || null) !== s.baseRelease) throw Error('Invalid draft');
           let values, baseline;
           if (chapter === 'c2') {
             if (saved.slot !== 'c2.examples' || !equal(saved.baseExamples, s.base['c2.examples'])) throw Error('Invalid examples');
@@ -512,17 +515,18 @@
       host.querySelectorAll('[data-cs-submit]').forEach(button => button.addEventListener('click', () => openSubmission(s)));
       const submission = s.submitDialog;
       submission.querySelector('[data-cs-submit-close]').addEventListener('click', () => submission.close());
-      submission.querySelector('form').addEventListener('submit', event => {
+      submission.querySelector('form').addEventListener('submit', async event => {
         event.preventDefault();
         const button = submission.querySelector('[type="submit"]');
         if (button.disabled) return;
         button.disabled = true;
         try {
           if (!canSubmit(s)) throw Error('Save your latest changes before sending this chapter.');
-          const result = window.AIWiseControlTower.submitStudioDraft({course:s.courseId, chapter:s.chapter,
-            courseName:COURSES[s.courseId].label, raw:s.raw, slots:s.saved, baseSlots:s.base,
+          const result = await window.AIWiseControlTower.submitStudioDraft({course:s.courseId, chapter:s.chapter,
+            courseName:COURSES[s.courseId].label, raw:s.raw, slots:s.saved, baseSlots:s.base, baseRelease:s.baseRelease,
             summary:submission.querySelector('[data-cs-submit-summary]').value,
             name:submission.querySelector('[data-cs-submit-name]').value});
+          if (session !== s) return;
           submission.close(); location.hash = '#tower/request/' + result.id;
         } catch (error) {
           submission.querySelector('[data-cs-submit-error]').textContent = error.message || 'The request could not be saved. Your draft has been preserved.';
@@ -560,6 +564,7 @@
       s.frame.srcdoc = previewHTML(html, url.href);
     } catch (error) { if (session === s && error.name !== 'AbortError') message(s, 'This chapter could not be loaded. Reload to try again or open it in Beta. Saved drafts are unchanged.', true); }
   }
+  window.AIWiseAuth?.subscribe(() => { if(session) controls(session); });
   window.addEventListener('beforeunload', event => { if (dirty()) { event.preventDefault(); event.returnValue = ''; } });
   window.AIWiseContentStudio = {render, supports,
     canLeave: () => !dirty() || confirm('Leave Content Studio without saving your edits?'),
