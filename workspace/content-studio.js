@@ -324,7 +324,7 @@
   }
 
   async function render(shell) {
-    shell('studio', 'AWS1 · Content Studio', 'Select an outlined example in C2 to edit it in place.', `
+    shell('studio', 'AWS1', '', `
       <div id="cs-studio">
         <p class="notice">C2 course examples · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p>
         <div class="cs-toolbar">
