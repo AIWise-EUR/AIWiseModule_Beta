@@ -328,16 +328,18 @@
       <div id="cs-studio">
         <p class="notice">C2 course examples · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p>
         <div class="cs-toolbar">
-          <div class="cs-example-nav" role="group" aria-label="Course examples">
-            <button type="button" class="button cs-step" data-cs-prev disabled aria-label="Previous example"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg></button>
-            <div class="cs-picker">
-              <button type="button" id="cs-example" data-cs-ready disabled aria-expanded="false" aria-controls="cs-examples-menu" aria-label="Choose an example">
-                <span class="cs-picker-meta">Course example <span data-cs-count></span></span>
-                <span data-cs-title>Loading examples…</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 8 5 5 5-5"/></svg>
-              </button>
-              <div id="cs-examples-menu" role="group" aria-label="Choose an example" hidden></div>
+          <div class="cs-example-block">
+            <p class="cs-picker-meta"><span>Course example</span><span data-cs-count></span></p>
+            <div class="cs-example-nav" role="group" aria-label="Course examples">
+              <button type="button" class="button cs-step" data-cs-prev disabled aria-label="Previous example"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg></button>
+              <div class="cs-picker">
+                <button type="button" id="cs-example" data-cs-ready disabled aria-expanded="false" aria-controls="cs-examples-menu" aria-label="Choose an example">
+                  <span data-cs-title>Loading examples…</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 8 5 5 5-5"/></svg>
+                </button>
+                <div id="cs-examples-menu" role="group" aria-label="Choose an example" hidden></div>
+              </div>
+              <button type="button" class="button cs-step" data-cs-next disabled aria-label="Next example"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button>
             </div>
-            <button type="button" class="button cs-step" data-cs-next disabled aria-label="Next example"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button>
           </div>
           <div class="cs-actions" role="group" aria-label="Content actions">
           <button type="button" class="button" data-cs-edit data-cs-ready disabled>Edit example</button>
