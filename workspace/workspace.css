@@ -144,7 +144,7 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 22px; border: 1px
 .course-dashboard .course-add { display: flex; flex-direction: column; justify-content: center; }
 .home-status-heading { flex: 1; min-width: 0; }
 .home-update-row { display: flex; gap: 10px; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); min-width: 0; }
-#workspace-update { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--signal); text-decoration: none; }
+#workspace-update { flex: 1; min-width: 0; white-space: normal; line-height: 1.6; font-size: 13px; color: var(--signal); text-decoration: none; }
 #workspace-update:hover { text-decoration: underline; }
 #workspace-update-count { color: var(--ink-3); font: 10px var(--font-mono); white-space: nowrap; }
 .update-controls { display: flex; gap: 5px; }
@@ -172,3 +172,7 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 22px; border: 1px
 .updates-body .item-link > small { flex-shrink: 0; }
 .updates-body .item-link span small { display: block; margin-top: 6px; color: var(--signal); }
 @media (max-width: 600px) { .updates-dialog { padding: 18px; max-height: 85dvh; } }
+
+.workspace-tips { margin: 0 0 24px; padding-left: 24px; font-size: 14px; line-height: 1.6; }
+.workspace-tips li { padding: 9px 4px; border-bottom: 1px solid var(--line); }
+.workspace-tips li::marker { color: var(--ink-3); font: 11px var(--font-mono); }
