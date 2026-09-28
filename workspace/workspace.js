@@ -38,6 +38,7 @@
   let pendingFetch;
   let currentPrompt = '';
   let renderedHash = location.hash;
+  let betaReturn = '#home';
 
   document.getElementById('area-list').innerHTML = Object.entries(areas).map(([id,a]) => `<a class="card link" href="${id==='published'?publishedUrl:'#'+id}"><svg viewBox="0 0 ${id==='tower'?'180 240':id==='beta'||id==='published'?'270 200':'240 180'}" aria-hidden="true"><use href="#${a.icon}"/></svg><h2>${a.name}</h2><p>${a.note}</p><span class="arrow">${a.action} ${id==='published'?'↗':'→'}</span></a>`).join('');
   function setView(view) {
@@ -145,13 +146,7 @@
       ['c1','c2','c3'].map(id=>card(items[id].name,'Preview and edit shared AI Orientation content.','#common/'+id,'Open editor')).join('')+
       '</div><div class="toolbar">'+button('View Common Studio requests','#tower/common')+'</div>',false);
   }
-  function renderBeta(part) {
-    const item=items[part];
-    if(item) {
-      shell('beta',item.name,hint(item.area+' · Item versions','Saved version history is not connected in this prototype. This working copy is not an immutable checkpoint or an approved release.'),`<div class="version-row"><div><strong>Current working copy</strong><p>Preview the content currently available in Beta.</p></div>${button('Open preview',item.url,true)}</div>`+(part==='aws1'?'<div class="toolbar">'+button('Diagnostic Questionnaire','../course-specific/aws1/diagnostic-questionnaire-final.html')+button('Activity entry','../course-specific/aws1/sub-lobby.html')+button('Course materials','../course-specific/aws1/aws-i-materials.html')+'</div>':'')); return;
-    }
-    shell('beta','AI-Wise Beta',hint(areas.beta.note),'<div class="toolbar">'+button('Open Beta module','../common/lobby.html',true)+'</div><h2 class="section-label">AI-Wise Common</h2><div class="cards">'+['c1','c2','c3'].map(id=>card(items[id].name,'Shared Orientation content.','#beta/'+id,'View item')).join('')+'</div><h2 class="section-label">AI-Wise Course Specific</h2><div class="cards">'+['aws1','ped','other'].map(id=>card(items[id].name,id==='other'?'Uses the shared Others configuration and inherits AWS1 content.':'Course content within the current module.','#beta/'+id,'View item')).join('')+'</div>');
-  }
+  function renderBeta(part) { window.AIWiseBetaReview.open(part, () => { location.hash = betaReturn; }); }
   function renderTower(part) {
     window.AIWiseControlTower.render(part, shell);
   }
@@ -164,10 +159,12 @@
   }
   function renderNotFound() {shell(null,'Area not found','',lead('That workspace address is not available.')+button('Back to map','#home'),false);}
   function route(focus=true) {
-    if (!window.AIWiseControlTower.canLeave() || !window.AIWiseContentStudio.canLeave() || !window.AIWiseCourses.canLeave()) { history.replaceState(null, '', location.pathname + location.search + renderedHash); return; }
+    if (!window.AIWiseControlTower.canLeave() || !window.AIWiseContentStudio.canLeave() || !window.AIWiseCourses.canLeave() || !window.AIWiseBetaReview.canLeave()) { history.replaceState(null, '', location.pathname + location.search + renderedHash); return; }
     window.AIWiseControlTower.dispose();
     window.AIWiseContentStudio.dispose();
     window.AIWiseCourses.dispose();
+    window.AIWiseBetaReview.dispose();
+    if (location.hash.startsWith('#beta') && !renderedHash.startsWith('#beta')) betaReturn = renderedHash || '#home';
     renderedHash = location.hash;
     pendingFetch?.abort(); pendingFetch=null;
     const [area='home', ...segments]=(location.hash.slice(1)||'home').split('/');
@@ -179,10 +176,10 @@
     });
     window.AIWiseSidebar.markCurrent();
     const isUpdates = area === 'updates';
-    const isHome=area==='home' || isUpdates;home.hidden=!isHome;room.hidden=isHome;
+    const isHome=area==='home' || isUpdates || area==='beta';home.hidden=!isHome;room.hidden=isHome;
     if (isUpdates) { history.replaceState(null, '', location.pathname + location.search + '#home'); renderedHash = '#home'; window.AIWiseSidebar.markCurrent(); }
     window.AIWiseOverview.setHome(isHome);
-    if(isHome) { document.title='AI-Wise Workspace'; window.AIWiseMotion.enter(home); }
+    if(isHome) { document.title=area==='beta'?'AI-Wise Beta · Preview':'AI-Wise Workspace'; window.AIWiseMotion.enter(home); if(area==='beta')renderBeta(part); }
     else {
       if(area==='profiler')renderProfiler(part);
       else if(area==='manager')renderManager(part);
@@ -196,7 +193,7 @@
       else renderNotFound();
       document.title=(document.getElementById('room-title')?.textContent||'Workspace')+' · AI-Wise';
     }
-    if(focus){document.getElementById(isHome?'main':'room-title')?.focus({preventScroll:true});window.scrollTo(0,0);}
+    if(focus && area!=='beta'){document.getElementById(isHome?'main':'room-title')?.focus({preventScroll:true});window.scrollTo(0,0);}
     if (isUpdates) window.AIWiseOverview.open();
     if(focus && area==='tower' && part && !part.includes('/')) document.querySelector('.ct-queue')?.scrollIntoView({block:'start'});
   }
