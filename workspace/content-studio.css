@@ -76,3 +76,6 @@
   .cs-actions>a:last-child { grid-column: 1 / -1; }
   .cs-preview iframe { min-height: 420px; }
 }
+
+.cs-picker-heading { position: sticky; top: -5px; z-index: 1; padding: 10px 9px; background: var(--paper-2); color: var(--ink-3); font: 11px/1.5 var(--font-mono); }
+#cs-examples-menu [role="group"] + [role="group"] { margin-top: 8px; }

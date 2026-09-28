@@ -104,7 +104,7 @@
   function selectItem(s, index, scroll = false) {
     s.index = Math.max(0, Math.min(index, s.items.length - 1));
     const item = s.items[s.index], doc = s.frame.contentDocument;
-    s.host.querySelector('[data-cs-count]').textContent = `${s.index + 1} / ${s.items.length}`;
+    s.host.querySelector('[data-cs-count]').textContent = `${s.chapter.toUpperCase()} · ${s.index + 1} / ${s.items.length}`;
     s.host.querySelector('[data-cs-title]').textContent = itemTitle(s, item);
     s.host.querySelector('[data-cs-prev]').disabled = s.index === 0;
     s.host.querySelector('[data-cs-next]').disabled = s.index === s.items.length - 1;
@@ -127,11 +127,29 @@
   }
   function refreshPicker(s) {
     const menu = s.host.querySelector('#cs-examples-menu'); menu.replaceChildren();
-    s.items.forEach((item, i) => {
-      const button = document.createElement('button'); button.type = 'button'; button.dataset.csChoice = String(i);
-      button.textContent = `${i + 1}. ${itemTitle(s, item)}`;
-      button.addEventListener('click', () => { selectItem(s, i, true); closePicker(s, true); }); menu.appendChild(button);
-    });
+    for (const chapter of ['c2', 'c3']) {
+      const group = document.createElement('div'); group.setAttribute('role', 'group');
+      group.setAttribute('aria-labelledby', 'cs-group-' + chapter);
+      const heading = document.createElement('div'); heading.className = 'cs-picker-heading';
+      heading.id = 'cs-group-' + chapter;
+      heading.textContent = chapter === 'c2' ? 'C2 · GenAI and human cognition' : 'C3 · How to engage with GenAI';
+      group.appendChild(heading);
+      s.catalog[chapter].forEach((item, i) => {
+        const button = document.createElement('button'); button.type = 'button';
+        button.dataset.csChapter = chapter; button.dataset.csItem = String(i);
+        if (chapter === s.chapter) button.dataset.csChoice = String(i);
+        const title = chapter === s.chapter ? itemTitle(s, item) : item.example === undefined
+          ? label(item.path) : s.otherExamples?.[item.example]?.title || get(s.source, item.path)[item.example].title || 'Untitled example';
+        button.textContent = `${i + 1}. ${title}`;
+        button.setAttribute('aria-pressed', String(chapter === s.chapter && i === s.index));
+        button.addEventListener('click', () => {
+          if (chapter === s.chapter) { selectItem(s, i, true); closePicker(s, true); }
+          else { closePicker(s, true); location.hash = `#studio/${s.courseId}/${chapter}/${i}`; }
+        });
+        group.appendChild(button);
+      });
+      menu.appendChild(group);
+    }
     selectItem(s, s.index);
   }
   function updatePreview(s) {
@@ -333,21 +351,20 @@
         const link = event.target.closest('a'); if (!link) return; event.preventDefault();
         const href = link.getAttribute('href') || '';
         if (href.startsWith('#')) scrollPreview(s, href.slice(1));
-        else message(s, 'Use the chapter links above or Open in Beta to browse other pages.');
+        else message(s, 'Choose an item from another chapter in the item menu, or use Open in Beta to browse the module.');
       });
       doc.addEventListener('submit', event => event.preventDefault());
       updatePreview(s); s.ready = true;
       s.host.querySelectorAll('[data-cs-ready]').forEach(node => node.disabled = false);
-      controls(s); selectItem(s, 0, true);
+      controls(s); selectItem(s, s.index, true);
     } catch { message(s, 'The preview could not be prepared. Reload to try again; saved drafts are unchanged.', true); }
   }
 
-  async function render(shell, courseId = 'aws1', chapter = 'c2') {
+  async function render(shell, courseId = 'aws1', chapter = 'c2', itemIndex = 0) {
     if (!supports(courseId) || !['c2','c3'].includes(chapter)) throw Error('Course editor not connected');
     const config = COURSES[courseId], chapterName = chapter.toUpperCase();
     shell('studio', config.label, '', `
       <div id="cs-studio">
-        <nav class="toolbar" aria-label="Chapter">${['c2','c3'].map(id => `<a class="button${chapter === id ? ' primary' : ''}" ${chapter === id ? 'aria-current="page"' : ''} href="#studio/${courseId}/${id}">${id.toUpperCase()}</a>`).join('')}</nav>
         <p class="notice">${chapterName} course content · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p>
         <p data-cs-coverage></p>
         <div class="cs-toolbar">
@@ -385,17 +402,20 @@
       </div>`, false);
     const host = document.getElementById('cs-studio');
     const s = session = {host, courseId, chapter, key: `aiwise_content_studio_${courseId}_${chapter}_v1`, frame: host.querySelector('iframe'), dialog: host.querySelector('dialog'),
-      abort: new AbortController(), index: 0, slideIndex: 0, raw: null, blocked: false, storageRead: false, ready: false};
+      abort: new AbortController(), index: itemIndex, slideIndex: 0, raw: null, blocked: false, storageRead: false, ready: false};
     try {
       const url = new URL(`../common/aiwise-${chapter}-final.html`, location.href);
-      const [html, data] = await Promise.all([
+      const otherChapter = chapter === 'c2' ? 'c3' : 'c2';
+      const [html, data, otherHTML] = await Promise.all([
         fetch(url, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Preview unavailable'); return r.text(); }),
-        fetch(config.source, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); })
+        fetch(config.source, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); }),
+        fetch(new URL(`../common/aiwise-${otherChapter}-final.html`, location.href), {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Item list unavailable'); return r.text(); })
       ]);
       if (session !== s) return;
       if (data.course?.id !== s.courseId) throw Error('Wrong course');
       s.source = data;
-      const slots = [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('[data-slot]')].map(node => node.dataset.slot);
+      const slotPaths = text => [...new DOMParser().parseFromString(text, 'text/html').querySelectorAll('[data-slot]')].map(node => node.dataset.slot);
+      const slots = slotPaths(html);
       if (!slots.length || new Set(slots).size !== slots.length || slots.some(path => !path.startsWith(chapter + '.'))) throw Error('Invalid slot catalog');
       s.base = {}; s.items = []; const missing = [];
       slots.forEach(path => {
@@ -407,6 +427,20 @@
         else s.items.push({path});
       });
       if (!s.items.length) throw Error('No course items');
+      s.index = Math.min(s.index, s.items.length - 1);
+      s.catalog = {[chapter]: s.items, [otherChapter]: []};
+      slotPaths(otherHTML).forEach(path => {
+        const value = get(data, path);
+        if (value === undefined) return;
+        if (path === 'c2.examples') value.forEach((_, example) => s.catalog[otherChapter].push({path, example}));
+        else s.catalog[otherChapter].push({path});
+      });
+      // Show saved C2 example titles in the other chapter's group when their source still matches.
+      if (otherChapter === 'c2') try {
+        const draft = JSON.parse(localStorage.getItem(`aiwise_content_studio_${courseId}_c2_v1`));
+        if (draft?.schema === 1 && draft.course === courseId && draft.slot === 'c2.examples' && equal(draft.baseExamples, data.c2.examples) && valid(draft.examples, data.c2.examples)) s.otherExamples = draft.examples;
+      } catch { /* The destination editor reports unreadable drafts without changing them. */ }
+
       host.querySelector('[data-cs-coverage]').textContent = `${s.items.length} editable items.` + (missing.length ? ' Not configured for this course: ' + missing.join(', ') + '.' : ' All course slots in this chapter are connected.');
       s.values = clone(s.base);
       let status = 'Current Beta content · No draft edits yet.';
@@ -444,13 +478,13 @@
       host.querySelector('[data-cs-prev]').addEventListener('click', () => selectItem(s, s.index - 1, true));
       host.querySelector('[data-cs-next]').addEventListener('click', () => selectItem(s, s.index + 1, true));
       const trigger = host.querySelector('#cs-example'), menu = host.querySelector('#cs-examples-menu');
-      const openPicker = () => { s.cancelPickerClose?.(); s.cancelPickerClose = null; menu.classList.remove('cs-closing'); menu.inert = false; menu.hidden = false; trigger.setAttribute('aria-expanded', 'true'); menu.children[s.index]?.focus({preventScroll: true}); };
+      const openPicker = () => { s.cancelPickerClose?.(); s.cancelPickerClose = null; menu.classList.remove('cs-closing'); menu.inert = false; menu.hidden = false; trigger.setAttribute('aria-expanded', 'true'); menu.querySelector('[aria-pressed="true"]')?.focus({preventScroll: true}); };
       trigger.addEventListener('click', () => menu.hidden ? openPicker() : closePicker(s));
       trigger.addEventListener('keydown', e => { if (['ArrowDown','ArrowUp'].includes(e.key)) { e.preventDefault(); openPicker(); } });
       menu.addEventListener('keydown', e => {
-        const index = [...menu.children].indexOf(document.activeElement), count = menu.children.length;
+        const buttons = [...menu.querySelectorAll('button')], index = buttons.indexOf(document.activeElement), count = buttons.length;
         const next = {ArrowDown: (index + 1) % count, ArrowUp: (index + count - 1) % count, Home: 0, End: count - 1}[e.key];
-        if (next !== undefined) { e.preventDefault(); menu.children[next].focus(); }
+        if (next !== undefined) { e.preventDefault(); buttons[next].focus(); }
       });
       host.querySelector('.cs-picker').addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); closePicker(s, true); } });
       host.querySelector('.cs-picker').addEventListener('focusout', e => { if (!e.currentTarget.contains(e.relatedTarget)) closePicker(s); });
