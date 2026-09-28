@@ -24,4 +24,12 @@
 .aw-account-local-note { margin:20px 0 0; padding-top:16px; border-top:1px solid var(--line); }
 .aw-account-error { color:var(--danger); margin:12px 0 0; }
 .aw-account-error:empty { display:none; }
+.aw-account-modes { display:flex; gap:8px; margin-bottom:18px; }
+.aw-account-modes .aw-account-button { flex:1; }
+.aw-account-modes [aria-pressed="true"] { background:var(--signal); border-color:var(--signal); color:white; }
+.aw-account-notice { padding:12px; border:1px solid var(--line); border-radius:6px; background:var(--paper); }
+#aw-confirm-field { display:grid; gap:8px; }
+.aw-auth-confirm-page { box-sizing:border-box; width:min(480px, calc(100% - 32px)); margin:10vh auto; padding:28px; border:1px solid var(--line); border-radius:12px; background:var(--card); }
+.aw-auth-confirm-page h1 { font:600 26px var(--font-heading); }
+.aw-auth-confirm-page a { display:inline-block; margin-top:12px; text-decoration:none; }
 .aw-account-trigger, .aw-account-button, .aw-account-close { transition:background-color var(--aw-motion-control) ease, border-color var(--aw-motion-control) ease; }
