@@ -140,7 +140,7 @@
       if (['c1','c2','c3'].includes(chapter) && /^\d+$/.test(index) && Number.isSafeInteger(Number(index)) && !extra) { window.AIWiseContentStudio.render(shell, 'common', chapter, Number(index)); return; }
       renderNotFound(); return;
     }
-    shell('common','Common Studio',hint(areas.common.note,'Edit the shared C1–C3 content in the module preview. Course examples remain read-only. Save a chapter draft, then send a copy to Control Tower for review. Drafts and requests stay in this browser.'),
+    shell('common','Common Studio',hint(areas.common.note,'Edit the shared C1–C3 content in the module preview. Course examples remain read-only. Save a chapter draft, then send a copy to Control Tower for review. Drafts stay in this browser. Submitted copies are shared with the team; administrator approval applies them to Beta.'),
       '<h2 class="section-label">Shared content</h2><div class="cards">'+
       ['c1','c2','c3'].map(id=>card(items[id].name,'Preview and edit shared AI Orientation content.','#common/'+id,'Open editor')).join('')+
       '</div><div class="toolbar">'+button('View Common Studio requests','#tower/common')+'</div>',false);

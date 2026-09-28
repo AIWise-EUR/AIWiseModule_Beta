@@ -1,6 +1,6 @@
 # AI-Wise development-team sign in
 
-Workspace supports email/password registration, confirmation-email resend, sign in, sign out, session restoration, and a database-backed development-team membership check. Account creation and team approval are separate steps. It does not migrate local drafts, requests, courses, or teacher profiles. The static prototype remains accessible without login. Membership is not yet attached to shared content operations, because those operations are not implemented.
+Workspace supports email/password registration, confirmation-email resend, sign in, sign out, session restoration, and a database-backed development-team membership check. Account creation and team approval are separate steps. It does not migrate local drafts, requests, courses, or teacher profiles. The static prototype remains accessible without login. For shared Content Studio submissions and administrator approval to Beta, follow [SHARED_STUDIO_SETUP.md](SHARED_STUDIO_SETUP.md) after this sign-in foundation.
 
 ## One-time administrator setup
 
@@ -30,7 +30,7 @@ Sign out ends this browser's session, including its synchronized tabs. It does n
 - `workspace/auth.js`: Auth events and server-verified user/membership state. Async work is deferred out of SDK Auth callbacks to avoid lock deadlocks.
 - `workspace/auth-ui.js` and `workspace/auth.css`: sign in/create account modes, password confirmation, neutral confirmation notices, resend cooldown, and existing motion timings.
 - `workspace/auth-confirm.html` and `workspace/auth-confirm.js`: dedicated email-confirmation return page; no third-party resources or automatic token import.
-- `workspace_members`: membership administration stays in Supabase for this first release. Roles such as reviewer and release manager are not assigned by this table.
+- `workspace_members`: membership administration stays in Supabase for this first release. The shared Studio migration adds member/admin roles; see its separate setup guide.
 
 The browser membership indicator is UX only, not a security boundary. Every future shared table/function must enforce membership and operation-specific permissions in Postgres. RLS must also protect immutable submitted versions and prevent client-side approval or role escalation.
 

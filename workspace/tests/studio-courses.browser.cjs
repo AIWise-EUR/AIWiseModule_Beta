@@ -15,7 +15,7 @@ const server=http.createServer((req,res)=>{
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,args:['--no-sandbox'],headless:true});
  try{
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
- await context.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.request().url().startsWith('https://cdn.jsdelivr.net/')?r.fulfill({contentType:'text/javascript',body:fs.readFileSync(process.env.SUPABASE_TEST_SDK,'utf8')}):r.abort());
+ await context.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.request().url().includes('/rest/v1/workspace_beta_content')?r.fulfill({json:[]}):r.request().url().startsWith('https://cdn.jsdelivr.net/')?r.fulfill({contentType:'text/javascript',body:fs.readFileSync(process.env.SUPABASE_TEST_SDK,'utf8')}):r.abort());
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  const ready=()=>page.waitForFunction(()=>!document.querySelector('#cs-example')?.disabled && !!document.querySelector('iframe')?.contentDocument.querySelector('.carousel-card'));
  const go=async id=>{await page.evaluate(id=>location.hash='#studio/'+id,id);await page.waitForFunction(id=>document.querySelector('#room-title')?.textContent.startsWith(id==='ped'?'Pedagogical Sciences':'Academic Writing Skills I'),id);await ready();};

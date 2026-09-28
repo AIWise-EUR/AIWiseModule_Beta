@@ -31,7 +31,7 @@
   let index = Math.floor(Math.random() * tips.length), timer, home = false, paused = reduced.matches;
   function collect() {
     const notices = [], updates = [];
-    let summary = 'Local activity · This browser only';
+    let summary = window.AIWiseSharedStudio?.snapshot().loaded ? 'Team requests & browser drafts' : 'Browser activity · Team requests not connected';
     try {
       const data = window.AIWiseControlTower.overview();
       summary += ` · ${data.pending} pending · ${data.urgent} urgent`;
@@ -91,6 +91,7 @@
   row.addEventListener('focusin', schedule); row.addEventListener('focusout', () => queueMicrotask(schedule));
   document.addEventListener('visibilitychange', schedule);
   reduced.addEventListener('change', () => { paused = reduced.matches; paint(); schedule(); });
+  window.addEventListener('aiwise:shared-studio', () => { if(home) refresh(); });
   window.addEventListener('storage', event => { if (home && (!event.key || ['aiwise_common_studio_c1_v1','aiwise_common_studio_c2_v1','aiwise_common_studio_c3_v1','aiwise_control_tower_v1','aiwise_content_studio_aws1_c2_v1','aiwise_content_studio_ped_c2_v1','aiwise_content_studio_aws1_c3_v1','aiwise_content_studio_ped_c3_v1'].includes(event.key))) refresh(); });
   function closeNow(restore = true) {
     cancelClose?.(); cancelClose = null;

@@ -2,53 +2,7 @@
    Source markup and course slots are never rewritten by author-entered text. */
 (() => {
   'use strict';
-  const chapters = ['c1', 'c2', 'c3'];
-  const names = {c1: 'What is GenAI?', c2: 'GenAI and human cognition', c3: 'How to engage with GenAI'};
-  const excluded = '[data-slot], script, style, .hero-tag, .section-tag, .sl-col-icon, .cs-edit-label, .critique-nav, .template-copy, .cycle-step-num, .cycle-arrow, .technique-num, .cst-num, [aria-hidden="true"]';
-  function textNodes(root) {
-    const walker = root.ownerDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    const nodes = [];
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      if (node.nodeValue.trim() && !node.parentElement.closest(excluded)) nodes.push(node);
-    }
-    return nodes;
-  }
-  function catalog(doc, chapter) {
-    const blocks = [];
-    function add(node) {
-      if (node.matches(excluded) || !textNodes(node).length) return;
-      if (node.matches('.part-block,.sl-grid,.sl-col,.sl-col-body,.framework-cards') || node.querySelector('.technique-pane,.critique-slide,.sl-card,.fn-card')) {
-        [...node.children].forEach(add);
-      } else blocks.push(node);
-    }
-    doc.querySelectorAll('section.hero, section.section').forEach(section => {
-      const container = section.querySelector('.hero-inner') || section;
-      [...container.children].forEach(add);
-    });
-    const sources = doc.querySelector('main > .sources');
-    if (sources) add(sources);
-    return blocks.map((node, index) => {
-      const nodes = textNodes(node), fields = {}, counts = {};
-      nodes.forEach(text => {
-        const tag = text.parentElement.tagName.toLowerCase();
-        const kind = /^h[1-6]$/.test(tag) ? 'Heading' : ['td','th'].includes(tag) ? 'Table text' :
-          tag === 'li' ? 'List text' : ['text','tspan'].includes(tag) ? 'Diagram label' :
-          tag === 'a' ? 'Link text' : tag === 'strong' || tag === 'b' ? 'Emphasis' : 'Text';
-        counts[kind] = (counts[kind] || 0) + 1;
-        fields[`${kind} ${counts[kind]}`] = text.nodeValue;
-      });
-      const heading = node.querySelector('h2,h3,h4,[class$="-title"],[class$="-header"]');
-      const friendly = node.matches('.technique-tabs') ? (node.closest('.proactive-panel') ? 'Proactive technique tabs' : 'Prompt technique tabs') :
-        node.matches('.critique-stepper-bar') ? 'Review step labels' : node.matches('.cycle-bar') ? 'Prompt → Critique → Integrate' :
-        node.matches('.template-block') ? (node.previousElementSibling?.textContent.trim() || 'Prompt template') :
-        node.matches('.code-compare') ? 'Markdown and XML' : '';
-      const title = (friendly || heading?.textContent || nodes.find(text => /[a-zA-Z]{2}/.test(text.nodeValue))?.nodeValue || nodes[0].nodeValue).trim().replace(/\s+/g, ' ');
-      const section = node.closest('section');
-      return {path: `${chapter}.block-${index}`, title: title.length > 75 ? title.slice(0, 72) + '…' : title,
-        section: section?.querySelector('h2,h3')?.textContent.trim() || 'Introduction', node, nodes, fields};
-    });
-  }
+  const {chapters, names, catalog} = window.AIWiseCommonContent;
   function apply(s, openEditor) {
     const doc = s.frame.contentDocument;
     if (!s.commonBlocks) {
@@ -74,8 +28,7 @@
       });
     }
     s.commonBlocks.forEach(block => {
-      const values = Object.values(s.values[block.path]);
-      block.nodes.forEach((node, i) => { node.nodeValue = values[i]; });
+      Object.keys(block.fields).forEach((key, i) => { block.nodes[i].nodeValue = s.values[block.path][key]; });
     });
   }
   window.AIWiseCommonStudio = {chapters, names, catalog, apply,
