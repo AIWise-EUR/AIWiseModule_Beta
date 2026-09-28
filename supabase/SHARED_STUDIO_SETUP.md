@@ -44,7 +44,7 @@ The source-baseline table intentionally has no client grants or RLS read policy.
 
 ## Common Studio extension
 
-Status (28 September 2026): implemented and tested locally; live migration and real-account verification are pending.
+Status (28 September 2026): implemented and tested locally. The user confirmed applying the Common Studio migration directly to the live project. This task has not independently inspected the protected live source rows; real-account submission/approval verification remains pending.
 
 After the shared Studio migration, run `migrations/20260928132359_common_studio_content.sql` in the same project's SQL Editor. This transaction extends the allowed source scope to `common` C1–C3 and seeds their exact text catalog. It changes no existing source rows, grants, policies, roles, or RPCs. Do not rerun the original shared Studio migration. Check that `workspace_content_sources` has seven rows (four course and three common baselines) and that existing RLS, grants and RPC bodies are unchanged before deploying the matching frontend.
 
