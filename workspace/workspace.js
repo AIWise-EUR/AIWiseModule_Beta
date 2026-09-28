@@ -108,7 +108,7 @@
     });
   }
   function renderStudio(part) {
-    if (part === 'aws1') { window.AIWiseContentStudio.render(shell); return; }
+    if (window.AIWiseContentStudio.supports(part)) { window.AIWiseContentStudio.render(shell, part); return; }
     if (part) { window.AIWiseCourses.render(part, shell); return; }
     shell('studio','Content Studio',areas.studio.note,notice('Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.')+'<div class="cards">'+window.AIWiseCourses.cards('studio')+'</div>');
   }
