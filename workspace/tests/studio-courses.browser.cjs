@@ -26,7 +26,7 @@ const server=http.createServer((req,res)=>{
  await page.locator('#room a[href="#studio/ped"]').click();await ready();
  assert.match(await page.locator('[data-cs-title]').textContent(),/scientific essay/);
  assert.match(await page.locator('iframe').getAttribute('title'),/^Pedagogical Sciences/);
- assert.match(await page.locator('.cs-actions a').getAttribute('href'),/course=ped$/);
+ assert.match(await page.locator('.help-note a').getAttribute('href'),/course=ped$/);
  const pedSource=JSON.parse(fs.readFileSync(path.join(root,'course-specific/ped/ped.json'),'utf8'));
  assert.equal(await page.locator('iframe').evaluate(el=>el.contentDocument.querySelector('[data-slot="c2.sat_example_title"]').textContent),pedSource.c2.sat_example_title);
  await edit('PED isolated draft');const pedDraft=await stored('ped');assert.equal(pedDraft.course,'ped');assert.equal(await stored('aws1'),null);
@@ -34,7 +34,7 @@ const server=http.createServer((req,res)=>{
  await edit('AWS1 isolated draft');const awsDraft=await stored('aws1');assert.deepEqual(await stored('ped'),pedDraft);
  await go('ped');assert.equal(await page.locator('[data-cs-title]').textContent(),'PED isolated draft');
  await page.reload();await ready();assert.equal(await page.locator('[data-cs-title]').textContent(),'PED isolated draft');
- page.once('dialog',d=>d.accept());await page.locator('[data-cs-reset]').click();assert.equal(await stored('ped'),null);assert.deepEqual(await stored('aws1'),awsDraft);
+ await page.frameLocator('iframe').locator('#cs-item-0').click();page.once('dialog',d=>d.accept());await page.locator('[data-cs-reset]').click();await page.locator('[data-cs-close]').first().click();assert.equal(await stored('ped'),null);assert.deepEqual(await stored('aws1'),awsDraft);
  await edit('PED retained draft');
  await page.evaluate(()=>location.hash='#home');await page.locator('#updates-open').click();
  assert.equal(await page.locator('#updates-dialog a[href="#studio/ped"]').count(),1);
@@ -46,7 +46,7 @@ const server=http.createServer((req,res)=>{
  // A wrongly labelled draft is blocked, never loaded or silently overwritten.
  await page.evaluate(k=>{const x=JSON.parse(localStorage.getItem(k));x.course='aws1';localStorage.setItem(k,JSON.stringify(x));},key('ped'));
  await page.reload();await ready();assert.match(await page.locator('.cs-status').first().textContent(),/could not be restored/);
- assert.equal((await stored('ped')).course,'aws1');assert.equal(await page.locator('.cs-actions [data-cs-save]').isDisabled(),true);
+ assert.equal((await stored('ped')).course,'aws1');assert.equal(await page.locator('.cs-editor [data-cs-save]').isDisabled(),true);
  assert.deepEqual(errors,[]);
  console.log('PASS PED navigation, PED-specific preview, separate saves, restore, isolated reset, activity links, and mismatched-draft protection');
  }finally{await browser.close();await new Promise(r=>server.close(r));}

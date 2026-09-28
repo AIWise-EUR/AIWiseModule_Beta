@@ -104,6 +104,7 @@
       localStorage.removeItem(s.key); s.raw = null; s.blocked = false;
       s.values = clone(s.base); s.saved = clone(s.base);
       updatePreview(s); controls(s); message(s, 'Draft reset to current Beta content.');
+      if (s.dialog.open) openEditor(s, s.index);
     } catch { message(s, 'Draft could not be reset. The saved copy has been preserved.', true); }
   }
   function scrollPreview(s, id, animate = true) {
@@ -398,7 +399,7 @@
   async function render(shell, courseId = 'aws1', chapter = 'c2', itemIndex = 0) {
     if (!supports(courseId) || !['c2','c3'].includes(chapter)) throw Error('Course editor not connected');
     const config = COURSES[courseId], chapterName = chapter.toUpperCase();
-    shell('studio', config.label, `<p>${chapterName} course content · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p><p data-cs-coverage></p>`, `
+    shell('studio', config.label, `<p>${chapterName} course content · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p><p data-cs-coverage></p><p><a href="../common/aiwise-${chapter}-final.html?course=${courseId}" target="_blank" rel="noopener">Open ${chapterName} in Beta ↗</a></p>`, `
       <div id="cs-studio">
         <div class="cs-toolbar">
           <div class="cs-example-block">
@@ -415,9 +416,7 @@
             </div>
           </div>
           <div class="cs-actions" role="group" aria-label="Content actions">
-            <button type="button" class="button primary" data-cs-save disabled>Save draft</button><button type="button" class="button" data-cs-submit disabled>Send to Control Tower</button>
-            <button type="button" class="button" data-cs-reset data-cs-ready disabled>Reset draft</button>
-            <a class="button" href="../common/aiwise-${chapter}-final.html?course=${courseId}" target="_blank" rel="noopener">Open ${chapterName} in Beta ↗</a>
+            <button type="button" class="button" data-cs-submit disabled>Send to Control Tower</button>
           </div>
         </div>
         <p class="cs-status" role="status">Loading ${chapterName} preview…</p>
@@ -428,7 +427,8 @@
           <div class="cs-editor-body" id="cs-editor-body"><div class="cs-editor-head"><div><h2 id="cs-editor-title">Course item</h2><button type="button" class="button" data-cs-close autofocus>Close</button></div>
             <p id="cs-editor-help">Changes appear as you type. Save draft to keep them in this browser. Reset applies to this chapter only.</p></div>
             <div class="cs-fields"></div><div class="cs-editor-foot"><p class="cs-status" role="status"></p><div>
-              <button type="button" class="button primary" data-cs-save disabled>Save draft</button><button type="button" class="button" data-cs-submit disabled>Send to Control Tower</button><button type="button" class="button" data-cs-close>Back to preview</button>
+              <button type="button" class="cs-reset-link" data-cs-reset data-cs-ready disabled>Reset chapter draft</button>
+              <button type="button" class="button primary" data-cs-save disabled>Save draft</button><button type="button" class="button" data-cs-close>Back to preview</button>
             </div></div></div></dialog>
         <dialog class="cs-submit-dialog aw-account-dialog" aria-labelledby="cs-submit-title">
           <div class="aw-account-header"><h2 id="cs-submit-title">Send to Control Tower</h2><button type="button" class="aw-account-close" data-cs-submit-close aria-label="Close submission">×</button></div>

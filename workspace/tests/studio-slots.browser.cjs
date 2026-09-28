@@ -84,11 +84,11 @@ const server=http.createServer((req,res)=>{
  await page.locator('#cs-example').click();page.once('dialog',d=>d.dismiss());await page.locator('[data-cs-chapter="c2"][data-cs-item="0"]').click();await page.waitForURL(/\/c3$/);
  const external={...(await stored('ped','c3')),savedAt:'2026-09-28T10:00:00.000Z'};
  await page.evaluate(([k,v])=>localStorage.setItem(k,JSON.stringify(v)),[key('ped','c3'),external]);
- await page.locator('.cs-actions [data-cs-save]').click();assert.match(await page.locator('.cs-status').first().textContent(),/Another tab/);
+ await choose(0);await page.locator('.cs-editor [data-cs-save]').click();assert.match(await page.locator('.cs-status').first().textContent(),/Another tab/);
  assert.deepEqual(await stored('ped','c3'),external);
- page.once('dialog',d=>d.accept());await page.locator('[data-cs-reset]').click();assert.match(await page.locator('.cs-status').first().textContent(),/safely reset/);
+ page.once('dialog',d=>d.accept());await page.locator('[data-cs-reset]').click();assert.match(await page.locator('.cs-status').first().textContent(),/safely reset/);await page.locator('[data-cs-close]').first().click();
  page.once('dialog',d=>d.accept());await page.reload();await ready();
- page.once('dialog',d=>d.accept());await page.locator('[data-cs-reset]').click();assert.equal(await stored('ped','c3'),null);assert.deepEqual(await stored('ped','c2'),pedC2);assert.ok(await stored('aws1','c3'));
+ await choose(0);page.once('dialog',d=>d.accept());await page.locator('[data-cs-reset]').click();await page.locator('[data-cs-close]').first().click();assert.equal(await stored('ped','c3'),null);assert.deepEqual(await stored('ped','c2'),pedC2);assert.ok(await stored('aws1','c3'));
  // Stale source records are not restored or overwritten.
  external.baseSlots['c3.full_example_title']='stale baseline';
  await page.evaluate(([k,v])=>localStorage.setItem(k,JSON.stringify(v)),[key('ped','c3'),external]);

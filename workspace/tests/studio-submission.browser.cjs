@@ -51,7 +51,7 @@ const server=http.createServer((req,res)=>{let p=new URL(req.url,'http://localho
  await submit.click();assert.match(await page.locator('[data-cs-submit-error]').textContent(),/could not be saved/);assert.equal((await requests()).length,1);assert.equal(await page.evaluate(k=>localStorage.getItem(k),draftKey),beforeDraft);
  await page.evaluate(()=>Storage.prototype.setItem=window.originalStorageSet);await submit.click();await page.waitForURL(/#tower\/request\//);assert.equal((await requests()).length,2);
  // C3 can save an initial draft and submit all 15 slots under the current account name.
- await go('c3');await page.locator('.cs-actions [data-cs-save]').click();
+ await go('c3');await page.frameLocator('iframe').locator('#cs-item-0').click();await page.locator('.cs-editor [data-cs-save]').click();await page.locator('[data-cs-close]').first().click();
  await page.evaluate(()=>{window.AIWiseAuth={snapshot:()=>({user:{id:'test-account',displayName:'Account name'}})};});
  await openSubmission();assert.equal(await name.inputValue(),'Account name');assert.equal(await name.getAttribute('readonly'),'');
  await summary.fill('First C3 review');await submit.click();await page.waitForURL(/#tower\/request\//);

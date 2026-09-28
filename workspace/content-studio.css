@@ -23,11 +23,13 @@
 .cs-actions .button:hover:not(:disabled) { background: #DEE8EF; border-color: var(--signal); }
 .cs-actions [data-cs-submit] { background: var(--signal); border-color: var(--signal); color: white; }
 .cs-actions [data-cs-submit]:hover:not(:disabled) { background: #294C63; border-color: #294C63; }
-.cs-actions [data-cs-save], .cs-editor [data-cs-save] { background: var(--ok); border-color: var(--ok); color: white; }
-.cs-actions [data-cs-save]:hover:not(:disabled), .cs-editor [data-cs-save]:hover:not(:disabled) { background: #345331; border-color: #345331; }
-.cs-actions [data-cs-save]:disabled, .cs-editor [data-cs-save]:disabled { background: #E2E7E1; border-color: #C9D3C6; color: #687463; opacity: 1; }
-.cs-actions [data-cs-reset] { background: #F5EBDF; border-color: #DBC4A7; color: #79562E; }
-.cs-actions [data-cs-reset]:hover:not(:disabled) { background: #EDE0CD; border-color: #B6946B; }
+.cs-editor [data-cs-save] { background: var(--ok); border-color: var(--ok); color: white; }
+.cs-editor [data-cs-save]:hover:not(:disabled) { background: #345331; border-color: #345331; }
+.cs-editor [data-cs-save]:disabled { background: #E2E7E1; border-color: #C9D3C6; color: #687463; opacity: 1; }
+/* Resetting the whole chapter draft is a quiet text action at the left of the editor footer. */
+.cs-reset-link { margin-right: auto; padding: 0; border: 0; background: none; color: #79562E; font: 13px/1.4 var(--font-body); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.cs-reset-link:hover:not(:disabled) { color: #4F3719; }
+.cs-reset-link:disabled { color: var(--mut-2); text-decoration: none; cursor: default; }
 .cs-example-nav svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .cs-picker { flex: 1; min-width: 0; position: relative; }
 #cs-example { display: flex; align-items: center; width: 100%; height: var(--cs-control-height); min-height: var(--cs-control-height); padding: 0 34px 0 13px; text-align: left; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--sh); }
@@ -69,11 +71,10 @@
 .cs-fields textarea { resize: vertical; min-height: 85px; }
 .cs-editor-foot { position: sticky; bottom: 0; padding: 12px 22px; background: var(--paper); border-top: 1px solid var(--line); }
 .cs-editor-foot .cs-status { margin: 0 0 10px; }
-.cs-editor-foot>div { display: flex; flex-wrap: wrap; gap: 8px; }
+.cs-editor-foot>div { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 @media (max-width: 600px) {
   .cs-example-block { flex-basis: 100%; width: 100%; }
-  .cs-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
-  .cs-actions>a:last-child { grid-column: 1 / -1; }
+  .cs-actions { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; }
   .cs-preview iframe { min-height: 420px; }
 }
 
