@@ -13,7 +13,7 @@ const server=http.createServer((req,res)=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,args:['--no-sandbox'],headless:true});
  try{
- const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
+ const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:process.env.STUDIO_TEST_MOTION || 'no-preference'});
  await context.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.abort());
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  const ready=()=>page.waitForFunction(()=>document.querySelector('[data-cs-edit]')?.disabled===false && document.querySelector('iframe')?.title.includes((location.hash.split('/')[2] || 'c2').toUpperCase()));
@@ -25,18 +25,19 @@ const server=http.createServer((req,res)=>{
  await go('ped','c2');
  assert.equal(await page.locator('nav[aria-label="Chapter"]').count(),0);
  await page.locator('#cs-example').click();
- assert.equal(await page.locator('#cs-examples-menu [data-cs-chapter="c2"]').count(),8);
- assert.equal(await page.locator('#cs-examples-menu [data-cs-chapter="c3"]').count(),15);
+ assert.equal(await page.locator('#cs-examples-menu [data-cs-chapter="c2"]').count(),7);
+ assert.equal(await page.locator('#cs-examples-menu [data-cs-chapter="c3"]').count(),14);
  await page.locator('[data-cs-chapter="c3"][data-cs-item="9"]').click();
  await page.waitForURL(/\/c3\/9$/);await ready();
  assert.equal(await page.locator('[data-cs-title]').textContent(),'Critique decide');
  assert.equal(await page.frameLocator('iframe').locator('#cs-item-9').isVisible(),true);
  await page.locator('#cs-example').click();await page.keyboard.press('Home');
  assert.equal(await page.evaluate(()=>document.activeElement.dataset.csChapter),'c2');
- await page.keyboard.press('End');assert.equal(await page.evaluate(()=>document.activeElement.dataset.csItem),'14');
+ await page.keyboard.press('End');assert.equal(await page.evaluate(()=>document.activeElement.dataset.csItem),'13');
  await page.keyboard.press('Escape');
- await page.locator('#cs-example').click();await page.locator('[data-cs-chapter="c2"][data-cs-item="7"]').click();
- await page.waitForURL(/\/c2\/7$/);await ready();
+ // Reopen before the closing animation ends, then select an item.
+ await page.locator('#cs-example').click();await page.locator('[data-cs-chapter="c2"][data-cs-item="6"]').click();
+ await page.waitForURL(/\/c2\/6$/);await ready();
  assert.equal(await page.locator('[data-cs-title]').textContent(),'S.A.T worked example');
  await page.reload();await ready();assert.equal(await page.locator('[data-cs-title]').textContent(),'S.A.T worked example');
  await go('ped','c2');
@@ -45,17 +46,17 @@ const server=http.createServer((req,res)=>{
  legacy.examples[0].title='Existing legacy draft';
  await page.evaluate(([k,v])=>localStorage.setItem(k,JSON.stringify(v)),[key('ped','c2'),legacy]);
  await page.reload();await ready();assert.equal(await page.locator('[data-cs-title]').textContent(),'Existing legacy draft');
- assert.match(await page.locator('[data-cs-coverage]').textContent(),/^8 editable/);
- await choose(6);await page.locator('.cs-fields textarea').fill('New S.A.T title');await saveClose();
- await choose(7);await page.locator('[name="phases.0.steps.0.text"]').fill('Changed S.A.T step');
+ assert.match(await page.locator('[data-cs-coverage]').textContent(),/^7 editable/);
+ await choose(6);await page.locator('.cs-fields [name="value"]').fill('New S.A.T title');await saveClose();
+ await choose(6);await page.locator('[name="phases.0.steps.0.text"]').fill('Changed S.A.T step');
  await page.locator('[name="phases.0.steps.0.actor"]').selectOption('team');await saveClose();
- const pedC2=await stored('ped','c2');assert.equal(pedC2.examples[0].title,'Existing legacy draft');assert.equal(pedC2.slots['c2.sat_example'].phases[0].steps[0].text,'Changed S.A.T step');
+ const pedC2=await stored('ped','c2');assert.equal(pedC2.slots['c2.sat_example_title'],'New S.A.T title');assert.equal(pedC2.examples[0].title,'Existing legacy draft');assert.equal(pedC2.slots['c2.sat_example'].phases[0].steps[0].text,'Changed S.A.T step');
  await page.reload();await ready();
  assert.match(await page.locator('iframe').evaluate(el=>el.contentDocument.querySelector('[data-slot="c2.sat_example"]').textContent),/Changed S.A.T step/);
  await go('aws1','c2');assert.match(await page.locator('[data-cs-coverage]').textContent(),/Not configured.*S.A.T/);
  for(const course of ['aws1','ped']){
-   await go(course,'c3');assert.match(await page.locator('[data-cs-coverage]').textContent(),/^15 editable/);
-   const slots=await page.locator('iframe').evaluate(el=>[...el.contentDocument.querySelectorAll('[data-slot]')].map(n=>n.dataset.slot));
+   await go(course,'c3');assert.match(await page.locator('[data-cs-coverage]').textContent(),/^14 editable/);
+   const slots=await page.locator('iframe').evaluate(el=>[...el.contentDocument.querySelectorAll('[data-slot]')].map(n=>n.dataset.slot).filter(path=>!path.endsWith('_title')));
    for(let i=0;i<slots.length;i++){
      await choose(i);
      // Every source string is exposed. Change every textual leaf, including nested template lines.
@@ -67,11 +68,11 @@ const server=http.createServer((req,res)=>{
      assert.match(await page.locator('iframe').evaluate((el,i)=>el.contentDocument.getElementById('cs-item-'+i).textContent,i),new RegExp(`Edited ${course} ${i}`));
      assert.equal(await page.locator('iframe').evaluate(el=>el.contentDocument.querySelectorAll('script').length),0);
    }
-   const saved=await stored(course,'c3');assert.equal(Object.keys(saved.slots).length,15);
+   const saved=await stored(course,'c3');assert.equal(Object.keys(saved.slots).length,15);assert.match(saved.slots['c3.full_example_title'],new RegExp(`Edited ${course} 13`));
    await page.reload();await ready();assert.match(await page.locator('.cs-status').first().textContent(),/restored/);
    assert.deepEqual(await stored('ped','c2'),pedC2);
    // The picker opens the right hidden technique pane, critique slide and details.
-   for(const i of [5,9,14]){
+   for(const i of [5,9,13]){
      await page.locator('#cs-example').click();await page.locator(`[data-cs-choice="${i}"]`).click();
      const node=page.frameLocator('iframe').locator('#cs-item-'+i);assert.equal(await node.isVisible(),true);
      assert.equal(await node.evaluate(n=>!!n.closest('[inert]')),false);

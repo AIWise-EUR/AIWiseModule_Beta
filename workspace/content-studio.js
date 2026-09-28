@@ -23,6 +23,15 @@
     bad: 'Initial prompt', good: 'Improved prompt', actor: 'Speaker', tag: 'Tag'
   };
   const label = key => labels[key] || key.replace(/^c3\./, '').replace(/[._]/g, ' ').replace(/^./, c => c.toUpperCase());
+  const titleSlots = {'c2.sat_example': 'c2.sat_example_title', 'c3.full_example': 'c3.full_example_title'};
+  function catalogItems(paths, data) {
+    const configured = paths.filter(path => get(data, path) !== undefined);
+    return configured.flatMap(path => {
+      if (Object.entries(titleSlots).some(([body, title]) => path === title && configured.includes(body))) return [];
+      if (path === 'c2.examples') return get(data, path).map((_, example) => ({path, example}));
+      return [{path, ...(configured.includes(titleSlots[path]) ? {titlePath: titleSlots[path]} : {})}];
+    });
+  }
   let session = null;
   const dirty = () => !!session?.values && !equal(session.values, session.saved);
   const reduceMotion = () => window.AIWiseMotion.reduced();
@@ -159,11 +168,16 @@
     window.AIWiseCourseRenderer.toggleRequired(data, doc);
     s.items.forEach((item, i) => {
       const node = item.example === undefined ? doc.querySelector(`[data-slot="${item.path}"]`) : doc.querySelectorAll('.carousel-card')[item.example];
-      node.id = 'cs-item-' + i; node.classList.add('cs-editable'); node.tabIndex = 0;
-      node.setAttribute('role', 'button'); node.setAttribute('aria-label', 'Edit ' + itemTitle(s, item));
-      // Replace handlers, because non-carousel slot containers survive rendering.
-      node.onclick = () => openEditor(s, i);
-      node.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openEditor(s, i); } };
+      node.id = 'cs-item-' + i;
+      const targets = [node];
+      if (item.titlePath) targets.push(doc.querySelector(`[data-slot="${item.titlePath}"]`));
+      targets.forEach(target => {
+        target.classList.add('cs-editable'); target.tabIndex = 0;
+        target.setAttribute('role', 'button'); target.setAttribute('aria-label', 'Edit ' + itemTitle(s, item));
+        // Title and body open the same editor. Prevent a title click from also collapsing its details element.
+        target.onclick = event => { event.preventDefault(); openEditor(s, i); };
+        target.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openEditor(s, i); } };
+      });
     });
     refreshPicker(s); s.frame.contentWindow.scrollTo(0, y);
   }
@@ -172,7 +186,7 @@
     const item = s.items[index];
     s.host.querySelector('#cs-editor-title').textContent = item.example === undefined ? label(item.path) : `Example ${item.example + 1}`;
     const container = s.host.querySelector('.cs-fields'); container.replaceChildren();
-    function field(value, path, name) {
+    function field(value, path, name, valuePath = item.path) {
       if (typeof value === 'string') {
         const wrap = document.createElement('label'); wrap.textContent = label(name);
         const options = name === 'actor' ? ['self','ai','team'] : name === 'tag' && ['adopt','modify','discard'].includes(value) ? ['adopt','modify','discard'] : null;
@@ -181,9 +195,9 @@
         input.name = path.join('.') || 'value'; input.value = value;
         if (input.tagName === 'TEXTAREA') input.rows = 5;
         input.addEventListener('input', () => {
-          if (!path.length) s.values[item.path] = input.value;
+          if (!path.length) s.values[valuePath] = input.value;
           else {
-            const target = currentValue(s, item), keys = [...path], last = keys.pop();
+            const target = valuePath === item.path ? currentValue(s, item) : s.values[valuePath], keys = [...path], last = keys.pop();
             const parent = keys.reduce((obj, key) => obj[key], target);
             if (last === 'typing_note' && !input.value && !Object.hasOwn(item.example === undefined ? s.base[item.path] : s.base[item.path][item.example], last)) delete parent[last];
             else parent[last] = input.value;
@@ -194,10 +208,11 @@
         wrap.appendChild(input); return wrap;
       }
       const group = document.createElement('fieldset'), legend = document.createElement('legend'); legend.textContent = label(name); group.appendChild(legend);
-      Object.entries(value).forEach(([key, child]) => group.appendChild(field(child, [...path, key], Array.isArray(value) ? `${name} ${Number(key) + 1}` : key)));
+      Object.entries(value).forEach(([key, child]) => group.appendChild(field(child, [...path, key], Array.isArray(value) ? `${name} ${Number(key) + 1}` : key, valuePath)));
       return group;
     }
     const value = currentValue(s, item);
+    if (item.titlePath) container.appendChild(field(s.values[item.titlePath], [], 'title', item.titlePath));
     if (typeof value === 'string') container.appendChild(field(value, [], 'Text'));
     else if (item.example !== undefined) {
       ['title','thinking','typing_note','typing','processing'].forEach(key => container.appendChild(field(value[key] || '', [key], key)));
@@ -415,24 +430,17 @@
       const slotPaths = text => [...new DOMParser().parseFromString(text, 'text/html').querySelectorAll('[data-slot]')].map(node => node.dataset.slot);
       const slots = slotPaths(html);
       if (!slots.length || new Set(slots).size !== slots.length || slots.some(path => !path.startsWith(chapter + '.'))) throw Error('Invalid slot catalog');
-      s.base = {}; s.items = []; const missing = [];
+      s.base = {}; const missing = [];
       slots.forEach(path => {
         const value = get(data, path);
         if (value === undefined) { missing.push(label(path)); return; }
         if (!valid(value, value)) throw Error('Unsupported source');
         s.base[path] = clone(value);
-        if (path === 'c2.examples') value.forEach((_, example) => s.items.push({path, example}));
-        else s.items.push({path});
       });
+      s.items = catalogItems(slots, data);
       if (!s.items.length) throw Error('No course items');
       s.index = Math.min(s.index, s.items.length - 1);
-      s.catalog = {[chapter]: s.items, [otherChapter]: []};
-      slotPaths(otherHTML).forEach(path => {
-        const value = get(data, path);
-        if (value === undefined) return;
-        if (path === 'c2.examples') value.forEach((_, example) => s.catalog[otherChapter].push({path, example}));
-        else s.catalog[otherChapter].push({path});
-      });
+      s.catalog = {[chapter]: s.items, [otherChapter]: catalogItems(slotPaths(otherHTML), data)};
       // Show saved C2 example titles in the other chapter's group when their source still matches.
       if (otherChapter === 'c2') try {
         const draft = JSON.parse(localStorage.getItem(`aiwise_content_studio_${courseId}_c2_v1`));
@@ -476,8 +484,8 @@
       host.querySelector('[data-cs-prev]').addEventListener('click', () => selectItem(s, s.index - 1, true));
       host.querySelector('[data-cs-next]').addEventListener('click', () => selectItem(s, s.index + 1, true));
       const trigger = host.querySelector('#cs-example'), menu = host.querySelector('#cs-examples-menu');
-      const openPicker = () => { s.cancelPickerClose?.(); s.cancelPickerClose = null; menu.classList.remove('cs-closing'); menu.inert = false; menu.hidden = false; trigger.setAttribute('aria-expanded', 'true'); menu.querySelector('[aria-pressed="true"]')?.focus({preventScroll: true}); };
-      trigger.addEventListener('click', () => menu.hidden ? openPicker() : closePicker(s));
+      const openPicker = () => { s.cancelPickerClose?.(); s.cancelPickerClose = null; menu.classList.remove('cs-closing'); menu.inert = false; menu.hidden = false; trigger.setAttribute('aria-expanded', 'true'); const selected = menu.querySelector('[aria-pressed="true"]'); selected?.focus({preventScroll: true}); if (selected) menu.scrollTop = Math.max(0, selected.offsetTop - 44); };
+      trigger.addEventListener('click', () => trigger.getAttribute('aria-expanded') === 'true' ? closePicker(s) : openPicker());
       trigger.addEventListener('keydown', e => { if (['ArrowDown','ArrowUp'].includes(e.key)) { e.preventDefault(); openPicker(); } });
       menu.addEventListener('keydown', e => {
         const buttons = [...menu.querySelectorAll('button')], index = buttons.indexOf(document.activeElement), count = buttons.length;
@@ -490,7 +498,12 @@
       setupEditorResize(s);
       host.querySelectorAll('[data-cs-close]').forEach(button => button.addEventListener('click', () => closeEditor(s)));
       s.dialog.addEventListener('cancel', e => { e.preventDefault(); closeEditor(s); });
-      s.dialog.addEventListener('close', () => { if (session === s) s.frame.contentDocument.getElementById('cs-item-' + s.index)?.focus({preventScroll: true}); });
+      s.dialog.addEventListener('close', () => {
+        // A queued close event must not steal focus from a picker the user has already reopened.
+        const active = document.activeElement;
+        if (session === s && (active === document.body || s.dialog.contains(active)))
+          s.frame.contentDocument.getElementById('cs-item-' + s.index)?.focus({preventScroll: true});
+      });
       s.dialog.addEventListener('click', e => { if (e.target === s.dialog && e.clientX < s.dialog.getBoundingClientRect().left) closeEditor(s); });
       s.frame.addEventListener('load', () => connectPreview(s), {once: true});
       s.frame.srcdoc = previewHTML(html, url.href);
