@@ -276,13 +276,21 @@
   function load(id, isFallback) {
     return fetchCourse(id)
       .then(function (data) {
+        return window.AIWiseBetaContent ? window.AIWiseBetaContent.read(id).then(function(rows) { return window.AIWiseBetaContent.apply(data, rows); }) : data;
+      })
+      .then(function (data) {
+        document.getElementById("aiwise-beta-error")?.remove();
         fillSlots(data);
         toggleRequired(data);
         announce(data, id);
       })
       .catch(function (err) {
         console.error("[course-loader] could not load course '" + id + "':", err);
-        if (!isFallback && id !== DEFAULT_ID) return load(DEFAULT_ID, true);
+        if (window.AIWiseBetaContent) {
+          var warning = document.getElementById("aiwise-beta-error");
+          if (!warning) { warning=document.createElement("p"); warning.id="aiwise-beta-error"; warning.setAttribute("role","alert"); warning.style.cssText="position:fixed;top:0;left:0;right:0;z-index:9999;background:#fff3cd;color:#663c00;padding:16px;margin:0"; document.body.prepend(warning); }
+          warning.textContent="Approved Beta content could not be loaded. Course examples may be unavailable. Reload to retry.";
+        } else if (!isFallback && id !== DEFAULT_ID) return load(DEFAULT_ID, true);
         /* nothing loaded: still announce so pages do not hang */
         announce(null, null);
       });

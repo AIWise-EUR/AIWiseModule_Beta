@@ -23,7 +23,7 @@
   const href = id => '#tower/request/' + id;
   const now = () => new Date().toISOString();
   const date = value => value ? new Date(value).toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }) : 'Not submitted';
-  let shell, db, person = '', problem = '', dirty = false, cleanup = [], mapView = 'map', flow = 'submission';
+  let shell, db, person = '', problem = '', dirty = false, cleanup = [], mapView = 'map', flow = 'submission', renderVersion = 0;
   const personKey = () => person.trim().toLocaleLowerCase();
   const badge = (text, style = '') => `<span class="ct-tag ${style}">${esc(text)}</span>`;
   const link = (text, url, primary = false) => `<a class="button${primary ? ' primary' : ''}" href="${url}">${esc(text)}</a>`;
@@ -65,7 +65,7 @@
     if (!person.trim()) throw Error('Set your name in the local profile above before saving or reviewing a request.');
   }
   function event(request, action, reason = '') { request.events.push({ at:now(), by:person, action, reason }); }
-  function unread(r) { return r.status !== 'draft' && person && !Object.hasOwn(r.seenBy, personKey()); }
+  function unread(r) { if(r.shared)return false; return r.status !== 'draft' && person && !Object.hasOwn(r.seenBy, personKey()); }
   function counts(route) {
     if (problem) return { pending:'—', fresh:'—', urgent:'—' };
     const rows = db.requests.filter(r => r.route === route && r.status === 'pending');
@@ -76,13 +76,14 @@
     return `<span class="ct-counts"><span><b>${n.pending}</b> Pending</span><span><b>${n.fresh}</b> New</span><span class="${Number(n.urgent) ? 'ct-urgent' : ''}"><b>${n.urgent}</b> Urgent</span></span>`;
   }
   function chrome(body) {
-    return `<div class="ct-local"><form id="ct-person-form"><label for="ct-person">Your name · local profile</label><div><input id="ct-person" maxlength="80" value="${esc(person)}" placeholder="Enter your name" required><button class="button" type="submit">Set name</button></div></form></div><p id="ct-message" class="ct-message" role="alert" tabindex="-1">${esc(problem)}</p>${body}`;
+    return `<div class="toolbar"><span>${esc(window.AIWiseSharedStudio.snapshot().error || (window.AIWiseSharedStudio.snapshot().loaded ? "Team submissions connected · " + window.AIWiseSharedStudio.snapshot().role : "Sign in to view team submissions."))}</span><button class="button" id="ct-refresh-shared" type="button">Refresh requests</button></div><div class="ct-local"><form id="ct-person-form"><label for="ct-person">Your name · local profile</label><div><input id="ct-person" maxlength="80" value="${esc(person)}" placeholder="Enter your name" required><button class="button" type="submit">Set name</button></div></form></div><p id="ct-message" class="ct-message" role="alert" tabindex="-1">${esc(problem)}</p>${body}`;
   }
   // Page explanations live in the heading's help note; the request context stays as a short lead line.
   const pageHelp = {'Control Tower': 'Follow requests between workspaces, review the exact request, and record a decision.'};
-  const localHelp = '<p>Requests and decisions stay in this browser. Names are self-entered, with no account permissions or team synchronization. Approval does not move or publish content.</p>';
+  const localHelp = '<p>Team submissions are shared with active members. Administrators can approve and apply Content Studio chapters to Beta. Existing browser-local requests remain separate and cannot publish content. The local profile applies only to those older prototype requests.</p>';
   function show(title, context, body) {
     shell('tower', title, (pageHelp[title] ? `<p>${esc(pageHelp[title])}</p>` : '') + localHelp, (context ? `<p class="room-lead">${esc(context)}</p>` : '') + chrome(body), false);
+    document.getElementById('ct-refresh-shared').onclick = () => { if(!dirty || confirm('Discard unsaved review text and refresh?')) refresh(); };
     document.getElementById('ct-person-form').addEventListener('submit', e => {
       e.preventDefault();
       if (dirty) { fail(Error('Save this draft before changing your local profile.')); return; }
@@ -93,7 +94,7 @@
       } catch (error) { fail(error); }
     });
   }
-  function refresh() { render(location.hash.slice('#tower'.length).replace(/^\//, ''), shell); }
+  function refresh() { return render(location.hash.slice('#tower'.length).replace(/^\//, ''), shell); }
   function selectedRoutes() { return flow === 'revision' ? ['rev-profiler','rev-studio','rev-common'] : ['profiler','studio','common','release']; }
   function mapMarkup(selected) {
     const lanes = { profiler:{path:'M215 100 C345 100 365 295 490 295',x:28,y:17}, studio:{path:'M215 300 H490',x:29,y:46}, common:{path:'M215 500 C345 500 365 305 490 305',x:28,y:74}, release:{path:'M835 300 H1050',x:75,y:46} };
@@ -120,7 +121,7 @@
     function preview(anchor) {
       keep(); const id = anchor.dataset.road;
       const rows = db.requests.filter(r => r.route === id && r.status === 'pending').sort((a,b) => b.submittedAt.localeCompare(a.submittedAt)).slice(0,3);
-      popup.innerHTML = `<button class="ct-popup-close" type="button" aria-label="Close route preview">×</button><h3>${esc(label(id))}</h3>${countHtml(id)}<ul>${rows.map(r => `<li><strong>${esc(r.title)}</strong><span>${esc(r.target)} · ${esc(r.version)}</span><small>${esc(date(r.submittedAt))}${unread(r)?' · New':''}${r.priority==='urgent'?' · Urgent':''}</small></li>`).join('') || '<li>No pending requests in this browser.</li>'}</ul>${link('View requests','#tower/'+id)}`;
+      popup.innerHTML = `<button class="ct-popup-close" type="button" aria-label="Close route preview">×</button><h3>${esc(label(id))}</h3>${countHtml(id)}<ul>${rows.map(r => `<li><strong>${esc(r.title)}</strong><span>${esc(r.target)} · ${esc(r.version)}</span><small>${esc(date(r.submittedAt))}${unread(r)?' · New':''}${r.priority==='urgent'?' · Urgent':''}</small></li>`).join('') || '<li>No pending requests.</li>'}</ul>${link('View requests','#tower/'+id)}`;
       window.AIWiseMotion.show(popup);
       const wrap = document.querySelector('.ct-map-wrap').getBoundingClientRect(), box = anchor.getBoundingClientRect();
       const width = Math.min(340, wrap.width - 24);
@@ -164,11 +165,11 @@
     const draw = () => {
       const search = document.getElementById('ct-search').value.toLocaleLowerCase(), status=document.getElementById('ct-status').value, attention=document.getElementById('ct-attention').value;
       const rows = db.requests.filter(r => (selected==='all'||r.route===selected) && (status==='all'||r.status===status) && (attention==='all'||attention==='new'&&unread(r)||attention==='urgent'&&r.priority==='urgent') && [r.title,r.target,r.author.name].join(' ').toLocaleLowerCase().includes(search)).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
-      document.getElementById('ct-rows').innerHTML = rows.length ? `<div class="ct-table-wrap"><table class="ct-table"><thead><tr><th>Request</th><th>Requestor</th><th>Submitted</th><th>Status</th></tr></thead><tbody>${rows.map(r=>`<tr><td><a href="${href(r.id)}">${esc(r.title||'Untitled draft')}</a><small>${esc(label(r.route))} · ${esc(r.target||'No target yet')} · ${esc(r.version||'No version yet')}</small>${unread(r)?badge('New','ct-new'):''} ${r.priority==='urgent'?badge('Urgent','ct-urgent'):''}</td><td>${esc(r.author.name)}</td><td>${esc(date(r.submittedAt))}</td><td>${badge(statuses[r.status],r.status==='approved'?'ct-approved':'')}${r.status==='approved'?'<small>Not applied</small>':''}</td></tr>`).join('')}</tbody></table></div>` : `<div class="empty-state"><h3>${problem?'Requests unavailable':'No matching requests'}</h3><p>${problem?'Stored data could not be read; it has not been replaced.':db.requests.length?'Adjust the filters or create a request.':'Create the first request in this browser. No sample requests have been added.'}</p></div>`;
+      document.getElementById('ct-rows').innerHTML = rows.length ? `<div class="ct-table-wrap"><table class="ct-table"><thead><tr><th>Request</th><th>Requestor</th><th>Submitted</th><th>Status</th></tr></thead><tbody>${rows.map(r=>`<tr><td><a href="${href(r.id)}">${esc(r.title||'Untitled draft')}</a><small>${esc(label(r.route))} · ${esc(r.target||'No target yet')} · ${esc(r.version||'No version yet')}</small>${badge(r.shared?'Team':'Browser only')} ${unread(r)?badge('New','ct-new'):''} ${r.priority==='urgent'?badge('Urgent','ct-urgent'):''}</td><td>${esc(r.author.name)}</td><td>${esc(date(r.submittedAt))}</td><td>${badge(statuses[r.status],r.status==='approved'?'ct-approved':'')}${r.status==='approved'?'<small>'+(r.shared?'Applied to Beta':'Not applied')+'</small>':''}</td></tr>`).join('')}</tbody></table></div>` : `<div class="empty-state"><h3>${problem?'Requests unavailable':'No matching requests'}</h3><p>${problem?'Stored data could not be read; it has not been replaced.':db.requests.length?'Adjust the filters or create a request.':'Send a saved chapter from Content Studio to create a team request.'}</p></div>`;
     };
     ['ct-search','ct-status','ct-attention'].forEach(id=>document.getElementById(id).addEventListener(id==='ct-search'?'input':'change',draw)); draw();
     document.getElementById('ct-export').onclick=()=>{
-      try { const data=read(), url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})); const a=document.createElement('a');a.href=url;a.download='control-tower-records.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000); } catch(error){fail(error);}
+      try { const data=db, url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})); const a=document.createElement('a');a.href=url;a.download='control-tower-records.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000); } catch(error){fail(error);}
     };
   }
   function field(key, title, value='', hint='', multiline=false, required=true) {
@@ -234,68 +235,43 @@
   }
   function detail(id) {
     let request=db.requests.find(r=>r.id===id);
-    if(!request){show('Request not found','This request is not available in this browser.',link('Back to requests','#tower/all'));return;}
-    if(request.status!=='draft'&&person&&!Object.hasOwn(request.seenBy,personKey())){
+    if(!request){show('Request not found','This request is unavailable. Sign in and refresh shared requests.',link('Back to requests','#tower/all'));return;}
+    if(!request.shared&&request.status!=='draft'&&person&&!Object.hasOwn(request.seenBy,personKey())){
       try {update(request.id,request.rev,r=>{r.seenBy={...r.seenBy,[personKey()]:now()};});request=db.requests.find(r=>r.id===id);}catch(error){problem=error.message;}
     }
     const parent=db.requests.find(r=>r.id===request.parentId),child=db.requests.find(r=>r.parentId===id);
-    const controls=request.status==='draft'?link('Edit draft','#tower/edit/'+id,true):request.status==='revision'?(child?link('Open resubmission',href(child.id),true):link('Revise and resubmit','#tower/resubmit/'+id,true)):'';
+    const controls=request.shared ? (request.status==='revision'?link('Open Content Studio','#studio/'+request.contentSnapshot.course+'/'+request.contentSnapshot.chapter,true):'') : request.status==='draft'?link('Edit draft','#tower/edit/'+id,true):request.status==='revision'?(child?link('Open resubmission',href(child.id),true):link('Revise and resubmit','#tower/resubmit/'+id,true)):'';
     const history=request.events.map(e=>`<li><div><strong>${esc(e.action)}</strong><span>${esc(e.by)} · ${esc(date(e.at))}</span></div>${e.reason?`<p class="ct-preserve">${esc(e.reason)}</p>`:''}</li>`).join('');
     const fields=[['Target item / course',request.target],['Exact version',request.version],['Target reference',request.targetRef],['Request details',request.details],['Expected outcome',request.outcome],...extras[request.type].map(([key,title])=>[title,request[key]]),['References',request.references],...(request.priority==='urgent'?[['Urgency reason',request.urgentReason]]:[]),...(request.parentId?[['Response to previous review',request.response]]:[])];
     show(request.title||'Untitled draft',label(request.route)+' · '+types[request.type],
       '<div class="toolbar">'+link('Back to requests','#tower/'+request.route)+controls+'</div>'+
-      `<div class="ct-detail-meta">${badge(statuses[request.status],request.status==='approved'?'ct-approved':'')}${request.priority==='urgent'?badge('Urgent','ct-urgent'):''}<span>Requested by <strong>${esc(request.author.name)}</strong></span><span>${esc(date(request.submittedAt))}</span></div>`+
+      `<div class="ct-detail-meta">${badge(request.shared?'Team':'Browser only')}${badge(statuses[request.status],request.status==='approved'?'ct-approved':'')}${request.priority==='urgent'?badge('Urgent','ct-urgent'):''}<span>Requested by <strong>${esc(request.author.name)}</strong></span><span>${esc(date(request.submittedAt))}</span></div>`+
       (parent?`<div class="ct-previous">${link('Previous submission',href(parent.id))}<p><strong>Previous decision</strong></p><p class="ct-preserve">${esc(parent.decision?.reason||'No decision reason recorded.')}</p><details><summary>Compare with the previous submission</summary>${textBlock('Previous target and version',parent.target+' · '+parent.version)}${textBlock('Previous request details',parent.details)}${textBlock('Previous expected outcome',parent.outcome)}</details></div>`:'')+
-      `<div class="ct-detail-grid"><article class="ct-detail-card">${submittedContent(request.contentSnapshot)}${fields.map(([title,value])=>textBlock(title,value)).join('')}${reference(request.targetRef)}</article><aside><section class="ct-detail-card"><h2>Review &amp; decision</h2>${request.status==='pending'?`<p>Review the target reference and request before recording a decision as <strong>${esc(person||'your local profile')}</strong>.</p><form id="ct-decision-form">${field('decisionReason','Decision reason','','For a revision request, specify exactly what needs to change.',true)}<p id="ct-decision-message" class="ct-message" role="alert" tabindex="-1"></p><div class="ct-decision-buttons"><button class="button primary" value="approved" type="submit">Approve</button><button class="button" value="revision" type="submit">Request revision</button><button class="button ct-reject" value="rejected" type="submit">Reject</button></div></form>`:request.decision?`<p><strong>${esc(statuses[request.status])}</strong> by ${esc(request.decision.by)}</p><p class="ct-preserve">${esc(request.decision.reason)}</p>`:'<p>Save and submit the draft to request a review.</p>'}</section><section class="ct-detail-card"><h2>Application</h2><p><strong>Not applied</strong></p><p>Content delivery is not connected. A local approval records a decision only; it does not change Beta or Published.</p></section><section class="ct-detail-card"><h2>Request history</h2><ol class="ct-history">${history}</ol></section></aside></div>`);
+      `<div class="ct-detail-grid"><article class="ct-detail-card">${submittedContent(request.contentSnapshot)}${fields.map(([title,value])=>textBlock(title,value)).join('')}${reference(request.targetRef)}</article><aside><section class="ct-detail-card"><h2>Review &amp; decision</h2>${request.shared && request.status==='pending' && window.AIWiseSharedStudio.snapshot().role !== 'admin' ? '<p>Awaiting administrator review. Only administrators can make a decision.</p>' : request.status==='pending'?`<p>Review the target reference and request before recording a decision as <strong>${esc(request.shared ? (window.AIWiseAuth.snapshot().user?.displayName || 'Administrator') : person||'your local profile')}</strong>.</p><form id="ct-decision-form">${field('decisionReason','Decision reason','','For a revision request, specify exactly what needs to change.',true)}<p id="ct-decision-message" class="ct-message" role="alert" tabindex="-1"></p><div class="ct-decision-buttons"><button class="button primary" value="approved" type="submit">${request.shared?'Approve & apply to Beta':'Approve'}</button><button class="button" value="revision" type="submit">Request revision</button><button class="button ct-reject" value="rejected" type="submit">Reject</button></div></form>`:request.decision?`<p><strong>${esc(statuses[request.status])}</strong> by ${esc(request.decision.by)}</p><p class="ct-preserve">${esc(request.decision.reason)}</p>`:'<p>Save and submit the draft to request a review.</p>'}</section><section class="ct-detail-card"><h2>Application</h2>${request.shared ? `<p><strong>${request.status==='approved'?'Applied to Beta':'Not applied'}</strong></p><p>${request.status==='approved'?'This approved version was applied to Beta. A later approval may replace it.':'Administrator approval applies this chapter to Beta.'} Published stays unchanged.</p>${link('Open Beta ↗','../common/aiwise-'+request.contentSnapshot.chapter+'-final.html?course='+request.contentSnapshot.course)}` : '<p><strong>Not applied</strong></p><p>This browser-only request does not change Beta or Published.</p>'}</section><section class="ct-detail-card"><h2>Request history</h2><ol class="ct-history">${history}</ol></section></aside></div>`);
+    if(request.shared)document.querySelector('.ct-local').hidden=true;
     const decisionForm=document.getElementById('ct-decision-form');
     decisionForm?.addEventListener('input',()=>{dirty=true;});
-    decisionForm?.addEventListener('submit',e=>{
+    decisionForm?.addEventListener('submit',async e=>{
       e.preventDefault();
       try {
-        requirePerson();const status=e.submitter?.value,reason=document.getElementById('ct-decisionReason').value.trim();
+        if(e.submitter?.disabled)return;
+        const status=e.submitter?.value,reason=document.getElementById('ct-decisionReason').value.trim();
         if(!['approved','revision','rejected'].includes(status)||!reason)throw Error('Enter a reason and choose a decision.');
-        update(request.id,request.rev,r=>{if(r.status!=='pending')throw Error('This request already has a decision.');r.status=status;r.decision={status,reason,by:person,at:now()};event(r,statuses[status],reason);});
-        dirty=false;refresh();document.getElementById('room-title').focus({preventScroll:true});
-      }catch(error){fail(error,'ct-decision-message');}
+        if(request.shared){
+          decisionForm.querySelectorAll('button').forEach(b=>b.disabled=true);
+          await window.AIWiseSharedStudio.decide(request.id,request.rev,status,reason);
+        } else { requirePerson();
+        update(request.id,request.rev,r=>{if(r.status!=='pending')throw Error('This request already has a decision.');r.status=status;r.decision={status,reason,by:person,at:now()};event(r,statuses[status],reason);}); }
+        dirty=false;await refresh();document.getElementById('room-title')?.focus({preventScroll:true});
+      }catch(error){fail(error,'ct-decision-message');decisionForm.querySelectorAll('button').forEach(b=>b.disabled=false);}
     });
   }
   function submissionName() {
-    return window.AIWiseAuth?.snapshot().user?.displayName || localStorage.getItem(PERSON) || '';
+    return window.AIWiseAuth?.snapshot().user?.displayName || 'Team member';
   }
-  function submitStudioDraft({course, chapter, courseName, raw, slots, baseSlots, summary, name}) {
-    if (!['aws1','ped'].includes(course) || !['c2','c3'].includes(chapter) || !raw) throw Error('Save a valid course draft before sending it.');
-    const key = `aiwise_content_studio_${course}_${chapter}_v1`;
-    if (localStorage.getItem(key) !== raw) throw Error('This draft changed in another tab. Reload the editor before sending it.');
-    const draft = JSON.parse(raw);
-    if (draft.schema !== 1 || draft.course !== course || !Number.isFinite(Date.parse(draft.savedAt)) ||
-        (chapter === 'c2' ? draft.slot !== 'c2.examples' : draft.chapter !== chapter)) throw Error('This saved draft cannot be submitted.');
-    if (!slots || !baseSlots || !Object.keys(slots).length || Object.keys(slots).some(path => !path.startsWith(chapter + '.') || !Object.hasOwn(baseSlots, path))) throw Error('The content copy could not be prepared.');
-    summary = String(summary || '').trim();
-    const account = window.AIWiseAuth?.snapshot().user;
-    name = (account?.displayName || String(name || '')).trim();
-    if (!name || name.length > 80) throw Error('Enter your name before sending this request.');
-    if (!summary || summary.length > 12000) throw Error('Describe the changes in 1–12,000 characters.');
-    const latest = read();
-    const existing = latest.requests.find(r => r.route === 'studio' && r.contentSnapshot?.course === course &&
-      r.contentSnapshot.chapter === chapter && r.contentSnapshot.savedAt === draft.savedAt &&
-      JSON.stringify(r.contentSnapshot.slots) === JSON.stringify(slots));
-    if (existing) return {id: existing.id, existing: true};
-    const stamp = now(), id = crypto.randomUUID();
-    const snapshot = JSON.parse(JSON.stringify({schema: 1, course, chapter, courseName, savedAt: draft.savedAt, slots, baseSlots}));
-    const request = {id, route:'studio', type:'submission', status:'pending', rev:1, parentId:null,
-      title:`${courseName} · ${chapter.toUpperCase()} content update`, target:`${courseName} · ${chapter.toUpperCase()}`,
-      version:`Saved draft · ${draft.savedAt}`, targetRef:`Attached content copy · ${id}`,
-      details:summary, changes:summary, outcome:'Review the attached course content for inclusion in Beta.',
-      references:'', priority:'normal', urgentReason:'',
-      author:{name, key:name.toLocaleLowerCase(), ...(account?.id ? {userId:account.id} : {})},
-      createdAt:stamp, submittedAt:stamp, seenBy:{}, events:[{at:stamp, by:name, action:'Submitted from Content Studio', reason:summary}],
-      contentSnapshot:snapshot};
-    latest.requests.push(request);
-    // Store the request and its content together; storage failure never leaves a partial request.
-    try { localStorage.setItem(KEY, JSON.stringify(latest)); }
-    catch { throw Error('The request could not be saved in this browser. Your saved content draft is unchanged. Check available browser storage and try again.'); }
-    db = latest;
-    return {id, existing:false};
+  async function submitStudioDraft(input) {
+    if (localStorage.getItem(`aiwise_content_studio_${input.course}_${input.chapter}_v1`) !== input.raw) throw Error('This draft changed in another tab. Reload before submitting.');
+    return window.AIWiseSharedStudio.submit(input);
   }
   function submittedContent(snapshot) {
     if (!snapshot) return '';
@@ -308,10 +284,15 @@
     return `<section class="ct-detail-section ct-submitted-content"><h2>Submitted content</h2><p>Saved ${esc(date(snapshot.savedAt))}. This copy stays with this request when the Content Studio draft changes.</p>` +
       Object.entries(snapshot.slots).map(([path, value]) => `<details class="ct-snapshot-item"><summary>${esc(title(path))} ${JSON.stringify(value) !== JSON.stringify(snapshot.baseSlots?.[path]) ? badge('Changed') : ''}</summary>${valueMarkup(value)}</details>`).join('') + '</section>';
   }
-  function dispose() { cleanup.forEach(fn=>fn());cleanup=[];dirty=false; }
-  function render(part, shellFunction) {
+  function dispose() { renderVersion++; cleanup.forEach(fn=>fn());cleanup=[];dirty=false; }
+  async function render(part, shellFunction) {
     dispose();shell=shellFunction;problem='';
+    const version=renderVersion;
+    shell('tower','Control Tower','', '<p role="status">Loading requests…</p>',false);
+    const shared=await window.AIWiseSharedStudio.refresh();
+    if(version!==renderVersion)return;
     try {person=localStorage.getItem(PERSON)||'';db=read();}catch(error){problem=error.message||'Browser storage is unavailable.';db={schema:1,requests:[]};}
+    db.requests.push(...shared.rows);
     const [view='',id='']=part.split('/');
     if(view==='request'){detail(id);return;}
     if(view==='new'&&routes[id]){form(id);return;}
@@ -326,13 +307,14 @@
     }
     list(routes[view]?view:'all');
   }
+  window.AIWiseAuth.subscribe(state=>{ if(!location.hash.startsWith('#tower') || !shell)return; if(state.status==='member'){refresh();return;} dispose(); db={schema:1,requests:[]};person='';show('Control Tower','',note('Sign in with an approved team account to view shared requests.')+link('Open requests','#tower/all')); });
   window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
   window.addEventListener('storage',e=>{if(e.key===KEY&&location.hash.startsWith('#tower')){
     if(dirty)fail(Error('Records changed in another tab. Your unsaved text is still here; reload before saving.'));
     else refresh();
   }});
   function getOverview() {
-    const requests = read().requests;
+    const requests = [...read().requests, ...window.AIWiseSharedStudio.snapshot().rows];
     return { pending: requests.filter(r => r.status === 'pending').length,
       urgent: requests.filter(r => r.status === 'pending' && r.priority === 'urgent').length,
       updates: requests.map(r => ({title: `${r.title || 'Untitled request'} · ${statuses[r.status]}`, href: href(r.id), at: r.events.at(-1)?.at || r.submittedAt || ''})) };

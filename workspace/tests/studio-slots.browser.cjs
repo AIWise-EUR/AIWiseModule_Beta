@@ -14,7 +14,7 @@ const server=http.createServer((req,res)=>{
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,args:['--no-sandbox'],headless:true});
  try{
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:process.env.STUDIO_TEST_MOTION || 'no-preference'});
- await context.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.abort());
+ await context.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.request().url().includes('/rest/v1/workspace_beta_content')?r.fulfill({json:[]}):r.abort());
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  const ready=()=>page.waitForFunction(()=>document.querySelector('#cs-example')?.disabled===false && document.querySelector('iframe')?.title.includes((location.hash.split('/')[2] || 'c2').toUpperCase()));
  const go=async(course,chapter)=>{await page.goto(`${origin}/workspace/#studio/${course}/${chapter}`);await ready();};
