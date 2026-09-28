@@ -18,7 +18,7 @@ Password login remains direct. Signup confirmation returns to `auth-confirm.html
 
 The map and list views open Course Profiler, Course Profiler Manager, Content Studio, Common Studio, Control Tower, and Beta. Published links open the live student site at `https://aiwise-eur.github.io/AI-Wise/` in the same tab. The legacy `#published` route redirects there too. This is a link to the existing student site, not a new Control Tower release or an approval record. The Approval gate opens the Beta to Published submission route. Hash routes support browser back navigation and direct links.
 
-Common Studio appears below Course Profiler Manager and Content Studio on the home map, with a third road joining the route through Control Tower to Beta. It is also available in the list and shared sidebar. Its entry page describes the shared content scope, links to existing C1–C3 Beta previews, and opens the Common Studio request queue. Content editing is not implemented.
+Common Studio appears below Course Profiler Manager and Content Studio on the home map, with a third road joining the route through Control Tower to Beta. It is also available in the list and shared sidebar. Its entry page opens the C1–C3 shared-content editors and the Common Studio request queue. The editor reuses Content Studio’s preview, item picker, resizable side panel, chapter draft controls, and review submission dialog.
 
 Course Profiler is the teacher's design tool, available through the sidebar, List view, and Manager. The map concentrates on the development workflow: Course Profiler Manager sits above Content Studio and Common Studio in the left column, leading through Control Tower to Beta and Published. Its entry screen at `#manager` describes review and package preparation, links the teacher tool and existing AWS1 prompt/activity previews, and opens the existing Control Tower queue. Manager does not approve transfers. Teacher intake, shared profile versions, and package assembly are not implemented. These role labels do not enforce permissions. Legacy `#profiler` and `#profiler/profile` still open the teacher editor; legacy prompt/activity links remain valid and appear under Manager.
 
@@ -26,7 +26,7 @@ Control Tower displays Course Profiler Manager on the existing `profiler` and `r
 
 Control Tower starts in map view at every screen size. The map stays above the request list when a route is selected, and list view is also available. Roads show pending, new, and urgent counts from records in this browser. Hovering or focusing a road opens a summary without marking requests as read; clicking the road or View requests opens its queue. The view choice is retained within the current page session.
 
-The tower supports Course Profiler Manager, Content Studio, and Common Studio submissions to Beta, Beta revision requests back to those three spaces, and Beta release requests to Published. Common Studio is represented as a request destination here; its content editor is not yet built.
+The tower supports Course Profiler Manager, Content Studio, and Common Studio submissions to Beta, Beta revision requests back to those three spaces, and Beta release requests to Published. Common Studio can attach a fixed copy of a saved shared-content chapter to its existing request lane.
 
 ## Control Tower request prototype
 
@@ -68,9 +68,21 @@ After saving, Send to Control Tower opens a change-summary form and creates a Pe
 
 Browser verification: `tests/studio-courses.browser.cjs` checks existing course navigation and C2 isolation; `tests/studio-slots.browser.cjs` exercises all C3 slot types for both courses, S.A.T, legacy C2 restoration, safe text rendering, hidden content, unsaved chapter navigation, stale sources, cross-tab conflicts, chapter resets and mobile layout. `tests/studio-submission.browser.cjs` covers save/send/review, removed buttons, fixed C2/C3 copies, duplicate submissions, dirty/stale drafts, quota failure, account names and approval isolation. The slot suite uses normal motion by default (set `STUDIO_TEST_MOTION=reduce` for reduced-motion coverage), including immediate menu reopening and selection after editor close. These require Playwright and `CHROMIUM_PATH`; the course test also uses `SUPABASE_TEST_SDK` as described by the signup test.
 
+## Common Studio visual editor
+
+Open `#common` to choose C1, C2, or C3, or use `#common/c1`, `#common/c2`, and `#common/c3` directly. The same Content Studio editor handles both scopes. `common-studio.js` supplies the shared-content catalog; course data and authentication are unchanged.
+
+Common Studio edits the existing chapter headings, explanatory text, table text, card text, diagram labels in inline SVG, and shared template text. The picker lists all three chapters and selecting an item reveals its tab or review step. Click an outlined block or its Edit button to open the same resizable right panel. Edits update the preview as plain text while retaining the source markup, links, emphasis, and layout. Inline text fragments are separate fields to preserve their formatting. Adding/removing blocks, changing links or artwork, and editing the separate scripted C1 anatomy diagram are outside this editor. That diagram remains an interactive, read-only preview in its own sandbox. Course-specific slots are read-only and display the current AWS1 examples for context.
+
+Drafts use new, independent `aiwise_common_studio_c1_v1`, `aiwise_common_studio_c2_v1`, and `aiwise_common_studio_c3_v1` keys. Each draft holds the chapter source baseline and editable text; source mismatches, malformed storage, stale saves, and storage failures preserve the existing copy and report the issue. Save and reset apply only to the current chapter. Unsaved navigation and reload guards are shared with Content Studio. Saving does not change repository files, Beta, or Published.
+
+Send to Control Tower stores a fixed `commonSnapshot` on the existing `common` request lane. This additive field is separate from the unchanged course `contentSnapshot` contract and survives linked resubmissions. The snapshot includes the submitted text, original text, and readable block titles. Repeated submission of the same saved copy opens its existing request. There is no shared database or release activation. Home’s activity popup links saved Common drafts to their editors.
+
+Validation: `node --test workspace/tests/common-studio.test.cjs` covers all three chapters, fixed snapshots, duplicate/stale submissions, failed storage, corrupt records, and compatibility with course submissions. Browser checks cover the actual module preview, editing and restore, the Common request detail, the existing AWS1/PED editors, keyboard panel resizing, and narrow layouts.
+
 ## Not implemented
 
-Editing beyond the existing AWS1/PED C2/C3 slots, Common Studio editing, shared package storage, authenticated manager permissions, immutable artifact storage, release activation, restoration, and general Records Office persistence are not implemented. Beta annotations, the Published window viewer, and the full Course Profiler Manager workflow remain upcoming work. Local request decisions are available, but the live Published site is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
+Editing beyond the existing AWS1/PED C2/C3 slots and the Common Studio text blocks, shared package storage, authenticated manager permissions, immutable artifact storage, release activation, restoration, and general Records Office persistence are not implemented. Beta annotations, the Published window viewer, and the full Course Profiler Manager workflow remain upcoming work. Local request decisions are available, but the live Published site is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
 
 The account dialog adds authentication and a membership lookup, but local editing and request flows are not yet protected shared operations. This is not a production administration console. No Analytics collection is added.
 

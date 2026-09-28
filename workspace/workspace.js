@@ -134,10 +134,15 @@
     shell('studio','Content Studio',hint(areas.studio.note,'Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.'),'<div class="cards">'+window.AIWiseCourses.cards('studio')+'</div>');
   }
 
-  function renderCommon() {
-    shell('common','Common Studio',hint(areas.common.note,'This studio is for shared module content, structure, rules, and templates. Editing is not connected yet. You can inspect the current Common content in Beta below.'),
-      '<h2 class="section-label">Current Beta previews</h2><div class="cards">'+
-      ['c1','c2','c3'].map(id=>card(items[id].name,'Shared AI Orientation content.','#beta/'+id,'View in Beta')).join('')+
+  function renderCommon(part) {
+    if (part) {
+      const [chapter, index = '0', extra] = part.split('/');
+      if (['c1','c2','c3'].includes(chapter) && /^\d+$/.test(index) && Number.isSafeInteger(Number(index)) && !extra) { window.AIWiseContentStudio.render(shell, 'common', chapter, Number(index)); return; }
+      renderNotFound(); return;
+    }
+    shell('common','Common Studio',hint(areas.common.note,'Edit the shared C1–C3 content in the module preview. Course examples remain read-only. Save a chapter draft, then send a copy to Control Tower for review. Drafts and requests stay in this browser.'),
+      '<h2 class="section-label">Shared content</h2><div class="cards">'+
+      ['c1','c2','c3'].map(id=>card(items[id].name,'Preview and edit shared AI Orientation content.','#common/'+id,'Open editor')).join('')+
       '</div><div class="toolbar">'+button('View Common Studio requests','#tower/common')+'</div>',false);
   }
   function renderBeta(part) {
@@ -183,7 +188,7 @@
       else if(area==='manager')renderManager(part);
       else if(area==='studio')renderStudio(part);
       else if(area==='courses')window.AIWiseCourses.render(part, shell);
-      else if(area==='common')renderCommon();
+      else if(area==='common')renderCommon(part);
       else if(area==='beta')renderBeta(part);
       else if(area==='tower')renderTower(part);
       else if(area==='published')renderPublished();
