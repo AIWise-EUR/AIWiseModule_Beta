@@ -18,14 +18,14 @@ const server=http.createServer((req,res)=>{
  await context.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.request().url().startsWith('https://cdn.jsdelivr.net/')?r.fulfill({contentType:'text/javascript',body:fs.readFileSync(process.env.SUPABASE_TEST_SDK,'utf8')}):r.abort());
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  const ready=()=>page.waitForFunction(()=>!document.querySelector('[data-cs-edit]')?.disabled && !!document.querySelector('iframe')?.contentDocument.querySelector('.carousel-card'));
- const go=async id=>{await page.evaluate(id=>location.hash='#studio/'+id,id);await page.waitForFunction(id=>document.querySelector('#room-title')?.textContent.startsWith(id==='ped'?'PED':'AWS1'),id);await ready();};
+ const go=async id=>{await page.evaluate(id=>location.hash='#studio/'+id,id);await page.waitForFunction(id=>document.querySelector('#room-title')?.textContent.startsWith(id==='ped'?'Pedagogical Sciences':'Academic Writing Skills I'),id);await ready();};
  const key=id=>'aiwise_content_studio_'+id+'_c2_v1';
  const stored=id=>page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key(id));
  async function edit(title){await page.locator('[data-cs-edit]').click();await page.locator('.cs-editor [name="title"]').fill(title);await page.locator('.cs-editor [data-cs-save]').click();await page.locator('[data-cs-close]').first().click();}
  await page.goto(origin+'/workspace/#studio');
  await page.locator('#room a[href="#studio/ped"]').click();await ready();
  assert.match(await page.locator('[data-cs-title]').textContent(),/scientific essay/);
- assert.match(await page.locator('iframe').getAttribute('title'),/^PED/);
+ assert.match(await page.locator('iframe').getAttribute('title'),/^Pedagogical Sciences/);
  assert.match(await page.locator('.cs-actions a').getAttribute('href'),/course=ped$/);
  const pedSource=JSON.parse(fs.readFileSync(path.join(root,'course-specific/ped/ped.json'),'utf8'));
  assert.equal(await page.locator('iframe').evaluate(el=>el.contentDocument.querySelector('[data-slot="c2.sat_example_title"]').textContent),pedSource.c2.sat_example_title);
@@ -42,7 +42,7 @@ const server=http.createServer((req,res)=>{
  await page.locator('#updates-close').click();
  await page.evaluate(()=>location.hash='#courses/ped');
  await page.locator('#room .course-campus .studio').click();await ready();
- assert.match(await page.locator('#room-title').textContent(),/^PED/);
+ assert.match(await page.locator('#room-title').textContent(),/^Pedagogical Sciences/);
  // A wrongly labelled draft is blocked, never loaded or silently overwritten.
  await page.evaluate(k=>{const x=JSON.parse(localStorage.getItem(k));x.course='aws1';localStorage.setItem(k,JSON.stringify(x));},key('ped'));
  await page.reload();await ready();assert.match(await page.locator('.cs-status').first().textContent(),/could not be restored/);

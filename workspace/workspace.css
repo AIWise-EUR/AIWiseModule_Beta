@@ -71,10 +71,20 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .card p { font-size: 13px; color: var(--ink-3); margin: 0 0 16px; }
 .card .arrow { display: block; font-size: 13px; font-weight: 600; color: var(--signal); margin-top: 18px; }
 .area-list .card svg { height: 100px; width: 145px; }
-.room-heading { display: flex; justify-content: space-between; align-items: start; gap: 24px; padding: 24px 28px; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); box-shadow: var(--sh); }
-.room-heading h1 { font-size: 26px; }
-.room-heading h1:last-child { margin-bottom: 0; }
-.room-description { max-width: 780px; color: var(--ink-3); font-size: 14px; margin: 0; }
+/* Area headings are plain text; explanations open from the ⓘ button beside the title. */
+.room-heading { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 6px 0 2px; }
+.room-heading h1 { font-size: 26px; margin: 0; }
+/* The title receives focus after navigation for screen readers; it is not a control, so it draws no ring. */
+.room-heading h1:focus { outline: none; }
+.room-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.room-help { position: relative; display: inline-flex; }
+.help-toggle { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--card); color: var(--ink-3); font: 600 12px/1 var(--font-mono); cursor: pointer; transition: color var(--aw-motion-control, .2s), border-color var(--aw-motion-control, .2s); }
+.help-toggle:hover, .help-toggle[aria-expanded=true] { color: var(--signal); border-color: var(--signal); }
+.help-note { position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; width: min(440px, calc(100vw - 96px)); padding: 14px 16px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--sh); font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+.help-note p { margin: 0 0 8px; }
+.help-note p:last-child { margin-bottom: 0; }
+.help-note p:empty { display: none; }
+.room-lead { margin: 4px 0 0; font: 12px/1.6 var(--font-mono); color: var(--ink-3); }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 8px 13px; border: 1px solid var(--line); background: var(--card); color: var(--signal); text-decoration: none; border-radius: 5px; font-size: 13px; font-weight: 600; }
 .button:hover { background: #EEF3F6; border-color: var(--signal); }
 .button.primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
@@ -109,7 +119,7 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 22px; border: 1px
   .header-actions { width: 100%; justify-content: space-between; gap: 12px; }
   main { padding: 18px 16px 36px; }
   h1, .room-heading h1 { font-size: 24px; }
-  .home-heading, .room-heading { padding: 20px; }
+  .home-heading { padding: 20px; }
   .cards, .area-list { grid-template-columns: 1fr; }
   .room-heading, .version-row { flex-direction: column; align-items: start; }
   .card { padding: 20px; }
@@ -127,7 +137,6 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 22px; border: 1px
 .course-form p { margin: 8px 0; overflow-wrap: anywhere; }
 .course-form #course-message { color: #91452e; }
 #room .card h3, #room .room-heading h1 { overflow-wrap: anywhere; }
-.course-local-note { color: var(--ink-3); font-size: 12px; margin: 18px 0; }
 .course-dashboard .course-tile { padding: 0; overflow: hidden; }
 .course-cover { display: flex; align-items: end; min-height: 112px; padding: 20px 22px; background: #DDE7EA; color: #355F70; }
 .course-cover span { font: 700 23px var(--font-heading); overflow-wrap: anywhere; }

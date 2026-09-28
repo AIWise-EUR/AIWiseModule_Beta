@@ -1,5 +1,4 @@
-.ct-local { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:16px 20px; margin-top:20px; background:var(--paper-2); border:1px solid var(--line); border-radius:var(--r); font-size:12px; }
-.ct-local p { max-width:740px; margin:5px 0 0; color:var(--ink-3); }
+.ct-local { display:flex; justify-content:flex-end; margin-top:16px; font-size:12px; }
 .ct-local form { min-width:280px; }
 .ct-local label { display:block; margin-bottom:5px; font:10px var(--font-mono); text-transform:uppercase; letter-spacing:.04em; }
 .ct-local form>div { display:flex; gap:6px; }

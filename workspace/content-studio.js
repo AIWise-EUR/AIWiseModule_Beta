@@ -2,8 +2,8 @@
 (() => {
   'use strict';
   const COURSES = Object.freeze({
-    aws1: {label: 'AWS1', source: '../course-specific/aws1/course-specific-content_aws1.json'},
-    ped: {label: 'PED', source: '../course-specific/ped/ped.json'}
+    aws1: {label: 'Academic Writing Skills I', source: '../course-specific/aws1/course-specific-content_aws1.json'},
+    ped: {label: 'Pedagogical Sciences', source: '../course-specific/ped/ped.json'}
   });
   const supports = id => Object.hasOwn(COURSES, id);
   const clone = value => JSON.parse(JSON.stringify(value));
@@ -189,7 +189,7 @@
             else parent[last] = input.value;
           }
           updatePreview(s); controls(s);
-          message(s, s.blocked ? 'Preview edits only. Saving is unavailable until the saved draft is reset.' : dirty() ? 'Unsaved edits · Preview only.' : 'No unsaved edits.', s.blocked);
+          message(s, s.blocked ? 'Preview edits only. Saving is unavailable until the saved draft is reset.' : dirty() ? 'Unsaved edits · Preview only.' : '', s.blocked);
         });
         wrap.appendChild(input); return wrap;
       }
@@ -363,10 +363,8 @@
   async function render(shell, courseId = 'aws1', chapter = 'c2', itemIndex = 0) {
     if (!supports(courseId) || !['c2','c3'].includes(chapter)) throw Error('Course editor not connected');
     const config = COURSES[courseId], chapterName = chapter.toUpperCase();
-    shell('studio', config.label, '', `
+    shell('studio', config.label, `<p>${chapterName} course content · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p><p data-cs-coverage></p>`, `
       <div id="cs-studio">
-        <p class="notice">${chapterName} course content · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p>
-        <p data-cs-coverage></p>
         <div class="cs-toolbar">
           <div class="cs-example-block">
             <p class="cs-picker-meta"><span>Course item</span><span data-cs-count></span></p>
@@ -390,7 +388,7 @@
           </div>
         </div>
         <p class="cs-status" role="status">Loading ${chapterName} preview…</p>
-        <div class="cs-preview"><div class="cs-preview-label">AI Orientation · ${chapterName} preview · Outlined items are editable</div>
+        <div class="cs-preview">
           <iframe title="${config.label} ${chapterName} module editing preview" sandbox="allow-same-origin allow-scripts"></iframe></div>
         <dialog class="cs-editor" aria-labelledby="cs-editor-title" aria-describedby="cs-editor-help">
           <div class="cs-resize-handle" role="separator" aria-orientation="vertical" aria-label="Resize editor" aria-controls="cs-editor-body" tabindex="0" title="Drag to resize. Use Left or Right arrow keys."></div>
@@ -441,9 +439,9 @@
         if (draft?.schema === 1 && draft.course === courseId && draft.slot === 'c2.examples' && equal(draft.baseExamples, data.c2.examples) && valid(draft.examples, data.c2.examples)) s.otherExamples = draft.examples;
       } catch { /* The destination editor reports unreadable drafts without changing them. */ }
 
-      host.querySelector('[data-cs-coverage]').textContent = `${s.items.length} editable items.` + (missing.length ? ' Not configured for this course: ' + missing.join(', ') + '.' : ' All course slots in this chapter are connected.');
+      document.querySelector('[data-cs-coverage]').textContent = `${s.items.length} editable items.` + (missing.length ? ' Not configured for this course: ' + missing.join(', ') + '.' : ' All course slots in this chapter are connected.');
       s.values = clone(s.base);
-      let status = 'Current Beta content · No draft edits yet.';
+      let status = '';
       try {
         s.raw = localStorage.getItem(s.key); s.storageRead = true;
         if (s.raw !== null) {

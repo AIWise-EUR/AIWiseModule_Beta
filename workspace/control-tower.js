@@ -70,10 +70,13 @@
     return `<span class="ct-counts"><span><b>${n.pending}</b> Pending</span><span><b>${n.fresh}</b> New</span><span class="${Number(n.urgent) ? 'ct-urgent' : ''}"><b>${n.urgent}</b> Urgent</span></span>`;
   }
   function chrome(body) {
-    return `<div class="ct-local"><div><strong>Local prototype</strong><p>Requests and decisions stay in this browser. Names are self-entered, with no account permissions or team synchronization. Approval does not move or publish content.</p></div><form id="ct-person-form"><label for="ct-person">Your name · local profile</label><div><input id="ct-person" maxlength="80" value="${esc(person)}" placeholder="Enter your name" required><button class="button" type="submit">Set name</button></div></form></div><p id="ct-message" class="ct-message" role="alert" tabindex="-1">${esc(problem)}</p>${body}`;
+    return `<div class="ct-local"><form id="ct-person-form"><label for="ct-person">Your name · local profile</label><div><input id="ct-person" maxlength="80" value="${esc(person)}" placeholder="Enter your name" required><button class="button" type="submit">Set name</button></div></form></div><p id="ct-message" class="ct-message" role="alert" tabindex="-1">${esc(problem)}</p>${body}`;
   }
-  function show(title, description, body) {
-    shell('tower', title, description, chrome(body), false);
+  // Page explanations live in the heading's help note; the request context stays as a short lead line.
+  const pageHelp = {'Control Tower': 'Follow requests between workspaces, review the exact request, and record a decision.'};
+  const localHelp = '<p>Requests and decisions stay in this browser. Names are self-entered, with no account permissions or team synchronization. Approval does not move or publish content.</p>';
+  function show(title, context, body) {
+    shell('tower', title, (pageHelp[title] ? `<p>${esc(pageHelp[title])}</p>` : '') + localHelp, (context ? `<p class="room-lead">${esc(context)}</p>` : '') + chrome(body), false);
     document.getElementById('ct-person-form').addEventListener('submit', e => {
       e.preventDefault();
       if (dirty) { fail(Error('Save this draft before changing your local profile.')); return; }
@@ -149,7 +152,7 @@
   }
   function list(selected) {
     if (routes[selected]) flow = routes[selected].type === 'revision' ? 'revision' : 'submission';
-    show('Control Tower', 'Follow requests between workspaces, review the exact request, and record a decision.', overview(selected) +
+    show('Control Tower', '', overview(selected) +
       `<section class="ct-queue" aria-labelledby="ct-queue-title"><div class="ct-queue-head"><h2 id="ct-queue-title">${selected==='all'?'All requests':esc(label(selected))}</h2><div class="toolbar">${link('All requests','#tower/all')}${link('New request','#tower/new/'+(selected==='all'?selectedRoutes()[0]:selected),true)}<button class="button" id="ct-export" type="button">Export records</button></div></div><div class="ct-filters"><label>Find a request<input type="search" id="ct-search" placeholder="Title, item, or requestor"></label><label>Status<select id="ct-status"><option value="all">All statuses</option>${Object.entries(statuses).map(([key,name])=>`<option value="${key}">${name}</option>`).join('')}</select></label><label>Attention<select id="ct-attention"><option value="all">All requests</option><option value="new">New to me</option><option value="urgent">Urgent</option></select></label></div><div id="ct-rows" aria-live="polite"></div></section>`);
     wireMap(selected);
     const draw = () => {

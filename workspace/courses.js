@@ -86,17 +86,17 @@
   function dirty() { return !!form && values() !== initial; }
   function canLeave() { return !dirty() || window.confirm('Leave without saving these course details?'); }
   function dispose() { form = null; initial = ''; snapshot = null; }
-  const notice = '<p class="notice">Course details are saved in this browser only. Registering a course does not create module content or publish it to students.</p>';
+  const localNote = '<p>Course details are saved in this browser only. Registering a course does not create module content or publish it to students.</p>';
   function render(part, shell) {
     let all;
     try { all = list(); }
-    catch (error) { shell(null, 'Courses', 'Manage courses across the workspace.', `<p class="notice" role="alert">${esc(error.message)}</p>`, false); return; }
+    catch (error) { shell(null, 'Courses', '', `<p class="notice" role="alert">${esc(error.message)}</p>`, false); return; }
     if (part === 'new' || part.endsWith('/edit')) {
       const isNew = part === 'new', id = part.split('/')[0];
       const course = isNew ? {id:'', short_name:'', full_name:''} : all.find(c => c.id === id);
       if (!course) { missing(shell); return; }
       snapshot = read().raw;
-      shell(null, isNew ? 'Add course' : 'Edit course', 'Register and maintain the basic information used in the workspace.', notice +
+      shell(null, isNew ? 'Add course' : 'Edit course', '<p>Register and maintain the basic information used in the workspace.</p>' + localNote,
         `<form id="course-form" class="card course-form"><label for="course-id">Course ID</label><input id="course-id" name="id" value="${esc(course.id)}" required maxlength="40" pattern="[a-z][a-z0-9-]{0,39}" ${isNew ? '' : 'readonly'} aria-describedby="course-id-help"><p id="course-id-help">Lowercase letters, numbers, and hyphens; start with a letter. This ID stays fixed after registration.</p><label for="course-short">Short name</label><input id="course-short" name="short_name" value="${esc(course.short_name)}" required maxlength="40" placeholder="e.g. AWS I"><label for="course-name">Full course name</label><input id="course-name" name="full_name" value="${esc(course.full_name)}" required maxlength="160" placeholder="e.g. Academic Writing Skills I"><p id="course-message" role="status"></p><div class="toolbar"><button type="submit" class="button primary">${isNew ? 'Add course' : 'Save changes'}</button><a class="button" href="#courses${isNew ? '' : '/' + course.id}">Cancel</a></div></form>`, false);
       form = document.getElementById('course-form'); initial = values();
       form.addEventListener('submit', event => {
@@ -124,26 +124,26 @@
       const c = all.find(c => c.id === id);
       if (!c || (view && view !== 'manager')) { missing(shell); return; }
       if (view === 'manager') {
-        shell('courses', `${c.short_name} · Course Profiler Manager`, c.full_name,
-          `<div class="toolbar"><a class="button primary" href="course-profiler/">Open Course Profiler</a><a class="button" href="#courses/${c.id}">Back to course</a></div><p class="course-local-note">The teacher tool opens its current browser profile. It does not automatically load this course.</p>` +
-          (c.id === 'aws1' ? '<div class="cards"><a class="card link" href="#manager/prompts"><h3>Preset Prompts</h3><p>AWS1 course and activity prompts.</p><span class="arrow">Read prompts →</span></a><a class="card link" href="#manager/activities"><h3>AI Activities</h3><p>The seven AWS1 activity pages.</p><span class="arrow">View activities →</span></a></div>' : '<div class="empty-state"><h2>Course materials not connected</h2><p>This course does not yet have a connected profile, preset prompts, or activity package.</p></div>'), false);
+        shell('courses', `${c.full_name} · Course Profiler Manager`, '<p>The teacher tool opens its current browser profile. It does not automatically load this course.</p>',
+          `<div class="toolbar"><a class="button primary" href="course-profiler/">Open Course Profiler</a><a class="button" href="#courses/${c.id}">Back to course</a></div>` +
+          (c.id === 'aws1' ? '<div class="cards"><a class="card link" href="#manager/prompts"><h3>Preset Prompts</h3><p>Academic Writing Skills I course and activity prompts.</p><span class="arrow">Read prompts →</span></a><a class="card link" href="#manager/activities"><h3>AI Activities</h3><p>The seven Academic Writing Skills I activity pages.</p><span class="arrow">View activities →</span></a></div>' : '<div class="empty-state"><h2>Course materials not connected</h2><p>This course does not yet have a connected profile, preset prompts, or activity package.</p></div>'), false);
         return;
       }
       const destination = (title, description, href, action) => `<div class="card"><h3>${title}</h3><p>${description}</p>${href ? `<a class="button" href="${href}">${action}</a>` : '<span class="badge">Setup needed</span>'}</div>`;
-      shell('courses', c.full_name, `${c.short_name} · Course workspace`, `<div class="toolbar course-view-toolbar"><div class="view-switch" role="group" aria-label="Course view"><button id="course-map-view" type="button" aria-pressed="true">▦ Map</button><button id="course-list-view" type="button" aria-pressed="false">☷ List</button></div><a class="button" href="#courses/${c.id}/edit">Edit course details</a><a class="button" href="#courses">All courses</a></div>` + courseMap(c) + `<p class="course-local-note">${esc(c.short_name)} materials · Common Studio is shared across courses and shown in grayscale. Unconnected areas are labeled on the map.</p><div id="course-material-list" class="cards course-hub" hidden>` +
+      shell('courses', c.full_name, `<p>${esc(c.full_name)} materials · Common Studio is shared across courses and shown in grayscale. Unconnected areas are labeled on the map.</p>`, `<div class="toolbar course-view-toolbar"><div class="view-switch" role="group" aria-label="Course view"><button id="course-map-view" type="button" aria-pressed="true">▦ Map</button><button id="course-list-view" type="button" aria-pressed="false">☷ List</button></div><a class="button" href="#courses/${c.id}/edit">Edit course details</a><a class="button" href="#courses">All courses</a></div>` + courseMap(c) + `<div id="course-material-list" class="cards course-hub" hidden>` +
         destination('Course Profiler Manager', c.id === 'aws1' ? 'Review the course and activity prompts.' : 'A course profile and activity package still need to be connected.', `#courses/${c.id}/manager`, 'Open course materials') +
         destination('Content Studio', hasStudio(c.id) ? 'Edit the course examples in AI Orientation.' : 'The Orientation editor is not connected for this course yet.', hasStudio(c.id) ? '#studio/' + c.id : '', 'Open editor') +
         destination('AI Activities', c.id === 'aws1' ? 'Inspect the seven existing activity pages.' : 'Activity pages still need to be connected.', c.id === 'aws1' ? '#manager/activities' : '', 'View activities') +
         destination('AI-Wise Beta', c.connected ? 'Preview this course in the current Beta module.' : 'A Beta module is not connected yet.', c.connected ? '#beta/' + c.id : '', 'Open Beta') +
         destination('Control Tower', 'The course request view is not connected yet.', '', '') +
-        destination('AI-Wise Published', c.id === 'aws1' ? 'Open the existing student site for AWS1.' : 'A student release is not connected for this course.', c.id === 'aws1' ? 'https://aiwise-eur.github.io/AI-Wise/' : '', 'Open student site') +
+        destination('AI-Wise Published', c.id === 'aws1' ? 'Open the existing student site for Academic Writing Skills I.' : 'A student release is not connected for this course.', c.id === 'aws1' ? 'https://aiwise-eur.github.io/AI-Wise/' : '', 'Open student site') +
         destination('Common Studio', 'Shared content used across courses.', '#common', 'Open shared content') + '</div>', false);
       wireCourseViews();
       return;
     }
-    shell(null, 'Courses', 'Choose a course to open its workspace.', '<p class="course-local-note">Course registration and name changes are saved in this browser.</p><div class="cards course-dashboard">' + all.map((c, index) => `<a class="card link course-tile course-tone-${index % 3}" href="#courses/${c.id}"><div class="course-cover"><span>${esc(c.short_name)}</span></div><div class="course-tile-body"><span class="badge">${c.connected ? 'Connected workspaces' : 'Setup needed'}</span><h3>${esc(c.full_name)}</h3><p>${esc(c.id)}</p><span class="arrow">Open course →</span></div></a>`).join('') + addCard() + '</div>', false);
+    shell(null, 'Courses', '<p>Choose a course to open its workspace.</p><p>Course registration and name changes are saved in this browser.</p>', '<div class="cards course-dashboard">' + all.map((c, index) => `<a class="card link course-tile course-tone-${index % 3}" href="#courses/${c.id}"><div class="course-cover"><span>${esc(c.short_name)}</span></div><div class="course-tile-body"><span class="badge">${c.connected ? 'Connected workspaces' : 'Setup needed'}</span><h3>${esc(c.full_name)}</h3><p>${esc(c.id)}</p><span class="arrow">Open course →</span></div></a>`).join('') + addCard() + '</div>', false);
   }
-  function missing(shell) { shell(null, 'Course not found', 'This course is not registered in this browser.', '<a class="button" href="#courses">All courses</a>', false); }
+  function missing(shell) { shell(null, 'Course not found', '', '<p class="room-lead">This course is not registered in this browser.</p><a class="button" href="#courses">All courses</a>', false); }
   window.addEventListener('beforeunload', event => { if (dirty()) { event.preventDefault(); event.returnValue = ''; } });
   window.AIWiseCourses = {ready, list, get, cards, addCard, render, canLeave, dispose};
 })();

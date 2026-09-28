@@ -43,10 +43,10 @@
 #cs-examples-menu button[aria-pressed=true] { background: #EDF3F7; color: var(--signal); font-weight: 600; border-color: #CFDEE8; }
 .cs-option-number { flex: 0 0 20px; font: 11px/1.5 var(--font-mono); color: var(--ink-3); }
 .cs-toolbar .button, .cs-editor .button { min-height: 42px; }
-.cs-status { min-height: 25px; font-size: 13px; color: var(--ink-3); overflow-wrap: anywhere; }
+.cs-status { font-size: 13px; color: var(--ink-3); overflow-wrap: anywhere; }
+.cs-status:empty { display: none; }
 .cs-status[data-error=true] { color: var(--danger); }
 .cs-preview { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: white; }
-.cs-preview-label { padding: 9px 16px; background: var(--paper-2); font: 11px/1.6 var(--font-mono); color: var(--ink-3); }
 .cs-preview iframe { display: block; width: 100%; height: 72vh; min-height: 480px; border: 0; background: white; }
 .cs-editor { position: fixed; inset: 0 0 0 auto; margin: 0; width: min(var(--cs-editor-width, 600px), 100%); max-width: 100%; height: 100dvh; max-height: 100%; padding: 0; border: 0; border-left: 1px solid var(--line); background: var(--paper); color: var(--ink-2); box-shadow: -12px 0 45px #15121d20; overflow: hidden; }
 .cs-editor-body { height: 100%; overflow-y: auto; overscroll-behavior: contain; }

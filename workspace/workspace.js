@@ -33,8 +33,7 @@
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const badge = text => `<span class="badge">${escape(text)}</span>`;
   const card = (title, text, href, label = 'Open', tag = '') => `<a class="card link" href="${href}">${tag ? badge(tag) : ''}<h3>${escape(title)}</h3><p>${escape(text)}</p><span class="arrow">${escape(label)} ${href.startsWith('https://')?'↗':'→'}</span></a>`;
-  const notice = text => `<p class="notice">${escape(text)}</p>`;
-  const empty = (title,text) => `<div class="empty-state"><h2>${escape(title)}</h2><p>${escape(text)}</p></div>`;
+  const empty = (title,text) => `<div class="empty-state"><h2>${escape(title)}</h2>${text ? `<p>${escape(text)}</p>` : ''}</div>`;
   const button = (title,href,primary=false) => `<a class="button${primary?' primary':''}" href="${href}">${escape(title)}</a>`;
   let pendingFetch;
   let currentPrompt = '';
@@ -51,37 +50,54 @@
   document.getElementById('map-view').addEventListener('click',()=>setView('map'));
   document.getElementById('list-view').addEventListener('click',()=>setView('list'));
 
-  function shell(area,title,description,body,records=true) {
+  // Explanations sit behind the ⓘ button beside the title; the page itself shows only what can be acted on.
+  const hint = (...texts) => texts.filter(Boolean).map(text => `<p>${escape(text)}</p>`).join('');
+  const lead = text => `<p class="room-lead">${escape(text)}</p>`;
+  function shell(area,title,help,body,records=true) {
     const parent = areas[area];
-    // Area context lives in the sidebar; the heading shows the page title only.
-    room.innerHTML = `<div class="room-heading"><div><h1 id="room-title" tabindex="-1">${escape(title)}</h1>${description ? `<p class="room-description">${escape(description)}</p>` : ''}</div>${records&&parent?button('Records Office','#records/'+area):''}</div>${body}`;
+    room.innerHTML = `<div class="room-heading"><div class="room-title"><h1 id="room-title" tabindex="-1">${escape(title)}</h1>${help ? `<div class="room-help"><button type="button" class="help-toggle" aria-label="About this page" aria-expanded="false" aria-controls="room-help-note">i</button><div class="help-note" id="room-help-note" role="note" hidden>${help}</div></div>` : ''}</div>${records&&parent?button('Records Office','#records/'+area):''}</div>${body}`;
     window.AIWiseMotion.enter(room);
   }
+  function setHelp(open, focus = false) {
+    const note = room.querySelector('.help-note'), toggle = room.querySelector('.help-toggle');
+    if (!note || !toggle) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    if (open) window.AIWiseMotion.show(note); else window.AIWiseMotion.hide(note);
+    if (focus) toggle.focus({preventScroll: true});
+  }
+  document.addEventListener('click', event => {
+    const toggle = event.target.closest('.help-toggle');
+    if (toggle && room.contains(toggle)) { setHelp(toggle.getAttribute('aria-expanded') !== 'true'); return; }
+    if (!event.target.closest('.help-note')) setHelp(false);
+  });
+  room.addEventListener('keydown', event => {
+    const note = room.querySelector('.help-note');
+    if (event.key === 'Escape' && note && !note.hidden) setHelp(false, true);
+  });
   function renderProfiler(part) {
     if (!part || part === 'profile') {
       window.location.replace('course-profiler/');
       return;
     }
     if (part === 'prompts') {
-      shell('manager','AWS1 · Preset Prompts','Read the prompts currently used by the AWS1 Beta activities.',notice('This is a read-only view. Editing and package submission are not available in this prototype.')+'<div class="prompt-view"><label for="prompt-select">Choose a prompt</label><select id="prompt-select"></select><div class="toolbar"><button class="button" id="copy-prompt" type="button">Copy prompt</button><button class="button" id="download-prompt" type="button">Download prompt</button></div><p class="live-message" id="prompt-message" role="status"></p><pre id="prompt-text" tabindex="0" aria-label="Selected preset prompt"></pre></div>');
+      shell('manager','Academic Writing Skills I · Preset Prompts',hint('Read the prompts currently used by the Academic Writing Skills I Beta activities.','This is a read-only view. Editing and package submission are not available in this prototype.'),'<div class="prompt-view"><label for="prompt-select">Choose a prompt</label><select id="prompt-select"></select><div class="toolbar"><button class="button" id="copy-prompt" type="button">Copy prompt</button><button class="button" id="download-prompt" type="button">Download prompt</button></div><p class="live-message" id="prompt-message" role="status"></p><pre id="prompt-text" tabindex="0" aria-label="Selected preset prompt"></pre></div>');
       setupPrompts(); return;
     }
     if (part === 'activities') {
-      shell('manager','AWS1 · AI Activities','Inspect the current activity pages and their prompts before designing the next version.',notice('Activity configuration editing and submission are not connected yet.')+`<div class="item-list">${activityPages.map(([name,file])=>`<a class="item-link" href="../course-specific/aws1/${file}"><span>${name}</span><small>Open Beta page ↗</small></a>`).join('')}</div>`); return;
+      shell('manager','Academic Writing Skills I · AI Activities',hint('Inspect the current activity pages and their prompts before designing the next version.','Activity configuration editing and submission are not connected yet.'),`<div class="item-list">${activityPages.map(([name,file])=>`<a class="item-link" href="../course-specific/aws1/${file}"><span>${name}</span><small>Open Beta page ↗</small></a>`).join('')}</div>`); return;
     }
     renderNotFound();
   }
   function renderManager(part) {
     if (part === 'prompts' || part === 'activities') { renderProfiler(part); return; }
     if (part) { renderNotFound(); return; }
-    shell('manager','Course Profiler Manager',areas.manager.note,
+    shell('manager','Course Profiler Manager',hint(areas.manager.note,'The teacher uses Course Profiler to express course goals and context. The development team reviews and refines that output here. Control Tower handles approval and transfer between areas.','Profile intake and package preparation are not connected yet. Shared teacher submissions, managed versions, and package assembly will be added after their workflow is defined.'),
       '<div class="toolbar">'+button('Open Course Profiler','course-profiler/',true)+'</div>'+
-      notice('The teacher uses Course Profiler to express course goals and context. The development team reviews and refines that output here. Control Tower handles approval and transfer between areas.')+
       '<div class="cards">'+
       card('Teacher course profile','Open the existing course design tool. Profiles currently stay in this browser.','course-profiler/','Open Course Profiler','Teacher tool')+
-      card('AWS1 · Preset Prompts','Inspect the current course and activity prompts.','#manager/prompts','Read prompts','Available')+
-      card('AWS1 · AI Activities','Inspect the current activity pages and prompt connections.','#manager/activities','View activities','Available')+
-      '</div><h2 class="section-label">Courses</h2><div class="cards">'+window.AIWiseCourses.cards('manager')+'</div>'+empty('Profile intake and package preparation are not connected yet','This is the development team entry point. Shared teacher submissions, managed versions, and package assembly will be added after their workflow is defined.')+
+      card('Academic Writing Skills I · Preset Prompts','Inspect the current course and activity prompts.','#manager/prompts','Read prompts','Available')+
+      card('Academic Writing Skills I · AI Activities','Inspect the current activity pages and prompt connections.','#manager/activities','View activities','Available')+
+      '</div><h2 class="section-label">Courses</h2><div class="cards">'+window.AIWiseCourses.cards('manager')+'</div>'+
       '<div class="toolbar">'+button('View package requests in Control Tower','#tower/profiler')+'</div>');
   }
   function setupPrompts() {
@@ -112,22 +128,21 @@
     const [courseId, chapter = 'c2', itemIndex = '0', extra] = part.split('/');
     if (window.AIWiseContentStudio.supports(courseId) && ['c2','c3'].includes(chapter) && /^\d+$/.test(itemIndex) && Number.isSafeInteger(Number(itemIndex)) && !extra) { window.AIWiseContentStudio.render(shell, courseId, chapter, Number(itemIndex)); return; }
     if (part) { window.AIWiseCourses.render(part, shell); return; }
-    shell('studio','Content Studio',areas.studio.note,notice('Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.')+'<div class="cards">'+window.AIWiseCourses.cards('studio')+'</div>');
+    shell('studio','Content Studio',hint(areas.studio.note,'Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.'),'<div class="cards">'+window.AIWiseCourses.cards('studio')+'</div>');
   }
 
   function renderCommon() {
-    shell('common','Common Studio',areas.common.note,
-      '<p class="notice">This studio is for shared module content, structure, rules, and templates. Editing is not connected yet. You can inspect the current Common content in Beta below.</p>'+
-      '<h2 class="section-label">AI-Wise Common · Current Beta previews</h2><div class="cards">'+
+    shell('common','Common Studio',hint(areas.common.note,'This studio is for shared module content, structure, rules, and templates. Editing is not connected yet. You can inspect the current Common content in Beta below.'),
+      '<h2 class="section-label">Current Beta previews</h2><div class="cards">'+
       ['c1','c2','c3'].map(id=>card(items[id].name,'Shared AI Orientation content.','#beta/'+id,'View in Beta')).join('')+
       '</div><div class="toolbar">'+button('View Common Studio requests','#tower/common')+'</div>',false);
   }
   function renderBeta(part) {
     const item=items[part];
     if(item) {
-      shell('beta',item.name,item.area+' · Item versions',`<div class="version-row"><div><strong>Current working copy</strong><p>Preview the content currently available in Beta.</p></div>${button('Open preview',item.url,true)}</div>`+notice('Saved version history is not connected in this prototype. This working copy is not an immutable checkpoint or an approved release.')+(part==='aws1'?'<div class="toolbar">'+button('Diagnostic Questionnaire','../course-specific/aws1/diagnostic-questionnaire-final.html')+button('Activity entry','../course-specific/aws1/sub-lobby.html')+button('Course materials','../course-specific/aws1/aws-i-materials.html')+'</div>':'')); return;
+      shell('beta',item.name,hint(item.area+' · Item versions','Saved version history is not connected in this prototype. This working copy is not an immutable checkpoint or an approved release.'),`<div class="version-row"><div><strong>Current working copy</strong><p>Preview the content currently available in Beta.</p></div>${button('Open preview',item.url,true)}</div>`+(part==='aws1'?'<div class="toolbar">'+button('Diagnostic Questionnaire','../course-specific/aws1/diagnostic-questionnaire-final.html')+button('Activity entry','../course-specific/aws1/sub-lobby.html')+button('Course materials','../course-specific/aws1/aws-i-materials.html')+'</div>':'')); return;
     }
-    shell('beta','AI-Wise Beta',areas.beta.note,'<div class="toolbar">'+button('Open Beta module','../common/lobby.html',true)+'</div><h2 class="section-label">AI-Wise Common</h2><div class="cards">'+['c1','c2','c3'].map(id=>card(items[id].name,'Shared Orientation content.','#beta/'+id,'View item')).join('')+'</div><h2 class="section-label">AI-Wise Course Specific</h2><div class="cards">'+['aws1','ped','other'].map(id=>card(items[id].name,id==='other'?'Uses the shared Others configuration and inherits AWS1 content.':'Course content within the current module.','#beta/'+id,'View item')).join('')+'</div>');
+    shell('beta','AI-Wise Beta',hint(areas.beta.note),'<div class="toolbar">'+button('Open Beta module','../common/lobby.html',true)+'</div><h2 class="section-label">AI-Wise Common</h2><div class="cards">'+['c1','c2','c3'].map(id=>card(items[id].name,'Shared Orientation content.','#beta/'+id,'View item')).join('')+'</div><h2 class="section-label">AI-Wise Course Specific</h2><div class="cards">'+['aws1','ped','other'].map(id=>card(items[id].name,id==='other'?'Uses the shared Others configuration and inherits AWS1 content.':'Course content within the current module.','#beta/'+id,'View item')).join('')+'</div>');
   }
   function renderTower(part) {
     window.AIWiseControlTower.render(part, shell);
@@ -137,9 +152,9 @@
   }
   function renderRecords(area) {
     if(!areas[area]) {renderNotFound();return;}
-    shell(area,'Records Office',areas[area].name+' · Internal history',empty('Version records not connected','Saved checkpoints, previous versions, review notes, and restoration history will be available here. No history is being recorded by this navigation prototype.')+'<div class="toolbar">'+button('Return to '+areas[area].name,'#'+area)+'</div>',false);
+    shell(area,'Records Office',hint(areas[area].name+' · Internal history','Saved checkpoints, previous versions, review notes, and restoration history will be available here. No history is being recorded by this navigation prototype.'),empty('Version records not connected','')+'<div class="toolbar">'+button('Return to '+areas[area].name,'#'+area)+'</div>',false);
   }
-  function renderNotFound() {shell(null,'Area not found','That workspace address is not available.',button('Back to map','#home'),false);}
+  function renderNotFound() {shell(null,'Area not found','',lead('That workspace address is not available.')+button('Back to map','#home'),false);}
   function route(focus=true) {
     if (!window.AIWiseControlTower.canLeave() || !window.AIWiseContentStudio.canLeave() || !window.AIWiseCourses.canLeave()) { history.replaceState(null, '', location.pathname + location.search + renderedHash); return; }
     window.AIWiseControlTower.dispose();
