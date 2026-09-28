@@ -107,10 +107,12 @@
       if (s.dialog.open) openEditor(s, s.index);
     } catch { message(s, 'Draft could not be reset. The saved copy has been preserved.', true); }
   }
-  function scrollPreview(s, id, animate = true) {
+  // Item selection jumps the preview at once; only in-page anchor links glide. A long smooth
+  // scroll is easy to miss and some browsers drop it when focus moves back to the picker.
+  function scrollPreview(s, id, animate = false) {
     const target = s.frame.contentDocument.getElementById(id);
     if (target) s.frame.contentWindow.scrollTo({top: target.getBoundingClientRect().top + s.frame.contentWindow.scrollY - 84,
-      behavior: animate && !reduceMotion() ? 'smooth' : 'instant'});
+      behavior: animate && !reduceMotion() ? 'smooth' : 'auto'});
   }
   function closePicker(s, focus = false) {
     const menu = s.host.querySelector('#cs-examples-menu');
@@ -386,7 +388,7 @@
       doc.addEventListener('click', event => {
         const link = event.target.closest('a'); if (!link) return; event.preventDefault();
         const href = link.getAttribute('href') || '';
-        if (href.startsWith('#')) scrollPreview(s, href.slice(1));
+        if (href.startsWith('#')) scrollPreview(s, href.slice(1), true);
         else message(s, 'Choose an item from another chapter in the item menu, or use Open in Beta to browse the module.');
       });
       doc.addEventListener('submit', event => event.preventDefault());
