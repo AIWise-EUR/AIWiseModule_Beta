@@ -19,8 +19,12 @@
   transition-timing-function: var(--aw-motion-ease);
 }
 .workspace-sidebar {
-  transition: transform var(--aw-motion-menu) var(--aw-motion-ease), visibility 0s linear var(--aw-motion-menu);
+  transition: transform var(--aw-motion-menu) var(--aw-motion-ease), width var(--aw-motion-menu) var(--aw-motion-ease), visibility 0s linear var(--aw-motion-menu);
 }
+.sidebar-panel {
+  transition: opacity var(--aw-motion-menu) var(--aw-motion-ease), visibility 0s linear var(--aw-motion-menu);
+}
+.workspace-sidebar:not([data-expanded=""]) .sidebar-panel { transition-delay: 0s; }
 .sidebar-backdrop {
   transition: opacity var(--aw-motion-menu) var(--aw-motion-ease), visibility 0s linear var(--aw-motion-menu);
 }
