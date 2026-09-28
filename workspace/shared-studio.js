@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   let identity = '', generation = 0, rows = [], role = null, error = '', loaded = false;
-  const names = {aws1:'Academic Writing Skills I',ped:'Pedagogical Sciences'};
+  const names = {common:'AI-Wise Common',aws1:'Academic Writing Skills I',ped:'Pedagogical Sciences'};
   function snapshot() { return {rows:rows.map(r=>({...r})),role,error,loaded}; }
   function notify() { window.dispatchEvent(new Event('aiwise:shared-studio')); }
   function friendly(e) {
@@ -20,7 +20,7 @@
   }
   function convert(r) {
     const name=names[r.course] || r.course;
-    return {shared:true,id:r.id,route:'studio',type:'submission',status:r.status,rev:r.revision,
+    return {shared:true,id:r.id,route:r.course === 'common' ? 'common' : 'studio',type:'submission',status:r.status,rev:r.revision,
       title:`${name} · ${r.chapter.toUpperCase()} content update`,target:`${name} · ${r.chapter.toUpperCase()}`,
       version:'Saved draft · '+r.saved_at,targetRef:'Shared content copy · '+r.id,
       details:r.summary,changes:r.summary,outcome:'Apply the approved chapter to Beta.',references:'',priority:'normal',

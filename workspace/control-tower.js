@@ -34,12 +34,23 @@
       s.baseSlots && typeof s.baseSlots === 'object' && !Array.isArray(s.baseSlots) &&
       Object.keys(s.slots).length > 0 && Object.keys(s.slots).every(path => path.startsWith(s.chapter + '.') && Object.hasOwn(s.baseSlots, path));
   }
+  function validCommonSnapshot(s) {
+    return s && s.schema === 1 && s.scope === 'common' && ['c1','c2','c3'].includes(s.chapter) &&
+      Number.isFinite(Date.parse(s.savedAt)) && s.slots && s.baseSlots &&
+      !Array.isArray(s.slots) && !Array.isArray(s.baseSlots) &&
+      Object.keys(s.slots).length > 0 && Object.keys(s.slots).length === Object.keys(s.baseSlots).length &&
+      Object.keys(s.slots).every(path => path.startsWith(s.chapter + '.block-') && Object.hasOwn(s.baseSlots, path) &&
+        s.slots[path] && s.baseSlots[path] && typeof s.slots[path] === 'object' && typeof s.baseSlots[path] === 'object' &&
+        !Array.isArray(s.slots[path]) && !Array.isArray(s.baseSlots[path]) &&
+        Object.keys(s.slots[path]).length === Object.keys(s.baseSlots[path]).length &&
+        Object.keys(s.slots[path]).every(key => Object.hasOwn(s.baseSlots[path], key) && typeof s.slots[path][key] === 'string' && typeof s.baseSlots[path][key] === 'string'));
+  }
   function read() {
     const raw = localStorage.getItem(KEY);
     if (!raw) return { schema:1, requests:[] };
     let data;
     try { data = JSON.parse(raw); } catch { throw Error('Stored requests could not be read. Existing data has been left untouched.'); }
-    if (data.schema !== 1 || !Array.isArray(data.requests) || data.requests.some(r => !/^[a-f0-9-]{36}$/.test(r.id) || !Object.hasOwn(routes,r.route) || r.type !== routes[r.route].type || !Object.hasOwn(statuses,r.status) || !Array.isArray(r.events) || !r.seenBy || !r.author || !Number.isInteger(r.rev) || (r.contentSnapshot && !validSnapshot(r.contentSnapshot)))) throw Error('Stored requests could not be read. Existing data has been left untouched.');
+    if (data.schema !== 1 || !Array.isArray(data.requests) || data.requests.some(r => !/^[a-f0-9-]{36}$/.test(r.id) || !Object.hasOwn(routes,r.route) || r.type !== routes[r.route].type || !Object.hasOwn(statuses,r.status) || !Array.isArray(r.events) || !r.seenBy || !r.author || !Number.isInteger(r.rev) || (r.contentSnapshot && !validSnapshot(r.contentSnapshot)) || (r.commonSnapshot && !validCommonSnapshot(r.commonSnapshot)))) throw Error('Stored requests could not be read. Existing data has been left untouched.');
     return data;
   }
   function write(operation) {
@@ -80,7 +91,7 @@
   }
   // Page explanations live in the heading's help note; the request context stays as a short lead line.
   const pageHelp = {'Control Tower': 'Follow requests between workspaces, review the exact request, and record a decision.'};
-  const localHelp = '<p>Team submissions are shared with active members. Administrators can approve and apply Content Studio chapters to Beta. Existing browser-local requests remain separate and cannot publish content. The local profile applies only to those older prototype requests.</p>';
+  const localHelp = '<p>Team submissions are shared with active members. Administrators can approve and apply Content Studio and Common Studio chapters to Beta. Existing browser-local requests remain separate and cannot publish content. The local profile applies only to those older prototype requests.</p>';
   function show(title, context, body) {
     shell('tower', title, (pageHelp[title] ? `<p>${esc(pageHelp[title])}</p>` : '') + localHelp, (context ? `<p class="room-lead">${esc(context)}</p>` : '') + chrome(body), false);
     document.getElementById('ct-refresh-shared').onclick = () => { if(!dirty || confirm('Discard unsaved review text and refresh?')) refresh(); };
@@ -179,6 +190,7 @@
     const values = original || previous || {}, type=routes[route].type;
     show(original?'Edit draft':previous?'Resubmit request':'New request', label(route) + ' · ' + types[type],
       '<div class="toolbar">'+link('Back to requests','#tower/'+route)+(previous?link('Previous submission',href(previous.id)):'')+'</div>'+
+      (previous?.commonSnapshot ? note('The submitted copy is retained. To change the content, save and send a new draft from Common Studio.') + link('Open Common Studio', '#common/' + previous.commonSnapshot.chapter) : '')+
       (previous?.contentSnapshot ? note('The existing submitted content copy is retained here. To change the content itself, save and send a new draft from Content Studio.') + link('Open Content Studio', '#studio/' + previous.contentSnapshot.course + '/' + previous.contentSnapshot.chapter) : '')+
       (previous?note('This creates a new submission linked to the previous request. Explain the response to the review; the previous submission and decision remain unchanged.'):'')+
       `<form id="ct-request-form" class="ct-form"><div class="ct-form-meta">${badge(types[type])}<strong>${esc(label(route))}</strong><span>Requestor: ${esc(original?.author.name||person||'Set your name above')}</span></div>`+
@@ -217,6 +229,7 @@
         }else{
           id=crypto.randomUUID();
           const request={...data,id,route,type,author:{name:person,key:personKey()},createdAt:now(),submittedAt:submit?now():null,status:submit?'pending':'draft',rev:1,parentId:previous?.id||null,seenBy:{},events:[]};
+          if (previous?.commonSnapshot) request.commonSnapshot = JSON.parse(JSON.stringify(previous.commonSnapshot));
           if (previous?.contentSnapshot) request.contentSnapshot = JSON.parse(JSON.stringify(previous.contentSnapshot));
           event(request,submit?'Submitted':'Draft saved');
           write(store=>{
@@ -240,14 +253,14 @@
       try {update(request.id,request.rev,r=>{r.seenBy={...r.seenBy,[personKey()]:now()};});request=db.requests.find(r=>r.id===id);}catch(error){problem=error.message;}
     }
     const parent=db.requests.find(r=>r.id===request.parentId),child=db.requests.find(r=>r.parentId===id);
-    const controls=request.shared ? (request.status==='revision'?link('Open Content Studio','#studio/'+request.contentSnapshot.course+'/'+request.contentSnapshot.chapter,true):'') : request.status==='draft'?link('Edit draft','#tower/edit/'+id,true):request.status==='revision'?(child?link('Open resubmission',href(child.id),true):link('Revise and resubmit','#tower/resubmit/'+id,true)):'';
+    const controls=request.shared ? (request.status==='revision'?link(request.contentSnapshot.course === 'common' ? 'Open Common Studio' : 'Open Content Studio', request.contentSnapshot.course === 'common' ? '#common/' + request.contentSnapshot.chapter : '#studio/'+request.contentSnapshot.course+'/'+request.contentSnapshot.chapter,true):'') : request.status==='draft'?link('Edit draft','#tower/edit/'+id,true):request.status==='revision'?(child?link('Open resubmission',href(child.id),true):link('Revise and resubmit','#tower/resubmit/'+id,true)):'';
     const history=request.events.map(e=>`<li><div><strong>${esc(e.action)}</strong><span>${esc(e.by)} · ${esc(date(e.at))}</span></div>${e.reason?`<p class="ct-preserve">${esc(e.reason)}</p>`:''}</li>`).join('');
     const fields=[['Target item / course',request.target],['Exact version',request.version],['Target reference',request.targetRef],['Request details',request.details],['Expected outcome',request.outcome],...extras[request.type].map(([key,title])=>[title,request[key]]),['References',request.references],...(request.priority==='urgent'?[['Urgency reason',request.urgentReason]]:[]),...(request.parentId?[['Response to previous review',request.response]]:[])];
     show(request.title||'Untitled draft',label(request.route)+' · '+types[request.type],
       '<div class="toolbar">'+link('Back to requests','#tower/'+request.route)+controls+'</div>'+
       `<div class="ct-detail-meta">${badge(request.shared?'Team':'Browser only')}${badge(statuses[request.status],request.status==='approved'?'ct-approved':'')}${request.priority==='urgent'?badge('Urgent','ct-urgent'):''}<span>Requested by <strong>${esc(request.author.name)}</strong></span><span>${esc(date(request.submittedAt))}</span></div>`+
       (parent?`<div class="ct-previous">${link('Previous submission',href(parent.id))}<p><strong>Previous decision</strong></p><p class="ct-preserve">${esc(parent.decision?.reason||'No decision reason recorded.')}</p><details><summary>Compare with the previous submission</summary>${textBlock('Previous target and version',parent.target+' · '+parent.version)}${textBlock('Previous request details',parent.details)}${textBlock('Previous expected outcome',parent.outcome)}</details></div>`:'')+
-      `<div class="ct-detail-grid"><article class="ct-detail-card">${submittedContent(request.contentSnapshot)}${fields.map(([title,value])=>textBlock(title,value)).join('')}${reference(request.targetRef)}</article><aside><section class="ct-detail-card"><h2>Review &amp; decision</h2>${request.shared && request.status==='pending' && window.AIWiseSharedStudio.snapshot().role !== 'admin' ? '<p>Awaiting administrator review. Only administrators can make a decision.</p>' : request.status==='pending'?`<p>Review the target reference and request before recording a decision as <strong>${esc(request.shared ? (window.AIWiseAuth.snapshot().user?.displayName || 'Administrator') : person||'your local profile')}</strong>.</p><form id="ct-decision-form">${field('decisionReason','Decision reason','','For a revision request, specify exactly what needs to change.',true)}<p id="ct-decision-message" class="ct-message" role="alert" tabindex="-1"></p><div class="ct-decision-buttons"><button class="button primary" value="approved" type="submit">${request.shared?'Approve & apply to Beta':'Approve'}</button><button class="button" value="revision" type="submit">Request revision</button><button class="button ct-reject" value="rejected" type="submit">Reject</button></div></form>`:request.decision?`<p><strong>${esc(statuses[request.status])}</strong> by ${esc(request.decision.by)}</p><p class="ct-preserve">${esc(request.decision.reason)}</p>`:'<p>Save and submit the draft to request a review.</p>'}</section><section class="ct-detail-card"><h2>Application</h2>${request.shared ? `<p><strong>${request.status==='approved'?'Applied to Beta':'Not applied'}</strong></p><p>${request.status==='approved'?'This approved version was applied to Beta. A later approval may replace it.':'Administrator approval applies this chapter to Beta.'} Published stays unchanged.</p>${link('Open Beta ↗','../common/aiwise-'+request.contentSnapshot.chapter+'-final.html?course='+request.contentSnapshot.course)}` : '<p><strong>Not applied</strong></p><p>This browser-only request does not change Beta or Published.</p>'}</section><section class="ct-detail-card"><h2>Request history</h2><ol class="ct-history">${history}</ol></section></aside></div>`);
+      `<div class="ct-detail-grid"><article class="ct-detail-card">${submittedContent(request.commonSnapshot || request.contentSnapshot)}${fields.map(([title,value])=>textBlock(title,value)).join('')}${reference(request.targetRef)}</article><aside><section class="ct-detail-card"><h2>Review &amp; decision</h2>${request.shared && request.status==='pending' && window.AIWiseSharedStudio.snapshot().role !== 'admin' ? '<p>Awaiting administrator review. Only administrators can make a decision.</p>' : request.status==='pending'?`<p>Review the target reference and request before recording a decision as <strong>${esc(request.shared ? (window.AIWiseAuth.snapshot().user?.displayName || 'Administrator') : person||'your local profile')}</strong>.</p><form id="ct-decision-form">${field('decisionReason','Decision reason','','For a revision request, specify exactly what needs to change.',true)}<p id="ct-decision-message" class="ct-message" role="alert" tabindex="-1"></p><div class="ct-decision-buttons"><button class="button primary" value="approved" type="submit">${request.shared?'Approve & apply to Beta':'Approve'}</button><button class="button" value="revision" type="submit">Request revision</button><button class="button ct-reject" value="rejected" type="submit">Reject</button></div></form>`:request.decision?`<p><strong>${esc(statuses[request.status])}</strong> by ${esc(request.decision.by)}</p><p class="ct-preserve">${esc(request.decision.reason)}</p>`:'<p>Save and submit the draft to request a review.</p>'}</section><section class="ct-detail-card"><h2>Application</h2>${request.shared ? `<p><strong>${request.status==='approved'?'Applied to Beta':'Not applied'}</strong></p><p>${request.status==='approved'?'This approved version was applied to Beta. A later approval may replace it.':'Administrator approval applies this chapter to Beta.'} Published stays unchanged.</p>${link('Open Beta ↗','../common/aiwise-'+request.contentSnapshot.chapter+'-final.html'+(request.contentSnapshot.course === 'common' ? '' : '?course='+request.contentSnapshot.course))}` : '<p><strong>Not applied</strong></p><p>This browser-only request does not change Beta or Published.</p>'}</section><section class="ct-detail-card"><h2>Request history</h2><ol class="ct-history">${history}</ol></section></aside></div>`);
     if(request.shared)document.querySelector('.ct-local').hidden=true;
     const decisionForm=document.getElementById('ct-decision-form');
     decisionForm?.addEventListener('input',()=>{dirty=true;});
@@ -273,16 +286,24 @@
     if (localStorage.getItem(`aiwise_content_studio_${input.course}_${input.chapter}_v1`) !== input.raw) throw Error('This draft changed in another tab. Reload before submitting.');
     return window.AIWiseSharedStudio.submit(input);
   }
+  async function submitCommonDraft(input) {
+    if (localStorage.getItem(`aiwise_common_studio_${input.chapter}_v1`) !== input.raw) throw Error('This draft changed in another tab. Reload before submitting.');
+    const draft = JSON.parse(input.raw);
+    if (!validCommonSnapshot(draft) || draft.chapter !== input.chapter ||
+        JSON.stringify(draft.slots) !== JSON.stringify(input.slots) || JSON.stringify(draft.baseSlots) !== JSON.stringify(input.baseSlots))
+      throw Error('This saved draft cannot be submitted. Reload the editor and try again.');
+    return window.AIWiseSharedStudio.submit({...input, course:'common'});
+  }
   function submittedContent(snapshot) {
     if (!snapshot) return '';
-    const title = key => key.replace(/^c[23]\./, '').replace(/[._]/g, ' ').replace(/^./, c => c.toUpperCase());
+    const title = key => key.replace(/^c[123]\./, '').replace(/[._]/g, ' ').replace(/^./, c => c.toUpperCase());
     function valueMarkup(value) {
       if (value === null || typeof value !== 'object') return `<p class="ct-preserve">${esc(value)}</p>`;
       if (Array.isArray(value)) return '<ol class="ct-snapshot-list">' + value.map(item => `<li>${valueMarkup(item)}</li>`).join('') + '</ol>';
       return '<dl class="ct-snapshot-fields">' + Object.entries(value).map(([key, value]) => `<dt>${esc(title(key))}</dt><dd>${valueMarkup(value)}</dd>`).join('') + '</dl>';
     }
-    return `<section class="ct-detail-section ct-submitted-content"><h2>Submitted content</h2><p>Saved ${esc(date(snapshot.savedAt))}. This copy stays with this request when the Content Studio draft changes.</p>` +
-      Object.entries(snapshot.slots).map(([path, value]) => `<details class="ct-snapshot-item"><summary>${esc(title(path))} ${JSON.stringify(value) !== JSON.stringify(snapshot.baseSlots?.[path]) ? badge('Changed') : ''}</summary>${valueMarkup(value)}</details>`).join('') + '</section>';
+    return `<section class="ct-detail-section ct-submitted-content"><h2>Submitted content</h2><p>Saved ${esc(date(snapshot.savedAt))}. This copy stays with this request when the ${(snapshot.scope === 'common' || snapshot.course === 'common') ? 'Common' : 'Content'} Studio draft changes.</p>` +
+      Object.entries(snapshot.slots).map(([path, value]) => `<details class="ct-snapshot-item"><summary>${esc((snapshot.scope === 'common' || snapshot.course === 'common') ? snapshot.blockTitles?.[path] || String(Object.values(snapshot.baseSlots?.[path] || {})[0] || 'Shared content').trim().slice(0,90) : title(path))} ${JSON.stringify(value) !== JSON.stringify(snapshot.baseSlots?.[path]) ? badge('Changed') : ''}</summary>${valueMarkup(value)}</details>`).join('') + '</section>';
   }
   function dispose() { renderVersion++; cleanup.forEach(fn=>fn());cleanup=[];dirty=false; }
   async function render(part, shellFunction) {
@@ -319,5 +340,5 @@
       urgent: requests.filter(r => r.status === 'pending' && r.priority === 'urgent').length,
       updates: requests.map(r => ({title: `${r.title || 'Untitled request'} · ${statuses[r.status]}`, href: href(r.id), at: r.events.at(-1)?.at || r.submittedAt || ''})) };
   }
-  window.AIWiseControlTower={render,dispose,submissionName,submitStudioDraft,overview:getOverview,canLeave:()=>!dirty||confirm('Leave without saving your changes?')};
+  window.AIWiseControlTower={render,dispose,submissionName,submitStudioDraft,submitCommonDraft,overview:getOverview,canLeave:()=>!dirty||confirm('Leave without saving your changes?')};
 })();

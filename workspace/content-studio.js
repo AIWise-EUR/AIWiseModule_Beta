@@ -5,6 +5,8 @@
     aws1: {label: 'Academic Writing Skills I', source: '../course-specific/aws1/course-specific-content_aws1.json'},
     ped: {label: 'Pedagogical Sciences', source: '../course-specific/ped/ped.json'}
   });
+  const common = () => window.AIWiseCommonStudio;
+  const targetNode = (s, index) => s.isCommon ? common().target(s, index) : s.frame.contentDocument.getElementById('cs-item-' + index);
   const supports = id => Object.hasOwn(COURSES, id);
   const clone = value => JSON.parse(JSON.stringify(value));
   const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
@@ -57,7 +59,7 @@
       panel.querySelector('[data-cs-submit-name]').value = window.AIWiseControlTower.submissionName();
       panel.querySelector('[data-cs-submit-name]').readOnly = true;
       panel.querySelector('[data-cs-submit-error]').textContent = '';
-      panel.querySelector('[data-cs-submit-scope]').textContent = `${COURSES[s.courseId].label} · ${s.chapter.toUpperCase()} · Saved ${new Date(JSON.parse(s.raw).savedAt).toLocaleString()}`;
+      panel.querySelector('[data-cs-submit-scope]').textContent = `${s.config.label} · ${s.chapter.toUpperCase()} · Saved ${new Date(JSON.parse(s.raw).savedAt).toLocaleString()}`;
       panel.showModal(); window.AIWiseMotion.enter(panel);
       panel.querySelector('[data-cs-submit-summary]').focus({preventScroll:true});
     } catch (error) { message(s, error.message || 'The submission could not be prepared.', true); }
@@ -76,6 +78,7 @@
       Object.keys(base).every(k => valid(value[k], base[k], k));
   }
   function record(s) {
+    if (s.isCommon) return {schema: 1, scope: 'common', chapter: s.chapter, baseRelease:s.baseRelease, savedAt: new Date().toISOString(), sourceHTML: s.sourceHTML, blockTitles: Object.fromEntries(s.items.map(item => [item.path, item.title])), baseSlots: s.base, slots: s.values};
     const shared = {schema: 1, course: s.courseId, baseRelease:s.baseRelease, savedAt: new Date().toISOString()};
     if (s.chapter === 'c2') {
       const extras = values => Object.fromEntries(Object.entries(values).filter(([k]) => k !== 'c2.examples'));
@@ -132,7 +135,7 @@
     if (focus) trigger.focus({ preventScroll: true });
   }
   function currentValue(s, item) { return item.example === undefined ? s.values[item.path] : s.values[item.path][item.example]; }
-  function itemTitle(s, item) { return item.example === undefined ? label(item.path) : currentValue(s, item).title || 'Untitled example'; }
+  function itemTitle(s, item) { if (s.isCommon) return item.title; return item.example === undefined ? label(item.path) : currentValue(s, item).title || 'Untitled example'; }
   function selectItem(s, index, scroll = false) {
     s.index = Math.max(0, Math.min(index, s.items.length - 1));
     const item = s.items[s.index], doc = s.frame.contentDocument;
@@ -141,7 +144,7 @@
     s.host.querySelector('[data-cs-prev]').disabled = s.index === 0;
     s.host.querySelector('[data-cs-next]').disabled = s.index === s.items.length - 1;
     s.host.querySelectorAll('[data-cs-choice]').forEach((button, i) => button.setAttribute('aria-pressed', String(i === s.index)));
-    const target = doc.getElementById('cs-item-' + s.index);
+    const target = targetNode(s, s.index);
     if (item.example !== undefined) {
       doc.getElementById('carouselTrack').style.transform = `translateX(-${item.example * 100}%)`;
       doc.querySelectorAll('.carousel-slide').forEach((slide, i) => { slide.inert = i !== item.example; slide.setAttribute('aria-hidden', String(i !== item.example)); });
@@ -155,28 +158,28 @@
     const slide = target?.closest('.critique-slide');
     if (slide) slide.closest('.critique-stepper').querySelector(`[data-step="${slide.dataset.slide}"]`)?.click();
     for (let parent = target?.parentElement; parent; parent = parent.parentElement) if (parent.tagName === 'DETAILS') parent.open = true;
-    if (scroll) scrollPreview(s, 'cs-item-' + s.index);
+    if (scroll && target) scrollPreview(s, target.id);
   }
   function refreshPicker(s) {
     const menu = s.host.querySelector('#cs-examples-menu'); menu.replaceChildren();
-    for (const chapter of ['c2', 'c3']) {
+    for (const chapter of s.isCommon ? common().chapters : ['c2', 'c3']) {
       const group = document.createElement('div'); group.setAttribute('role', 'group');
       group.setAttribute('aria-labelledby', 'cs-group-' + chapter);
       const heading = document.createElement('div'); heading.className = 'cs-picker-heading';
       heading.id = 'cs-group-' + chapter;
-      heading.textContent = chapter === 'c2' ? 'C2 · GenAI and human cognition' : 'C3 · How to engage with GenAI';
+      heading.textContent = s.isCommon ? chapter.toUpperCase() + ' · ' + common().names[chapter] : chapter === 'c2' ? 'C2 · GenAI and human cognition' : 'C3 · How to engage with GenAI';
       group.appendChild(heading);
       s.catalog[chapter].forEach((item, i) => {
         const button = document.createElement('button'); button.type = 'button';
         button.dataset.csChapter = chapter; button.dataset.csItem = String(i);
         if (chapter === s.chapter) button.dataset.csChoice = String(i);
-        const title = chapter === s.chapter ? itemTitle(s, item) : item.example === undefined
+        const title = s.isCommon ? item.title : chapter === s.chapter ? itemTitle(s, item) : item.example === undefined
           ? label(item.path) : s.otherExamples?.[item.example]?.title || get(s.source, item.path)[item.example].title || 'Untitled example';
         button.textContent = `${i + 1}. ${title}`;
         button.setAttribute('aria-pressed', String(chapter === s.chapter && i === s.index));
         button.addEventListener('click', () => {
           if (chapter === s.chapter) { selectItem(s, i, true); closePicker(s, true); }
-          else { closePicker(s, true); location.hash = `#studio/${s.courseId}/${chapter}/${i}`; }
+          else { closePicker(s, true); location.hash = s.isCommon ? `#common/${chapter}/${i}` : `#studio/${s.courseId}/${chapter}/${i}`; }
         });
         group.appendChild(button);
       });
@@ -185,6 +188,7 @@
     selectItem(s, s.index);
   }
   function updatePreview(s) {
+    if (s.isCommon) { common().apply(s, openEditor); refreshPicker(s); return; }
     const doc = s.frame.contentDocument, data = clone(s.source), y = s.frame.contentWindow.scrollY;
     Object.entries(s.values).forEach(([path, value]) => put(data, path, value));
     window.AIWiseCourseRenderer.fillSlots(data, doc);
@@ -207,13 +211,13 @@
   function openEditor(s, index) {
     closePicker(s); selectItem(s, index, true);
     const item = s.items[index];
-    s.host.querySelector('#cs-editor-title').textContent = item.example === undefined ? label(item.path) : `Example ${item.example + 1}`;
+    s.host.querySelector('#cs-editor-title').textContent = s.isCommon ? item.title : item.example === undefined ? label(item.path) : `Example ${item.example + 1}`;
     const container = s.host.querySelector('.cs-fields'); container.replaceChildren();
     function field(value, path, name, valuePath = item.path) {
       if (typeof value === 'string') {
         const wrap = document.createElement('label'); wrap.textContent = label(name);
         const options = name === 'actor' ? ['self','ai','team'] : name === 'tag' && ['adopt','modify','discard'].includes(value) ? ['adopt','modify','discard'] : null;
-        const input = document.createElement(options ? 'select' : ['title','typing_note','heading','tag','name','label'].includes(name) ? 'input' : 'textarea');
+        const input = document.createElement(options ? 'select' : (['title','typing_note','heading','tag','name','label'].includes(name) || s.isCommon && name.startsWith('Heading')) ? 'input' : 'textarea');
         if (options) options.forEach(text => { const option = document.createElement('option'); option.value = text; option.textContent = label(text); input.appendChild(option); });
         input.name = path.join('.') || 'value'; input.value = value;
         if (input.tagName === 'TEXTAREA') input.rows = 5;
@@ -237,6 +241,7 @@
     const value = currentValue(s, item);
     if (item.titlePath) container.appendChild(field(s.values[item.titlePath], [], 'title', item.titlePath));
     if (typeof value === 'string') container.appendChild(field(value, [], 'Text'));
+    else if (s.isCommon) { Object.entries(value).forEach(([name, text]) => container.appendChild(field(text, [name], name))); }
     else if (item.example !== undefined) {
       ['title','thinking','typing_note','typing','processing'].forEach(key => container.appendChild(field(value[key] || '', [key], key)));
     } else container.appendChild(field(value, [], label(item.path)));
@@ -300,9 +305,15 @@
   }
 
   // The real module HTML and renderers are reused, with scripts and navigation isolated.
-  function previewHTML(html, url) {
+  function previewHTML(html, url, isCommon = false, commonRelease = null) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    doc.querySelectorAll('script, base, iframe, object, embed, meta[http-equiv]').forEach(node => node.remove());
+    if (commonRelease) window.AIWiseCommonContent.apply(doc, commonRelease.chapter, commonRelease.slots);
+    doc.querySelectorAll('script, base, object, embed, meta[http-equiv]').forEach(node => node.remove());
+    doc.querySelectorAll('iframe').forEach(node => {
+      if (isCommon && node.getAttribute('src') === 'aiwise-c1-anatomy-2d.html') {
+        node.setAttribute('sandbox', 'allow-scripts');
+      } else node.remove();
+    });
     doc.querySelectorAll('*').forEach(node => {
       [...node.attributes].forEach(attr => {
         if (/^on/i.test(attr.name) || (/^(href|src|action)$/i.test(attr.name) && /^\s*javascript:/i.test(attr.value))) node.removeAttribute(attr.name);
@@ -312,14 +323,16 @@
     // WebKit blocks parent-installed listeners without allow-scripts on the frame.
     // CSP still prevents all scripts in the module (including inline handlers) from running.
     const policy = doc.createElement('meta'); policy.httpEquiv = 'Content-Security-Policy';
-    policy.content = "script-src 'none'; object-src 'none'; frame-src 'none'; connect-src 'none'; form-action 'none'";
+    policy.content = `script-src 'none'; object-src 'none'; frame-src ${isCommon ? new URL('aiwise-c1-anatomy-2d.html', url).href : "'none'"}; connect-src 'none'; form-action 'none'`;
     doc.head.prepend(policy);
     const style = doc.createElement('style');
     style.textContent = `
       #carousel { scroll-margin-top:84px; }
       .cs-editable { position:relative; cursor:pointer; outline:2px dashed #35617f; outline-offset:-3px; }
       .cs-editable:hover,.cs-editable:focus-visible { outline:3px solid #35617f; }
-      .cs-edit-label { display:block; padding:8px 22px; color:#35617f; background:#edf3f7; font:600 12px/1.5 sans-serif; }
+      .cs-edit-label { display:block; position:relative; z-index:2; width:max-content; margin:0 0 8px auto; padding:5px 12px; border:1px solid #c6d4de; border-radius:6px; color:#294c63; background:#edf3f7; cursor:pointer; font:600 12px/1.5 sans-serif; }
+      .cs-edit-label:hover,.cs-edit-label:focus-visible { background:#dee8ef; outline:2px solid #35617f; }
+      [data-cs-common-item] { overflow-wrap:anywhere; }
       .carousel-card p { white-space:pre-wrap; overflow-wrap:anywhere; }
       .carousel-card-header { overflow-wrap:anywhere; }
       html { scroll-behavior:auto !important; }
@@ -335,6 +348,7 @@
     if (session !== s || s.abort.signal.aborted) return;
     try {
       const doc = s.frame.contentDocument;
+      if (s.isCommon) common().apply(s, openEditor);
       doc.addEventListener('pointerdown', () => closePicker(s));
       doc.querySelectorAll('.technique-panel').forEach(panel => panel.querySelectorAll('.technique-tab').forEach(tab => {
         tab.tabIndex = 0; tab.setAttribute('role', 'button');
@@ -363,7 +377,7 @@
         stepper.querySelector('.critique-next').addEventListener('click', () => go(index + 1));
         go(0);
       });
-      if (s.chapter === 'c2') {
+      if (s.chapter === 'c2' && !s.isCommon) {
         const dots = doc.getElementById('carouselDots'); dots.replaceChildren();
         s.values['c2.examples'].forEach((_, i) => {
           const dot = doc.createElement('button'); dot.className = 'carousel-dot'; dot.type = 'button'; dot.setAttribute('aria-label', `Show example ${i + 1}`);
@@ -372,10 +386,22 @@
         doc.getElementById('carouselPrev').addEventListener('click', () => selectItem(s, s.slideIndex - 1));
         doc.getElementById('carouselNext').addEventListener('click', () => selectItem(s, s.slideIndex + 1));
       }
-      doc.querySelectorAll('.fn-card-title, .sources-toggle').forEach(node => {
+      if (s.isCommon && s.chapter === 'c2') {
+        const slides = [...doc.querySelectorAll('.carousel-slide')], dots = doc.getElementById('carouselDots');
+        let index = 0;
+        const go = next => { index = Math.max(0, Math.min(next, slides.length - 1));
+          doc.getElementById('carouselTrack').style.transform = `translateX(-${index * 100}%)`;
+          slides.forEach((slide, i) => { slide.inert = i !== index; });
+          [...dots.children].forEach((dot, i) => { dot.classList.toggle('active', i === index); dot.setAttribute('aria-pressed', String(i === index)); });
+          doc.getElementById('carouselPrev').disabled = index === 0; doc.getElementById('carouselNext').disabled = index === slides.length - 1; };
+        dots.replaceChildren();
+        slides.forEach((_, i) => { const dot = doc.createElement('button'); dot.type = 'button'; dot.className = 'carousel-dot'; dot.setAttribute('aria-label', `Show example ${i + 1}`); dot.onclick = () => go(i); dots.appendChild(dot); });
+        doc.getElementById('carouselPrev').onclick = () => go(index - 1); doc.getElementById('carouselNext').onclick = () => go(index + 1); go(0);
+      }
+      doc.querySelectorAll('.fn-card-title, .sl-item-title, .sources-toggle').forEach(node => {
         node.tabIndex = 0; if (node.tagName !== 'BUTTON') node.setAttribute('role', 'button');
         node.setAttribute('aria-expanded', 'false');
-        const toggle = () => { const target = node.matches('.fn-card-title') ? node.parentElement : node;
+        const toggle = () => { const target = node.matches('.fn-card-title, .sl-item-title') ? node.parentElement : node;
           target.classList.toggle('open'); if (node.matches('.sources-toggle')) node.nextElementSibling.classList.toggle('open');
           node.setAttribute('aria-expanded', String(target.classList.contains('open'))); };
         node.addEventListener('click', toggle);
@@ -399,20 +425,21 @@
   }
 
   async function render(shell, courseId = 'aws1', chapter = 'c2', itemIndex = 0) {
-    if (!supports(courseId) || !['c2','c3'].includes(chapter)) throw Error('Course editor not connected');
-    const config = COURSES[courseId], chapterName = chapter.toUpperCase();
-    shell('studio', config.label, `<p>${chapterName} course content · Drafts stay in this browser. Common content is read-only. Saving does not update Beta or Published.</p><p data-cs-coverage></p><p><a href="../common/aiwise-${chapter}-final.html?course=${courseId}" target="_blank" rel="noopener">Open ${chapterName} in Beta ↗</a></p>`, `
+    const isCommon = courseId === 'common';
+    if (isCommon ? !common().chapters.includes(chapter) : !supports(courseId) || !['c2','c3'].includes(chapter)) throw Error('Course editor not connected');
+    const config = isCommon ? {label: 'AI-Wise Common', source: COURSES.aws1.source} : COURSES[courseId], chapterName = chapter.toUpperCase();
+    shell(isCommon ? 'common' : 'studio', config.label, `<p>${chapterName} ${isCommon ? 'shared content · Course examples are read-only.' : 'course content · Common content is read-only.'} Drafts stay in this browser. Saving does not update Beta or Published.</p><p data-cs-coverage></p><p><a href="../common/aiwise-${chapter}-final.html${isCommon ? '' : '?course=' + courseId}" target="_blank" rel="noopener">Open ${chapterName} in Beta ↗</a></p>`, `
       <div id="cs-studio">
         <div class="cs-toolbar">
           <div class="cs-example-block">
-            <p class="cs-picker-meta"><span>Course item</span><span data-cs-count></span></p>
-            <div class="cs-example-nav" role="group" aria-label="Course items">
+            <p class="cs-picker-meta"><span>${isCommon ? 'Common' : 'Course'} item</span><span data-cs-count></span></p>
+            <div class="cs-example-nav" role="group" aria-label="${isCommon ? 'Common' : 'Course'} items">
               <button type="button" class="button cs-step" data-cs-prev disabled aria-label="Previous item"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg></button>
               <div class="cs-picker">
-                <button type="button" id="cs-example" data-cs-ready disabled aria-expanded="false" aria-controls="cs-examples-menu" aria-label="Choose a course item">
+                <button type="button" id="cs-example" data-cs-ready disabled aria-expanded="false" aria-controls="cs-examples-menu" aria-label="Choose a ${isCommon ? 'common' : 'course'} item">
                   <span data-cs-title>Loading items…</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 8 5 5 5-5"/></svg>
                 </button>
-                <div id="cs-examples-menu" role="group" aria-label="Choose a course item" hidden></div>
+                <div id="cs-examples-menu" role="group" aria-label="Choose a ${isCommon ? 'common' : 'course'} item" hidden></div>
               </div>
               <button type="button" class="button cs-step" data-cs-next disabled aria-label="Next item"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button>
             </div>
@@ -426,7 +453,7 @@
           <iframe title="${config.label} ${chapterName} module editing preview" sandbox="allow-same-origin allow-scripts"></iframe></div>
         <dialog class="cs-editor" aria-labelledby="cs-editor-title" aria-describedby="cs-editor-help">
           <div class="cs-resize-handle" role="separator" aria-orientation="vertical" aria-label="Resize editor" aria-controls="cs-editor-body" tabindex="0" title="Drag to resize. Use Left or Right arrow keys."></div>
-          <div class="cs-editor-body" id="cs-editor-body"><div class="cs-editor-head"><div><h2 id="cs-editor-title">Course item</h2><button type="button" class="button" data-cs-close autofocus>Close</button></div>
+          <div class="cs-editor-body" id="cs-editor-body"><div class="cs-editor-head"><div><h2 id="cs-editor-title">${isCommon ? 'Common' : 'Course'} item</h2><button type="button" class="button" data-cs-close autofocus>Close</button></div>
             <p id="cs-editor-help">Changes appear as you type. Save draft to keep them in this browser. Reset applies to this chapter only.</p></div>
             <div class="cs-fields"></div><div class="cs-editor-foot"><p class="cs-status" role="status"></p><div>
               <button type="button" class="cs-reset-link" data-cs-reset data-cs-ready disabled>Reset chapter draft</button>
@@ -444,22 +471,38 @@
         </dialog>
       </div>`, false);
     const host = document.getElementById('cs-studio');
-    const s = session = {host, courseId, chapter, key: `aiwise_content_studio_${courseId}_${chapter}_v1`, frame: host.querySelector('iframe'), dialog: host.querySelector('.cs-editor'), submitDialog: host.querySelector('.cs-submit-dialog'),
+    const s = session = {host, courseId, chapter, isCommon, config, key: isCommon ? `aiwise_common_studio_${chapter}_v1` : `aiwise_content_studio_${courseId}_${chapter}_v1`, frame: host.querySelector('iframe'), dialog: host.querySelector('.cs-editor'), submitDialog: host.querySelector('.cs-submit-dialog'),
       abort: new AbortController(), index: itemIndex, slideIndex: 0, raw: null, blocked: false, storageRead: false, ready: false};
     try {
       const url = new URL(`../common/aiwise-${chapter}-final.html`, location.href);
       const otherChapter = chapter === 'c2' ? 'c3' : 'c2';
-      const [html, sourceData, otherHTML, releases] = await Promise.all([
+      const [html, sourceData, otherHTML, releases, contextReleases] = await Promise.all([
         fetch(url, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Preview unavailable'); return r.text(); }),
         fetch(config.source, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); }),
         fetch(new URL(`../common/aiwise-${otherChapter}-final.html`, location.href), {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Item list unavailable'); return r.text(); }),
-        window.AIWiseBetaContent.read(courseId)
+        window.AIWiseBetaContent.read(courseId),
+        window.AIWiseBetaContent.read(isCommon ? 'aws1' : 'common')
       ]);
       if (session !== s) return;
-      const data = window.AIWiseBetaContent.apply(sourceData, releases);
+      const data = window.AIWiseBetaContent.apply(sourceData, isCommon ? contextReleases : releases);
       s.baseRelease = releases.find(r => r.chapter === chapter)?.submission_id || null;
-      if (data.course?.id !== s.courseId) throw Error('Wrong course');
+      if (!isCommon && data.course?.id !== s.courseId) throw Error('Wrong course');
       s.source = data;
+      if (isCommon) {
+        s.sourceHTML = html; s.catalog = {}; s.base = {};
+        const chaptersHTML = await Promise.all(common().chapters.map(id => id === chapter ? html : fetch(new URL(`../common/aiwise-${id}-final.html`, location.href), {signal:s.abort.signal, cache:'no-cache'}).then(r => { if (!r.ok) throw Error('Chapter unavailable'); return r.text(); })));
+        if (session !== s) return;
+        common().chapters.forEach((id, i) => {
+          s.catalog[id] = common().catalog(new DOMParser().parseFromString(chaptersHTML[i], 'text/html'), id).map(({path, title, section, fields}) => {
+            if (id === chapter) s.base[path] = fields;
+            return {path, title, section};
+          });
+        });
+        s.items = s.catalog[chapter];
+        if (!s.items.length) throw Error('No common items');
+        s.index = Math.min(s.index, s.items.length - 1);
+        document.querySelector('[data-cs-coverage]').textContent = `${s.items.length} editable blocks. Choose a block or click its Edit button in the preview.`;
+      } else {
       const slotPaths = text => [...new DOMParser().parseFromString(text, 'text/html').querySelectorAll('[data-slot]')].map(node => node.dataset.slot);
       const slots = slotPaths(html);
       if (!slots.length || new Set(slots).size !== slots.length || slots.some(path => !path.startsWith(chapter + '.'))) throw Error('Invalid slot catalog');
@@ -481,15 +524,25 @@
       } catch { /* The destination editor reports unreadable drafts without changing them. */ }
 
       document.querySelector('[data-cs-coverage]').textContent = `${s.items.length} editable items.` + (missing.length ? ' Not configured for this course: ' + missing.join(', ') + '.' : ' All course slots in this chapter are connected.');
+      }
+      if (isCommon) {
+        const approved = releases.find(row => row.chapter === chapter);
+        if (approved) {
+          if (!valid(approved.slots, s.base)) throw Error('Common content no longer matches its source.');
+          // JSONB storage reorders keys. Keep fields in the source's reading order.
+          s.base = Object.fromEntries(Object.entries(s.base).map(([path, fields]) =>
+            [path, Object.fromEntries(Object.keys(fields).map(key => [key, approved.slots[path][key]]))]));
+        }
+      }
       s.values = clone(s.base);
       let status = '';
       try {
         s.raw = localStorage.getItem(s.key); s.storageRead = true;
         if (s.raw !== null) {
           const saved = JSON.parse(s.raw);
-          if (saved.schema !== 1 || saved.course !== courseId || (saved.baseRelease || null) !== s.baseRelease) throw Error('Invalid draft');
+          if (saved.schema !== 1 || (isCommon ? saved.scope !== 'common' || saved.chapter !== chapter || saved.sourceHTML !== html : saved.course !== courseId) || (saved.baseRelease || null) !== s.baseRelease) throw Error('Invalid draft');
           let values, baseline;
-          if (chapter === 'c2') {
+          if (!isCommon && chapter === 'c2') {
             if (saved.slot !== 'c2.examples' || !equal(saved.baseExamples, s.base['c2.examples'])) throw Error('Invalid examples');
             // Existing C2 drafts have no extra slots. Preserve those examples and use source S.A.T content.
             const extras = Object.fromEntries(Object.entries(s.base).filter(([k]) => k !== 'c2.examples'));
@@ -522,8 +575,8 @@
         button.disabled = true;
         try {
           if (!canSubmit(s)) throw Error('Save your latest changes before sending this chapter.');
-          const result = await window.AIWiseControlTower.submitStudioDraft({course:s.courseId, chapter:s.chapter,
-            courseName:COURSES[s.courseId].label, raw:s.raw, slots:s.saved, baseSlots:s.base, baseRelease:s.baseRelease,
+          const result = await (s.isCommon ? window.AIWiseControlTower.submitCommonDraft : window.AIWiseControlTower.submitStudioDraft)({course:s.courseId, chapter:s.chapter,
+            courseName:s.config.label, raw:s.raw, slots:s.saved, baseSlots:s.base, baseRelease:s.baseRelease,
             summary:submission.querySelector('[data-cs-submit-summary]').value,
             name:submission.querySelector('[data-cs-submit-name]').value});
           if (session !== s) return;
@@ -557,17 +610,17 @@
         // A queued close event must not steal focus from a picker the user has already reopened.
         const active = document.activeElement;
         if (session === s && (active === document.body || s.dialog.contains(active)))
-          s.frame.contentDocument.getElementById('cs-item-' + s.index)?.focus({preventScroll: true});
+          targetNode(s, s.index)?.focus({preventScroll: true});
       });
       s.dialog.addEventListener('click', e => { if (e.target === s.dialog && e.clientX < s.dialog.getBoundingClientRect().left) closeEditor(s); });
       s.frame.addEventListener('load', () => connectPreview(s), {once: true});
-      s.frame.srcdoc = previewHTML(html, url.href);
+      s.frame.srcdoc = previewHTML(html, url.href, s.isCommon, isCommon ? null : contextReleases.find(row => row.chapter === chapter));
     } catch (error) { if (session === s && error.name !== 'AbortError') message(s, 'This chapter could not be loaded. Reload to try again or open it in Beta. Saved drafts are unchanged.', true); }
   }
   window.AIWiseAuth?.subscribe(() => { if(session) controls(session); });
   window.addEventListener('beforeunload', event => { if (dirty()) { event.preventDefault(); event.returnValue = ''; } });
   window.AIWiseContentStudio = {render, supports,
-    canLeave: () => !dirty() || confirm('Leave Content Studio without saving your edits?'),
+    canLeave: () => !dirty() || confirm(`Leave ${session?.isCommon ? 'Common' : 'Content'} Studio without saving your edits?`),
     dispose: () => { const old = session; session = null; old?.abort.abort(); old?.cancelPickerClose?.(); old?.cancelEditorClose?.(); if (old?.dialog.open) old.dialog.close(); if (old?.submitDialog.open) old.submitDialog.close(); }
   };
 })();

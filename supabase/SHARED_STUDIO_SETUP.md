@@ -19,7 +19,7 @@ If the Supabase connection is available, the same additive migration can be appl
 - `workspace_members.role` defaults to `member`. Only active `admin` members can use the decision RPC. The browser hiding a button is not the security boundary. Role checks occur in Postgres for every operation.
 - `workspace_beta_content` exposes only the approved course/chapter slots, submission ID and timestamp to public readers, consistent with the existing public GitHub Pages Beta. Pending content, author data and review comments are not public. Browser roles cannot write this table.
 - Approval, request status and the active Beta chapter change atomically. Row locks and a course/chapter transaction lock serialize competing decisions. A stale base release cannot replace a newer approved version. Saved client IDs prevent duplicate submission on retry.
-- C2 and C3 for AWS1 and PED are connected. Common Studio, course registration, teacher profiles, Beta comments, and Published release deployment are outside this increment. These records are not automatically uploaded.
+- C2 and C3 for AWS1 and PED are connected. The Common Studio extension below adds C1–C3. Course registration, teacher profiles, Beta comments, and Published release deployment are outside this increment. These records are not automatically uploaded.
 - Old local requests remain labeled Browser only; their local decisions cannot affect Beta. Shared requests show Team and use the account identity. Refresh requests retrieves current server records. Open Beta pages update on reload, not by realtime push.
 - If repository slot structures change later, update the server's supported source/approved schema as part of that release. This migration seeds the current four chapter baselines and intentionally rejects incompatible content.
 
@@ -41,3 +41,20 @@ Implementation references: https://supabase.com/docs/guides/database/functions a
 ## Live advisor review
 
 The source-baseline table intentionally has no client grants or RLS read policy. The authenticated SECURITY DEFINER advisories cover the deliberately exposed, guarded role/submit/decision RPCs; anonymous execution is revoked, search_path is empty, and server-side membership/admin checks were verified against the tested function bodies. See [RLS without policies](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy) and [authenticated SECURITY DEFINER functions](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable). Supabase also reported the existing [leaked password protection setting](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection) as disabled; it was not changed as part of this rollout.
+
+## Common Studio extension
+
+Status (28 September 2026): implemented and tested locally. The user confirmed applying the Common Studio migration directly to the live project. This task has not independently inspected the protected live source rows; real-account submission/approval verification remains pending.
+
+After the shared Studio migration, run `migrations/20260928132359_common_studio_content.sql` in the same project's SQL Editor. This transaction extends the allowed source scope to `common` C1–C3 and seeds their exact text catalog. It changes no existing source rows, grants, policies, roles, or RPCs. Do not rerun the original shared Studio migration. Check that `workspace_content_sources` has seven rows (four course and three common baselines) and that existing RLS, grants and RPC bodies are unchanged before deploying the matching frontend.
+
+The existing submit and decision RPCs accept Common chapters through their source lookup and schema validation. Only active members can submit; only active administrators can approve. Pending common text remains private to active team members. Approval exposes only the approved text through the existing public Beta table. The student-facing Published repository is unchanged.
+
+Local dependencies used: `@electric-sql/pglite@0.3.14`, `linkedom@0.18.12`.
+
+```
+LINKEDOM_MODULE=/path/to/linkedom node --test workspace/tests/common-studio.test.cjs
+LINKEDOM_MODULE=/path/to/linkedom PGLITE_MODULE=/path/to/@electric-sql/pglite node supabase/tests/common_studio.cjs
+```
+
+Common tests cover all three seeded source schemas and safe renderers, field ordering after JSONB storage, unchanged course slots, member/admin isolation, immutable snapshots, duplicate retries, atomic Beta approval, stale releases and revoked access. Re-run the existing course database suite alongside them. Production verification still needs real authorized sessions; never approve dummy test text on live Beta.

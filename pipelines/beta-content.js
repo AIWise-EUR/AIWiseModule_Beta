@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   async function read(course) {
-    if (!['aws1','ped'].includes(course)) return [];
+    if (!['aws1','ped','common'].includes(course)) return [];
     const config = window.AIWiseSupabaseConfig;
     if (!config) throw Error('Beta content connection is unavailable.');
     const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 12000);
@@ -12,7 +12,7 @@
       const response = await fetch(url, {headers:{apikey:config.publishableKey},cache:'no-store',credentials:'omit',signal:controller.signal});
       if (!response.ok) throw Error('Approved Beta content could not be loaded. Please retry.');
       const rows = await response.json();
-      if (!Array.isArray(rows) || rows.some(row => row.course !== course || !['c2','c3'].includes(row.chapter) || !row.slots || typeof row.slots !== 'object')) throw Error('Invalid approved content response.');
+      if (!Array.isArray(rows) || rows.some(row => row.course !== course || !(course === 'common' ? ['c1','c2','c3'] : ['c2','c3']).includes(row.chapter) || !row.slots || typeof row.slots !== 'object')) throw Error('Invalid approved content response.');
       return rows;
     } finally { clearTimeout(timer); }
   }

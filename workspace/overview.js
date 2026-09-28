@@ -15,6 +15,7 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const tips = [
     'Choose a course in Content Studio to edit that course’s examples.',
+    'Open Common Studio to preview and edit the shared C1, C2 and C3 content.',
     'The item menu includes both C2 and C3. Pick an item to jump straight to it.',
     'Click an outlined item in the preview to open its editor.',
     'Need more space? Drag the editor’s left edge to widen it.',
@@ -45,6 +46,16 @@
           updates.push({title:label + ' · ' + chapter.toUpperCase() + ' · Content Studio draft saved in this browser', href:'#studio/' + id + (chapter === 'c2' ? '' : '/c3'), at:draft.savedAt});
         }
       } catch { notices.push({title:label + ' · ' + chapter.toUpperCase() + ' · Content Studio draft could not be read. Open the editor for details.', href:'#studio/' + id + (chapter === 'c2' ? '' : '/c3'), at:''}); }
+    }
+    for (const chapter of ['c1','c2','c3']) {
+      const href = '#common/' + chapter;
+      try {
+        const raw = localStorage.getItem(`aiwise_common_studio_${chapter}_v1`);
+        if (!raw) continue;
+        const draft = JSON.parse(raw);
+        if (draft.schema !== 1 || draft.scope !== 'common' || draft.chapter !== chapter || !draft.slots || !Number.isFinite(Date.parse(draft.savedAt))) throw Error();
+        updates.push({title:'Common Studio · ' + chapter.toUpperCase() + ' · Draft saved in this browser', href, at:draft.savedAt});
+      } catch { notices.push({title:'Common Studio · ' + chapter.toUpperCase() + ' · Draft could not be read. Open the editor for details.', href, at:''}); }
     }
     updates.sort((a,b) => (Date.parse(b.at)||0)-(Date.parse(a.at)||0));
     return {summary, entries: [...notices, ...updates]};
@@ -81,7 +92,7 @@
   document.addEventListener('visibilitychange', schedule);
   reduced.addEventListener('change', () => { paused = reduced.matches; paint(); schedule(); });
   window.addEventListener('aiwise:shared-studio', () => { if(home) refresh(); });
-  window.addEventListener('storage', event => { if (home && (!event.key || ['aiwise_control_tower_v1','aiwise_content_studio_aws1_c2_v1','aiwise_content_studio_ped_c2_v1','aiwise_content_studio_aws1_c3_v1','aiwise_content_studio_ped_c3_v1'].includes(event.key))) refresh(); });
+  window.addEventListener('storage', event => { if (home && (!event.key || ['aiwise_common_studio_c1_v1','aiwise_common_studio_c2_v1','aiwise_common_studio_c3_v1','aiwise_control_tower_v1','aiwise_content_studio_aws1_c2_v1','aiwise_content_studio_ped_c2_v1','aiwise_content_studio_aws1_c3_v1','aiwise_content_studio_ped_c3_v1'].includes(event.key))) refresh(); });
   function closeNow(restore = true) {
     cancelClose?.(); cancelClose = null;
     window.AIWiseMotion.cancel(dialog); dialog.classList.remove('updates-closing');
@@ -101,7 +112,7 @@
     window.AIWiseMotion.cancel(dialog); dialog.classList.remove('updates-closing');
     const data = collect();
     dialog.innerHTML = `<div class="updates-heading"><div><p class="eyebrow">AI-Wise Workspace</p><h2 id="updates-title">Tips &amp; activity</h2></div><button class="button" id="updates-close" type="button" aria-label="Close tips and activity" autofocus>×</button></div><p id="updates-summary">${esc(data.summary)}</p><div class="updates-body"><h3 class="section-label">Quick tips</h3><ol class="workspace-tips">${tips.map(tip => `<li>${esc(tip)}</li>`).join('')}</ol><h3 class="section-label">Recent activity</h3>` +
-      (data.entries.length ? '<div class="item-list">' + data.entries.map(item => `<a class="item-link" href="${esc(item.href)}"><span>${esc(item.title)}<small>${item.href.startsWith('#tower/request/') ? 'Open request →' : item.href.startsWith('#studio/') ? 'Open Content Studio →' : 'Open Control Tower →'}</small></span><small>${Number.isFinite(Date.parse(item.at)) ? esc(new Date(item.at).toLocaleString()) : 'Check workspace'}</small></a>`).join('') + '</div>' : '<div class="empty-state"><h3>No recorded activity yet</h3><p>Saved drafts and Control Tower requests will appear here.</p></div>') + '</div>';
+      (data.entries.length ? '<div class="item-list">' + data.entries.map(item => `<a class="item-link" href="${esc(item.href)}"><span>${esc(item.title)}<small>${item.href.startsWith('#tower/request/') ? 'Open request →' : item.href.startsWith('#common/') ? 'Open Common Studio →' : item.href.startsWith('#studio/') ? 'Open Content Studio →' : 'Open Control Tower →'}</small></span><small>${Number.isFinite(Date.parse(item.at)) ? esc(new Date(item.at).toLocaleString()) : 'Check workspace'}</small></a>`).join('') + '</div>' : '<div class="empty-state"><h3>No recorded activity yet</h3><p>Saved drafts and Control Tower requests will appear here.</p></div>') + '</div>';
     document.getElementById('updates-close').addEventListener('click', close);
     if (!dialog.open) dialog.showModal();
     window.AIWiseMotion.enter(dialog);
