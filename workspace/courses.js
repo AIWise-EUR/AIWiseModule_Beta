@@ -38,7 +38,7 @@
       return list().map(c => {
         const editable = area === 'studio' && hasStudio(c.id);
         const href = editable ? '#studio/' + c.id : '#courses/' + c.id;
-        return `<a class="card link" href="${href}"><span class="badge">${editable ? 'Available' : c.connected ? 'Existing course' : 'Setup needed'}</span><h3>${esc(c.full_name)}</h3><p>${editable ? 'Edit course examples in the C2 module preview.' : esc(c.short_name) + ' · Manage course information and connections.'}</p><span class="arrow">${editable ? 'Open editor' : 'Manage course'} →</span></a>`;
+        return `<a class="card link" href="${href}"><span class="badge">${editable ? 'Available' : c.connected ? 'Existing course' : 'Setup needed'}</span><h3>${esc(c.full_name)}</h3><p>${editable ? 'Edit course content in the C2 and C3 module previews.' : esc(c.short_name) + ' · Manage course information and connections.'}</p><span class="arrow">${editable ? 'Open editor' : 'Manage course'} →</span></a>`;
       }).join('') + addCard();
     } catch (error) { return `<p class="notice">${esc(error.message)}</p>` + addCard(); }
   }
@@ -47,7 +47,7 @@
     campus.classList.add('course-campus');
     const targets = {
       'profiler-manager': {href: `#courses/${course.id}/manager`, note: `${course.short_name} · Course materials`},
-      studio: {href: hasStudio(course.id) ? '#studio/' + course.id : '', note: hasStudio(course.id) ? `${course.short_name} · C2 examples` : 'Course editor not connected'},
+      studio: {href: hasStudio(course.id) ? '#studio/' + course.id : '', note: hasStudio(course.id) ? `${course.short_name} · C2 and C3 content` : 'Course editor not connected'},
       'common-studio': {href:'#common', note:'Shared across all courses'},
       tower: {href:'', note:'Course request view not connected'},
       beta: {href:course.connected ? `#beta/${course.id}` : '', note:course.connected ? `${course.short_name} · Working version` : 'Course preview not connected'},

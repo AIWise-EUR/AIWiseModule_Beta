@@ -22,15 +22,15 @@
       summary += ` · ${data.pending} pending · ${data.urgent} urgent`;
       updates.push(...data.updates);
     } catch { notices.push({title:'Request records are unavailable. Open Control Tower for details.', href:'#tower/all', at:''}); }
-    for (const [id, label] of [['aws1', 'AWS1'], ['ped', 'PED']]) {
+    for (const [id, label] of [['aws1', 'AWS1'], ['ped', 'PED']]) for (const chapter of ['c2','c3']) {
       try {
-        const raw = localStorage.getItem(`aiwise_content_studio_${id}_c2_v1`);
+        const raw = localStorage.getItem(`aiwise_content_studio_${id}_${chapter}_v1`);
         if (raw) {
           const draft = JSON.parse(raw);
-          if (draft.schema !== 1 || draft.course !== id || !Array.isArray(draft.examples) || !Number.isFinite(Date.parse(draft.savedAt))) throw Error();
-          updates.push({title:label + ' · Content Studio draft saved in this browser', href:'#studio/' + id, at:draft.savedAt});
+          if (draft.schema !== 1 || draft.course !== id || (chapter === 'c2' ? !Array.isArray(draft.examples) : draft.chapter !== 'c3' || !draft.slots) || !Number.isFinite(Date.parse(draft.savedAt))) throw Error();
+          updates.push({title:label + ' · ' + chapter.toUpperCase() + ' · Content Studio draft saved in this browser', href:'#studio/' + id + (chapter === 'c2' ? '' : '/c3'), at:draft.savedAt});
         }
-      } catch { notices.push({title:label + ' · Content Studio draft could not be read. Open the editor for details.', href:'#studio/' + id, at:''}); }
+      } catch { notices.push({title:label + ' · ' + chapter.toUpperCase() + ' · Content Studio draft could not be read. Open the editor for details.', href:'#studio/' + id + (chapter === 'c2' ? '' : '/c3'), at:''}); }
     }
     updates.sort((a,b) => (Date.parse(b.at)||0)-(Date.parse(a.at)||0));
     return {summary, entries: [...notices, ...updates]};
@@ -66,7 +66,7 @@
   row.addEventListener('focusin', schedule); row.addEventListener('focusout', () => queueMicrotask(schedule));
   document.addEventListener('visibilitychange', schedule);
   reduced.addEventListener('change', () => { paused = reduced.matches; paint(); schedule(); });
-  window.addEventListener('storage', event => { if (home && (!event.key || ['aiwise_control_tower_v1','aiwise_content_studio_aws1_c2_v1','aiwise_content_studio_ped_c2_v1'].includes(event.key))) refresh(); });
+  window.addEventListener('storage', event => { if (home && (!event.key || ['aiwise_control_tower_v1','aiwise_content_studio_aws1_c2_v1','aiwise_content_studio_ped_c2_v1','aiwise_content_studio_aws1_c3_v1','aiwise_content_studio_ped_c3_v1'].includes(event.key))) refresh(); });
   function closeNow(restore = true) {
     cancelClose?.(); cancelClose = null;
     window.AIWiseMotion.cancel(dialog); dialog.classList.remove('updates-closing');

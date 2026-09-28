@@ -108,7 +108,8 @@
     });
   }
   function renderStudio(part) {
-    if (window.AIWiseContentStudio.supports(part)) { window.AIWiseContentStudio.render(shell, part); return; }
+    const [courseId, chapter = 'c2', extra] = part.split('/');
+    if (window.AIWiseContentStudio.supports(courseId) && ['c2','c3'].includes(chapter) && !extra) { window.AIWiseContentStudio.render(shell, courseId, chapter); return; }
     if (part) { window.AIWiseCourses.render(part, shell); return; }
     shell('studio','Content Studio',areas.studio.note,notice('Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.')+'<div class="cards">'+window.AIWiseCourses.cards('studio')+'</div>');
   }
