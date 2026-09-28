@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="theme.css">
   <link rel="stylesheet" href="workspace.css?v=workspace-tips-v1">
+  <link rel="stylesheet" href="beta-review.css?v=beta-review-v1">
   <link rel="stylesheet" href="content-studio.css?v=shared-studio-v1">
   <link rel="stylesheet" href="control-tower.css?v=shared-studio-v1">
   <link rel="stylesheet" href="sidebar.css?v=sidebar-panel-v1">
@@ -24,13 +25,16 @@
   <script src="../course-specific/aws1/preset-prompts.js" defer></script>
   <script src="../pipelines/beta-content.js?v=common-editor-v1" defer></script>
   <script src="shared-studio.js?v=common-editor-v1" defer></script>
-  <script src="control-tower.js?v=common-editor-v1" defer></script>
+  <script src="control-tower.js?v=beta-review-v1" defer></script>
   <script src="../pipelines/course-loader.js?v=shared-studio-v1" data-render-only defer></script>
   <script src="../pipelines/common-content.js?v=common-editor-v1" data-editor-only defer></script>
   <script src="common-studio.js?v=common-editor-v1" defer></script>
   <script src="content-studio.js?v=common-editor-v1" defer></script>
   <script src="overview.js?v=common-editor-v1" defer></script>
-  <script src="workspace.js?v=common-editor-v1" defer></script>
+  <script src="beta-anchors.js?v=beta-review-v1" defer></script>
+  <script src="beta-feedback.js?v=beta-review-v1" defer></script>
+  <script src="beta-review.js?v=beta-review-v1" defer></script>
+  <script src="workspace.js?v=beta-review-v1" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to workspace</a>
@@ -55,7 +59,7 @@
           <a class="destination studio" href="#studio"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#studio-building"/></svg><strong>Content Studio</strong><span>Course specific orientation</span></a>
           <a class="destination common-studio" href="#common"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#studio-building"/></svg><strong>Common Studio</strong><span>AI-Wise Common content</span></a>
           <a class="destination tower" href="#tower"><svg viewBox="0 0 180 240" aria-hidden="true"><use href="#tower-building"/></svg><strong>Control Tower</strong><span>Package exchange &amp; approval</span></a>
-          <a class="destination beta" href="#beta"><svg viewBox="0 0 270 200" aria-hidden="true"><use href="#beta-screen"/></svg><strong>AI-Wise Beta</strong><span>Showcase &amp; review</span></a>
+          <a class="destination beta" href="#beta" aria-haspopup="dialog"><svg viewBox="0 0 270 200" aria-hidden="true"><use href="#beta-screen"/></svg><strong>AI-Wise Beta</strong><span>Showcase &amp; review</span></a>
           <a class="approval-gate" href="#tower/release" aria-label="Review Beta to Published release submissions"><span>Approval</span><svg viewBox="0 0 85 60" aria-hidden="true"><rect x="8" y="15" width="18" height="40" rx="3"/><path d="M26 29h47v10H26z"/><path class="gate-stripes" d="m35 29-7 10m23-10-7 10m23-10-7 10"/></svg></a>
           <a class="destination published" href="https://aiwise-eur.github.io/AI-Wise/"><svg viewBox="0 0 270 200" aria-hidden="true"><use href="#published-product"/></svg><strong>AI-Wise Published</strong><span>Open student site ↗</span></a>
         </div>

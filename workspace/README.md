@@ -88,7 +88,7 @@ Validation: `LINKEDOM_MODULE=/path/to/linkedom node --test workspace/tests/commo
 
 ## Not implemented
 
-Editing beyond the existing AWS1/PED C2/C3 slots and Common C1–C3 text blocks, general shared package storage, Published release activation, restoration, and general Records Office persistence are not implemented. Beta annotations, the Published window viewer, and the full Course Profiler Manager workflow remain upcoming work. Local request decisions are available, but the live Published site is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
+Editing beyond the existing AWS1/PED C2/C3 slots and Common C1–C3 text blocks, general shared package storage, Published release activation, restoration, and general Records Office persistence are not implemented. Immutable Beta version history, the Published window viewer, and the full Course Profiler Manager workflow remain upcoming work. Local request decisions are available, but the live Published site is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
 
 The account dialog adds authentication and a membership lookup. Shared Content Studio submission and review permissions are enforced by the database; local editing and legacy request flows remain browser tools. This is not a production administration console. No Analytics collection is added.
 
@@ -129,3 +129,18 @@ Area headings show the page title as plain text, without a card, and use full co
 The workspace has no footer bar. The home heading greets the person with “Hello”, and adds the account's display name once `AIWiseAuth` exposes a `user.name`; the eyebrow element keeps the id `home-greeting`.
 
 The Content Studio toolbar carries one action, Send to Control Tower. Save draft sits in the editor footer, together with a quiet Reset chapter draft link that refreshes the open item's fields after the confirmation. The Beta preview link lives in the heading's help note instead of the toolbar.
+
+
+## Beta preview and team feedback
+
+The AI-Wise Beta destination on the home map/list and Control Tower opens a large preview dialog directly. Sidebar chapter links and course hubs open the corresponding module or course in that dialog. Close returns to the previous workspace route. The existing campus, sidebar, account behavior and Published destination remain unchanged.
+
+`beta-review.js` shows the actual current Beta module in an iframe. Page/course controls and internal module links navigate inside the preview. External destinations remain available through Open page. The original student feedback widget is hidden inside this review frame only. Feedback lives in the right panel, below the preview on narrow screens. The dialog uses the existing page/dialog motion and reduced-motion setting.
+
+Add memo enables Comment, Highlight, Box and Pin. Click a content box, select text, drag a rectangle, or point at a position; the Content box picker and Enter on a tagged box provide keyboard alternatives. Media such as the C1 diagram can be selected from the picker. Selected text is represented by text offsets and a quote; boxes/pins use coordinates relative to their content box. Markers are overlays and never rewrite module content. A content fingerprint prevents a stale comment being silently attached to changed text. Such threads remain readable with an unavailable-location notice. This reviews current Beta, not a fabricated historical version or immutable release snapshot.
+
+Approved team members can read/post comments and replies. The author or an administrator can resolve/reopen a thread. Refresh retrieves teammates' changes; no realtime subscription is added. The page and course context keep feedback separate. Comments and author information are private to active team members, independent of public approved Beta content. Author identity/timestamps come from the server. New comments and replies are immutable; retrying the same client UUID cannot create duplicate rows. Sign-out/account changes clear the panel. Network errors preserve unsent text; changing pages, closing, and refresh guard it. No browser drafts are uploaded automatically.
+
+Before deployment apply `../supabase/migrations/20260928151827_beta_review_feedback.sql`, following `../supabase/BETA_FEEDBACK_SETUP.md`. This adds two private team tables, constrained anchors and column-level grants, RLS, indexes, and a trigger-only author stamp in a private schema. Existing account, role, content approval and public Beta contracts are unchanged.
+
+Validation: `LINKEDOM_MODULE=/path/to/linkedom node --test workspace/tests/beta-review.test.cjs` covers anchor restoration/staleness, media, reverse dragging, retry identity, sign-out races, and setup/permission failures. `PGLITE_MODULE=/path/to/@electric-sql/pglite node supabase/tests/beta_feedback.cjs` verifies actual PostgreSQL RLS, derived authors, immutable text, replies, author/admin resolution, invalid anchors, duplicates and revocation. A separate local UI fixture verified all four marker tools, posting/replying, resolving/reopening, failed save/retry, and keyboard target selection without live writes. The actual Workspace route was checked signed out: the Beta box opens the dialog directly and keeps team actions unavailable. A 390×844 layout check confirmed no horizontal overflow and accessible preview/panel regions. Live account posting remains a rollout check after the user's SQL application.
