@@ -53,7 +53,7 @@
       const member = result.data?.user_id === user.id && result.data.active === true;
       apply({status: member ? 'member' : 'not-member', user,
         message: member ? 'Your development-team membership is verified.' :
-          'Awaiting administrator approval. Ask your project administrator to enable development-team access, then select Check again.'});
+          'Awaiting administrator approval. Ask your project administrator to enable development-team access. Reopen this window to check for approval.'});
     } catch (error) {
       apply({status: 'error', user: null, message: error.status === 401 || error.status === 403 ?
         'Your session is no longer valid. Sign in again.' : 'Account check unavailable. Check your connection and try again.'});

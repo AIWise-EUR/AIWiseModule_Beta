@@ -15,11 +15,8 @@
     <div class="aw-account-body">
       <p id="aw-account-status" role="status" aria-live="polite"></p>
       <p id="aw-account-email" hidden></p>
-      <div id="aw-account-modes" class="aw-account-modes" role="group" aria-label="Account action">
-        <button type="button" class="aw-account-button" id="aw-mode-signin" aria-pressed="true">Sign in</button>
-        <button type="button" class="aw-account-button" id="aw-mode-signup" aria-pressed="false">Create account</button>
-      </div>
       <p id="aw-account-notice" class="aw-account-notice" role="status" hidden></p>
+      <p id="aw-account-error" class="aw-account-error" role="alert"></p>
       <form id="aw-signin-form">
         <label for="aw-auth-email">Email</label><input id="aw-auth-email" type="email" autocomplete="username" required maxlength="254">
         <label for="aw-auth-password">Password</label><input id="aw-auth-password" type="password" autocomplete="current-password" required>
@@ -28,8 +25,12 @@
         <p class="aw-account-help" id="aw-account-help">Use your AI-Wise account. Your Supabase dashboard account is separate.</p>
         <button class="aw-account-button" type="button" id="aw-resend-confirmation">Resend confirmation</button>
       </form>
-      <div class="aw-account-actions"><button class="aw-account-button" type="button" id="aw-auth-refresh">Check again</button><button class="aw-account-button" type="button" id="aw-signout" hidden>Sign out</button></div>
-      <p id="aw-account-error" class="aw-account-error" role="alert"></p>
+      <div class="aw-account-actions"><button class="aw-account-button" type="button" id="aw-auth-refresh" hidden>Retry</button><button class="aw-account-button" type="button" id="aw-signout" hidden>Sign out</button></div>
+      <div id="aw-account-modes" class="aw-account-switch">
+        <p id="aw-account-switch-hint">Don’t have an account yet?</p>
+        <button type="button" class="aw-account-button" id="aw-mode-signup">Create account</button>
+        <button type="button" class="aw-account-button" id="aw-mode-signin" hidden>Sign in</button>
+      </div>
       <p class="aw-account-local-note">Drafts and requests are still saved in this browser. Signing in does not upload them; signing out does not delete them.</p>
     </div>`;
   document.body.appendChild(dialog);
@@ -39,7 +40,7 @@
   const confirmPassword = dialog.querySelector('#aw-auth-confirm');
   const modeButtons = [dialog.querySelector('#aw-mode-signin'), dialog.querySelector('#aw-mode-signup')];
   const notice = dialog.querySelector('#aw-account-notice'), resend = dialog.querySelector('#aw-resend-confirmation');
-  let busy = false, state, cancelClose, mode = 'signin', resendAfter = 0, resendTimer;
+  let busy = false, state, cancelClose, mode = 'signin', resendAfter = 0, resendTimer, retrySignIn = false;
   function showNotice(message) { notice.textContent = message; notice.hidden = !message; }
   function cooldown() {
     resendAfter = Date.now() + 60000;
@@ -47,7 +48,7 @@
     resendTimer = setTimeout(() => paint(state), 60000);
   }
   function setMode(next) {
-    mode = next; password.value = ''; confirmPassword.value = '';
+    mode = next; retrySignIn = false; password.value = ''; confirmPassword.value = '';
     confirmPassword.setCustomValidity(''); error.textContent = ''; showNotice(''); paint(state);
     email.focus({preventScroll: true});
   }
@@ -57,7 +58,7 @@
     trigger.querySelector('#aw-account-label').textContent = value.user ? 'Account' : 'Sign in';
     trigger.dataset.member = String(value.status === 'member');
     dialog.dataset.status = value.status;
-    dialog.querySelector('#aw-account-title').textContent = value.user ? 'Your account' : signup ? 'Create your account' : 'Team sign in';
+    dialog.querySelector('#aw-account-title').textContent = value.user ? 'Your account' : signup ? 'Create your account' : retrySignIn ? 'Sign-in failed' : 'Team sign in';
     dialog.querySelector('#aw-account-status').textContent = !value.user && signup && value.status !== 'checking' ?
       'Create an account, confirm your email, then ask an administrator to approve team access.' : value.message;
     const accountEmail = dialog.querySelector('#aw-account-email');
@@ -65,18 +66,20 @@
     form.hidden = !!value.user;
     dialog.querySelector('#aw-account-modes').hidden = !!value.user;
     if (value.user) showNotice('');
-    modeButtons[0].setAttribute('aria-pressed', String(!signup));
-    modeButtons[1].setAttribute('aria-pressed', String(signup));
+    modeButtons[0].hidden = !signup;
+    modeButtons[1].hidden = signup;
+    dialog.querySelector('#aw-account-switch-hint').textContent = signup ? 'Already have an account?' : 'Don’t have an account yet?';
     dialog.querySelector('#aw-confirm-field').hidden = !signup;
     confirmPassword.required = signup;
     password.autocomplete = signup ? 'new-password' : 'current-password';
     password.minLength = signup ? 8 : 0;
-    dialog.querySelector('#aw-signin').textContent = busy ? 'Please wait…' : signup ? 'Create account' : 'Sign in';
+    dialog.querySelector('#aw-signin').textContent = busy ? 'Please wait…' : signup ? 'Create account' : retrySignIn ? 'Retry' : 'Sign in';
     dialog.querySelector('#aw-account-help').textContent = signup ?
       'Use at least 8 characters. Creating an account does not grant development-team access.' :
       'Use your AI-Wise account. Your Supabase dashboard account is separate.';
     resend.hidden = signup;
     signOutButton.hidden = !value.user;
+    refreshButton.hidden = !['error', 'access-error', 'setup-needed'].includes(value.status);
     for (const control of [...form.elements, ...modeButtons, refreshButton, signOutButton]) {
       control.disabled = busy || value.status === 'checking';
     }
@@ -99,7 +102,9 @@
   function open() {
     window.AIWiseSidebar.close(false);
     cancelClose?.(); cancelClose = null; window.AIWiseMotion.cancel(dialog);
-    error.textContent = ''; dialog.showModal(); window.AIWiseMotion.enter(dialog);
+    error.textContent = ''; retrySignIn = false; paint(state);
+    dialog.showModal(); window.AIWiseMotion.enter(dialog);
+    if (state.user && !busy) window.AIWiseAuth.refresh();
     if (!state.user && !email.disabled) email.focus({preventScroll: true});
     else dialog.querySelector('.aw-account-close').focus({preventScroll: true});
   }
@@ -110,11 +115,11 @@
   let backdropDown = false;
   dialog.addEventListener('pointerdown', event => { backdropDown = event.target === dialog && outside(event); });
   dialog.addEventListener('click', event => { if (backdropDown && event.target === dialog && outside(event)) close(); backdropDown = false; });
-  async function action(fn) {
+  async function action(fn, isSignIn = false) {
     if (busy) return;
-    busy = true; error.textContent = ''; paint(state);
+    busy = true; retrySignIn = false; error.textContent = ''; paint(state);
     try { await fn(); }
-    catch (failure) { error.textContent = failure.message || 'Account action failed. Please try again.'; }
+    catch (failure) { retrySignIn = isSignIn; error.textContent = failure.message || 'Account action failed. Please try again.'; }
     finally { busy = false; password.value = ''; confirmPassword.value = ''; paint(window.AIWiseAuth.snapshot()); }
   }
   modeButtons[0].addEventListener('click', () => setMode('signin'));
@@ -134,7 +139,7 @@
         showNotice('If this address can be registered, check your inbox and spam folder for a confirmation link, then sign in. If you already have an account, sign in with your existing password. Team access requires administrator approval.');
       }
     });
-    else action(async () => { await window.AIWiseAuth.signIn(loginEmail, loginPassword); showNotice(''); });
+    else action(async () => { await window.AIWiseAuth.signIn(loginEmail, loginPassword); showNotice(''); }, true);
   });
   resend.addEventListener('click', () => {
     if (!email.reportValidity()) return;

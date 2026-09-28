@@ -22,11 +22,10 @@
 .aw-account-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
 .aw-account-help, .aw-account-local-note { font-size:12px; color:var(--ink-3); }
 .aw-account-local-note { margin:20px 0 0; padding-top:16px; border-top:1px solid var(--line); }
-.aw-account-error { color:var(--danger); margin:12px 0 0; }
+.aw-account-error { color:var(--danger); margin:0 0 16px; }
 .aw-account-error:empty { display:none; }
-.aw-account-modes { display:flex; gap:8px; margin-bottom:18px; }
-.aw-account-modes .aw-account-button { flex:1; }
-.aw-account-modes [aria-pressed="true"] { background:var(--signal); border-color:var(--signal); color:white; }
+.aw-account-switch { margin-top:20px; padding-top:16px; border-top:1px solid var(--line); }
+.aw-account-switch p { margin:0 0 8px; color:var(--ink-3); }
 .aw-account-notice { padding:12px; border:1px solid var(--line); border-radius:6px; background:var(--paper); }
 #aw-confirm-field { display:grid; gap:8px; }
 .aw-auth-confirm-page { box-sizing:border-box; width:min(480px, calc(100% - 32px)); margin:10vh auto; padding:28px; border:1px solid var(--line); border-radius:12px; background:var(--card); }

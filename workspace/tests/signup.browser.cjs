@@ -42,7 +42,10 @@ const session = {access_token:token,refresh_token:'test-refresh',expires_in:3600
           if (options.networkError) return route.abort();
           if (options.signupError) { body=options.signupError;status=options.status||422; }
           else body=options.autoConfirm ? session : {...user,email_confirmed_at:undefined};
-        } else if (url.pathname.endsWith('/token')) body=session;
+        } else if (url.pathname.endsWith('/token')) {
+          if (options.signInError) { body={code:'invalid_credentials',msg:'Invalid login credentials'}; status=400; }
+          else body=session;
+        }
         else if (url.pathname.endsWith('/user')) body=user;
         else if (url.pathname.includes('/rest/')) {
           assert.equal(req.method(),'GET','Browser must not write memberships');
@@ -92,7 +95,10 @@ const session = {access_token:token,refresh_token:'test-refresh',expires_in:3600
       await page.waitForFunction(()=>AIWiseAuth.snapshot().status==='not-member');
       await page.getByRole('button',{name:'Show sidebar',exact:true}).click();
       await page.locator('.aw-account-trigger').click();
-      f.approve(); await page.locator('#aw-auth-refresh').click();
+      assert.equal(await page.locator('#aw-auth-refresh').isVisible(),false);
+      f.approve(); await page.locator('.aw-account-close').click();
+      await page.getByRole('button',{name:'Show sidebar',exact:true}).click();
+      await page.locator('.aw-account-trigger').click();
       await page.waitForFunction(()=>AIWiseAuth.snapshot().status==='member');
       await page.locator('#aw-signout').click();
       await page.waitForFunction(()=>AIWiseAuth.snapshot().status==='signed-out');
@@ -102,6 +108,25 @@ const session = {access_token:token,refresh_token:'test-refresh',expires_in:3600
     await run('Auto-confirmed signup still requires independent membership approval',async()=>{
       const f=await fixture({autoConfirm:true}); await fill(f.page); await f.page.locator('#aw-signin').click();
       await f.page.waitForFunction(()=>AIWiseAuth.snapshot().status==='not-member');
+      assert.deepEqual(f.errors,[]); await f.context.close();
+    });
+    await run('Failed sign in offers Retry and a separate Create account prompt',async()=>{
+      const options={signInError:true}; const f=await fixture(options), page=f.page;
+      assert.equal(await page.locator('#aw-auth-refresh').isVisible(),false);
+      assert.equal(await page.getByRole('button',{name:'Retry',exact:true}).count(),0);
+      await page.locator('#aw-auth-email').fill(user.email);
+      await page.locator('#aw-auth-password').fill('wrong-password');
+      await page.locator('#aw-signin').click();
+      await page.waitForFunction(()=>document.querySelector('#aw-account-title').textContent==='Sign-in failed');
+      assert.equal(await page.locator('#aw-signin').textContent(),'Retry');
+      assert.equal(await page.locator('#aw-account-switch-hint').textContent(),'Don’t have an account yet?');
+      assert.equal(await page.locator('#aw-mode-signup').isVisible(),true);
+      await page.screenshot({path:'/tmp/aiwise-login-failed.png'});
+      options.signInError=false;
+      await page.locator('#aw-auth-password').fill('correct-password');
+      await page.locator('#aw-signin').click();
+      await page.waitForFunction(()=>AIWiseAuth.snapshot().status==='not-member');
+      assert.equal(await page.locator('#aw-auth-refresh').isVisible(),false);
       assert.deepEqual(f.errors,[]); await f.context.close();
     });
     await run('Resend confirmation needs only email and does not grant membership',async()=>{
