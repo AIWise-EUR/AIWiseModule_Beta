@@ -1,6 +1,6 @@
 # Beta preview feedback rollout
 
-Status (29 September 2026): code and local tests complete; the user will apply the SQL directly. Not yet deployed or verified with live account comments.
+Status (29 September 2026): code and local tests complete; the user confirmed applying the SQL directly. Frontend deployment is proceeding separately. Live account sharing and database advisors have not been independently verified by this task.
 
 1. In project `cvcvdiohckwgpgoxibia`, ensure the existing workspace membership and shared Studio migrations are installed. This migration reuses `workspace_role()`; it does not alter that function or assign roles.
 2. Run the entire `migrations/20260928151827_beta_review_feedback.sql` once in SQL Editor. Do not rerun earlier migrations. The transaction adds only the Beta memo/reply tables and their supporting validation, indexes, permissions and private triggers.
