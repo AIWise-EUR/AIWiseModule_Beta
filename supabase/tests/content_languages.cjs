@@ -1,0 +1,77 @@
+/* Isolated PostgreSQL: populated upgrade, locale isolation and source-aware review. */
+const {PGlite}=require(process.env.PGLITE_MODULE||'@electric-sql/pglite');
+const fs=require('fs'),path=require('path'),assert=require('node:assert/strict'),vm=require('node:vm');
+const {parseHTML}=require(process.env.LINKEDOM_MODULE||'linkedom');
+const root=path.resolve(__dirname,'../..');
+(async()=>{
+ const db=new PGlite();
+ await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;
+ create table auth.users(id uuid primary key,raw_user_meta_data jsonb default '{}');
+ create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
+ grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
+ for(const file of ['202609270001_workspace_members.sql','202609280001_shared_studio.sql','20260928132359_common_studio_content.sql','20260928151827_beta_review_feedback.sql'])await db.exec(fs.readFileSync(path.join(root,'supabase/migrations',file),'utf8'));
+ const member='11111111-1111-4111-8111-111111111111',admin='22222222-2222-4222-8222-222222222222',outsider='33333333-3333-4333-8333-333333333333';
+ await db.query("insert into auth.users values ($1,'{}'),($2,'{}'),($3,'{\"role\":\"admin\"}')",[member,admin,outsider]);
+ await db.query("insert into workspace_members(user_id,role) values ($1,'member'),($2,'admin')",[member,admin]);
+ async function as(user,sql,args=[]){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[user||'']);await db.exec('set role '+(user?'authenticated':'anon'));return db.query(sql,args);}
+ const denied=async(user,sql,args=[])=>assert.rejects(()=>as(user,sql,args));
+ const legacy='select workspace_submit_content($1,$2,$3,$4,$5,$6,$7,$8) id';
+ const base=(await db.query("select slots from workspace_content_sources where course='common' and chapter='c1'")).rows[0].slots;
+ const edited=structuredClone(base);edited['c1.block-0']['Heading 1']='Approved existing English';
+ const oldId=(await as(member,legacy,['aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','common','c1',edited,base,null,'2026-09-29','Existing content'])).rows[0].id;
+ const decide='select workspace_decide_content($1,$2,$3,$4)';
+ await as(admin,decide,[oldId,1,'approved','Reviewed']);
+ await db.exec('reset role');
+ const oldPendingBase=(await db.query("select slots from workspace_content_sources where course='common' and chapter='c2'")).rows[0].slots;
+ const oldPending=(await as(member,legacy,['bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','common','c2',oldPendingBase,oldPendingBase,null,'2026-09-29','Pre-migration pending'])).rows[0].id;
+ await db.exec('reset role');await db.exec(fs.readFileSync(path.join(root,'supabase/migrations/20260930062634_orientation_content_languages.sql'),'utf8'));
+ assert.equal((await as(null,"select slots from workspace_beta_content where course='common' and chapter='c1' and locale='en'")).rows[0].slots['c1.block-0']['Heading 1'],'Approved existing English');
+ assert.equal((await as(member,'select slots from workspace_submissions where id=$1',[oldId])).rows[0].slots['c1.block-0']['Heading 1'],'Approved existing English');
+ await as(admin,decide,[oldPending,1,'approved','Preserved legacy request']);
+ assert.ok((await as(null,"select slots from workspace_beta_content where chapter='c2' and course='common' and locale='en'")).rows[0].slots['c2.extra-0'],'old approval retains supplemental fields');
+ const sources=(await as(null,'select * from workspace_content_sources')).rows;
+ assert.equal(sources.length,20);assert.equal((await as(null,"select count(*)::int n from workspace_beta_content where locale='nl'")).rows[0].n,0,'seeds are not translations');
+ const ctx={window:{},document:{currentScript:{hasAttribute:()=>true}},NodeFilter:{SHOW_TEXT:4}};vm.runInNewContext(fs.readFileSync(path.join(root,'pipelines/common-content.js'),'utf8'),ctx);
+ for(const chapter of ['c1','c2','c3','map']){
+  const file=chapter==='map'?'aiwise-c1-anatomy-2d':`aiwise-${chapter}-final`;
+  const doc=parseHTML(fs.readFileSync(path.join(root,`common/${file}.html`),'utf8')).document;
+  const expected=Object.fromEntries(ctx.window.AIWiseCommonContent.catalog(doc,chapter).map(b=>[b.path,b.fields]));
+  assert.deepEqual(JSON.parse(JSON.stringify(expected)),sources.find(r=>r.course==='common'&&r.chapter===chapter&&r.locale==='en').slots,'complete source catalog matches SQL');
+ }
+ const nlBase=sources.find(r=>r.course==='common'&&r.chapter==='c1'&&r.locale==='nl').slots;
+ assert.equal(nlBase['c1.block-0']['Heading 1'],'Approved existing English','Dutch seed uses approved English');
+ const nl=structuredClone(nlBase);nl['c1.block-0']['Heading 1']='Wat is generatieve AI?';
+ const submit='select workspace_submit_localized_content($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) id';
+ const args=['cccccccc-cccc-4ccc-8ccc-cccccccccccc','common','c1',nl,nlBase,null,'2026-09-30','Dutch draft','nl',oldId];
+ await denied(null,submit,args);await denied(outsider,submit,args);
+ const id=(await as(member,submit,args)).rows[0].id;
+ assert.equal((await as(member,submit,args)).rows[0].id,id,'lost response retry is idempotent');
+ await denied(member,submit,[...args.slice(0,8),'en',null]);
+ await denied(member,submit,[...args.slice(0,8),'fr',null]);
+ await denied(member,decide,[id,1,'approved','Cannot self-approve']);
+ assert.equal((await as(outsider,'select count(*)::int n from workspace_submissions')).rows[0].n,0);
+ await denied(null,'select * from workspace_submissions');
+ await denied(member,"update workspace_content_sources set slots='{}'");
+ await denied(member,"update workspace_beta_content set slots='{}'");
+ await denied(member,"update workspace_submissions set locale='en'");
+ await denied(member,'select aiwise_private.beta_feedback_stamp()');
+ await as(admin,decide,[id,1,'approved','Translation reviewed']);
+ assert.equal((await as(null,"select slots from workspace_beta_content where course='common' and chapter='c1' and locale='nl'")).rows[0].slots['c1.block-0']['Heading 1'],'Wat is generatieve AI?');
+ assert.equal((await as(null,"select slots from workspace_beta_content where course='common' and chapter='c1' and locale='en'")).rows[0].slots['c1.block-0']['Heading 1'],'Approved existing English');
+ const pending=(await as(member,submit,['dddddddd-dddd-4ddd-8ddd-dddddddddddd','common','c1',nl,nl,id,'2026-09-30','Another translation','nl',oldId])).rows[0].id;
+ const en=(await as(null,"select slots from workspace_beta_content where course='common' and chapter='c1' and locale='en'")).rows[0].slots;
+ const enChanged=structuredClone(en);enChanged['c1.block-0']['Heading 1']='New English source';
+ const enId=(await as(member,legacy,['eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee','common','c1',enChanged,en,oldId,'2026-09-30','English update'])).rows[0].id;
+ await as(admin,decide,[enId,1,'approved','Source reviewed']);
+ await denied(admin,decide,[pending,1,'approved','Stale source must not publish']);
+ await denied(member,submit,['ffffffff-ffff-4fff-8fff-ffffffffffff','common','c1',nl,nl,id,'2026-09-30','Stale source','nl',oldId]);
+ // Canonical feedback keys separate languages without changing legacy English keys.
+ const anchor={kind:'comment',path:'body>main:nth-of-type(1)>p:nth-of-type(1)',fingerprint:'a'.repeat(64),excerpt:'Text'};
+ for(const [memo,page] of [['12121212-1212-4212-8212-121212121212','common/aiwise-c1-final.html?course=aws1'],['13131313-1313-4313-8313-131313131313','common/aiwise-c1-final.html?course=aws1&lang=nl']])await as(member,'insert into workspace_beta_memos(id,page,body,anchor) values($1,$2,$3,$4)',[memo,page,'Review',anchor]);
+ assert.equal((await as(admin,"select count(*)::int n from workspace_beta_memos where page='common/aiwise-c1-final.html?course=aws1&lang=nl'")).rows[0].n,1);
+ await denied(member,'insert into workspace_beta_memos(id,page,body,anchor) values(gen_random_uuid(),$1,$2,$3)',['common/aiwise-c1-final.html?lang=fr','Invalid locale',anchor]);
+ await db.exec('reset role');await db.query('update workspace_members set active=false where user_id=$1',[admin]);
+ await denied(admin,decide,[pending,1,'revision','Revoked admin']);
+ console.log('PASS language SQL: populated upgrade, source catalogs, EN/NL isolation, private review, role checks, idempotency, stale English source, feedback isolation, revocation.');
+ await db.close();
+})().catch(e=>{console.error(e);process.exit(1)});

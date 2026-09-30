@@ -76,7 +76,7 @@ Browser verification: `tests/studio-courses.browser.cjs` checks existing course 
 
 Open `#common` to choose C1, C2, or C3, or use `#common/c1`, `#common/c2`, and `#common/c3` directly. The same Content Studio editor handles both scopes. `pipelines/common-content.js` supplies one shared text catalog for the editor and approved Beta renderer; `common-studio.js` connects it to the editor. Authentication is unchanged.
 
-Common Studio edits the existing chapter headings, explanatory text, table text, card text, diagram labels in inline SVG, and shared template text. The picker lists all three chapters and selecting an item reveals its tab or review step. Click an outlined block or its Edit button to open the same resizable right panel. Edits update the preview as plain text while retaining the source markup, links, emphasis, and layout. Inline text fragments are separate fields to preserve their formatting. Adding/removing blocks, changing links or artwork, and editing the separate scripted C1 anatomy diagram are outside this editor. That diagram remains an interactive, read-only preview in its own sandbox. Course-specific slots are read-only and display the current AWS1 examples for context.
+Common Studio edits the existing chapter headings, explanatory text, table text, card text, diagram labels in inline SVG, and shared template text. The picker lists all three chapters and selecting an item reveals its tab or review step. Click an outlined block or its Edit button to open the same resizable right panel. Edits update the preview as plain text while retaining the source markup, links, emphasis, and layout. Inline text fragments are separate fields to preserve their formatting. Adding/removing blocks and changing links or artwork remain outside this editor. The C1 anatomy map is now an additional item group in Common Studio; its node labels, categories, descriptions, controls and legend text are editable while its geometry and interactions stay intact. Course-specific slots are read-only and display the current AWS1 examples for context.
 
 Drafts use new, independent `aiwise_common_studio_c1_v1`, `aiwise_common_studio_c2_v1`, and `aiwise_common_studio_c3_v1` keys. Each draft holds the chapter source baseline and editable text; source mismatches, malformed storage, stale saves, and storage failures preserve the existing copy and report the issue. Save and reset apply only to the current chapter. Unsaved navigation and reload guards are shared with Content Studio. Saving does not change repository files, Beta, or Published.
 
@@ -88,7 +88,7 @@ Validation: `LINKEDOM_MODULE=/path/to/linkedom node --test workspace/tests/commo
 
 ## Not implemented
 
-Editing beyond the existing AWS1/PED C2/C3 slots and Common C1–C3 text blocks, general shared package storage, Published release activation, restoration, and general Records Office persistence are not implemented. Immutable Beta version history, the Published window viewer, and the full Course Profiler Manager workflow remain upcoming work. Local request decisions are available, but the live Published site is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
+Adding or restructuring authored blocks, media replacement, general shared package storage, Published release activation, restoration, and general Records Office persistence are not implemented. Immutable Beta version history, the Published window viewer, and the full Course Profiler Manager workflow remain upcoming work. Local request decisions are available, but the live Published site is not managed by this prototype. No sample approvals, version histories, or live usage numbers are fabricated.
 
 The account dialog adds authentication and a membership lookup. Shared Content Studio submission and review permissions are enforced by the database; local editing and legacy request flows remain browser tools. This is not a production administration console. No Analytics collection is added.
 
@@ -144,3 +144,22 @@ Approved team members can read/post comments and replies. The author or an admin
 Before deployment apply `../supabase/migrations/20260928151827_beta_review_feedback.sql`, following `../supabase/BETA_FEEDBACK_SETUP.md`. This adds two private team tables, constrained anchors and column-level grants, RLS, indexes, and a trigger-only author stamp in a private schema. Existing account, role, content approval and public Beta contracts are unchanged.
 
 Validation: `LINKEDOM_MODULE=/path/to/linkedom node --test workspace/tests/beta-review.test.cjs` covers anchor restoration/staleness, media, reverse dragging, retry identity, sign-out races, and setup/permission failures. `PGLITE_MODULE=/path/to/@electric-sql/pglite node supabase/tests/beta_feedback.cjs` verifies actual PostgreSQL RLS, derived authors, immutable text, replies, author/admin resolution, invalid anchors, duplicates and revocation. A separate local UI fixture verified all four marker tools, posting/replying, resolving/reopening, failed save/retry, and keyboard target selection without live writes. The actual Workspace route was checked signed out: the Beta box opens the dialog directly and keeps team actions unavailable. A 390×844 layout check confirmed no horizontal overflow and accessible preview/panel regions. Live account posting remains a rollout check after the user's SQL application.
+
+
+## English and Nederlands content spaces
+
+Common Studio and Content Studio retain their existing campus entries and editor. A Language control selects English or Nederlands, with separate browser drafts, team submissions, approvals and Beta feedback. This is a translation workspace, not a completed Dutch translation or a translation of the Workspace interface. English remains the default. No Published release is changed.
+
+Coverage is split by content ownership:
+
+- Common Studio: C1–C3 headings, explanations, tables, inline diagram text, templates, navigation, control labels, accessibility text and runtime labels. The item picker also includes the separate C1 system map, including all 22 nodes and their descriptions.
+- Content Studio: every configured C2/C3 course slot for AWS1, PED and the generic Other courses examples. Optional S.A.T examples remain absent where the course has none; no invented example is added. Course registration is still the place for course identity.
+- Artwork, document structure, the module landing page and Workspace interface are not translation editors in this change.
+
+Each Dutch field offers Show English source. Its starting text is explicitly identified as English, and nothing is automatically approved as Dutch. If an English approval changes, the saved translation remains editable but submission requires an explicit source review. Saving alone does not acknowledge that review. The database checks the English reference again at submission and approval, including concurrent updates.
+
+English storage keys and feedback URLs are preserved. Dutch drafts add `_nl` before `_v1`; module URLs use `lang=nl`. Compatible old English Common drafts retain their edits and ask for one explicit save to add newly editable fields. Incompatible drafts are preserved and blocked for reconciliation. Already submitted Common copies remain immutable; the migration normalizes the live catalog and adapts legacy pending approvals.
+
+Beta has Page, Course and Language controls. Its actual module frame waits for approved common and course content before attaching feedback. The C1 map can also be opened directly. Internal chapter/course navigation carries the selected language. A page with no approved Dutch common/course content shows its English fallback with a visible notice. Feedback remains private to active members and separate for each language.
+
+Rollout requires `../supabase/CONTENT_LANGUAGES_SETUP.md`. This branch is not evidence that SQL or GitHub Pages was deployed. Run the language DOM tests plus the isolated PostgreSQL migration suite described there. Local browser checks use mock data and do not verify a live team account.

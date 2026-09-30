@@ -3,8 +3,11 @@
   'use strict';
   const COURSES = Object.freeze({
     aws1: {label: 'Academic Writing Skills I', source: '../course-specific/aws1/course-specific-content_aws1.json'},
-    ped: {label: 'Pedagogical Sciences', source: '../course-specific/ped/ped.json'}
+    ped: {label: 'Pedagogical Sciences', source: '../course-specific/ped/ped.json'},
+    other: {label: 'Other courses', source: '../common/courses/other.json'}
   });
+  const language = () => window.AIWiseLanguage;
+  const chapterURL = chapter => `../common/${chapter === 'map' ? 'aiwise-c1-anatomy-2d' : 'aiwise-'+chapter+'-final'}.html`;
   const common = () => window.AIWiseCommonStudio;
   const targetNode = (s, index) => s.isCommon ? common().target(s, index) : s.frame.contentDocument.getElementById('cs-item-' + index);
   const supports = id => Object.hasOwn(COURSES, id);
@@ -42,13 +45,13 @@
     s.host.querySelectorAll('.cs-status').forEach(node => { node.textContent = text; node.dataset.error = String(error); });
   }
   function controls(s) {
-    s.host.querySelectorAll('[data-cs-save]').forEach(button => button.disabled = !s.ready || s.blocked || (!dirty() && s.raw !== null));
+    s.host.querySelectorAll('[data-cs-save]').forEach(button => button.disabled = !s.ready || s.blocked || (!dirty() && s.raw !== null && !s.needsUpgrade));
     s.host.querySelectorAll('[data-cs-submit]').forEach(button => {
       button.disabled = !canSubmit(s);
       button.title = window.AIWiseAuth?.snapshot().status !== 'member' ? 'Sign in with an approved team account to submit.' : button.disabled ? 'Save this chapter’s draft before sending it for review.' : 'Send the saved chapter to the review queue.';
     });
   }
-  const canSubmit = s => s.ready && !s.blocked && !!s.raw && !dirty() && window.AIWiseAuth?.snapshot().status === 'member';
+  const canSubmit = s => s.ready && !s.blocked && !s.sourceStale && !s.needsUpgrade && !!s.raw && !dirty() && window.AIWiseAuth?.snapshot().status === 'member';
   function openSubmission(s) {
     if (!canSubmit(s)) return;
     try {
@@ -59,7 +62,7 @@
       panel.querySelector('[data-cs-submit-name]').value = window.AIWiseControlTower.submissionName();
       panel.querySelector('[data-cs-submit-name]').readOnly = true;
       panel.querySelector('[data-cs-submit-error]').textContent = '';
-      panel.querySelector('[data-cs-submit-scope]').textContent = `${s.config.label} · ${s.chapter.toUpperCase()} · Saved ${new Date(JSON.parse(s.raw).savedAt).toLocaleString()}`;
+      panel.querySelector('[data-cs-submit-scope]').textContent = `${s.config.label} · ${s.chapter.toUpperCase()} · ${language().name(s.locale)} · Saved ${new Date(JSON.parse(s.raw).savedAt).toLocaleString()}`;
       panel.showModal(); window.AIWiseMotion.enter(panel);
       panel.querySelector('[data-cs-submit-summary]').focus({preventScroll:true});
     } catch (error) { message(s, error.message || 'The submission could not be prepared.', true); }
@@ -78,8 +81,8 @@
       Object.keys(base).every(k => valid(value[k], base[k], k));
   }
   function record(s) {
-    if (s.isCommon) return {schema: 1, scope: 'common', chapter: s.chapter, baseRelease:s.baseRelease, savedAt: new Date().toISOString(), sourceHTML: s.sourceHTML, blockTitles: Object.fromEntries(s.items.map(item => [item.path, item.title])), baseSlots: s.base, slots: s.values};
-    const shared = {schema: 1, course: s.courseId, baseRelease:s.baseRelease, savedAt: new Date().toISOString()};
+    if (s.isCommon) return {schema: 1, scope: 'common', chapter: s.chapter, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString(), sourceHTML: s.sourceHTML, blockTitles: Object.fromEntries(s.items.map(item => [item.path, item.title])), baseSlots: s.base, slots: s.values};
+    const shared = {schema: 1, course: s.courseId, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString()};
     if (s.chapter === 'c2') {
       const extras = values => Object.fromEntries(Object.entries(values).filter(([k]) => k !== 'c2.examples'));
       return {...shared, slot: 'c2.examples', baseExamples: s.base['c2.examples'], examples: s.values['c2.examples'],
@@ -94,7 +97,7 @@
         message(s, 'Another tab changed this draft. Your edits have not been saved. Copy any text you want to keep before reloading.', true); return;
       }
       const raw = JSON.stringify(record(s)); localStorage.setItem(s.key, raw);
-      s.raw = raw; s.saved = clone(s.values); controls(s);
+      s.raw = raw; s.needsUpgrade=false; s.saved = clone(s.values); controls(s);
       message(s, 'Draft saved in this browser · ' + new Date().toLocaleTimeString() + '. Beta is unchanged.');
     } catch { message(s, 'Draft could not be saved. Keep this page open and try again.', true); }
   }
@@ -139,7 +142,7 @@
   function selectItem(s, index, scroll = false) {
     s.index = Math.max(0, Math.min(index, s.items.length - 1));
     const item = s.items[s.index], doc = s.frame.contentDocument;
-    s.host.querySelector('[data-cs-count]').textContent = `${s.chapter.toUpperCase()} · ${s.index + 1} / ${s.items.length}`;
+    s.host.querySelector('[data-cs-count]').textContent = `${s.chapter==='map'?'System map':s.chapter.toUpperCase()} · ${s.index + 1} / ${s.items.length}`;
     s.host.querySelector('[data-cs-title]').textContent = itemTitle(s, item);
     s.host.querySelector('[data-cs-prev]').disabled = s.index === 0;
     s.host.querySelector('[data-cs-next]').disabled = s.index === s.items.length - 1;
@@ -167,7 +170,7 @@
       group.setAttribute('aria-labelledby', 'cs-group-' + chapter);
       const heading = document.createElement('div'); heading.className = 'cs-picker-heading';
       heading.id = 'cs-group-' + chapter;
-      heading.textContent = s.isCommon ? chapter.toUpperCase() + ' · ' + common().names[chapter] : chapter === 'c2' ? 'C2 · GenAI and human cognition' : 'C3 · How to engage with GenAI';
+      heading.textContent = s.isCommon ? (chapter==='map'?'':chapter.toUpperCase() + ' · ') + common().names[chapter] : chapter === 'c2' ? 'C2 · GenAI and human cognition' : 'C3 · How to engage with GenAI';
       group.appendChild(heading);
       s.catalog[chapter].forEach((item, i) => {
         const button = document.createElement('button'); button.type = 'button';
@@ -232,7 +235,14 @@
           updatePreview(s); controls(s);
           message(s, s.blocked ? 'Preview edits only. Saving is unavailable until the saved draft is reset.' : dirty() ? 'Unsaved edits · Preview only.' : '', s.blocked);
         });
-        wrap.appendChild(input); return wrap;
+        wrap.appendChild(input);
+        if(s.locale==='nl') {
+          let original=s.englishBase[valuePath];
+          if(item.example!==undefined && valuePath===item.path)original=original?.[item.example];
+          for(const key of path)original=original?.[key];
+          if(typeof original==='string'){const detail=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='Show English source';text.textContent=original;text.className='cs-source-text';detail.append(summary,text);wrap.append(detail);}
+        }
+        return wrap;
       }
       const group = document.createElement('fieldset'), legend = document.createElement('legend'); legend.textContent = label(name); group.appendChild(legend);
       Object.entries(value).forEach(([key, child]) => group.appendChild(field(child, [...path, key], Array.isArray(value) ? `${name} ${Number(key) + 1}` : key, valuePath)));
@@ -312,6 +322,7 @@
     doc.querySelectorAll('iframe').forEach(node => {
       if (isCommon && node.getAttribute('src') === 'aiwise-c1-anatomy-2d.html') {
         node.setAttribute('sandbox', 'allow-scripts');
+        node.setAttribute('src', language().url(new URL('aiwise-c1-anatomy-2d.html',url).href));
       } else node.remove();
     });
     doc.querySelectorAll('*').forEach(node => {
@@ -347,7 +358,7 @@
   function connectPreview(s) {
     if (session !== s || s.abort.signal.aborted) return;
     try {
-      const doc = s.frame.contentDocument;
+      const doc = s.frame.contentDocument;doc.documentElement.lang=s.locale;
       if (s.isCommon) common().apply(s, openEditor);
       doc.addEventListener('pointerdown', () => closePicker(s));
       doc.querySelectorAll('.technique-panel').forEach(panel => panel.querySelectorAll('.technique-tab').forEach(tab => {
@@ -408,7 +419,7 @@
         if (node.tagName !== 'BUTTON') node.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
       });
       doc.querySelectorAll('#coreNavDesktop, #mobileCoreNav').forEach(nav => doc.querySelectorAll('section[id]').forEach(section => {
-        const link = doc.createElement('a'); link.className = 'core-nav-sub'; link.href = '#' + section.id;
+        const link = doc.createElement('a'); link.className = 'core-nav-sub'; link.href = '#' + section.id; link.dataset.copyUse='nav-'+s.chapter+'-'+section.id;
         link.textContent = section.querySelector('h2,h3')?.textContent.trim() || section.id; nav.appendChild(link);
       }));
       doc.addEventListener('click', event => {
@@ -425,12 +436,13 @@
   }
 
   async function render(shell, courseId = 'aws1', chapter = 'c2', itemIndex = 0) {
-    const isCommon = courseId === 'common';
+    const isCommon = courseId === 'common', locale=language().current();
     if (isCommon ? !common().chapters.includes(chapter) : !supports(courseId) || !['c2','c3'].includes(chapter)) throw Error('Course editor not connected');
     const config = isCommon ? {label: 'AI-Wise Common', source: COURSES.aws1.source} : COURSES[courseId], chapterName = chapter.toUpperCase();
-    shell(isCommon ? 'common' : 'studio', config.label, `<p>${chapterName} ${isCommon ? 'shared content · Course examples are read-only.' : 'course content · Common content is read-only.'} Drafts stay in this browser. Saving does not update Beta or Published.</p><p data-cs-coverage></p><p><a href="../common/aiwise-${chapter}-final.html${isCommon ? '' : '?course=' + courseId}" target="_blank" rel="noopener">Open ${chapterName} in Beta ↗</a></p>`, `
+    shell(isCommon ? 'common' : 'studio', config.label, `<p>${chapterName} ${isCommon ? 'shared content · Course examples are read-only.' : 'course content · Common content is read-only.'} Drafts stay in this browser. Saving does not update Beta or Published.</p><p data-cs-coverage></p><p><a href="${language().url(new URL(chapterURL(chapter),location.href).href+(isCommon?'':'?course='+courseId),locale)}" target="_blank" rel="noopener">Open ${chapterName} in Beta ↗</a></p>`, `
       <div id="cs-studio">
         <div class="cs-toolbar">
+          <label class="cs-language">Language<select data-cs-language><option value="en">English</option><option value="nl">Nederlands</option></select></label>
           <div class="cs-example-block">
             <p class="cs-picker-meta"><span>${isCommon ? 'Common' : 'Course'} item</span><span data-cs-count></span></p>
             <div class="cs-example-nav" role="group" aria-label="${isCommon ? 'Common' : 'Course'} items">
@@ -445,9 +457,11 @@
             </div>
           </div>
           <div class="cs-actions" role="group" aria-label="Content actions">
+            <button type="button" class="button" data-cs-edit data-cs-ready disabled>Edit item</button>
             <button type="button" class="button" data-cs-submit disabled>Send to Control Tower</button>
           </div>
         </div>
+        <p class="cs-language-status" data-cs-language-status></p><button type="button" class="button" data-cs-source-reviewed hidden>Mark English source reviewed</button>
         <p class="cs-status" role="status">Loading ${chapterName} preview…</p>
         <div class="cs-preview">
           <iframe title="${config.label} ${chapterName} module editing preview" sandbox="allow-same-origin allow-scripts"></iframe></div>
@@ -471,26 +485,35 @@
         </dialog>
       </div>`, false);
     const host = document.getElementById('cs-studio');
-    const s = session = {host, courseId, chapter, isCommon, config, key: isCommon ? `aiwise_common_studio_${chapter}_v1` : `aiwise_content_studio_${courseId}_${chapter}_v1`, frame: host.querySelector('iframe'), dialog: host.querySelector('.cs-editor'), submitDialog: host.querySelector('.cs-submit-dialog'),
+    const s = session = {host, courseId, chapter, isCommon, locale, config, key: language().draftKey(courseId,chapter,locale), frame: host.querySelector('iframe'), dialog: host.querySelector('.cs-editor'), submitDialog: host.querySelector('.cs-submit-dialog'),
       abort: new AbortController(), index: itemIndex, slideIndex: 0, raw: null, blocked: false, storageRead: false, ready: false};
+    host.querySelector('[data-cs-language]').value=locale;
+    host.querySelector('[data-cs-language]').onchange=event=>{
+      if(!window.AIWiseContentStudio.canLeave()){event.target.value=locale;return;}
+      const next=event.target.value;window.AIWiseContentStudio.dispose();history.replaceState(null,'',language().url(location.href,next));render(shell,courseId,chapter,s.index);
+    };
     try {
-      const url = new URL(`../common/aiwise-${chapter}-final.html`, location.href);
+      const url = new URL(chapterURL(chapter), location.href);
       const otherChapter = chapter === 'c2' ? 'c3' : 'c2';
-      const [html, sourceData, otherHTML, releases, contextReleases] = await Promise.all([
+      const [html, sourceData, otherHTML, releases, contextReleases, englishReleases, seeds] = await Promise.all([
         fetch(url, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Preview unavailable'); return r.text(); }),
-        fetch(config.source, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); }),
+        fetch(config.source, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); }).then(async data=>{if(courseId!=='other')return data;const response=await fetch(COURSES.aws1.source,{signal:s.abort.signal,cache:'no-cache'});if(!response.ok)throw Error('Default examples unavailable');return {...await response.json(),course:data.course};}),
         fetch(new URL(`../common/aiwise-${otherChapter}-final.html`, location.href), {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Item list unavailable'); return r.text(); }),
-        window.AIWiseBetaContent.read(courseId),
-        window.AIWiseBetaContent.read(isCommon ? 'aws1' : 'common')
+        window.AIWiseBetaContent.read(courseId,locale),
+        window.AIWiseBetaContent.read(isCommon ? 'aws1' : 'common',locale),
+        window.AIWiseBetaContent.read(courseId,'en'),
+        locale==='nl'?window.AIWiseBetaContent.sources(courseId,'nl'):Promise.resolve([])
       ]);
       if (session !== s) return;
       const data = window.AIWiseBetaContent.apply(sourceData, isCommon ? contextReleases : releases);
       s.baseRelease = releases.find(r => r.chapter === chapter)?.submission_id || null;
       if (!isCommon && data.course?.id !== s.courseId) throw Error('Wrong course');
       s.source = data;
+      s.englishRelease=locale==='nl'?(englishReleases.find(r=>r.chapter===chapter)?.submission_id||null):null;
+      const englishData=window.AIWiseBetaContent.apply(sourceData,isCommon?[]:englishReleases);
       if (isCommon) {
         s.sourceHTML = html; s.catalog = {}; s.base = {};
-        const chaptersHTML = await Promise.all(common().chapters.map(id => id === chapter ? html : fetch(new URL(`../common/aiwise-${id}-final.html`, location.href), {signal:s.abort.signal, cache:'no-cache'}).then(r => { if (!r.ok) throw Error('Chapter unavailable'); return r.text(); })));
+        const chaptersHTML = await Promise.all(common().chapters.map(id => id === chapter ? html : fetch(new URL(chapterURL(id), location.href), {signal:s.abort.signal, cache:'no-cache'}).then(r => { if (!r.ok) throw Error('Chapter unavailable'); return r.text(); })));
         if (session !== s) return;
         common().chapters.forEach((id, i) => {
           s.catalog[id] = common().catalog(new DOMParser().parseFromString(chaptersHTML[i], 'text/html'), id).map(({path, title, section, fields}) => {
@@ -519,28 +542,38 @@
       s.catalog = {[chapter]: s.items, [otherChapter]: catalogItems(slotPaths(otherHTML), data)};
       // Show saved C2 example titles in the other chapter's group when their source still matches.
       if (otherChapter === 'c2') try {
-        const draft = JSON.parse(localStorage.getItem(`aiwise_content_studio_${courseId}_c2_v1`));
+        const draft = JSON.parse(localStorage.getItem(language().draftKey(courseId,'c2',locale)));
         if (draft?.schema === 1 && draft.course === courseId && draft.slot === 'c2.examples' && equal(draft.baseExamples, data.c2.examples) && valid(draft.examples, data.c2.examples)) s.otherExamples = draft.examples;
       } catch { /* The destination editor reports unreadable drafts without changing them. */ }
 
       document.querySelector('[data-cs-coverage]').textContent = `${s.items.length} editable items.` + (missing.length ? ' Not configured for this course: ' + missing.join(', ') + '.' : ' All course slots in this chapter are connected.');
       }
-      if (isCommon) {
-        const approved = releases.find(row => row.chapter === chapter);
-        if (approved) {
-          if (!valid(approved.slots, s.base)) throw Error('Common content no longer matches its source.');
-          // JSONB storage reorders keys. Keep fields in the source's reading order.
-          s.base = Object.fromEntries(Object.entries(s.base).map(([path, fields]) =>
-            [path, Object.fromEntries(Object.keys(fields).map(key => [key, approved.slots[path][key]]))]));
-        }
-      }
+      const sourceBase=clone(s.base);
+      s.englishBase=isCommon?Object.fromEntries(Object.entries(sourceBase).map(([path,fields])=>[path,Object.fromEntries(Object.keys(fields).map(key=>[key,englishReleases.find(r=>r.chapter===chapter)?.slots?.[path]?.[key] ?? fields[key]]))])):
+        Object.fromEntries(Object.keys(sourceBase).map(path=>[path,clone(get(englishData,path))]));
+      const approved=releases.find(r=>r.chapter===chapter);
+      const baseline=approved || (locale==='nl'?seeds.find(r=>r.chapter===chapter):null);
+      if(baseline){
+        if(!valid(baseline.slots,sourceBase))throw Error('Content no longer matches its source.');
+        // Retain catalog order after JSONB reorders object keys.
+        s.base=isCommon?Object.fromEntries(Object.entries(sourceBase).map(([path,fields])=>[path,Object.fromEntries(Object.keys(fields).map(key=>[key,baseline.slots[path][key]]))])):clone(baseline.slots);
+      } else if(locale==='nl')throw Error('Translation setup is not ready.');
+      s.reviewedSource=locale==='nl'?(approved?(approved.source_release||null):s.englishRelease):null;
+      s.sourceStale=locale==='nl' && s.reviewedSource!==s.englishRelease;
+      const languageStatus=()=>{
+        host.querySelector('[data-cs-language-status]').textContent=locale==='nl'?(s.sourceStale?'English source changed. Compare and review your translation before submitting.':approved?'Nederlands · Approved Beta baseline':'Nederlands · Translation draft. English starting text is not a completed translation.'):'English · Source content';
+        host.querySelector('[data-cs-source-reviewed]').hidden=!s.sourceStale;
+      };
+      host.querySelector('[data-cs-source-reviewed]').onclick=()=>{s.reviewedSource=s.englishRelease;s.sourceStale=false;languageStatus();save(s);controls(s);};
       s.values = clone(s.base);
       let status = '';
       try {
         s.raw = localStorage.getItem(s.key); s.storageRead = true;
         if (s.raw !== null) {
           const saved = JSON.parse(s.raw);
-          if (saved.schema !== 1 || (isCommon ? saved.scope !== 'common' || saved.chapter !== chapter || saved.sourceHTML !== html : saved.course !== courseId) || (saved.baseRelease || null) !== s.baseRelease) throw Error('Invalid draft');
+          const upgraded=isCommon && locale==='en' ? common().upgradeDraft(saved,s.base) : null;
+          if(upgraded){s.needsUpgrade=true;saved.slots=upgraded;saved.baseSlots=clone(s.base);}
+          if (saved.schema !== 1 || (saved.locale || 'en') !== locale || (isCommon ? saved.scope !== 'common' || saved.chapter !== chapter || saved.sourceHTML !== html && !upgraded : saved.course !== courseId) || (saved.baseRelease || null) !== s.baseRelease) throw Error('Invalid draft');
           let values, baseline;
           if (!isCommon && chapter === 'c2') {
             if (saved.slot !== 'c2.examples' || !equal(saved.baseExamples, s.base['c2.examples'])) throw Error('Invalid examples');
@@ -556,12 +589,14 @@
           // Compare keys without relying on serialized property order.
           if (!baseline || Object.keys(baseline).length !== Object.keys(s.base).length || Object.keys(s.base).some(k => !equal(baseline[k], s.base[k])) || !valid(values, s.base)) throw Error('Changed source or invalid draft');
           s.values = Object.fromEntries(Object.keys(s.base).map(k => [k, clone(values[k])]));
-          status = 'Saved browser draft restored. Beta is unchanged.';
+          if(locale==='nl'){s.reviewedSource=saved.sourceRelease||null;s.sourceStale=s.reviewedSource!==s.englishRelease;}
+          status = s.needsUpgrade?'Saved draft restored. Save once to include the newly editable items.':'Saved browser draft restored. Beta is unchanged.';
         }
       } catch {
         s.blocked = true;
         status = 'Saved draft could not be restored or its Beta source has changed. The saved copy has not been changed; the preview shows current Beta content. Reset draft will discard the saved copy.';
       }
+      languageStatus();
       s.saved = clone(s.values); message(s, status, s.blocked);
       host.querySelectorAll('[data-cs-save]').forEach(button => button.addEventListener('click', () => save(s)));
       host.querySelector('[data-cs-reset]').addEventListener('click', () => reset(s));
@@ -575,7 +610,7 @@
         button.disabled = true;
         try {
           if (!canSubmit(s)) throw Error('Save your latest changes before sending this chapter.');
-          const result = await (s.isCommon ? window.AIWiseControlTower.submitCommonDraft : window.AIWiseControlTower.submitStudioDraft)({course:s.courseId, chapter:s.chapter,
+          const result = await (s.isCommon ? window.AIWiseControlTower.submitCommonDraft : window.AIWiseControlTower.submitStudioDraft)({course:s.courseId, chapter:s.chapter, locale:s.locale, sourceRelease:s.reviewedSource,
             courseName:s.config.label, raw:s.raw, slots:s.saved, baseSlots:s.base, baseRelease:s.baseRelease,
             summary:submission.querySelector('[data-cs-submit-summary]').value,
             name:submission.querySelector('[data-cs-submit-name]').value});
@@ -587,6 +622,7 @@
         }
       });
       host.querySelector('[data-cs-prev]').addEventListener('click', () => selectItem(s, s.index - 1, true));
+      host.querySelector('[data-cs-edit]').addEventListener('click',()=>openEditor(s,s.index));
       host.querySelector('[data-cs-next]').addEventListener('click', () => selectItem(s, s.index + 1, true));
       const trigger = host.querySelector('#cs-example'), menu = host.querySelector('#cs-examples-menu');
       const openPicker = () => { s.cancelPickerClose?.(); s.cancelPickerClose = null; menu.classList.remove('cs-closing'); menu.inert = false; menu.hidden = false; trigger.setAttribute('aria-expanded', 'true'); const selected = menu.querySelector('[aria-pressed="true"]'); selected?.focus({preventScroll: true}); if (selected) menu.scrollTop = Math.max(0, selected.offsetTop - 44); };
@@ -614,8 +650,9 @@
       });
       s.dialog.addEventListener('click', e => { if (e.target === s.dialog && e.clientX < s.dialog.getBoundingClientRect().left) closeEditor(s); });
       s.frame.addEventListener('load', () => connectPreview(s), {once: true});
-      s.frame.srcdoc = previewHTML(html, url.href, s.isCommon, isCommon ? null : contextReleases.find(row => row.chapter === chapter));
-    } catch (error) { if (session === s && error.name !== 'AbortError') message(s, 'This chapter could not be loaded. Reload to try again or open it in Beta. Saved drafts are unchanged.', true); }
+      if(chapter==='map'){url.searchParams.set('studio-preview','1');s.frame.src=url.href;}
+      else s.frame.srcdoc = previewHTML(html, url.href, s.isCommon, isCommon ? null : contextReleases.find(row => row.chapter === chapter));
+    } catch (error) { if (session === s && error.name !== 'AbortError') { console.error('[Content Studio]',error); message(s, 'This chapter could not be loaded. Reload to try again or open it in Beta. Saved drafts are unchanged.', true); } }
   }
   window.AIWiseAuth?.subscribe(() => { if(session) controls(session); });
   window.addEventListener('beforeunload', event => { if (dirty()) { event.preventDefault(); event.returnValue = ''; } });

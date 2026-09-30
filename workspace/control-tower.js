@@ -29,17 +29,17 @@
   const link = (text, url, primary = false) => `<a class="button${primary ? ' primary' : ''}" href="${url}">${esc(text)}</a>`;
   const note = text => `<p class="notice">${esc(text)}</p>`;
   function validSnapshot(s) {
-    return s && s.schema === 1 && ['aws1','ped'].includes(s.course) && ['c2','c3'].includes(s.chapter) &&
+    return s && s.schema === 1 && ['aws1','ped','other'].includes(s.course) && ['c2','c3'].includes(s.chapter) &&
       Number.isFinite(Date.parse(s.savedAt)) && s.slots && typeof s.slots === 'object' && !Array.isArray(s.slots) &&
       s.baseSlots && typeof s.baseSlots === 'object' && !Array.isArray(s.baseSlots) &&
       Object.keys(s.slots).length > 0 && Object.keys(s.slots).every(path => path.startsWith(s.chapter + '.') && Object.hasOwn(s.baseSlots, path));
   }
   function validCommonSnapshot(s) {
-    return s && s.schema === 1 && s.scope === 'common' && ['c1','c2','c3'].includes(s.chapter) &&
+    return s && s.schema === 1 && s.scope === 'common' && ['c1','c2','c3','map'].includes(s.chapter) &&
       Number.isFinite(Date.parse(s.savedAt)) && s.slots && s.baseSlots &&
       !Array.isArray(s.slots) && !Array.isArray(s.baseSlots) &&
       Object.keys(s.slots).length > 0 && Object.keys(s.slots).length === Object.keys(s.baseSlots).length &&
-      Object.keys(s.slots).every(path => path.startsWith(s.chapter + '.block-') && Object.hasOwn(s.baseSlots, path) &&
+      Object.keys(s.slots).every(path => (path.startsWith(s.chapter + '.block-') || path.startsWith(s.chapter + '.extra-')) && Object.hasOwn(s.baseSlots, path) &&
         s.slots[path] && s.baseSlots[path] && typeof s.slots[path] === 'object' && typeof s.baseSlots[path] === 'object' &&
         !Array.isArray(s.slots[path]) && !Array.isArray(s.baseSlots[path]) &&
         Object.keys(s.slots[path]).length === Object.keys(s.baseSlots[path]).length &&
@@ -253,7 +253,7 @@
       try {update(request.id,request.rev,r=>{r.seenBy={...r.seenBy,[personKey()]:now()};});request=db.requests.find(r=>r.id===id);}catch(error){problem=error.message;}
     }
     const parent=db.requests.find(r=>r.id===request.parentId),child=db.requests.find(r=>r.parentId===id);
-    const controls=request.shared ? (request.status==='revision'?link(request.contentSnapshot.course === 'common' ? 'Open Common Studio' : 'Open Content Studio', request.contentSnapshot.course === 'common' ? '#common/' + request.contentSnapshot.chapter : '#studio/'+request.contentSnapshot.course+'/'+request.contentSnapshot.chapter,true):'') : request.status==='draft'?link('Edit draft','#tower/edit/'+id,true):request.status==='revision'?(child?link('Open resubmission',href(child.id),true):link('Revise and resubmit','#tower/resubmit/'+id,true)):'';
+    const controls=request.shared ? (request.status==='revision'?link(request.contentSnapshot.course === 'common' ? 'Open Common Studio' : 'Open Content Studio', '?lang='+(request.contentSnapshot.locale||'en')+(request.contentSnapshot.course === 'common' ? '#common/' + request.contentSnapshot.chapter : '#studio/'+request.contentSnapshot.course+'/'+request.contentSnapshot.chapter),true):'') : request.status==='draft'?link('Edit draft','#tower/edit/'+id,true):request.status==='revision'?(child?link('Open resubmission',href(child.id),true):link('Revise and resubmit','#tower/resubmit/'+id,true)):'';
     const history=request.events.map(e=>`<li><div><strong>${esc(e.action)}</strong><span>${esc(e.by)} · ${esc(date(e.at))}</span></div>${e.reason?`<p class="ct-preserve">${esc(e.reason)}</p>`:''}</li>`).join('');
     const fields=[['Target item / course',request.target],['Exact version',request.version],['Target reference',request.targetRef],['Request details',request.details],['Expected outcome',request.outcome],...extras[request.type].map(([key,title])=>[title,request[key]]),['References',request.references],...(request.priority==='urgent'?[['Urgency reason',request.urgentReason]]:[]),...(request.parentId?[['Response to previous review',request.response]]:[])];
     show(request.title||'Untitled draft',label(request.route)+' · '+types[request.type],
@@ -283,13 +283,13 @@
     return window.AIWiseAuth?.snapshot().user?.displayName || 'Team member';
   }
   async function submitStudioDraft(input) {
-    if (localStorage.getItem(`aiwise_content_studio_${input.course}_${input.chapter}_v1`) !== input.raw) throw Error('This draft changed in another tab. Reload before submitting.');
+    if (localStorage.getItem(`aiwise_content_studio_${input.course}_${input.chapter}${input.locale==='nl'?'_nl':''}_v1`) !== input.raw) throw Error('This draft changed in another tab. Reload before submitting.');
     return window.AIWiseSharedStudio.submit(input);
   }
   async function submitCommonDraft(input) {
-    if (localStorage.getItem(`aiwise_common_studio_${input.chapter}_v1`) !== input.raw) throw Error('This draft changed in another tab. Reload before submitting.');
+    if (localStorage.getItem(`aiwise_common_studio_${input.chapter}${input.locale==='nl'?'_nl':''}_v1`) !== input.raw) throw Error('This draft changed in another tab. Reload before submitting.');
     const draft = JSON.parse(input.raw);
-    if (!validCommonSnapshot(draft) || draft.chapter !== input.chapter ||
+    if (!validCommonSnapshot(draft) || draft.chapter !== input.chapter || (draft.locale||'en') !== (input.locale||'en') ||
         JSON.stringify(draft.slots) !== JSON.stringify(input.slots) || JSON.stringify(draft.baseSlots) !== JSON.stringify(input.baseSlots))
       throw Error('This saved draft cannot be submitted. Reload the editor and try again.');
     return window.AIWiseSharedStudio.submit({...input, course:'common'});

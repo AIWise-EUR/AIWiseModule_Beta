@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   let identity = '', generation = 0, rows = [], role = null, error = '', loaded = false;
-  const names = {common:'AI-Wise Common',aws1:'Academic Writing Skills I',ped:'Pedagogical Sciences'};
+  const names = {other:'Other courses',common:'AI-Wise Common',aws1:'Academic Writing Skills I',ped:'Pedagogical Sciences'};
   function snapshot() { return {rows:rows.map(r=>({...r})),role,error,loaded}; }
   function notify() { window.dispatchEvent(new Event('aiwise:shared-studio')); }
   function friendly(e) {
@@ -19,15 +19,15 @@
     finally { clearTimeout(timer); }
   }
   function convert(r) {
-    const name=names[r.course] || r.course;
+    const name=names[r.course] || r.course, language=r.locale==='nl'?'Nederlands':'English';
     return {shared:true,id:r.id,route:r.course === 'common' ? 'common' : 'studio',type:'submission',status:r.status,rev:r.revision,
-      title:`${name} · ${r.chapter.toUpperCase()} content update`,target:`${name} · ${r.chapter.toUpperCase()}`,
+      title:`${name} · ${r.chapter.toUpperCase()} · ${language} content update`,target:`${name} · ${r.chapter.toUpperCase()} · ${language}`,
       version:'Saved draft · '+r.saved_at,targetRef:'Shared content copy · '+r.id,
       details:r.summary,changes:r.summary,outcome:'Apply the approved chapter to Beta.',references:'',priority:'normal',
       author:{name:r.author_name,userId:r.author_id},createdAt:r.submitted_at,submittedAt:r.submitted_at,seenBy:{},
       decision:r.decided_at?{status:r.status,reason:r.decision_reason,by:r.reviewer_name,at:r.decided_at}:null,
       events:[{action:'Submitted to team',by:r.author_name,at:r.submitted_at,reason:r.summary},...(r.decided_at?[{action:r.status==='approved'?'Approved and applied to Beta':r.status==='revision'?'Revision requested':'Rejected',by:r.reviewer_name,at:r.decided_at,reason:r.decision_reason}]:[])],
-      contentSnapshot:{schema:1,course:r.course,chapter:r.chapter,courseName:name,savedAt:r.saved_at,slots:r.slots,baseSlots:r.base_slots}};
+      contentSnapshot:{schema:1,course:r.course,chapter:r.chapter,locale:r.locale||'en',sourceRelease:r.source_release,courseName:name,savedAt:r.saved_at,slots:r.slots,baseSlots:r.base_slots}};
   }
   async function refresh() {
     const token=++generation, user=window.AIWiseAuth.snapshot();
@@ -41,16 +41,16 @@
     } catch(e) { if(token!==generation)return snapshot(); rows=[];role=null;loaded=false;error=friendly(e).message; }
     notify();return snapshot();
   }
-  async function submit({course,chapter,raw,slots,baseSlots,baseRelease,summary}) {
+  async function submit({course,chapter,raw,slots,baseSlots,baseRelease,summary,locale='en',sourceRelease=null}) {
     const backend=await client(), user=window.AIWiseAuth.snapshot().user;
     const saved=JSON.parse(raw), owner=user.id;
     const assertOwner=()=>{const now=window.AIWiseAuth.snapshot();if(now.status!=='member'||now.user?.id!==owner)throw Error('Your account changed. Reopen the submission form.');};
     // Stable per-account content ID makes a lost response safe to retry, including across tabs.
-    const bytes=new TextEncoder().encode(user.id+'\n'+course+'\n'+chapter+'\n'+raw);
+    const bytes=new TextEncoder().encode(user.id+'\n'+course+'\n'+chapter+'\n'+locale+'\n'+raw);
     const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');
     const clientId=hash.slice(0,8)+'-'+hash.slice(8,12)+'-4'+hash.slice(13,16)+'-8'+hash.slice(17,20)+'-'+hash.slice(20,32);
     assertOwner();
-    const id=await query(backend.rpc('workspace_submit_content',{p_client_id:clientId,p_course:course,p_chapter:chapter,p_slots:slots,p_base_slots:baseSlots,p_base_release:baseRelease||null,p_saved_at:saved.savedAt,p_summary:summary}));
+    const id=await query(backend.rpc('workspace_submit_localized_content',{p_client_id:clientId,p_locale:locale,p_source_release:sourceRelease,p_course:course,p_chapter:chapter,p_slots:slots,p_base_slots:baseSlots,p_base_release:baseRelease||null,p_saved_at:saved.savedAt,p_summary:summary}));
     assertOwner();await refresh();return {id};
   }
   async function decide(id,revision,status,reason) {

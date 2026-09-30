@@ -18,3 +18,4 @@
 .br-target-label {display:grid;gap:3px;font-size:11px;min-width:0;max-width:260px;}.br-target-label select {width:100%;min-width:0;}.br-tools {max-height:140px;overflow:auto;}
 
 @media(max-width:850px){.br-dialog{overflow-y:auto;}.br-body{min-height:440px;grid-template-rows:minmax(240px,1fr) minmax(200px,40%);}}
+@media(max-width:600px){.br-toolbar label{flex:1 1 135px;}.br-toolbar select{min-width:135px;}}

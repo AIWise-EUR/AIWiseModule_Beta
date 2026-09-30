@@ -1,18 +1,19 @@
 /* Approved Beta content only. Pending submissions and review metadata are private. */
 (() => {
   'use strict';
-  async function read(course) {
-    if (!['aws1','ped','common'].includes(course)) return [];
+  async function read(course, locale = 'en', sources = false) {
+    if (!['en','nl'].includes(locale)) throw Error('Unsupported content language.');
+    if (!['aws1','ped','other','common'].includes(course)) return [];
     const config = window.AIWiseSupabaseConfig;
     if (!config) throw Error('Beta content connection is unavailable.');
     const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 12000);
     try {
-      const url = new URL('/rest/v1/workspace_beta_content', config.url);
-      url.search = new URLSearchParams({select:'course,chapter,submission_id,slots,approved_at',course:'eq.'+course});
+      const url = new URL('/rest/v1/'+(sources?'workspace_content_sources':'workspace_beta_content'), config.url);
+      url.search = new URLSearchParams({select:sources?'course,chapter,locale,slots':'course,chapter,locale,submission_id,source_release,slots,approved_at',course:'eq.'+course,locale:'eq.'+locale});
       const response = await fetch(url, {headers:{apikey:config.publishableKey},cache:'no-store',credentials:'omit',signal:controller.signal});
       if (!response.ok) throw Error('Approved Beta content could not be loaded. Please retry.');
       const rows = await response.json();
-      if (!Array.isArray(rows) || rows.some(row => row.course !== course || !(course === 'common' ? ['c1','c2','c3'] : ['c2','c3']).includes(row.chapter) || !row.slots || typeof row.slots !== 'object')) throw Error('Invalid approved content response.');
+      if (!Array.isArray(rows) || rows.some(row => row.course !== course || row.locale !== locale || !(course === 'common' ? ['c1','c2','c3','map'] : ['c2','c3']).includes(row.chapter) || !row.slots || typeof row.slots !== 'object')) throw Error('Invalid approved content response.');
       return rows;
     } finally { clearTimeout(timer); }
   }
@@ -28,5 +29,5 @@
     }
     return next;
   }
-  window.AIWiseBetaContent = Object.freeze({read,apply});
+  window.AIWiseBetaContent = Object.freeze({read,apply,sources:(course,locale)=>read(course,locale,true)});
 })();
