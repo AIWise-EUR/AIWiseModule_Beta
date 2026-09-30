@@ -14,6 +14,7 @@
     ['common', 'Common Studio', `${base}#common`, '▥'],
     ['tower', 'Control Tower', `${base}#tower`, '⇄'],
     ['beta', 'Beta', `${base}#beta`, '▣', true],
+    ['team', 'Team management', `${base}#team`, '♧'],
     ['published', 'Published ↗', 'https://aiwise-eur.github.io/AI-Wise/', '↗']
   ];
   const commonItems = [['beta/c1', 'C1 · What is GenAI?'], ['beta/c2', 'C2 · GenAI and human cognition'], ['beta/c3', 'C3 · How to engage with GenAI']];

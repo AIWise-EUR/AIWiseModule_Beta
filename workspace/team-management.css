@@ -1,0 +1,42 @@
+/* The existing campus, type, colours and motion remain the administrator view. */
+html[data-workspace-access="checking"] #home,
+html[data-workspace-access="checking"] #room { visibility:hidden; }
+html:not([data-workspace-access="admin"]) .sidebar-area:not([data-area-row="beta"]),
+html:not([data-workspace-access="admin"]) .sidebar-courses,
+html:not([data-workspace-access="admin"]) .sidebar-module,
+html:not([data-workspace-access="admin"]) .sidebar-note { display:none; }
+html:not([data-workspace-access="admin"]):not([data-workspace-access="member"]) .sidebar-area[data-area-row="beta"] { display:none; }
+.workspace-access, .beta-welcome { max-width:720px; margin:48px auto; padding:32px; background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--sh); }
+.beta-welcome svg { display:block; width:240px; max-width:100%; margin:0 auto 20px; }
+.team-summary { display:flex; flex-wrap:wrap; gap:16px 48px; margin:24px 0; }
+.team-summary p { margin:0; font-size:14px; line-height:1.8; }
+.team-panel { border:1px solid var(--line); border-radius:var(--r); background:var(--card); padding:24px; }
+.team-search label, .team-dialog label { display:block; font-weight:600; margin-bottom:8px; }
+.team-search>div { display:flex; flex-wrap:wrap; gap:8px; }
+.team-search input { flex:1 1 220px; min-width:0; }
+.team-search input, .team-dialog select { min-height:42px; padding:8px 12px; border:1px solid var(--line); border-radius:5px; font:inherit; background:white; color:var(--ink); }
+.team-people { list-style:none; padding:0; margin:16px 0; }
+.team-person { display:flex; align-items:center; gap:16px; border-top:1px solid var(--line-2); padding:18px 0; }
+.team-person-name { flex:1; min-width:0; display:grid; gap:6px; overflow-wrap:anywhere; }
+.team-person-name>span { font-size:13px; color:var(--ink-3); }
+.team-person .badge { color:var(--ink-2); font-size:12px; }
+.team-person button { flex-shrink:0; min-height:42px; }
+.team-you { color:var(--signal); font-size:12px; margin-left:6px; }
+.team-pagination { display:flex; align-items:center; justify-content:flex-end; gap:12px; flex-wrap:wrap; font-size:13px; }
+.team-dialog { width:min(520px,calc(100vw - 32px)); box-sizing:border-box; max-height:calc(100dvh - 32px); overflow:auto; padding:28px; background:var(--card); border:1px solid var(--line); border-radius:var(--r); color:var(--ink-2); }
+.team-dialog::backdrop { background:rgba(21,18,29,.38); }
+.team-dialog h2 { margin-top:0; }
+.team-dialog select { width:100%; }
+.team-dialog p { overflow-wrap:anywhere; }
+.team-help { color:var(--ink-3); font-size:13px; line-height:1.6; }
+.team-dialog [role="alert"] { color:var(--danger); }
+.team-self-note { padding:12px; background:var(--paper-2); font-size:13px; line-height:1.6; }
+.team-dialog .toolbar { justify-content:flex-end; }
+.team-panel button:disabled,.team-dialog button:disabled { opacity:.6; cursor:not-allowed; }
+@media(max-width:600px) {
+ .team-panel { padding:16px; }
+ .team-person { flex-wrap:wrap; gap:12px; }
+ .team-person-name { flex-basis:100%; }
+ .team-person .badge { margin-right:auto; }
+ .workspace-access,.beta-welcome { margin:24px auto; padding:24px; }
+}
