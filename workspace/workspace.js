@@ -132,13 +132,13 @@
     const [courseId, chapter = 'c2', itemIndex = '0', extra] = part.split('/');
     if (window.AIWiseContentStudio.supports(courseId) && ['c2','c3'].includes(chapter) && /^\d+$/.test(itemIndex) && Number.isSafeInteger(Number(itemIndex)) && !extra) { window.AIWiseContentStudio.render(shell, courseId, chapter, Number(itemIndex)); return; }
     if (part) { window.AIWiseCourses.render(part, shell); return; }
-    shell('studio','Content Studio',hint(areas.studio.note,'Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.'),'<div class="cards">'+window.AIWiseCourses.cards('studio')+'</div>');
+    shell('studio','Content Studio',hint(areas.studio.note,'Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.'),'<div class="cards">'+window.AIWiseCourses.cards('studio')+card('Other courses','Default course examples and templates.','#studio/other','Open editor')+'</div>');
   }
 
   function renderCommon(part) {
     if (part) {
       const [chapter, index = '0', extra] = part.split('/');
-      if (['c1','c2','c3'].includes(chapter) && /^\d+$/.test(index) && Number.isSafeInteger(Number(index)) && !extra) { window.AIWiseContentStudio.render(shell, 'common', chapter, Number(index)); return; }
+      if (['c1','c2','c3','map'].includes(chapter) && /^\d+$/.test(index) && Number.isSafeInteger(Number(index)) && !extra) { window.AIWiseContentStudio.render(shell, 'common', chapter, Number(index)); return; }
       renderNotFound(); return;
     }
     shell('common','Common Studio',hint(areas.common.note,'Edit the shared C1–C3 content in the module preview. Course examples remain read-only. Save a chapter draft, then send a copy to Control Tower for review. Drafts stay in this browser. Submitted copies are shared with the team; administrator approval applies them to Beta.'),

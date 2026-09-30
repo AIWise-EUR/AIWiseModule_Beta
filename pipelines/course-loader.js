@@ -62,6 +62,8 @@
     return cur;
   }
 
+  var renderDoc = document;
+  function copy(key,fallback) { return window.AIWiseCommonContent?.copy(renderDoc,key,fallback) ?? fallback; }
   /* ── small DOM helpers (all text goes through textContent) ─ */
   function el(tag, className, text) {
     var n = document.createElement(tag);
@@ -82,7 +84,7 @@
         var wrap = el("div", "carousel-layer layer-" + kind);
         var lab = el("div", "carousel-layer-label");
         lab.appendChild(el("span", "dot"));
-        lab.appendChild(document.createTextNode(label));
+        var labelText=el("span",null,label);labelText.dataset.copyUse=kind;lab.appendChild(labelText);
         wrap.appendChild(lab);
         wrap.appendChild(node);
         return wrap;
@@ -93,13 +95,13 @@
         var card = el("div", "carousel-card");
 
         var header = el("div", "carousel-card-header");
-        header.appendChild(el("span", "card-num", "Example " + (i + 1) + " of " + total));
+        var counter=el("span", "card-num", copy("example","Example") + " " + (i + 1) + " " + copy("of","of") + " " + total);counter.dataset.exampleIndex=i+1;counter.dataset.exampleTotal=total;header.appendChild(counter);
         header.appendChild(document.createTextNode(" " + (item.title || "")));
         card.appendChild(header);
 
         var layers = el("div", "carousel-layers");
 
-        layers.appendChild(layer("thinking", "What you are actually thinking",
+        layers.appendChild(layer("thinking", copy("thinking", "What you are actually thinking"),
           el("p", null, item.thinking || "")));
 
         var typingP = el("p");
@@ -108,9 +110,9 @@
           typingP.appendChild(document.createElement("br"));
         }
         typingP.appendChild(document.createTextNode(item.typing || ""));
-        layers.appendChild(layer("typing", "What you type", typingP));
+        layers.appendChild(layer("typing", copy("typing", "What you type"), typingP));
 
-        layers.appendChild(layer("processing", "How the model actually processes this",
+        layers.appendChild(layer("processing", copy("processing", "How the model actually processes this"),
           el("p", null, item.processing || "")));
 
         card.appendChild(layers);
@@ -141,11 +143,11 @@
       var intro = el("p", null, data.intro || "");
       intro.setAttribute("style", "font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.6;");
       container.appendChild(intro);
-      var TAG_LABELS = { adopt: "Adopt", modify: "Modify", discard: "Discard" };
+      var TAG_LABELS = { adopt: copy("adopt","Adopt"), modify: copy("modify","Modify"), discard: copy("discard","Discard") };
       (data.items || []).forEach(function (item) {
         var row = el("div", "amd-item");
         row.appendChild(el("div", "amd-item-text", item.text || ""));
-        row.appendChild(el("span", "amd-tag amd-tag-" + item.tag, TAG_LABELS[item.tag] || item.tag));
+        var tag=el("span", "amd-tag amd-tag-" + item.tag, TAG_LABELS[item.tag] || item.tag);tag.dataset.copyUse=item.tag;row.appendChild(tag);
         row.appendChild(el("div", "amd-reason", item.reason || ""));
         container.appendChild(row);
       });
@@ -160,7 +162,7 @@
         group.appendChild(el("span", "sat-phase-label sat-phase-" + kind, phase.label));
         (phase.steps || []).forEach(function (step) {
           var row = el("div", "sat-step");
-          row.appendChild(el("span", "sat-step-badge sat-badge-" + step.actor, step.actor === "ai" ? "AI" : step.actor.charAt(0).toUpperCase() + step.actor.slice(1)));
+          var badge=el("span", "sat-step-badge sat-badge-" + step.actor, copy(step.actor,step.actor === "ai" ? "AI" : step.actor.charAt(0).toUpperCase() + step.actor.slice(1)));badge.dataset.copyUse=step.actor;row.appendChild(badge);
           var content = el("div", "sat-step-content");
           content.appendChild(el("span", "sat-step-name", step.name));
           content.appendChild(document.createTextNode(step.text || ""));
@@ -201,6 +203,7 @@
 
   /* ── fill every slot ───────────────────────────────────── */
   function fillSlots(data, root) {
+    renderDoc = root || document;
     var slots = (root || document).querySelectorAll("[data-slot]");
     slots.forEach(function (node) {
       var path = node.getAttribute("data-slot");
@@ -274,9 +277,14 @@
   }
 
   function load(id, isFallback) {
-    return fetchCourse(id)
+    return Promise.resolve(window.AIWiseCommonReady).then(function(){return fetchCourse(id);})
       .then(function (data) {
-        return window.AIWiseBetaContent ? window.AIWiseBetaContent.read(id).then(function(rows) { return window.AIWiseBetaContent.apply(data, rows); }) : data;
+        return window.AIWiseBetaContent ? window.AIWiseBetaContent.read(id,window.AIWiseLanguage?.current() || "en").then(function(rows) { var chapter=document.querySelector('[data-current-block]')?.dataset.currentBlock;
+          if(window.AIWiseLanguage?.current()==='nl' && ['c2','c3'].includes(chapter) && !rows.some(r=>r.chapter===chapter)) {
+            var note=document.createElement('p');note.dataset.languageNotice='';note.setAttribute('role','status');note.textContent='Nederlands course examples are not approved yet. English examples are shown.';
+            note.style.cssText='padding:12px;background:#fff3e8;color:#682b1b';document.querySelector('main')?.prepend(note);
+          }
+          return window.AIWiseBetaContent.apply(data, rows); }) : data;
       })
       .then(function (data) {
         document.getElementById("aiwise-beta-error")?.remove();
@@ -357,9 +365,9 @@
     pill.id = "aiwiseCourseSwitch";
     pill.className = "aiwise-course-switch";
     pill.setAttribute("aria-haspopup", "dialog");
-    pill.appendChild(el("span", "acs-label", "Course"));
+    pill.appendChild(el("span", "acs-label", copy("course",'Course')));
     pill.appendChild(el("span", "acs-name", currentName));
-    pill.appendChild(el("span", "acs-change", "Change"));
+    pill.appendChild(el("span", "acs-change", copy("change",'Change')));
     document.body.appendChild(pill);
 
     /* modal */
@@ -367,14 +375,14 @@
     modal.className = "aiwise-course-modal";
     modal.setAttribute("role", "dialog");
     modal.setAttribute("aria-modal", "true");
-    modal.setAttribute("aria-label", "Choose your course");
+    modal.setAttribute("aria-label", copy("choose-course",'Choose your course'));
     modal.hidden = true;
 
     var backdrop = el("div", "acm-backdrop");
     var card = el("div", "acm-card");
-    card.appendChild(el("h2", "acm-title", "Choose your course"));
+    card.appendChild(el("h2", "acm-title", copy("choose-course",'Choose your course')));
     card.appendChild(el("p", "acm-desc",
-      "AI-Wise adapts its examples, explanations, and prompt templates to your course. You can change this at any time."));
+      copy("course-help",'AI-Wise adapts its examples, explanations, and prompt templates to your course. You can change this at any time.')));
     var options = el("div", "acm-options");
     list.forEach(function (c) {
       var btn = document.createElement("button");
@@ -384,7 +392,7 @@
       btn.appendChild(el("span", null, c.full_name));
       btn.addEventListener("click", function () {
         if (c.id === currentId) { close(); return; }
-        window.location.href = window.location.pathname + "?course=" + encodeURIComponent(c.id);
+        window.location.href = window.location.pathname + "?course=" + encodeURIComponent(c.id) + (window.AIWiseLanguage?.current()==="nl"?"&lang=nl":"");
       });
       options.appendChild(btn);
     });
@@ -434,7 +442,7 @@
       var hasParam = new URLSearchParams(window.location.search).get("course");
       if (!hasParam) firstVisit = !localStorage.getItem(STORAGE_KEY);
     } catch (e) {}
-    load(resolveCourseId(), false);
+    window.AIWiseCourseReady = load(resolveCourseId(), false);
     initUI(firstVisit);
   }
 

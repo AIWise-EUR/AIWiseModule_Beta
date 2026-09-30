@@ -76,7 +76,7 @@ const root=path.resolve(__dirname,'../..');
  vm.runInNewContext(fs.readFileSync(path.join(root,'pipelines/common-content.js'),'utf8'),ctx);
  for(const chapter of ['c1','c2','c3']) {
   const document=parseHTML(fs.readFileSync(path.join(root,'common/aiwise-'+chapter+'-final.html'),'utf8')).document;
-  const expected=Object.fromEntries(ctx.window.AIWiseCommonContent.catalog(document,chapter).map(b=>[b.path,b.fields]));
+  const expected=Object.fromEntries(ctx.window.AIWiseCommonContent.legacyCatalog(document,chapter).map(b=>[b.path,b.fields]));
   const actual=sources.find(r=>r.course==='common'&&r.chapter===chapter).slots;
   assert.deepEqual(JSON.parse(JSON.stringify(expected)),actual,'seed matches exact module text');
  }

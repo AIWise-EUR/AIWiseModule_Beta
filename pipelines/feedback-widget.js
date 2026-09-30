@@ -83,6 +83,13 @@
     + '</button>';
   document.body.appendChild(wrapper);
 
+  function translateFeedback() {
+    const api=window.AIWiseCommonContent;if(!api)return;
+    const text=(selector,key)=>{const n=wrapper.querySelector(selector);n.textContent=api.copy(document,key,n.textContent);};
+    text('.fb-panel-title','feedback');text('.fb-launcher span','feedback');text('.fb-label','feedback-question');text('.fb-submit','send-feedback');text('.fb-success','feedback-thanks');
+    [['.fb-panel','aria-label','send-feedback'],['.fb-close','aria-label','close-feedback'],['.fb-textarea','placeholder','feedback-placeholder']].forEach(([selector,attr,key])=>{const n=wrapper.querySelector(selector);n.setAttribute(attr,api.copy(document,key,n.getAttribute(attr)));});
+  }
+  Promise.resolve(window.AIWiseCommonReady).then(translateFeedback);
   var launcher = wrapper.querySelector('.fb-launcher');
   var panel = wrapper.querySelector('.fb-panel');
   var closeBtn = wrapper.querySelector('.fb-close');

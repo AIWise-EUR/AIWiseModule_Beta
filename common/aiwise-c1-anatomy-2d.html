@@ -286,6 +286,46 @@ svg#diagram {
   </div>
 </div>
 
+<div data-anatomy-copy="user" hidden><span data-map-field="label">User</span><span data-map-field="tag">Physical</span><span data-map-field="desc">The human who types prompts and receives responses. The starting and ending point of every inference cycle.</span></div>
+<div data-anatomy-copy="device" hidden><span data-map-field="label">Local Device</span><span data-map-field="tag">Physical</span><span data-map-field="desc">Your laptop or phone. Only the interface — sends prompts and displays responses. No computation happens here.</span></div>
+<div data-anatomy-copy="server" hidden><span data-map-field="label">Cloud Server
+Data Centre</span><span data-map-field="tag">Physical</span><span data-map-field="desc">Remote GPU clusters in physical buildings. This is where all computation actually runs — vast electrical infrastructure.</span></div>
+<div data-anatomy-copy="company" hidden><span data-map-field="label">AI Company</span><span data-map-field="tag">AI Company</span><span data-map-field="desc">e.g. OpenAI, Anthropic, Google DeepMind. Controls training data selection, model architecture, and alignment decisions.</span></div>
+<div data-anatomy-copy="tr_data" hidden><span data-map-field="label">Training Data</span><span data-map-field="tag">Training</span><span data-map-field="desc">Billions of tokens from diverse sources, collected and curated before training begins.</span></div>
+<div data-anatomy-copy="tr_token" hidden><span data-map-field="label">Tokenisation</span><span data-map-field="tag">Training</span><span data-map-field="desc">Text split into subword units and converted to numbers. Language becomes a numerical sequence.</span></div>
+<div data-anatomy-copy="tr_posenc" hidden><span data-map-field="label">Positional
+Encoding</span><span data-map-field="tag">Training</span><span data-map-field="desc">Transformers process tokens in parallel and have no inherent sense of order. Positional encodings inject sequence position into each token.</span></div>
+<div data-anatomy-copy="algorithm" hidden><span data-map-field="label">Algorithm
++ Weights</span><span data-map-field="tag">Bridge</span><span data-map-field="desc">The transformer architecture. During training, weights adjust continuously. During inference, weights are frozen. Same architecture — different mode.</span></div>
+<div data-anatomy-copy="loss" hidden><span data-map-field="label">Loss +
+Backprop</span><span data-map-field="tag">Training</span><span data-map-field="desc">Prediction error is calculated and propagated back through the network. Weights are adjusted. This loop repeats billions of times.</span></div>
+<div data-anatomy-copy="rlhf" hidden><span data-map-field="label">Fine-tuning
+/ RLHF</span><span data-map-field="tag">Training</span><span data-map-field="desc">Human evaluators rate outputs. The model is trained toward helpfulness and accuracy. Consented user input feeds here, shaping alignment.</span></div>
+<div data-anatomy-copy="sub_web" hidden><span data-map-field="label">Web Crawl</span><span data-map-field="tag">Training Data</span><span data-map-field="desc">Publicly indexed web pages. Common Crawl is the primary source — the majority of training volume by token count.</span></div>
+<div data-anatomy-copy="sub_books" hidden><span data-map-field="label">Books</span><span data-map-field="tag">Training Data</span><span data-map-field="desc">Digitised books and long-form text. BooksCorpus, Project Gutenberg. Gives the model coherent long-range structure.</span></div>
+<div data-anatomy-copy="sub_papers" hidden><span data-map-field="label">Academic
+Papers</span><span data-map-field="tag">Training Data</span><span data-map-field="desc">arXiv, PubMed, academic databases. Domain-specific knowledge and scientific reasoning.</span></div>
+<div data-anatomy-copy="sub_code" hidden><span data-map-field="label">Code
+Repositories</span><span data-map-field="tag">Training Data</span><span data-map-field="desc">GitHub and similar. Programming corpora giving the model structured logical reasoning ability.</span></div>
+<div data-anatomy-copy="sub_wiki" hidden><span data-map-field="label">Encyclopaedic
+Curated</span><span data-map-field="tag">Training Data</span><span data-map-field="desc">Wikipedia, news archives, structured reference material. High quality, reliable baseline knowledge.</span></div>
+<div data-anatomy-copy="sub_licensed" hidden><span data-map-field="label">Licensed
+Data</span><span data-map-field="tag">Training Data</span><span data-map-field="desc">Data purchased or licensed from third-party publishers, news organisations, and data providers.</span></div>
+<div data-anatomy-copy="inf_prompt" hidden><span data-map-field="label">User Prompt</span><span data-map-field="tag">Inference</span><span data-map-field="desc">You type a message. Natural language enters the system. Your device sends it to the server via the internet.</span></div>
+<div data-anatomy-copy="inf_token" hidden><span data-map-field="label">Tokenisation</span><span data-map-field="tag">Inference</span><span data-map-field="desc">Your prompt is split using the same token format as training. From this point, your message is a sequence of numbers.</span></div>
+<div data-anatomy-copy="inf_posenc" hidden><span data-map-field="label">Positional
+Encoding</span><span data-map-field="tag">Inference</span><span data-map-field="desc">Token order is encoded before entering the transformer. Same step as training.</span></div>
+<div data-anatomy-copy="inf_logits" hidden><span data-map-field="label">Logits /
+Softmax</span><span data-map-field="tag">Inference</span><span data-map-field="desc">The final layer scores every token in the vocabulary. Softmax converts scores into a probability distribution — likelihoods, not answers.</span></div>
+<div data-anatomy-copy="inf_sampling" hidden><span data-map-field="label">Output
+Sampling</span><span data-map-field="tag">Inference</span><span data-map-field="desc">A token is selected probabilistically. Same prompt can produce different responses — generation is not deterministic by default.</span></div>
+<div data-anatomy-copy="inf_iface" hidden><span data-map-field="label">Response /
+Interface</span><span data-map-field="tag">Inference</span><span data-map-field="desc">Tokens decoded back into language. This is the first moment language exists again — everything before this was numbers.</span></div>
+<div data-common-copy hidden><span data-copy="internet">Internet</span><span data-copy="same-architecture">same architecture</span><span data-copy="different-mode">different mode</span><span data-copy="training-cycle">TRAINING CYCLE</span><span data-copy="inference-cycle">INFERENCE CYCLE</span></div>
+<script src="../pipelines/content-language.js?v=orientation-languages-v1"></script>
+<script src="../workspace/supabase-config.js"></script>
+<script src="../pipelines/beta-content.js?v=orientation-languages-v1"></script>
+<script src="../pipelines/common-content.js?v=orientation-languages-v1"></script>
 <script>
 // ─────────────────────────────────────────────────────────────
 // LAYOUT CONSTANTS
@@ -345,59 +385,60 @@ const SZ = {
 // ─────────────────────────────────────────────────────────────
 // NODE DATA
 // ─────────────────────────────────────────────────────────────
+function mapText(id,field) { return document.querySelector('[data-anatomy-copy="'+id+'"] [data-map-field="'+field+'"]').textContent; }
 const NODES = [
   // ── PHYSICAL ─────────────────────────────────────────────
-  { id:'user',    label:'User',              x:C.USER_X,    y:C.PHYS_Y,   type:'physical',   color:'#2563eb', tag:'Physical',
-    desc:'The human who types prompts and receives responses. The starting and ending point of every inference cycle.' },
-  { id:'device',  label:'Local Device',      x:C.DEVICE_X,  y:C.PHYS_Y,   type:'physical',   color:'#2563eb', tag:'Physical',
-    desc:'Your laptop or phone. Only the interface — sends prompts and displays responses. No computation happens here.' },
-  { id:'server',  label:'Cloud Server\nData Centre', x:C.SERVER_X, y:C.PHYS_Y, type:'physical', color:'#2563eb', tag:'Physical',
-    desc:'Remote GPU clusters in physical buildings. This is where all computation actually runs — vast electrical infrastructure.' },
-  { id:'company', label:'AI Company',        x:C.COMPANY_X, y:C.COMPANY_Y, type:'governance', color:'#7c3aed', tag:'AI Company',
-    desc:'e.g. OpenAI, Anthropic, Google DeepMind. Controls training data selection, model architecture, and alignment decisions.' },
+  { id:'user',    label:mapText('user','label'),              x:C.USER_X,    y:C.PHYS_Y,   type:'physical',   color:'#2563eb', tag:mapText('user','tag'),
+    desc:mapText('user','desc') },
+  { id:'device',  label:mapText('device','label'),      x:C.DEVICE_X,  y:C.PHYS_Y,   type:'physical',   color:'#2563eb', tag:mapText('device','tag'),
+    desc:mapText('device','desc') },
+  { id:'server',  label:mapText('server','label'), x:C.SERVER_X, y:C.PHYS_Y, type:'physical', color:'#2563eb', tag:mapText('server','tag'),
+    desc:mapText('server','desc') },
+  { id:'company', label:mapText('company','label'),        x:C.COMPANY_X, y:C.COMPANY_Y, type:'governance', color:'#7c3aed', tag:mapText('company','tag'),
+    desc:mapText('company','desc') },
 
   // ── TRAINING ─────────────────────────────────────────────
-  { id:'tr_data',   label:'Training Data',       x:C.TR_DATA_X,   y:C.TR_Y,   type:'training', color:'#16a34a', tag:'Training',
-    desc:'Billions of tokens from diverse sources, collected and curated before training begins.' },
-  { id:'tr_token',  label:'Tokenisation',        x:C.TR_TOKEN_X,  y:C.TR_Y,   type:'training', color:'#16a34a', tag:'Training',
-    desc:'Text split into subword units and converted to numbers. Language becomes a numerical sequence.' },
-  { id:'tr_posenc', label:'Positional\nEncoding', x:C.TR_POSENC_X, y:C.TR_Y,   type:'training', color:'#16a34a', tag:'Training',
-    desc:'Transformers process tokens in parallel and have no inherent sense of order. Positional encodings inject sequence position into each token.' },
-  { id:'algorithm', label:'Algorithm\n+ Weights', x:C.ALGO_X,      y:C.PHYS_Y, type:'bridge',   color:'#a07d39', tag:'Bridge',
-    desc:'The transformer architecture. During training, weights adjust continuously. During inference, weights are frozen. Same architecture — different mode.' },
-  { id:'loss',      label:'Loss +\nBackprop',    x:C.LOSS_X,      y:C.TR_Y,   type:'training', color:'#16a34a', tag:'Training',
-    desc:'Prediction error is calculated and propagated back through the network. Weights are adjusted. This loop repeats billions of times.' },
-  { id:'rlhf',      label:'Fine-tuning\n/ RLHF', x:C.RLHF_X,     y:C.RLHF_Y, type:'training', color:'#16a34a', tag:'Training',
-    desc:'Human evaluators rate outputs. The model is trained toward helpfulness and accuracy. Consented user input feeds here, shaping alignment.' },
+  { id:'tr_data',   label:mapText('tr_data','label'),       x:C.TR_DATA_X,   y:C.TR_Y,   type:'training', color:'#16a34a', tag:mapText('tr_data','tag'),
+    desc:mapText('tr_data','desc') },
+  { id:'tr_token',  label:mapText('tr_token','label'),        x:C.TR_TOKEN_X,  y:C.TR_Y,   type:'training', color:'#16a34a', tag:mapText('tr_token','tag'),
+    desc:mapText('tr_token','desc') },
+  { id:'tr_posenc', label:mapText('tr_posenc','label'), x:C.TR_POSENC_X, y:C.TR_Y,   type:'training', color:'#16a34a', tag:mapText('tr_posenc','tag'),
+    desc:mapText('tr_posenc','desc') },
+  { id:'algorithm', label:mapText('algorithm','label'), x:C.ALGO_X,      y:C.PHYS_Y, type:'bridge',   color:'#a07d39', tag:mapText('algorithm','tag'),
+    desc:mapText('algorithm','desc') },
+  { id:'loss',      label:mapText('loss','label'),    x:C.LOSS_X,      y:C.TR_Y,   type:'training', color:'#16a34a', tag:mapText('loss','tag'),
+    desc:mapText('loss','desc') },
+  { id:'rlhf',      label:mapText('rlhf','label'), x:C.RLHF_X,     y:C.RLHF_Y, type:'training', color:'#16a34a', tag:mapText('rlhf','tag'),
+    desc:mapText('rlhf','desc') },
 
   // ── TRAINING DATA SUB-NODES — arc fanning upward from tr_data ─
   // 6 nodes arranged in a semicircle above tr_data, radius ~130px
-  { id:'sub_web',      label:'Web Crawl',           x:C.TR_DATA_X-130, y:C.TR_Y-80,  type:'data_sub', color:'#ca8a04', tag:'Training Data',
-    desc:'Publicly indexed web pages. Common Crawl is the primary source — the majority of training volume by token count.' },
-  { id:'sub_books',    label:'Books',                x:C.TR_DATA_X-100, y:C.TR_Y-160, type:'data_sub', color:'#ca8a04', tag:'Training Data',
-    desc:'Digitised books and long-form text. BooksCorpus, Project Gutenberg. Gives the model coherent long-range structure.' },
-  { id:'sub_papers',   label:'Academic\nPapers',     x:C.TR_DATA_X-10,  y:C.TR_Y-210, type:'data_sub', color:'#ca8a04', tag:'Training Data',
-    desc:'arXiv, PubMed, academic databases. Domain-specific knowledge and scientific reasoning.' },
-  { id:'sub_code',     label:'Code\nRepositories',   x:C.TR_DATA_X+100, y:C.TR_Y-200, type:'data_sub', color:'#ca8a04', tag:'Training Data',
-    desc:'GitHub and similar. Programming corpora giving the model structured logical reasoning ability.' },
-  { id:'sub_wiki',     label:'Encyclopaedic\nCurated', x:C.TR_DATA_X+170, y:C.TR_Y-130, type:'data_sub', color:'#ca8a04', tag:'Training Data',
-    desc:'Wikipedia, news archives, structured reference material. High quality, reliable baseline knowledge.' },
-  { id:'sub_licensed', label:'Licensed\nData',       x:C.TR_DATA_X+50,  y:C.TR_Y-240, type:'data_sub', color:'#ca8a04', tag:'Training Data',
-    desc:'Data purchased or licensed from third-party publishers, news organisations, and data providers.' },
+  { id:'sub_web',      label:mapText('sub_web','label'),           x:C.TR_DATA_X-130, y:C.TR_Y-80,  type:'data_sub', color:'#ca8a04', tag:mapText('sub_web','tag'),
+    desc:mapText('sub_web','desc') },
+  { id:'sub_books',    label:mapText('sub_books','label'),                x:C.TR_DATA_X-100, y:C.TR_Y-160, type:'data_sub', color:'#ca8a04', tag:mapText('sub_books','tag'),
+    desc:mapText('sub_books','desc') },
+  { id:'sub_papers',   label:mapText('sub_papers','label'),     x:C.TR_DATA_X-10,  y:C.TR_Y-210, type:'data_sub', color:'#ca8a04', tag:mapText('sub_papers','tag'),
+    desc:mapText('sub_papers','desc') },
+  { id:'sub_code',     label:mapText('sub_code','label'),   x:C.TR_DATA_X+100, y:C.TR_Y-200, type:'data_sub', color:'#ca8a04', tag:mapText('sub_code','tag'),
+    desc:mapText('sub_code','desc') },
+  { id:'sub_wiki',     label:mapText('sub_wiki','label'), x:C.TR_DATA_X+170, y:C.TR_Y-130, type:'data_sub', color:'#ca8a04', tag:mapText('sub_wiki','tag'),
+    desc:mapText('sub_wiki','desc') },
+  { id:'sub_licensed', label:mapText('sub_licensed','label'),       x:C.TR_DATA_X+50,  y:C.TR_Y-240, type:'data_sub', color:'#ca8a04', tag:mapText('sub_licensed','tag'),
+    desc:mapText('sub_licensed','desc') },
 
   // ── INFERENCE ────────────────────────────────────────────
-  { id:'inf_prompt',   label:'User Prompt',          x:C.INF_PROMPT_X,  y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
-    desc:'You type a message. Natural language enters the system. Your device sends it to the server via the internet.' },
-  { id:'inf_token',    label:'Tokenisation',         x:C.INF_TOKEN_X,   y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
-    desc:'Your prompt is split using the same token format as training. From this point, your message is a sequence of numbers.' },
-  { id:'inf_posenc',   label:'Positional\nEncoding', x:C.INF_POSENC_X,  y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
-    desc:'Token order is encoded before entering the transformer. Same step as training.' },
-  { id:'inf_logits',   label:'Logits /\nSoftmax',    x:C.INF_LOGITS_X,  y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
-    desc:'The final layer scores every token in the vocabulary. Softmax converts scores into a probability distribution — likelihoods, not answers.' },
-  { id:'inf_sampling', label:'Output\nSampling',     x:C.INF_SAMP_X,    y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
-    desc:'A token is selected probabilistically. Same prompt can produce different responses — generation is not deterministic by default.' },
-  { id:'inf_iface',    label:'Response /\nInterface',x:C.INF_IFACE_X,   y:C.INF_Y,  type:'inference', color:'#ea580c', tag:'Inference',
-    desc:'Tokens decoded back into language. This is the first moment language exists again — everything before this was numbers.' },
+  { id:'inf_prompt',   label:mapText('inf_prompt','label'),          x:C.INF_PROMPT_X,  y:C.INF_Y,  type:'inference', color:'#ea580c', tag:mapText('inf_prompt','tag'),
+    desc:mapText('inf_prompt','desc') },
+  { id:'inf_token',    label:mapText('inf_token','label'),         x:C.INF_TOKEN_X,   y:C.INF_Y,  type:'inference', color:'#ea580c', tag:mapText('inf_token','tag'),
+    desc:mapText('inf_token','desc') },
+  { id:'inf_posenc',   label:mapText('inf_posenc','label'), x:C.INF_POSENC_X,  y:C.INF_Y,  type:'inference', color:'#ea580c', tag:mapText('inf_posenc','tag'),
+    desc:mapText('inf_posenc','desc') },
+  { id:'inf_logits',   label:mapText('inf_logits','label'),    x:C.INF_LOGITS_X,  y:C.INF_Y,  type:'inference', color:'#ea580c', tag:mapText('inf_logits','tag'),
+    desc:mapText('inf_logits','desc') },
+  { id:'inf_sampling', label:mapText('inf_sampling','label'),     x:C.INF_SAMP_X,    y:C.INF_Y,  type:'inference', color:'#ea580c', tag:mapText('inf_sampling','tag'),
+    desc:mapText('inf_sampling','desc') },
+  { id:'inf_iface',    label:mapText('inf_iface','label'),x:C.INF_IFACE_X,   y:C.INF_Y,  type:'inference', color:'#ea580c', tag:mapText('inf_iface','tag'),
+    desc:mapText('inf_iface','desc') },
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -694,7 +735,7 @@ inetTxt.setAttribute('text-anchor','middle'); inetTxt.setAttribute('y','3');
 inetTxt.setAttribute('font-size','10'); inetTxt.setAttribute('font-family','DM Sans,sans-serif');
 inetTxt.setAttribute('fill','#2563eb'); inetTxt.setAttribute('font-weight','600');
 inetTxt.setAttribute('letter-spacing','0.06em');
-inetTxt.textContent = 'Internet';
+inetTxt.textContent = 'Internet'; inetTxt.dataset.copyUse='internet';
 inetG.appendChild(inetBg); inetG.appendChild(inetTxt);
 root.appendChild(inetG);
 
@@ -710,17 +751,17 @@ const bpT1 = document.createElementNS('http://www.w3.org/2000/svg','text');
 bpT1.setAttribute('x','60'); bpT1.setAttribute('y','-3');
 bpT1.setAttribute('text-anchor','middle'); bpT1.setAttribute('font-size','9.5');
 bpT1.setAttribute('font-family','DM Sans,sans-serif'); bpT1.setAttribute('fill','#a07d39');
-bpT1.setAttribute('font-weight','600'); bpT1.textContent = 'same architecture';
+bpT1.setAttribute('font-weight','600'); bpT1.textContent = 'same architecture'; bpT1.dataset.copyUse='same-architecture';
 const bpT2 = document.createElementNS('http://www.w3.org/2000/svg','text');
 bpT2.setAttribute('x','60'); bpT2.setAttribute('y','10');
 bpT2.setAttribute('text-anchor','middle'); bpT2.setAttribute('font-size','9.5');
 bpT2.setAttribute('font-family','DM Sans,sans-serif'); bpT2.setAttribute('fill','rgba(160,125,57,0.7)');
-bpT2.textContent = 'different mode';
+bpT2.textContent = 'different mode'; bpT2.dataset.copyUse='different-mode';
 bpG.appendChild(bpBg); bpG.appendChild(bpT1); bpG.appendChild(bpT2);
 root.appendChild(bpG);
 
 // Cycle track labels
-function trackLabel(text, x, y, color) {
+function trackLabel(text, x, y, color, key) {
   const g = document.createElementNS('http://www.w3.org/2000/svg','g');
   g.setAttribute('transform',`translate(${x},${y})`);
   const t = document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -730,12 +771,12 @@ function trackLabel(text, x, y, color) {
   t.setAttribute('fill',color);
   t.setAttribute('font-weight','700');
   t.setAttribute('letter-spacing','0.13em');
-  t.textContent = text;
+  t.textContent = text; t.dataset.copyUse=key;
   g.appendChild(t);
   root.appendChild(g);
 }
-trackLabel('TRAINING CYCLE', (C.TR_DATA_X + C.LOSS_X) / 2, C.TR_Y - 265, '#16a34a');
-trackLabel('INFERENCE CYCLE', (C.INF_PROMPT_X + C.INF_IFACE_X) / 2, C.INF_Y + 90, '#ea580c');
+trackLabel('TRAINING CYCLE', (C.TR_DATA_X + C.LOSS_X) / 2, C.TR_Y - 265, '#16a34a', 'training-cycle');
+trackLabel('INFERENCE CYCLE', (C.INF_PROMPT_X + C.INF_IFACE_X) / 2, C.INF_Y + 90, '#ea580c', 'inference-cycle');
 
 // ── NODES ──────────────────────────────────────────────────
 
@@ -798,7 +839,7 @@ NODES.forEach(node => {
     t.setAttribute('fill', node.color);
     t.setAttribute('font-weight','600');
     t.setAttribute('opacity', isBox ? '0.9' : '0.8');
-    t.textContent = line;
+    t.textContent = line; t.dataset.nodeLabel = node.id;
     g.appendChild(t);
   });
 
@@ -1025,6 +1066,19 @@ function animateLoop(ts) {
   requestAnimationFrame(animateLoop);
 }
 requestAnimationFrame(animateLoop);
+</script>
+<script>
+window.AIWiseAnatomy = {refreshTexts() {
+  NODES.forEach(node => {
+    node.label=mapText(node.id,'label');node.tag=mapText(node.id,'tag');node.desc=mapText(node.id,'desc');
+    const group=nodeSVGEls[node.id].g, old=[...group.querySelectorAll('[data-node-label]')], sample=old[0];
+    if(!sample)return;
+    const y=Number(sample.getAttribute('y'));
+    node.label.split('\n').forEach((line,i)=>{const t=sample.cloneNode(true);t.textContent=line;t.setAttribute('y',y+i*12);group.appendChild(t);});
+    old.forEach(t=>t.remove());group.setAttribute('aria-label',node.label.replace(/\n/g,' ')+'. '+node.desc);
+  });
+  if(activeNode){const node=nodeById[activeNode];ttTag.textContent=node.tag;ttTitle.textContent=node.label.replace(/\n/g,' ');ttBody.textContent=node.desc;}
+}};
 </script>
 <script src="ui-effects.js"></script>
 </body>

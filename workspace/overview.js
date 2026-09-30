@@ -37,25 +37,25 @@
       summary += ` · ${data.pending} pending · ${data.urgent} urgent`;
       updates.push(...data.updates);
     } catch { notices.push({title:'Request records are unavailable. Open Control Tower for details.', href:'#tower/all', at:''}); }
-    for (const [id, label] of [['aws1', 'AWS1'], ['ped', 'PED']]) for (const chapter of ['c2','c3']) {
+    for (const [id, label] of [['aws1', 'AWS1'], ['ped', 'PED'], ['other','Other courses']]) for (const chapter of ['c2','c3']) for(const locale of ['en','nl']) {
       try {
-        const raw = localStorage.getItem(`aiwise_content_studio_${id}_${chapter}_v1`);
+        const raw = localStorage.getItem(window.AIWiseLanguage.draftKey(id,chapter,locale));
         if (raw) {
           const draft = JSON.parse(raw);
           if (draft.schema !== 1 || draft.course !== id || (chapter === 'c2' ? !Array.isArray(draft.examples) : draft.chapter !== 'c3' || !draft.slots) || !Number.isFinite(Date.parse(draft.savedAt))) throw Error();
-          updates.push({title:label + ' · ' + chapter.toUpperCase() + ' · Content Studio draft saved in this browser', href:'#studio/' + id + (chapter === 'c2' ? '' : '/c3'), at:draft.savedAt});
+          updates.push({title:label + ' · ' + chapter.toUpperCase() + ' · ' + window.AIWiseLanguage.name(locale) + ' · Content Studio draft saved in this browser', href:'?lang='+locale+'#studio/' + id + (chapter === 'c2' ? '' : '/c3'), at:draft.savedAt});
         }
-      } catch { notices.push({title:label + ' · ' + chapter.toUpperCase() + ' · Content Studio draft could not be read. Open the editor for details.', href:'#studio/' + id + (chapter === 'c2' ? '' : '/c3'), at:''}); }
+      } catch { notices.push({title:label + ' · ' + chapter.toUpperCase() + ' · ' + window.AIWiseLanguage.name(locale) + ' · Content Studio draft could not be read. Open the editor for details.', href:'?lang='+locale+'#studio/' + id + (chapter === 'c2' ? '' : '/c3'), at:''}); }
     }
-    for (const chapter of ['c1','c2','c3']) {
-      const href = '#common/' + chapter;
+    for (const chapter of ['c1','c2','c3','map']) for(const locale of ['en','nl']) {
+      const href = '?lang='+locale+'#common/' + chapter;
       try {
-        const raw = localStorage.getItem(`aiwise_common_studio_${chapter}_v1`);
+        const raw = localStorage.getItem(window.AIWiseLanguage.draftKey('common',chapter,locale));
         if (!raw) continue;
         const draft = JSON.parse(raw);
         if (draft.schema !== 1 || draft.scope !== 'common' || draft.chapter !== chapter || !draft.slots || !Number.isFinite(Date.parse(draft.savedAt))) throw Error();
-        updates.push({title:'Common Studio · ' + chapter.toUpperCase() + ' · Draft saved in this browser', href, at:draft.savedAt});
-      } catch { notices.push({title:'Common Studio · ' + chapter.toUpperCase() + ' · Draft could not be read. Open the editor for details.', href, at:''}); }
+        updates.push({title:'Common Studio · ' + chapter.toUpperCase() + ' · ' + window.AIWiseLanguage.name(locale) + ' · Draft saved in this browser', href, at:draft.savedAt});
+      } catch { notices.push({title:'Common Studio · ' + chapter.toUpperCase() + ' · ' + window.AIWiseLanguage.name(locale) + ' · Draft could not be read. Open the editor for details.', href, at:''}); }
     }
     updates.sort((a,b) => (Date.parse(b.at)||0)-(Date.parse(a.at)||0));
     return {summary, entries: [...notices, ...updates]};
@@ -92,7 +92,7 @@
   document.addEventListener('visibilitychange', schedule);
   reduced.addEventListener('change', () => { paused = reduced.matches; paint(); schedule(); });
   window.addEventListener('aiwise:shared-studio', () => { if(home) refresh(); });
-  window.addEventListener('storage', event => { if (home && (!event.key || ['aiwise_common_studio_c1_v1','aiwise_common_studio_c2_v1','aiwise_common_studio_c3_v1','aiwise_control_tower_v1','aiwise_content_studio_aws1_c2_v1','aiwise_content_studio_ped_c2_v1','aiwise_content_studio_aws1_c3_v1','aiwise_content_studio_ped_c3_v1'].includes(event.key))) refresh(); });
+  window.addEventListener('storage', event => { if (home && (!event.key || /^aiwise_(common|content)_studio_/.test(event.key) || ['aiwise_common_studio_c1_v1','aiwise_common_studio_c2_v1','aiwise_common_studio_c3_v1','aiwise_control_tower_v1','aiwise_content_studio_aws1_c2_v1','aiwise_content_studio_ped_c2_v1','aiwise_content_studio_aws1_c3_v1','aiwise_content_studio_ped_c3_v1'].includes(event.key))) refresh(); });
   function closeNow(restore = true) {
     cancelClose?.(); cancelClose = null;
     window.AIWiseMotion.cancel(dialog); dialog.classList.remove('updates-closing');

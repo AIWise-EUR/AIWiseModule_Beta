@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const root=new URL('../',document.currentScript.src), A=window.AIWiseBetaAnchors, F=window.AIWiseBetaFeedback;
-  const pages=[['common/lobby.html','Module home'],['common/aiwise-c1-final.html','C1 · What is GenAI?'],['common/aiwise-c2-final.html','C2 · GenAI and human cognition'],['common/aiwise-c3-final.html','C3 · How to engage with GenAI']];
+  const pages=[['common/lobby.html','Module home'],['common/aiwise-c1-final.html','C1 · What is GenAI?'],['common/aiwise-c2-final.html','C2 · GenAI and human cognition'],['common/aiwise-c3-final.html','C3 · How to engage with GenAI'],['common/aiwise-c1-anatomy-2d.html','C1 · GenAI system map']];
   const kinds={comment:'Comment',highlight:'Highlight',box:'Box',pin:'Pin'};
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let session=null;
@@ -12,7 +12,8 @@
     const path=u.pathname.slice(root.pathname.length);
     if(!/^(common\/[a-z0-9-]+\.html|course-specific\/[a-z0-9_-]+\/[a-zA-Z0-9_.()-]+\.html)$/.test(path))return null;
     const course=u.searchParams.get('course');
-    return path+(['aws1','ped','other'].includes(course)?'?course='+course:'');
+    const params=new URLSearchParams();if(['aws1','ped','other'].includes(course))params.set('course',course);if(u.searchParams.get('lang')==='nl')params.set('lang','nl');
+    return path+(params.size?'?'+params:'');
   }
   const active=s=>session===s;
   const member=()=>window.AIWiseAuth.snapshot().status==='member';
@@ -115,14 +116,20 @@
       else marker(s,origin,'comment',label,id);
     }
   }
-  function connect(s) {
-    if(!active(s))return;s.frameAbort?.abort();s.resize?.disconnect();s.mutation?.disconnect();s.selectionEpoch++;resetDraft(s);
+  async function connect(s) {
+    if(!active(s))return;
     let doc,url;try {doc=s.frame.contentDocument;url=new URL(s.frame.contentWindow.location.href);}catch {status(s,'This page cannot be reviewed inside Beta.',true);return;}
+    if(s.pendingURL&&url.href!==s.pendingURL)return;
+    const navigation=s.navigation;
+    await Promise.all([s.frame.contentWindow.AIWiseCommonReady,s.frame.contentWindow.AIWiseCourseReady]);
+    if(!active(s)||s.navigation!==navigation||s.frame.contentDocument!==doc||(s.pendingURL&&url.href!==s.pendingURL))return;
     const page=pageKey(url);if(!doc?.body||!page){status(s,'Open a module page to add feedback.',true);return;}
+    s.pendingURL=null;s.frameAbort?.abort();s.resize?.disconnect();s.mutation?.disconnect();resetDraft(s);
     s.doc=doc;s.page=page;s.frameAbort=new AbortController();const signal=s.frameAbort.signal;
     s.modal.querySelector('[data-page-title]').textContent=doc.title||'Current Beta';
     const path=page.split('?')[0],select=s.modal.querySelector('[data-page]');
     select.querySelector('[data-current]')?.remove();if(!pages.some(p=>p[0]===path)){const o=new Option(doc.title,path);o.dataset.current='';select.add(o);}select.value=path;
+    s.locale.value=url.searchParams.get('lang')==='nl'?'nl':'en';
     const course=url.searchParams.get('course');if(['aws1','ped','other'].includes(course))s.course.value=course;
     s.modal.querySelector('[data-external]').href=new URL(page,root).href;
     const style=doc.createElement('style');style.textContent=`.fb-widget{display:none!important} [data-beta-mode] [data-beta-target]:hover,[data-beta-mode] [data-beta-target]:focus-visible{outline:2px dashed #35617f;outline-offset:3px} [data-beta-mode=box] [data-beta-target],[data-beta-mode=pin] [data-beta-target]{touch-action:none;cursor:crosshair} [data-beta-mode=comment] [data-beta-target]{cursor:crosshair} [data-beta-overlay]{position:absolute;inset:0 auto auto 0;width:100%;height:0;z-index:9000;pointer-events:none}.br-mark{position:absolute;pointer-events:none;box-sizing:border-box}.br-highlight{background:rgba(255,201,55,.38);border-bottom:2px solid #98651a}.br-box,.br-comment{border:2px solid #9b6517;border-radius:4px}.br-comment{border-style:dashed}.br-pin{background:#9b6517;transform:translate(-50%,-100%)}.br-pin:after{content:'';position:absolute;bottom:-6px;left:-4px;border:6px solid transparent;border-top-color:#9b6517;border-bottom:0}.br-marker-button{position:absolute;transform:translate(-8px,-12px);min-width:26px;height:26px;border:2px solid white;border-radius:50%;background:#704812;color:white;font:bold 12px/1 system-ui;pointer-events:auto;cursor:pointer;box-shadow:0 1px 5px #0004}`;doc.head.append(style);
@@ -139,13 +146,13 @@
     };
     register();
     targetPicker.onchange=()=>{if(targetPicker.value!=='')selectBox(s,targets[Number(targetPicker.value)]);};
-    s.mutation=new MutationObserver(records=>{
+    s.mutation=new doc.defaultView.MutationObserver(records=>{
       if(records.every(r=>(r.target.nodeType===3?r.target.parentElement:r.target).closest?.('[data-beta-overlay]')))return;
       clearTimeout(s.targetTimer);s.targetTimer=setTimeout(()=>{if(active(s)&&s.doc===doc){register();draw(s);}},100);
     });
     s.mutation.observe(doc.querySelector('main')||doc.body,{childList:true,characterData:true,subtree:true});
     const schedule=()=>{clearTimeout(s.drawTimer);s.drawTimer=setTimeout(()=>draw(s),80);};
-    s.resize=new ResizeObserver(schedule);s.resize.observe(doc.body);
+    s.resize=new doc.defaultView.ResizeObserver(schedule);s.resize.observe(doc.body);
     doc.defaultView.addEventListener('resize',schedule,{signal});doc.addEventListener('scroll',schedule,{signal,capture:true});
     doc.addEventListener('keydown',e=>{
       if(e.key==='Escape'){e.preventDefault();if(s.mode&&!dirty()){resetDraft(s);status(s,'Memo cancelled.');}else requestClose(s);return;}
@@ -178,9 +185,10 @@
     s.modal.querySelector('[data-add]').disabled=!member();refresh(s);
   }
   function navigate(s,url) {
+    url=window.AIWiseLanguage.url(url,s.locale.value);
     if(s.busy){status(s,'Saving feedback…');return false;}
     if(dirty()){status(s,'Post or cancel your draft before changing pages.',true);return false;}
-    s.selectionEpoch++;s.request++;resetDraft(s);s.rows=[];s.replies=[];renderList(s);s.page=null;status(s,'Loading preview…');s.frame.src=url;return true;
+    s.selectionEpoch++;s.request++;resetDraft(s);s.rows=[];s.replies=[];renderList(s);s.page=null;s.doc=null;s.navigation=(s.navigation||0)+1;s.frameAbort?.abort();s.modal.querySelector('[data-add]').disabled=true;status(s,'Loading preview…');s.pendingURL=new URL(url,root).href;s.frame.src=url;return true;
   }
   function discardPrompt(s,show) {
     const prompt=s.modal.querySelector('[data-discard]');prompt.hidden=!show;
@@ -195,8 +203,8 @@
   }
   function open(part,onClose) {
     dispose();const modal=document.createElement('dialog');modal.className='br-dialog';modal.setAttribute('aria-labelledby','br-title');
-    modal.innerHTML=`<div class="br-top"><div><h1 id="br-title">AI-Wise Beta</h1><p data-page-title>Current Beta</p></div><button type="button" class="button" data-close aria-label="Close Beta preview">Close</button></div><div class="br-toolbar"><label>Page<select data-page>${pages.map(([value,label])=>`<option value="${value}">${label}</option>`).join('')}</select></label><label>Course<select data-course><option value="aws1">Academic Writing Skills I</option><option value="ped">Pedagogical Sciences</option><option value="other">Others</option></select></label><a class="button" data-external target="_blank" rel="noopener">Open page ↗</a><button type="button" class="button primary" data-add aria-pressed="false" disabled>Add memo</button></div><div class="br-tools" role="group" aria-label="Mark feedback location" hidden>${Object.entries(kinds).map(([key,label])=>`<button type="button" class="button" data-mode="${key}" aria-pressed="false">${label}</button>`).join('')}<label class="br-target-label">Content box<select data-target><option value="">Select a location…</option></select></label><button type="button" class="button" data-cancel-memo>Cancel memo</button></div><div class="br-body"><iframe title="AI-Wise Beta module preview" sandbox="allow-scripts allow-same-origin allow-downloads"></iframe><aside class="br-panel" aria-label="Beta feedback"><div class="br-panel-head"><h2>Feedback <span data-count>0 open</span></h2><div><label class="br-filter-label">Show<select data-filter><option value="open">Open</option><option value="resolved">Resolved</option><option value="all">All</option></select></label><button class="button" type="button" data-refresh>Refresh</button></div></div><p class="br-status" role="status" data-status></p><form class="br-compose" data-compose hidden><p data-selected></p><label>Comment<textarea data-comment rows="4" maxlength="8000" required placeholder="Describe the change or question…"></textarea></label><div class="br-comment-actions"><button type="submit" class="button primary">Post comment</button><button type="button" class="button" data-cancel-comment>Cancel</button></div></form><div class="br-list" data-list></div></aside></div><div class="br-discard" data-discard role="alertdialog" aria-labelledby="br-discard-message" hidden><p id="br-discard-message">Discard your unsent feedback and close the preview?</p><button class="button primary" type="button" data-keep>Keep editing</button><button class="button" type="button" data-leave>Discard and close</button></div>`;
-    document.body.append(modal);const s=session={modal,onClose,frame:modal.querySelector('iframe'),text:modal.querySelector('[data-comment]'),form:modal.querySelector('[data-compose]'),tools:modal.querySelector('.br-tools'),status:modal.querySelector('[data-status]'),filter:modal.querySelector('[data-filter]'),list:modal.querySelector('[data-list]'),course:modal.querySelector('[data-course]'),refresh:modal.querySelector('[data-refresh]'),rows:[],replies:[],request:0,drawEpoch:0,selectionEpoch:0};
+    modal.innerHTML=`<div class="br-top"><div><h1 id="br-title">AI-Wise Beta</h1><p data-page-title>Current Beta</p></div><button type="button" class="button" data-close aria-label="Close Beta preview">Close</button></div><div class="br-toolbar"><label>Page<select data-page>${pages.map(([value,label])=>`<option value="${value}">${label}</option>`).join('')}</select></label><label>Course<select data-course><option value="aws1">Academic Writing Skills I</option><option value="ped">Pedagogical Sciences</option><option value="other">Others</option></select></label><label>Language<select data-language><option value="en">English</option><option value="nl">Nederlands</option></select></label><a class="button" data-external target="_blank" rel="noopener">Open page ↗</a><button type="button" class="button primary" data-add aria-pressed="false" disabled>Add memo</button></div><div class="br-tools" role="group" aria-label="Mark feedback location" hidden>${Object.entries(kinds).map(([key,label])=>`<button type="button" class="button" data-mode="${key}" aria-pressed="false">${label}</button>`).join('')}<label class="br-target-label">Content box<select data-target><option value="">Select a location…</option></select></label><button type="button" class="button" data-cancel-memo>Cancel memo</button></div><div class="br-body"><iframe title="AI-Wise Beta module preview" sandbox="allow-scripts allow-same-origin allow-downloads"></iframe><aside class="br-panel" aria-label="Beta feedback"><div class="br-panel-head"><h2>Feedback <span data-count>0 open</span></h2><div><label class="br-filter-label">Show<select data-filter><option value="open">Open</option><option value="resolved">Resolved</option><option value="all">All</option></select></label><button class="button" type="button" data-refresh>Refresh</button></div></div><p class="br-status" role="status" data-status></p><form class="br-compose" data-compose hidden><p data-selected></p><label>Comment<textarea data-comment rows="4" maxlength="8000" required placeholder="Describe the change or question…"></textarea></label><div class="br-comment-actions"><button type="submit" class="button primary">Post comment</button><button type="button" class="button" data-cancel-comment>Cancel</button></div></form><div class="br-list" data-list></div></aside></div><div class="br-discard" data-discard role="alertdialog" aria-labelledby="br-discard-message" hidden><p id="br-discard-message">Discard your unsent feedback and close the preview?</p><button class="button primary" type="button" data-keep>Keep editing</button><button class="button" type="button" data-leave>Discard and close</button></div>`;
+    document.body.append(modal);const s=session={modal,onClose,frame:modal.querySelector('iframe'),text:modal.querySelector('[data-comment]'),form:modal.querySelector('[data-compose]'),tools:modal.querySelector('.br-tools'),status:modal.querySelector('[data-status]'),filter:modal.querySelector('[data-filter]'),list:modal.querySelector('[data-list]'),locale:modal.querySelector('[data-language]'),course:modal.querySelector('[data-course]'),refresh:modal.querySelector('[data-refresh]'),rows:[],replies:[],request:0,drawEpoch:0,selectionEpoch:0};
     modal.showModal();window.AIWiseMotion.enter(modal,'dialog');modal.querySelector('[data-close]').focus();
     modal.querySelector('[data-close]').onclick=()=>requestClose(s);modal.addEventListener('cancel',e=>{e.preventDefault();requestClose(s);});
     modal.querySelector('[data-keep]').onclick=()=>discardPrompt(s,false);
@@ -213,10 +221,12 @@
       catch(error){if(active(s))status(s,error.message,true);}finally{if(active(s))busy(s,false);}
     };
     const choose=()=>{
-      const picker=modal.querySelector('[data-page]'),old=s.page?.split('?')[0],oldCourse=s.page?new URL(s.page,root).searchParams.get('course'):null;
-      if(!navigate(s,new URL(picker.value+'?course='+s.course.value,root).href)&&old){picker.value=old;if(oldCourse)s.course.value=oldCourse;}
+      const picker=modal.querySelector('[data-page]'),old=s.page?.split('?')[0],oldCourse=s.page?new URL(s.page,root).searchParams.get('course'):null,oldLocale=s.page?new URL(s.page,root).searchParams.get('lang'):null;
+      const moved=navigate(s,new URL(picker.value+'?course='+s.course.value,root).href);
+      if(!moved&&old){picker.value=old;if(oldCourse)s.course.value=oldCourse;s.locale.value=oldLocale==='nl'?'nl':'en';}
+      if(moved)history.replaceState(null,'',window.AIWiseLanguage.url(location.href,s.locale.value));
     };
-    modal.querySelector('[data-page]').onchange=choose;s.course.onchange=()=>{modal.querySelector('[data-page]').value='common/lobby.html';choose();};
+    s.locale.value=window.AIWiseLanguage.current();s.locale.onchange=choose;modal.querySelector('[data-page]').onchange=choose;s.course.onchange=()=>{modal.querySelector('[data-page]').value='common/lobby.html';choose();};
     s.frame.addEventListener('load',()=>connect(s));
     s.unsubscribe=window.AIWiseAuth.subscribe(auth=>{
       if(auth.status==='checking' && auth.user?.id===s.owner){modal.querySelector('[data-add]').disabled=true;return;}

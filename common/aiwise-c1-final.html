@@ -912,10 +912,50 @@ body {
   <a class="next-btn" href="aiwise-c2-final.html">Continue to C2 →</a>
 </div>
 
+<div data-common-copy hidden aria-hidden="true">
+<span data-copy="nav-c1">C1: What is AI?</span>
+<span data-copy="nav-c2">C2: What is AI for us?</span>
+<span data-copy="nav-c3">C3: How do we use AI?</span>
+<span data-copy="nav-c1-section-1">History &amp; Development</span>
+<span data-copy="nav-c1-section-2">Anatomy of GenAI</span>
+<span data-copy="nav-c1-section-3">GenAI Output Traits</span>
+<span data-copy="nav-c2-section-1">AI vs Human Intelligence</span>
+<span data-copy="nav-c2-section-2">Human vs GenAI</span>
+<span data-copy="nav-c2-section-3">Collaboration Framework</span>
+<span data-copy="nav-c3-section-1">Prompt</span>
+<span data-copy="nav-c3-section-2">Critique</span>
+<span data-copy="nav-c3-section-3">Integrate</span>
+<span data-copy="subsections">subsections toggle</span>
+<span data-copy="slide">Go to slide</span>
+<span data-copy="example">Example</span>
+<span data-copy="of">of</span>
+<span data-copy="thinking">What you are actually thinking</span>
+<span data-copy="typing">What you type</span>
+<span data-copy="processing">How the model actually processes this</span>
+<span data-copy="adopt">Adopt</span>
+<span data-copy="modify">Modify</span>
+<span data-copy="discard">Discard</span>
+<span data-copy="self">Self</span>
+<span data-copy="ai">AI</span>
+<span data-copy="team">Team</span>
+<span data-copy="copy">Copy</span>
+<span data-copy="copied">Copied</span>
+<span data-copy="course">Course</span>
+<span data-copy="change">Change</span>
+<span data-copy="choose-course">Choose your course</span>
+<span data-copy="course-help">AI-Wise adapts its examples, explanations, and prompt templates to your course. You can change this at any time.</span>
+<span data-copy="feedback">Feedback</span>
+<span data-copy="send-feedback">Send feedback</span>
+<span data-copy="close-feedback">Close feedback</span>
+<span data-copy="feedback-question">What&#x27;s on your mind?</span>
+<span data-copy="feedback-placeholder">Share a thought, suggestion, or issue...</span>
+<span data-copy="feedback-thanks">Thank you — your feedback has been noted.</span>
+</div>
+<script src="../pipelines/content-language.js?v=orientation-languages-v1"></script>
 <script src="../workspace/supabase-config.js?v=shared-studio-v1"></script>
-<script src="../pipelines/beta-content.js?v=common-editor-v1"></script>
-<script src="../pipelines/common-content.js?v=common-editor-v1"></script>
-<script src="../pipelines/course-loader.js?v=8"></script>
+<script src="../pipelines/beta-content.js?v=orientation-languages-v1"></script>
+<script src="../pipelines/common-content.js?v=orientation-languages-v1"></script>
+<script src="../pipelines/course-loader.js?v=orientation-languages-v1"></script>
 <script>
 // Core block navigation with subsection awareness
 (function() {
@@ -960,6 +1000,7 @@ body {
 
   function makeBlock(block) {
     var blockEl = document.createElement('div');
+    blockEl.dataset.commonGenerated = '';
     blockEl.className = 'core-nav-block' + (block.id === currentBlock ? ' current' : ' collapsed');
 
     var header = document.createElement('div');
@@ -968,12 +1009,12 @@ body {
     var title = document.createElement('a');
     title.className = 'core-nav-block-title';
     title.href = block.href;
-    title.textContent = block.title;
+    title.textContent = block.title; title.dataset.copyUse = 'nav-' + block.id;
 
     var toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'core-nav-toggle';
-    toggle.setAttribute('aria-label', block.title + ' subsections toggle');
+    toggle.setAttribute('aria-label', block.title + ' subsections toggle'); toggle.dataset.copyToggle = block.id;
     toggle.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l4 4 4-4"/></svg>';
     toggle.addEventListener('click', function(e) {
       e.preventDefault();
@@ -991,7 +1032,7 @@ body {
     block.sections.forEach(function(section) {
       var sub = document.createElement('a');
       sub.className = 'core-nav-sub';
-      sub.textContent = section.label;
+      sub.textContent = section.label; sub.dataset.copyUse = 'nav-' + block.id + '-' + section.id;
       sub.setAttribute('data-block', block.id);
       sub.setAttribute('data-section', section.id);
       sub.href = block.id === currentBlock ? ('#' + section.id) : (block.href + '#' + section.id);
@@ -1059,7 +1100,7 @@ document.querySelectorAll('.sl-item-title').forEach(function(title) {
 });
 </script>
 <script src="ui-effects.js"></script>
-<script src="../pipelines/feedback-widget.js" defer></script>
+<script src="../pipelines/feedback-widget.js?v=orientation-languages-v1" defer></script>
 
 </body>
 </html>
