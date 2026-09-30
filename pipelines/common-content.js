@@ -110,6 +110,7 @@
   function apply(doc, chapter, slots, blocks = catalog(doc, chapter)) {
     if (!valid(slots, blocks)) throw Error('Approved shared content no longer matches this chapter.');
     blocks.forEach(block => {
+      block.node.dataset.reviewCommonKey = block.path;
       Object.keys(block.fields).forEach((key, i) => { block.nodes[i].nodeValue = slots[block.path][key]; });
     });
     sync(doc);

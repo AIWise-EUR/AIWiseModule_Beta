@@ -54,5 +54,5 @@
   }
   const point=(node,x,y)=>{const r=node.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(x-r.left)/r.width)),y:Math.max(0,Math.min(1,(y-r.top)/r.height))};};
   function box(a,b) {return {x:Math.min(a.x,b.x),y:Math.min(a.y,b.y),w:Math.abs(a.x-b.x),h:Math.abs(a.y-b.y)};}
-  window.AIWiseBetaAnchors=Object.freeze({targets,target,make,selection,range,locate,point,box});
+  window.AIWiseBetaAnchors=Object.freeze({targets,target,make,selection,range,locate,point,box,path});
 })();

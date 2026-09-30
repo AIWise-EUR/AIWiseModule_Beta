@@ -170,7 +170,7 @@
     if(access.status!=='member' || !['admin','member'].includes(access.role)) {
       home.hidden=true;room.hidden=false;window.AIWiseOverview.setHome(false);
       room.classList.add('workspace-access-page');
-      room.innerHTML=`<section class="workspace-access" aria-labelledby="room-title"><div class="workspace-access-mark" aria-hidden="true">AI</div><p class="workspace-access-eyebrow">A shared space for the AI-Wise team</p><h1 id="room-title" tabindex="-1">AI-Wise WorkSpace</h1><p class="workspace-access-intro">Create, review and improve learning with AI.</p><p class="workspace-access-status" role="status">${escape(access.message)}</p><button class="button primary" type="button" data-account>${access.user?'Open account':'Sign in or create account'}<span aria-hidden="true"> →</span></button></section>`;
+      room.innerHTML=`<section class="workspace-access" aria-labelledby="room-title"><img class="workspace-access-logo" src="../common/assets/erasmus-logo.png" alt="Erasmus University Rotterdam"><h1 id="room-title" tabindex="-1">AI-Wise WorkSpace</h1><button class="button primary" type="button" data-account>${access.user?'Open account':'Sign in or create account'}<span aria-hidden="true"> →</span></button></section>`;
       room.querySelector('[data-account]').onclick=()=>document.querySelector('.aw-account-trigger').click();
       document.title='AI-Wise WorkSpace';return;
     }

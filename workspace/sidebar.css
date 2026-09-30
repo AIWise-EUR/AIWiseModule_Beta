@@ -86,3 +86,7 @@ html[data-workspace-access]:not([data-workspace-access="admin"]) .sidebar-admin 
 .workspace-sidebar #sidebar-course-list a { margin-left: 20px; padding-left: 24px; font-size: 12px; overflow-wrap: anywhere; }
 .sidebar-course-status { margin: 8px 12px; color: var(--ink-3); font: 11px/1.5 var(--font-body); }
 .workspace-sidebar .sidebar-add-course { color: var(--signal); }
+
+.sidebar-resources { border-top:1px solid var(--line); padding-top:16px; margin-bottom:14px; }
+.sidebar-resources .workspace-navigation { display:grid; gap:4px; }
+html[data-workspace-access="none"] .sidebar-resources,html[data-workspace-access="checking"] .sidebar-resources { display:none; }

@@ -38,3 +38,13 @@
 #aw-profile-help, #aw-profile-status { margin:0 0 8px; }
 #aw-profile-status { color:var(--ok); font-size:13px; }
 #aw-profile-status:empty { display:none; }
+
+/* The signed-in account is a right-hand My page drawer. */
+.aw-account-caption { margin-left:auto; font-size:11px; color:var(--ink-3); white-space:nowrap; }
+.aw-account-dialog.aw-my-page { position:fixed; inset:0 0 0 auto; margin:0; width:min(440px,100vw); max-width:100vw; height:100dvh; max-height:100dvh; border-radius:0; border-width:0 0 0 1px; }
+.aw-my-page .aw-account-header { padding-top:32px; }
+.aw-my-page.aw-enter { animation-name:aw-account-slide-in; }
+.aw-my-page.aw-leaving { animation-name:aw-account-slide-out; }
+@keyframes aw-account-slide-in { from { opacity:0; transform:translateX(32px); } to { opacity:1; transform:translateX(0); } }
+@keyframes aw-account-slide-out { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(32px); } }
+#aw-account-help:empty { display:none; }
