@@ -125,7 +125,9 @@
     const locale=window.AIWiseLanguage?.current() || 'en';
     try {
       const rows=await window.AIWiseBetaContent.read('common',locale), row=rows.find(r=>r.chapter===chapter);
-      if(row) { apply(document,chapter,row.slots,sourceBlocks); document.documentElement.lang=locale; }
+      if(row) { apply(document,chapter,row.slots,sourceBlocks); document.documentElement.lang=row.fallback_locale||locale;
+        if(row.fallback_locale){const note=document.createElement('p');note.dataset.languageNotice='';note.setAttribute('role','status');note.textContent='Nederlands was not approved for this page in this version. The saved English content is shown.';note.style.cssText='padding:12px;background:#fff3e8;color:#682b1b;margin:0';(document.querySelector('main')||document.body).prepend(note);}
+      }
       else if(locale==='nl') {
         const note=document.createElement('p');note.dataset.languageNotice='';note.setAttribute('role','status');
         note.textContent='Nederlands is not approved for this page yet. English source is shown.';

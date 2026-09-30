@@ -28,9 +28,9 @@
 .sidebar-module { color: var(--signal); text-decoration: none; font: 500 12px/1.5 var(--font-body); }
 .sidebar-module:hover { text-decoration: underline; }
 .sidebar-note { color: var(--ink-3); font: 10px var(--font-mono); }
-.sidebar-admin { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.sidebar-account { display: grid; gap: 8px; padding-top: 16px; border-top: 1px solid var(--line); }
+.sidebar-account .sidebar-section-label { margin: 0 0 2px; }
 html[data-workspace-access]:not([data-workspace-access="admin"]) .sidebar-admin { display: none; }
-.sidebar-admin .sidebar-section-label { color: var(--signal); }
 .workspace-sidebar .sidebar-admin a { background: #E2EAF0; color: var(--signal); box-shadow: inset 0 0 0 1px #BDCDDA; }
 .workspace-sidebar .sidebar-admin a:hover { background: #D4E1EB; }
 .workspace-sidebar .sidebar-admin a[aria-current] { background: var(--signal); color: white; box-shadow: none; }

@@ -7,7 +7,8 @@
   trigger.innerHTML = '<span class="aw-account-dot" aria-hidden="true"></span><span id="aw-account-label">Sign in</span>';
   const bottom = document.querySelector('.sidebar-bottom');
   if (!bottom) return;
-  bottom.prepend(trigger);
+  const accountSlot = bottom.querySelector('[data-account-slot]');
+  if (accountSlot) accountSlot.append(trigger); else bottom.prepend(trigger);
   const dialog = document.createElement('dialog');
   dialog.id = 'aw-account-dialog'; dialog.className = 'aw-account-dialog';
   dialog.setAttribute('aria-labelledby', 'aw-account-title');
