@@ -280,7 +280,7 @@
     return Promise.resolve(window.AIWiseCommonReady).then(function(){return fetchCourse(id);})
       .then(function (data) {
         return window.AIWiseBetaContent ? window.AIWiseBetaContent.read(id,window.AIWiseLanguage?.current() || "en").then(function(rows) { var chapter=document.querySelector('[data-current-block]')?.dataset.currentBlock;
-          if(window.AIWiseLanguage?.current()==='nl' && ['c2','c3'].includes(chapter) && !rows.some(r=>r.chapter===chapter)) {
+          if(window.AIWiseLanguage?.current()==='nl' && ['c2','c3'].includes(chapter) && (!rows.some(r=>r.chapter===chapter)||rows.find(r=>r.chapter===chapter)?.fallback_locale==='en')) {
             var note=document.createElement('p');note.dataset.languageNotice='';note.setAttribute('role','status');note.textContent='Nederlands course examples are not approved yet. English examples are shown.';
             note.style.cssText='padding:12px;background:#fff3e8;color:#682b1b';document.querySelector('main')?.prepend(note);
           }
@@ -392,7 +392,8 @@
       btn.appendChild(el("span", null, c.full_name));
       btn.addEventListener("click", function () {
         if (c.id === currentId) { close(); return; }
-        window.location.href = window.location.pathname + "?course=" + encodeURIComponent(c.id) + (window.AIWiseLanguage?.current()==="nl"?"&lang=nl":"");
+        var reviewVersion = new URLSearchParams(window.location.search).get("review_version");
+        window.location.href = window.location.pathname + "?course=" + encodeURIComponent(c.id) + (window.AIWiseLanguage?.current()==="nl"?"&lang=nl":"") + (reviewVersion?"&review_version="+encodeURIComponent(reviewVersion):"");
       });
       options.appendChild(btn);
     });

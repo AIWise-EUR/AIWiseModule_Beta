@@ -24,7 +24,7 @@ test('box coordinates are normalized and survive reverse dragging',()=>{
 });
 function service(handler){
  let auth={status:'member',user:{id:'member-id'}};
- const chain=(table)=>{let op='select',record,filters=[];const q={select(){return q;},single(){return q;},eq(k,v){filters.push([k,v]);return q;},in(){return q;},order(){return q;},insert(r){op='insert';record=r;return q;},update(r){op='update';record=r;return q;},abortSignal(){return handler({table,op,record,filters});}};return q;};
+ const chain=(table)=>{let op='select',record,filters=[];const q={select(){return q;},single(){return q;},eq(k,v){filters.push([k,v]);return q;},in(){return q;},is(k,v){filters.push([k,v]);return q;},order(){return q;},insert(r){op='insert';record=r;return q;},update(r){op='update';record=r;return q;},abortSignal(){return handler({table,op,record,filters});}};return q;};
  const backend={from:chain,rpc:()=>({abortSignal:async()=>({data:'member'})})};
  const window={AIWiseAuth:{snapshot:()=>auth},AIWiseBackend:{getClient:async()=>backend}};
  vm.runInNewContext(fs.readFileSync(path.join(root,'workspace/beta-feedback.js'),'utf8'),{window,AbortController,setTimeout,clearTimeout});

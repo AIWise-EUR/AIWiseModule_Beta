@@ -38,7 +38,6 @@
   let pendingFetch;
   let currentPrompt = '';
   let renderedHash = location.hash;
-  let betaReturn = '#home';
 
   document.getElementById('area-list').innerHTML = Object.entries(areas).map(([id,a]) => `<a class="card link" href="${id==='published'?publishedUrl:'#'+id}"><svg viewBox="0 0 ${id==='tower'?'180 240':id==='beta'||id==='published'?'270 200':'240 180'}" aria-hidden="true"><use href="#${a.icon}"/></svg><h2>${a.name}</h2><p>${a.note}</p><span class="arrow">${a.action} ${id==='published'?'↗':'→'}</span></a>`).join('');
   function setView(view) {
@@ -146,7 +145,7 @@
       ['c1','c2','c3'].map(id=>card(items[id].name,'Preview and edit shared AI Orientation content.','#common/'+id,'Open editor')).join('')+
       '</div><div class="toolbar">'+button('View Common Studio requests','#tower/common')+'</div>',false);
   }
-  function renderBeta(part) { window.AIWiseBetaReview.open(part, () => { location.hash = betaReturn; }); }
+  function renderBeta(part) { window.AIWiseBetaSpace.render(shell,part); }
   function renderTower(part) {
     window.AIWiseControlTower.render(part, shell);
   }
@@ -159,25 +158,24 @@
   }
   function renderNotFound() {shell(null,'Area not found','',lead('That workspace address is not available.')+button('Back to map','#home'),false);}
   function route(focus=true, accessChanged=false) {
-    if (!accessChanged && (!window.AIWiseTeam.canLeave() || !window.AIWiseControlTower.canLeave() || !window.AIWiseContentStudio.canLeave() || !window.AIWiseCourses.canLeave() || !window.AIWiseBetaReview.canLeave())) { history.replaceState(null, '', location.pathname + location.search + renderedHash); return; }
+    if (!accessChanged && (!window.AIWiseBetaSpace.canLeave() || !window.AIWiseTeam.canLeave() || !window.AIWiseControlTower.canLeave() || !window.AIWiseContentStudio.canLeave() || !window.AIWiseCourses.canLeave() || !window.AIWiseBetaReview.canLeave())) { history.replaceState(null, '', location.pathname + location.search + renderedHash); return; }
+    window.AIWiseBetaSpace.dispose();
     window.AIWiseTeam.dispose();
     window.AIWiseControlTower.dispose();
     window.AIWiseContentStudio.dispose();
     window.AIWiseCourses.dispose();
     window.AIWiseBetaReview.dispose();
+    room.classList.remove('workspace-access-page');
     const access=window.AIWiseAuth.snapshot();
     if(access.status!=='member' || !['admin','member'].includes(access.role)) {
       home.hidden=true;room.hidden=false;window.AIWiseOverview.setHome(false);
-      const checking=access.status==='checking';
-      shell(null,checking?'Checking access…':access.user?'Workspace access':'Welcome to AI-Wise','',
-        `<div class="workspace-access"><p>${escape(access.message)}</p><button class="button primary" type="button" data-account>${access.user?'Open account':'Sign in or create account'}</button></div>`,false);
+      room.classList.add('workspace-access-page');
+      room.innerHTML=`<section class="workspace-access" aria-labelledby="room-title"><img class="workspace-access-logo" src="../common/assets/erasmus-logo.png" alt="Erasmus University Rotterdam"><h1 id="room-title" tabindex="-1">AI-Wise WorkSpace</h1><button class="button primary" type="button" data-account>${access.user?'Open account':'Sign in or create account'}<span aria-hidden="true"> →</span></button></section>`;
       room.querySelector('[data-account]').onclick=()=>document.querySelector('.aw-account-trigger').click();
-      document.title='AI-Wise Workspace';return;
+      document.title='AI-Wise WorkSpace';return;
     }
     if(access.role==='member' && !['home','beta'].includes((location.hash.slice(1)||'home').split('/')[0]))
       history.replaceState(null,'',location.pathname+location.search+'#home');
-    if (location.hash.startsWith('#beta') && !renderedHash.startsWith('#beta')) betaReturn = renderedHash || '#home';
-    if(access.role==='member')betaReturn='#home';
     renderedHash = location.hash;
     pendingFetch?.abort(); pendingFetch=null;
     const [area='home', ...segments]=(location.hash.slice(1)||'home').split('/');
@@ -190,14 +188,15 @@
     window.AIWiseSidebar.markCurrent();
     const isUpdates = area === 'updates';
     const reviewer=access.role==='member';
-    const isHome=!reviewer && (area==='home' || isUpdates || area==='beta');home.hidden=!isHome;room.hidden=isHome;
+    const isHome=!reviewer && (area==='home' || isUpdates);home.hidden=!isHome;room.hidden=isHome;
     if (isUpdates) { history.replaceState(null, '', location.pathname + location.search + '#home'); renderedHash = '#home'; window.AIWiseSidebar.markCurrent(); }
     window.AIWiseOverview.setHome(isHome);
-    if(reviewer) {
-      shell(null,'AI-Wise Beta','',`<div class="beta-welcome"><svg viewBox="0 0 270 200" aria-hidden="true"><use href="#beta-screen"/></svg><h2>Preview and share feedback</h2><p>Explore the module, highlight content and leave comments for the team.</p>${button('Open Beta preview','#beta',true)}</div>`,false);
-      document.title='AI-Wise Beta · Workspace';if(area==='beta')renderBeta(part);
+    if(area==='beta') {document.title='AI-Wise Beta · Review';renderBeta(part);}
+    else if(reviewer) {
+      shell(null,'AI-Wise Beta','',`<div class="beta-welcome"><svg viewBox="0 0 270 200" aria-hidden="true"><use href="#beta-screen"/></svg><h2>Preview and share feedback</h2><p>Explore the module, highlight content and leave comments for the team.</p>${button('Open Beta review','#beta',true)}</div>`,false);
+      document.title='AI-Wise Beta · Workspace';
     }
-    else if(isHome) { document.title=area==='beta'?'AI-Wise Beta · Preview':'AI-Wise Workspace'; window.AIWiseMotion.enter(home); if(area==='beta')renderBeta(part); }
+    else if(isHome) { document.title='AI-Wise WorkSpace'; window.AIWiseMotion.enter(home); }
     else {
       if(area==='team')window.AIWiseTeam.render(shell);
       else if(area==='profiler')renderProfiler(part);
@@ -205,7 +204,6 @@
       else if(area==='studio')renderStudio(part);
       else if(area==='courses')window.AIWiseCourses.render(part, shell);
       else if(area==='common')renderCommon(part);
-      else if(area==='beta')renderBeta(part);
       else if(area==='tower')renderTower(part);
       else if(area==='published')renderPublished();
       else if(area==='records')renderRecords(part);

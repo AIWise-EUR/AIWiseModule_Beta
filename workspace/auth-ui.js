@@ -4,10 +4,11 @@
   const trigger = document.createElement('button');
   trigger.type = 'button'; trigger.className = 'aw-account-trigger';
   trigger.setAttribute('aria-haspopup', 'dialog'); trigger.setAttribute('aria-controls', 'aw-account-dialog');
-  trigger.innerHTML = '<span class="aw-account-dot" aria-hidden="true"></span><span id="aw-account-label">Sign in</span>';
+  trigger.innerHTML = '<span class="aw-account-dot" aria-hidden="true"></span><span id="aw-account-label">Sign in</span><span class="aw-account-caption" aria-hidden="true">My page →</span>';
   const bottom = document.querySelector('.sidebar-bottom');
   if (!bottom) return;
-  bottom.prepend(trigger);
+  const accountSlot = bottom.querySelector('[data-account-slot]');
+  if (accountSlot) accountSlot.append(trigger); else bottom.prepend(trigger);
   const dialog = document.createElement('dialog');
   dialog.id = 'aw-account-dialog'; dialog.className = 'aw-account-dialog';
   dialog.setAttribute('aria-labelledby', 'aw-account-title');
@@ -30,7 +31,7 @@
         <label for="aw-auth-password">Password</label><input id="aw-auth-password" type="password" autocomplete="current-password" required>
         <div id="aw-confirm-field" hidden><label for="aw-auth-confirm">Confirm password</label><input id="aw-auth-confirm" type="password" autocomplete="new-password"></div>
         <button class="aw-account-button primary" type="submit" id="aw-signin">Sign in</button>
-        <p class="aw-account-help" id="aw-account-help">Use your AI-Wise account. Your Supabase dashboard account is separate.</p>
+        <p class="aw-account-help" id="aw-account-help"></p>
         <button class="aw-account-button" type="button" id="aw-resend-confirmation">Resend confirmation</button>
       </form>
       <div class="aw-account-actions"><button class="aw-account-button" type="button" id="aw-auth-refresh" hidden>Retry</button><button class="aw-account-button" type="button" id="aw-signout" hidden>Sign out</button></div>
@@ -39,7 +40,7 @@
         <button type="button" class="aw-account-button" id="aw-mode-signup">Create account</button>
         <button type="button" class="aw-account-button" id="aw-mode-signin" hidden>Sign in</button>
       </div>
-      <p class="aw-account-local-note">Drafts and requests are still saved in this browser. Signing in does not upload them; signing out does not delete them.</p>
+
     </div>`;
   document.body.appendChild(dialog);
   const form = dialog.querySelector('#aw-signin-form'), email = dialog.querySelector('#aw-auth-email');
@@ -70,7 +71,10 @@
     trigger.querySelector('#aw-account-label').textContent = value.user ? value.user.displayName || 'Account' : 'Sign in';
     trigger.dataset.member = String(value.status === 'member');
     dialog.dataset.status = value.status;
-    dialog.querySelector('#aw-account-title').textContent = value.user ? 'Your account' : signup ? 'Create your account' : retrySignIn ? 'Sign-in failed' : 'Team sign in';
+    dialog.classList.toggle('aw-my-page',!!value.user);
+    trigger.querySelector('.aw-account-caption').hidden=!value.user;
+    trigger.setAttribute('aria-label',value.user?'My page · '+(value.user.displayName||'Account'):'Sign in');
+    dialog.querySelector('#aw-account-title').textContent = value.user ? 'My page' : signup ? 'Create your account' : retrySignIn ? 'Sign-in failed' : 'Team sign in';
     dialog.querySelector('#aw-account-status').textContent = !value.user && signup && value.status !== 'checking' ?
       'Create an account, confirm your email, then ask an administrator to approve team access.' : value.message;
     const accountEmail = dialog.querySelector('#aw-account-email');
@@ -96,7 +100,7 @@
     dialog.querySelector('#aw-signin').textContent = busy ? 'Please wait…' : signup ? 'Create account' : retrySignIn ? 'Retry' : 'Sign in';
     dialog.querySelector('#aw-account-help').textContent = signup ?
       'Use at least 8 characters. Creating an account does not grant development-team access.' :
-      'Use your AI-Wise account. Your Supabase dashboard account is separate.';
+      '';
     resend.hidden = signup;
     signOutButton.hidden = !value.user;
     refreshButton.hidden = !['error', 'access-error', 'setup-needed'].includes(value.status);

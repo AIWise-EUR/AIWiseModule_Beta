@@ -4,6 +4,17 @@
   async function read(course, locale = 'en', sources = false) {
     if (!['en','nl'].includes(locale)) throw Error('Unsupported content language.');
     if (!['aws1','ped','other','common'].includes(course)) return [];
+    // Saved review copies are read only through the signed-in parent Workspace.
+    let context=window, version=null;
+    try {
+      while(context.parent&&context!==context.parent) {
+        version=version||new URL(context.location.href).searchParams.get('review_version');
+        context=context.parent;
+        if(version&&context.AIWiseBetaSpace)return context.AIWiseBetaSpace.snapshot(version,course,locale);
+      }
+      version=version||new URL(window.location?.href||'https://example.invalid/').searchParams.get('review_version');
+    } catch {if(version)throw Error('This review version is not available.');}
+    if(version)throw Error('Open this review version from the Workspace.');
     const config = window.AIWiseSupabaseConfig;
     if (!config) throw Error('Beta content connection is unavailable.');
     const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 12000);

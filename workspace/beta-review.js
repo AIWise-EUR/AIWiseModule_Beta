@@ -5,6 +5,11 @@
   const pages=[['common/lobby.html','Module home'],['common/aiwise-c1-final.html','C1 · What is GenAI?'],['common/aiwise-c2-final.html','C2 · GenAI and human cognition'],['common/aiwise-c3-final.html','C3 · How to engage with GenAI'],['common/aiwise-c1-anatomy-2d.html','C1 · GenAI system map']];
   const kinds={comment:'Comment',highlight:'Highlight',box:'Box',pin:'Pin'};
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const authorColor = id => {
+    let hash=0;for(const char of String(id||'anonymous'))hash=(Math.imul(hash,31)+char.charCodeAt(0))>>>0;
+    return ['#35617f','#6b4e8f','#387052','#99506b','#8c611c','#287277','#8b5037','#555fa0'][hash%8];
+  };
+  const toolIcons={comment:'M4 4h16v12H9l-5 4V4z',highlight:'m14 3 7 7-9 9-7-7 9-9z M5 12l-2 7 7-2 M3 22h18',box:'M4 4h16v16H4V4z',pin:'M12 22s7-8 7-14a7 7 0 0 0-14 0c0 6 7 14 7 14z M10 8h4'};
   let session=null;
   function pageKey(url) {
     const u=new URL(url,root);
@@ -24,7 +29,7 @@
     if(value){s.disabled=new Map([...s.modal.querySelectorAll('button,select,textarea')].map(n=>[n,n.disabled]));s.disabled.forEach((_,n)=>n.disabled=true);}
     else{s.disabled?.forEach((disabled,n)=>n.disabled=disabled);s.disabled=null;s.modal.querySelector('[data-add]').disabled=!member()||!s.doc;}
   }
-  function resetDraft(s) {s.selectionEpoch++;s.anchor=null;s.clientId=null;s.text.value='';s.mode=null;s.drag=null;s.form.hidden=true;s.tools.hidden=true;s.modal.querySelector('[data-add]').setAttribute('aria-pressed','false');s.doc?.body.removeAttribute('data-beta-mode');s.targetTabs?.forEach((value,node)=>{if(value===null)node.removeAttribute('tabindex');else node.setAttribute('tabindex',value);});draw(s);}
+  function resetDraft(s) {s.selectionEpoch++;s.anchor=null;s.clientId=null;s.text.value='';s.mentions?.reset();s.mode=null;s.drag=null;s.form.hidden=true;s.tools.hidden=true;s.modal.querySelector('[data-add]').setAttribute('aria-pressed','false');s.doc?.body.removeAttribute('data-beta-mode');s.targetTabs?.forEach((value,node)=>{if(value===null)node.removeAttribute('tabindex');else node.setAttribute('tabindex',value);});draw(s);}
   function setMode(s,mode) {
     s.selectionEpoch++;s.mode=mode;s.anchor=null;s.clientId=null;s.form.hidden=true;s.tools.hidden=false;s.modal.querySelector('[data-add]').setAttribute('aria-pressed','true');
     s.tools.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
@@ -56,7 +61,7 @@
     if(!page)return;
     if(!member()) {status(s,'Sign in with an approved team account to view and add feedback.');return;}
     s.refresh.disabled=true;status(s,'Loading feedback…');
-    try {const result=await F.list(page);if(!active(s)||token!==s.request)return;s.rows=result.memos;s.replies=result.replies;s.role=result.role;status(s,'');renderList(s);draw(s);}
+    try {const result=await F.list(page,s.version?.id||null);if(!active(s)||token!==s.request)return;s.rows=result.memos;s.replies=result.replies;s.role=result.role;status(s,'');renderList(s);draw(s);if(s.initialMemo){const button=s.list.querySelector('#br-'+s.initialMemo+' .br-location');if(button){button.click();button.focus();}s.initialMemo=null;}}
     catch(e){if(active(s)&&token===s.request)status(s,e.message,true);}
     finally {if(active(s)&&token===s.request)s.refresh.disabled=false;}
   }
@@ -65,8 +70,8 @@
     s.list.replaceChildren();s.modal.querySelector('[data-count]').textContent=s.rows.filter(r=>!r.resolved).length+' open';
     if(!rows.length){const p=document.createElement('p');p.className='br-empty';p.textContent=member()?'No '+(filter==='all'?'':filter+' ')+'feedback on this page.':'Team feedback appears here after sign-in.';s.list.append(p);return;}
     rows.forEach(row=>{
-      const article=document.createElement('article');article.className='br-comment';article.id='br-'+row.id;
-      article.innerHTML=`<div class="br-comment-head"><strong>${esc(row.author_name)}</strong><span>${row.resolved?'Resolved':esc(kinds[row.anchor.kind])}</span></div><time>${esc(new Date(row.created_at).toLocaleString())}</time><button class="br-location" type="button">${esc(row.anchor.excerpt)}</button><p class="br-comment-body">${esc(row.body)}</p><p class="br-anchor-status" role="status"></p><div class="br-replies">${s.replies.filter(r=>r.memo_id===row.id).map(r=>`<div><strong>${esc(r.author_name)}</strong><p>${esc(r.body)}</p></div>`).join('')}</div><div class="br-comment-actions"><button type="button" class="button" data-reply>Reply</button>${s.role==='admin'?`<button type="button" class="button" data-resolve>${row.resolved?'Reopen':'Resolve'}</button>`:''}</div>`;
+      const article=document.createElement('article');article.className='br-comment';article.id='br-'+row.id;article.style.setProperty('--author-color',authorColor(row.author_id));
+      article.innerHTML=`<div class="br-comment-head"><strong>${esc(row.author_name)}</strong><span>${row.resolved?'Resolved':esc(kinds[row.anchor.kind])}</span></div><time>${esc(new Date(row.created_at).toLocaleString())}</time><button class="br-location" type="button">${esc(row.anchor.excerpt)}</button><p class="br-comment-body">${esc(row.body)}</p><p class="br-anchor-status" role="status"></p><div class="br-replies">${s.replies.filter(r=>r.memo_id===row.id).map(r=>`<div style="--author-color:${authorColor(r.author_id)}"><strong>${esc(r.author_name)}</strong><p>${esc(r.body)}</p></div>`).join('')}</div><div class="br-comment-actions"><button type="button" class="button" data-reply>Reply</button>${s.role==='admin'?`<button type="button" class="button" data-resolve>${row.resolved?'Reopen':'Resolve'}</button>`:''}</div>`;
       article.querySelector('.br-location').onclick=async()=>{
         const node=await A.locate(s.doc,row.anchor);if(!active(s))return;
         if(!node){article.querySelector('.br-anchor-status').textContent='Content changed since this comment. The original location is unavailable.';return;}
@@ -76,9 +81,10 @@
         if(s.modal.querySelector('[data-reply-form]')){status(s,'Post or cancel the open reply first.');return;}
         const form=document.createElement('form');form.dataset.replyForm='';const id=crypto.randomUUID();
         form.innerHTML='<label>Reply<textarea data-reply-text rows="3" maxlength="8000" required></textarea></label><div class="br-comment-actions"><button class="button primary" type="submit">Post reply</button><button class="button" type="button" data-cancel>Cancel</button></div><p role="alert"></p>';
+        const replyMentions=window.AIWiseBetaMentions.attach(form.querySelector('textarea'));
         form.querySelector('[data-cancel]').onclick=()=>form.remove();
         form.onsubmit=async e=>{e.preventDefault();const button=form.querySelector('[type=submit]');if(s.busy)return;busy(s,true);const page=s.page,owner=window.AIWiseAuth.snapshot().user?.id;
-          try{const body=form.querySelector('textarea').value.trim();if(!body)throw Error('Write a reply first.');await F.reply({id,memo_id:row.id,body});if(active(s)&&page===s.page&&owner===window.AIWiseAuth.snapshot().user?.id){form.remove();await refresh(s);}}
+          try{const body=form.querySelector('textarea').value.trim();if(!body)throw Error('Write a reply first.');await F.reply({id,memo_id:row.id,body,mentions:replyMentions.ids()});if(active(s)&&page===s.page&&owner===window.AIWiseAuth.snapshot().user?.id){form.remove();await refresh(s);}}
           catch(error){if(form.isConnected){form.querySelector('[role=alert]').textContent=error.message;button.disabled=false;}}finally{if(active(s))busy(s,false);}};
         article.append(form);form.querySelector('textarea').focus();
       };
@@ -89,19 +95,19 @@
       s.list.append(article);
     });
   }
-  function marker(s,rect,kind,label,id) {
-    const doc=s.doc,shape=doc.createElement('span');shape.className='br-mark br-'+kind;
+  function marker(s,rect,kind,label,id,color) {
+    const doc=s.doc,shape=doc.createElement('span');shape.className='br-mark br-'+kind;shape.style.setProperty('--memo-color',color);
     Object.assign(shape.style,{left:rect.left+'px',top:rect.top+'px',width:Math.max(rect.width,2)+'px',height:Math.max(rect.height,2)+'px'});s.overlay.append(shape);
-    if(label){const b=doc.createElement('button');b.type='button';b.className='br-marker-button';b.textContent=label;b.setAttribute('aria-label','Open feedback '+label);Object.assign(b.style,{left:rect.left+'px',top:rect.top+'px'});b.onclick=()=>{s.selected=id;s.list.querySelector('#br-'+id)?.scrollIntoView({block:'nearest'});s.list.querySelector('#br-'+id+' button')?.focus();draw(s);};s.overlay.append(b);}
+    if(label){const b=doc.createElement('button');b.type='button';b.className='br-marker-button';b.style.setProperty('--memo-color',color);if(s.selected===id)b.classList.add('br-marker-selected');b.textContent=label;b.setAttribute('aria-label','Open feedback '+label);Object.assign(b.style,{left:rect.left+'px',top:rect.top+'px'});b.onclick=()=>{s.selected=id;s.list.querySelector('#br-'+id)?.scrollIntoView({block:'nearest'});s.list.querySelector('#br-'+id+' button')?.focus();draw(s);};s.overlay.append(b);}
   }
   async function draw(s) {
     if(!active(s)||!s.overlay?.isConnected)return;
     const epoch=++s.drawEpoch,doc=s.doc;
-    const entries=s.rows.filter(r=>s.filter.value==='all'||r.resolved===(s.filter.value==='resolved')).map((r,i)=>({anchor:r.anchor,id:r.id,label:String(i+1)}));
-    if(s.anchor)entries.push({anchor:s.anchor,label:'',id:'draft'});
+    const entries=s.rows.filter(r=>s.filter.value==='all'||r.resolved===(s.filter.value==='resolved')).map((r,i)=>({anchor:r.anchor,id:r.id,label:String(i+1),color:authorColor(r.author_id)}));
+    if(s.anchor)entries.push({anchor:s.anchor,label:'',id:'draft',color:authorColor(window.AIWiseAuth.snapshot().user?.id)});
     const found=await Promise.all(entries.map(async r=>({...r,node:await A.locate(doc,r.anchor)})));
     if(!active(s)||s.doc!==doc||epoch!==s.drawEpoch)return;s.overlay.replaceChildren();
-    for(const {node,anchor,id,label} of found){
+    for(const {node,anchor,id,label,color} of found){
       const statusNode=s.list.querySelector('#br-'+id+' .br-anchor-status');
       if(statusNode)statusNode.textContent=node?'':'Content changed since this comment. Original location unavailable.';
       if(!node)continue;const r=node.getBoundingClientRect(),win=doc.defaultView;
@@ -109,29 +115,31 @@
       const origin={left:r.left+win.scrollX,top:r.top+win.scrollY,width:r.width,height:r.height};
       if(anchor.kind==='highlight'){
         const range=A.range(node,anchor);if(!range)continue;
-        [...range.getClientRects()].forEach((rect,i)=>marker(s,{left:rect.left+win.scrollX,top:rect.top+win.scrollY,width:rect.width,height:rect.height},'highlight',i===0?label:'',id));
-      }else if(anchor.kind==='box')marker(s,{left:origin.left+anchor.x*r.width,top:origin.top+anchor.y*r.height,width:anchor.w*r.width,height:anchor.h*r.height},'box',label,id);
-      else if(anchor.kind==='pin')marker(s,{left:origin.left+anchor.x*r.width,top:origin.top+anchor.y*r.height,width:4,height:24},'pin',label,id);
-      else marker(s,origin,'comment',label,id);
+        [...range.getClientRects()].forEach((rect,i)=>marker(s,{left:rect.left+win.scrollX,top:rect.top+win.scrollY,width:rect.width,height:rect.height},'highlight',i===0?label:'',id,color));
+      }else if(anchor.kind==='box')marker(s,{left:origin.left+anchor.x*r.width,top:origin.top+anchor.y*r.height,width:anchor.w*r.width,height:anchor.h*r.height},'box',label,id,color);
+      else if(anchor.kind==='pin')marker(s,{left:origin.left+anchor.x*r.width,top:origin.top+anchor.y*r.height,width:4,height:24},'pin',label,id,color);
+      else marker(s,origin,'comment',label,id,color);
     }
   }
   async function connect(s) {
     if(!active(s))return;
     let doc,url;try {doc=s.frame.contentDocument;url=new URL(s.frame.contentWindow.location.href);}catch {status(s,'This page cannot be reviewed inside Beta.',true);return;}
     if(s.pendingURL&&url.href!==s.pendingURL)return;
+    if(s.version&&url.searchParams.get('review_version')!==s.version.id){navigate(s,url.href);return;}
     const navigation=s.navigation;
     await Promise.all([s.frame.contentWindow.AIWiseCommonReady,s.frame.contentWindow.AIWiseCourseReady]);
     if(!active(s)||s.navigation!==navigation||s.frame.contentDocument!==doc||(s.pendingURL&&url.href!==s.pendingURL))return;
     const page=pageKey(url);if(!doc?.body||!page){status(s,'Open a module page to add feedback.',true);return;}
-    s.pendingURL=null;s.frameAbort?.abort();s.resize?.disconnect();s.mutation?.disconnect();resetDraft(s);
+    if(s.version&&doc.querySelector('[data-language-notice][role=alert],#aiwise-beta-error')){s.frame.hidden=true;status(s,'This saved version could not be displayed. Return to review versions and try again.',true);return;}
+    s.history?.dispose();s.pendingURL=null;s.frameAbort?.abort();s.resize?.disconnect();s.mutation?.disconnect();resetDraft(s);
     s.doc=doc;s.page=page;s.frameAbort=new AbortController();const signal=s.frameAbort.signal;
     s.modal.querySelector('[data-page-title]').textContent=doc.title||'Current Beta';
     const path=page.split('?')[0],select=s.modal.querySelector('[data-page]');
     select.querySelector('[data-current]')?.remove();if(!pages.some(p=>p[0]===path)){const o=new Option(doc.title,path);o.dataset.current='';select.add(o);}select.value=path;
     s.locale.value=url.searchParams.get('lang')==='nl'?'nl':'en';
     const course=url.searchParams.get('course');if(['aws1','ped','other'].includes(course))s.course.value=course;
-    s.modal.querySelector('[data-external]').href=new URL(page,root).href;
-    const style=doc.createElement('style');style.textContent=`.fb-widget{display:none!important} [data-beta-mode] [data-beta-target]:hover,[data-beta-mode] [data-beta-target]:focus-visible{outline:2px dashed #35617f;outline-offset:3px} [data-beta-mode=box] [data-beta-target],[data-beta-mode=pin] [data-beta-target]{touch-action:none;cursor:crosshair} [data-beta-mode=comment] [data-beta-target]{cursor:crosshair} [data-beta-overlay]{position:absolute;inset:0 auto auto 0;width:100%;height:0;z-index:9000;pointer-events:none}.br-mark{position:absolute;pointer-events:none;box-sizing:border-box}.br-highlight{background:rgba(255,201,55,.38);border-bottom:2px solid #98651a}.br-box,.br-comment{border:2px solid #9b6517;border-radius:4px}.br-comment{border-style:dashed}.br-pin{background:#9b6517;transform:translate(-50%,-100%)}.br-pin:after{content:'';position:absolute;bottom:-6px;left:-4px;border:6px solid transparent;border-top-color:#9b6517;border-bottom:0}.br-marker-button{position:absolute;transform:translate(-8px,-12px);min-width:26px;height:26px;border:2px solid white;border-radius:50%;background:#704812;color:white;font:bold 12px/1 system-ui;pointer-events:auto;cursor:pointer;box-shadow:0 1px 5px #0004}`;doc.head.append(style);
+    s.modal.querySelector('[data-external]').href=s.version?new URL('#beta/'+s.version.id+'?page='+encodeURIComponent(page),location.href).href:new URL(page,root).href;
+    const style=doc.createElement('style');style.textContent=`.fb-widget,#aiwiseCourseSwitch{display:none!important} [data-beta-mode] [data-beta-target]:hover,[data-beta-mode] [data-beta-target]:focus-visible{outline:2px dashed #35617f;outline-offset:3px} [data-beta-mode=box] [data-beta-target],[data-beta-mode=pin] [data-beta-target]{touch-action:none;cursor:crosshair} [data-beta-mode=comment] [data-beta-target]{cursor:copy} [data-beta-mode=highlight],[data-beta-mode=highlight] [data-beta-target],[data-beta-mode=highlight] [data-beta-target] *{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='m18 3 10 10-12 12-10-10z' fill='%23ffe08a' stroke='%2335617f' stroke-width='2'/%3E%3Cpath d='m6 15-3 13 13-3z' fill='%2335617f'/%3E%3C/svg%3E") 3 28,text} [data-beta-mode=highlight] ::selection{background:#ffe08a;color:#15121d} [data-beta-overlay]{position:absolute;inset:0 auto auto 0;width:100%;height:0;z-index:9000;pointer-events:none}.br-mark{position:absolute;pointer-events:none;box-sizing:border-box}.br-highlight{background:color-mix(in srgb,var(--memo-color) 23%,transparent);border-bottom:2px solid var(--memo-color)}.br-box,.br-comment{border:2px solid var(--memo-color);border-radius:4px}.br-comment{border-style:dashed}.br-pin{background:var(--memo-color);transform:translate(-50%,-100%)}.br-pin:after{content:'';position:absolute;bottom:-6px;left:-4px;border:6px solid transparent;border-top-color:var(--memo-color);border-bottom:0}.br-marker-button{position:absolute;transform:translate(-8px,-12px);min-width:26px;height:26px;border:2px solid white;border-radius:50%;background:var(--memo-color);color:white;font:bold 12px/1 system-ui;pointer-events:auto;cursor:pointer;box-shadow:0 1px 5px #0004}.br-marker-selected{outline:3px solid var(--memo-color);outline-offset:3px}`;doc.head.append(style);
     s.overlay=doc.createElement('div');s.overlay.dataset.betaOverlay='';doc.body.append(s.overlay);
     s.targetTabs=new Map();let targets=[];const targetPicker=s.modal.querySelector('[data-target]');
     const register=()=>{
@@ -144,6 +152,7 @@
       });
     };
     register();
+    s.history=window.AIWiseBetaHistory.attach({host:s.modal.querySelector('[data-history]'),doc,version:s.version,page,course:s.course.value,locale:s.locale.value,canSelect:()=>!s.mode&&!s.busy&&!dirty(),reveal});
     targetPicker.onchange=()=>{if(targetPicker.value!=='')selectBox(s,targets[Number(targetPicker.value)]);};
     s.mutation=new doc.defaultView.MutationObserver(records=>{
       if(records.every(r=>(r.target.nodeType===3?r.target.parentElement:r.target).closest?.('[data-beta-overlay]')))return;
@@ -184,10 +193,10 @@
     s.modal.querySelector('[data-add]').disabled=!member();refresh(s);
   }
   function navigate(s,url) {
-    url=window.AIWiseLanguage.url(url,s.locale.value);
+    url=window.AIWiseLanguage.url(url,s.locale.value);if(s.version){const u=new URL(url,root);u.searchParams.set('review_version',s.version.id);url=u.href;}
     if(s.busy){status(s,'Saving feedback…');return false;}
     if(dirty()){status(s,'Post or cancel your draft before changing pages.',true);return false;}
-    s.selectionEpoch++;s.request++;resetDraft(s);s.rows=[];s.replies=[];renderList(s);s.page=null;s.doc=null;s.navigation=(s.navigation||0)+1;s.frameAbort?.abort();s.modal.querySelector('[data-add]').disabled=true;status(s,'Loading preview…');s.pendingURL=new URL(url,root).href;s.frame.src=url;return true;
+    s.history?.dispose();s.selectionEpoch++;s.request++;resetDraft(s);s.rows=[];s.replies=[];renderList(s);s.page=null;s.doc=null;s.navigation=(s.navigation||0)+1;s.frameAbort?.abort();s.modal.querySelector('[data-add]').disabled=true;status(s,'Loading preview…');s.pendingURL=new URL(url,root).href;s.frame.hidden=false;s.frame.src=url;return true;
   }
   function discardPrompt(s,show) {
     const prompt=s.modal.querySelector('[data-discard]');prompt.hidden=!show;
@@ -200,11 +209,11 @@
     if(dirty()){discardPrompt(s,true);return;}
     const close=s.onClose;dispose();close();
   }
-  function open(part,onClose) {
-    dispose();const modal=document.createElement('dialog');modal.className='br-dialog';modal.setAttribute('aria-labelledby','br-title');
-    modal.innerHTML=`<div class="br-top"><div><h1 id="br-title">AI-Wise Beta</h1><p data-page-title>Current Beta</p></div><button type="button" class="button" data-close aria-label="Close Beta preview">Close</button></div><div class="br-toolbar"><label>Page<select data-page>${pages.map(([value,label])=>`<option value="${value}">${label}</option>`).join('')}</select></label><label>Course<select data-course><option value="aws1">Academic Writing Skills I</option><option value="ped">Pedagogical Sciences</option><option value="other">Others</option></select></label><label>Language<select data-language><option value="en">English</option><option value="nl">Nederlands</option></select></label><a class="button" data-external target="_blank" rel="noopener">Open page ↗</a><button type="button" class="button primary" data-add aria-pressed="false" disabled>Add memo</button></div><div class="br-tools" role="group" aria-label="Mark feedback location" hidden>${Object.entries(kinds).map(([key,label])=>`<button type="button" class="button" data-mode="${key}" aria-pressed="false">${label}</button>`).join('')}<label class="br-target-label">Content box<select data-target><option value="">Select a location…</option></select></label><button type="button" class="button" data-cancel-memo>Cancel memo</button></div><div class="br-body"><iframe title="AI-Wise Beta module preview" sandbox="allow-scripts allow-same-origin allow-downloads"></iframe><aside class="br-panel" aria-label="Beta feedback"><div class="br-panel-head"><h2>Feedback <span data-count>0 open</span></h2><div><label class="br-filter-label">Show<select data-filter><option value="open">Open</option><option value="resolved">Resolved</option><option value="all">All</option></select></label><button class="button" type="button" data-refresh>Refresh</button></div></div><p class="br-status" role="status" data-status></p><form class="br-compose" data-compose hidden><p data-selected></p><label>Comment<textarea data-comment rows="4" maxlength="8000" required placeholder="Describe the change or question…"></textarea></label><div class="br-comment-actions"><button type="submit" class="button primary">Post comment</button><button type="button" class="button" data-cancel-comment>Cancel</button></div></form><div class="br-list" data-list></div></aside></div><div class="br-discard" data-discard role="alertdialog" aria-labelledby="br-discard-message" hidden><p id="br-discard-message">Discard your unsent feedback and close the preview?</p><button class="button primary" type="button" data-keep>Keep editing</button><button class="button" type="button" data-leave>Discard and close</button></div>`;
-    document.body.append(modal);const s=session={modal,onClose,frame:modal.querySelector('iframe'),text:modal.querySelector('[data-comment]'),form:modal.querySelector('[data-compose]'),tools:modal.querySelector('.br-tools'),status:modal.querySelector('[data-status]'),filter:modal.querySelector('[data-filter]'),list:modal.querySelector('[data-list]'),locale:modal.querySelector('[data-language]'),course:modal.querySelector('[data-course]'),refresh:modal.querySelector('[data-refresh]'),rows:[],replies:[],request:0,drawEpoch:0,selectionEpoch:0};
-    modal.showModal();window.AIWiseMotion.enter(modal,'dialog');modal.querySelector('[data-close]').focus();
+  function open(part,onClose,options={}) {
+    dispose();const modal=document.createElement(options.container?'section':'dialog');modal.className='br-dialog'+(options.container?' br-page':'');modal.setAttribute('aria-labelledby','br-title');
+    modal.innerHTML=`<div class="br-top"><div><h1 id="br-title">AI-Wise Beta</h1><p class="br-version-name">${options.version?`V${options.version.number} · ${esc(options.version.title)}`:'Current approved Beta'}</p><p data-page-title>Loading page…</p></div><button type="button" class="button" data-close aria-label="Back to review versions">← Review versions</button></div><div class="br-toolbar"><label>Page<select data-page>${pages.map(([value,label])=>`<option value="${value}">${label}</option>`).join('')}</select></label><label>Course<select data-course><option value="aws1">Academic Writing Skills I</option><option value="ped">Pedagogical Sciences</option><option value="other">Others</option></select></label><label>Language<select data-language><option value="en">English</option><option value="nl">Nederlands</option></select></label><a class="button" data-external target="_blank" rel="noopener">Open page ↗</a><button type="button" class="button primary" data-add aria-pressed="false" disabled>Add memo</button></div><div class="br-tools" role="group" aria-label="Mark feedback location" hidden>${Object.entries(kinds).map(([key,label])=>`<button type="button" class="button" data-mode="${key}" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${toolIcons[key]}"/></svg>${label}</button>`).join('')}<label class="br-target-label">Content box<select data-target><option value="">Select a location…</option></select></label><button type="button" class="button" data-cancel-memo>Cancel memo</button></div><div class="br-body"><iframe title="AI-Wise Beta module preview" sandbox="allow-scripts allow-same-origin allow-downloads"></iframe><aside class="br-panel" aria-label="Beta feedback"><div data-history></div><div class="br-panel-head"><h2>Feedback <span data-count>0 open</span></h2><div><label class="br-filter-label">Show<select data-filter><option value="open">Open</option><option value="resolved">Resolved</option><option value="all">All</option></select></label><button class="button" type="button" data-refresh>Refresh</button></div></div><p class="br-status" role="status" data-status></p><form class="br-compose" data-compose hidden><p data-selected></p><label>Comment<textarea data-comment rows="4" maxlength="8000" required placeholder="Describe the change or question…"></textarea></label><div class="br-comment-actions"><button type="submit" class="button primary">Post comment</button><button type="button" class="button" data-cancel-comment>Cancel</button></div></form><div class="br-list" data-list></div></aside></div><div class="br-discard" data-discard role="alertdialog" aria-labelledby="br-discard-message" hidden><p id="br-discard-message">Discard your unsent feedback and close the preview?</p><button class="button primary" type="button" data-keep>Keep editing</button><button class="button" type="button" data-leave>Discard and close</button></div>`;
+    (options.container||document.body).append(modal);const s=session={modal,onClose,version:options.version||null,initialMemo:options.memo,frame:modal.querySelector('iframe'),text:modal.querySelector('[data-comment]'),form:modal.querySelector('[data-compose]'),tools:modal.querySelector('.br-tools'),status:modal.querySelector('[data-status]'),filter:modal.querySelector('[data-filter]'),list:modal.querySelector('[data-list]'),locale:modal.querySelector('[data-language]'),course:modal.querySelector('[data-course]'),refresh:modal.querySelector('[data-refresh]'),rows:[],replies:[],request:0,drawEpoch:0,selectionEpoch:0};
+    s.mentions=window.AIWiseBetaMentions.attach(s.text);if(options.memo){s.filter.value='all';s.lastFilter='all';}if(!options.container)modal.showModal();window.AIWiseMotion.enter(modal,options.container?'page':'dialog');modal.querySelector('[data-close]').focus();
     modal.querySelector('[data-close]').onclick=()=>requestClose(s);modal.addEventListener('cancel',e=>{e.preventDefault();requestClose(s);});
     modal.querySelector('[data-keep]').onclick=()=>discardPrompt(s,false);
     modal.querySelector('[data-leave]').onclick=()=>{resetDraft(s);modal.querySelector('[data-reply-form]')?.remove();requestClose(s);};
@@ -216,7 +225,7 @@
     s.form.onsubmit=async e=>{
       e.preventDefault();if(!s.anchor)return;const button=s.form.querySelector('[type=submit]');if(s.busy)return;busy(s,true);
       const page=s.page,owner=window.AIWiseAuth.snapshot().user?.id;
-      try {const body=s.text.value.trim();if(!body)throw Error('Write a comment first.');if(!await A.locate(s.doc,s.anchor))throw Error('Content changed. Select the location again.');await F.add({id:s.clientId,page,anchor:s.anchor,body});if(active(s)&&page===s.page&&owner===window.AIWiseAuth.snapshot().user?.id){resetDraft(s);await refresh(s);status(s,'Comment shared with the team.');}}
+      try {const body=s.text.value.trim();if(!body)throw Error('Write a comment first.');if(!await A.locate(s.doc,s.anchor))throw Error('Content changed. Select the location again.');await F.add({id:s.clientId,page,version_id:s.version?.id||null,anchor:s.anchor,body,mentions:s.mentions.ids()});if(active(s)&&page===s.page&&owner===window.AIWiseAuth.snapshot().user?.id){resetDraft(s);await refresh(s);status(s,'Comment shared with the team.');}}
       catch(error){if(active(s))status(s,error.message,true);}finally{if(active(s))busy(s,false);}
     };
     const choose=()=>{
@@ -233,9 +242,11 @@
     });
     const chapter=['c1','c2','c3'].includes(part)?part:null;
     if(['aws1','ped','other'].includes(part))s.course.value=part;
-    navigate(s,new URL((chapter?`common/aiwise-${chapter}-final.html`:'common/lobby.html')+'?course='+s.course.value,root).href);
+    const initial=options.initialPage&&pageKey(options.initialPage);
+    if(initial)s.locale.value=new URL(initial,root).searchParams.get('lang')==='nl'?'nl':'en';
+    navigate(s,new URL(initial||((chapter?`common/aiwise-${chapter}-final.html`:'common/lobby.html')+'?course='+s.course.value),root).href);
   }
-  function dispose() {const s=session;session=null;if(!s)return;s.request++;s.unsubscribe?.();s.frameAbort?.abort();s.resize?.disconnect();s.mutation?.disconnect();clearTimeout(s.drawTimer);clearTimeout(s.targetTimer);s.modal.close();s.modal.remove();}
+  function dispose() {const s=session;session=null;if(!s)return;s.history?.dispose();s.request++;s.unsubscribe?.();s.frameAbort?.abort();s.resize?.disconnect();s.mutation?.disconnect();clearTimeout(s.drawTimer);clearTimeout(s.targetTimer);s.modal.close?.();s.modal.remove();}
   window.addEventListener('beforeunload',e=>{if(dirty()){e.preventDefault();e.returnValue='';}});
   window.AIWiseBetaReview=Object.freeze({open,dispose,canLeave:()=>{if(session?.busy){status(session,'Saving feedback…');return false;}if(!dirty())return true;discardPrompt(session,true);return false;},pageKey});
 })();

@@ -3,41 +3,45 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>AI-Wise Workspace</title>
+  <title>AI-Wise WorkSpace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="theme.css">
   <link rel="stylesheet" href="workspace.css?v=workspace-tips-v1">
-  <link rel="stylesheet" href="beta-review.css?v=orientation-languages-v1">
+  <link rel="stylesheet" href="beta-review.css?v=review-details-v1">
   <link rel="stylesheet" href="content-studio.css?v=orientation-languages-v1">
   <link rel="stylesheet" href="control-tower.css?v=shared-studio-v1">
-  <link rel="stylesheet" href="sidebar.css?v=team-nav-v1">
+  <link rel="stylesheet" href="sidebar.css?v=review-details-v1">
   <link rel="stylesheet" href="motion.css?v=sidebar-panel-v1">
   <script src="motion.js?v=workspace-motion-v1" defer></script>
   <script src="supabase-config.js?v=connection-v1" defer></script>
   <script src="supabase-connection.js?v=connection-v1" defer></script>
   <script src="courses.js?v=prune-v1" defer></script>
-  <script src="sidebar.js?v=team-nav-v1" defer></script>
-  <link rel="stylesheet" href="auth.css?v=account-names-v1">
+  <script src="sidebar.js?v=review-details-v1" defer></script>
+  <link rel="stylesheet" href="auth.css?v=review-details-v1">
   <script src="auth.js?v=team-access-v1" defer></script>
-  <script src="auth-ui.js?v=account-names-v1" defer></script>
+  <script src="auth-ui.js?v=review-details-v1" defer></script>
   <script src="../course-specific/aws1/preset-prompts.js" defer></script>
-  <script src="../pipelines/beta-content.js?v=orientation-languages-v1" defer></script>
+  <script src="../pipelines/beta-content.js?v=review-details-v1" defer></script>
   <script src="shared-studio.js?v=team-access-v1" defer></script>
   <script src="control-tower.js?v=orientation-languages-v1" defer></script>
-  <script src="../pipelines/course-loader.js?v=orientation-languages-v1" data-render-only defer></script>
+  <script src="../pipelines/course-loader.js?v=review-details-v1" data-render-only defer></script>
   <script src="../pipelines/content-language.js?v=orientation-languages-v1" data-editor-only></script>
-  <script src="../pipelines/common-content.js?v=orientation-languages-v1" data-editor-only defer></script>
+  <script src="../pipelines/common-content.js?v=review-details-v1" data-editor-only defer></script>
   <script src="common-studio.js?v=orientation-languages-v1" defer></script>
   <script src="content-studio.js?v=team-access-v1" defer></script>
   <script src="overview.js?v=orientation-languages-v1" defer></script>
-  <script src="beta-anchors.js?v=orientation-languages-v1" defer></script>
-  <script src="beta-feedback.js?v=orientation-languages-v1" defer></script>
-  <script src="beta-review.js?v=team-access-v1" defer></script>
-  <link rel="stylesheet" href="team-management.css?v=team-access-v1">
+  <script src="beta-anchors.js?v=review-details-v1" defer></script>
+  <script src="beta-feedback.js?v=review-details-v1" defer></script>
+  <script src="beta-mentions.js?v=review-details-v1" defer></script>
+  <script src="beta-space.js?v=review-details-v1" defer></script>
+  <script src="beta-history.js?v=review-details-v1" defer></script>
+  <script src="beta-review.js?v=review-details-v1" defer></script>
+  <link rel="stylesheet" href="team-management.css?v=review-details-v1">
   <script src="team-management.js?v=team-access-v1" defer></script>
-  <script src="workspace.js?v=team-access-v1" defer></script>
+  <script src="workspace.js?v=review-details-v1" defer></script>
+<link rel="stylesheet" href="controls.css?v=review-details-v1">
 </head>
 <body>
   <a class="skip" href="#main">Skip to workspace</a>
@@ -62,7 +66,7 @@
           <a class="destination studio" href="#studio"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#studio-building"/></svg><strong>Content Studio</strong><span>Course specific orientation</span></a>
           <a class="destination common-studio" href="#common"><svg viewBox="0 0 240 180" aria-hidden="true"><use href="#studio-building"/></svg><strong>Common Studio</strong><span>AI-Wise Common content</span></a>
           <a class="destination tower" href="#tower"><svg viewBox="0 0 180 240" aria-hidden="true"><use href="#tower-building"/></svg><strong>Control Tower</strong><span>Package exchange &amp; approval</span></a>
-          <a class="destination beta" href="#beta" aria-haspopup="dialog"><svg viewBox="0 0 270 200" aria-hidden="true"><use href="#beta-screen"/></svg><strong>AI-Wise Beta</strong><span>Showcase &amp; review</span></a>
+          <a class="destination beta" href="#beta"><svg viewBox="0 0 270 200" aria-hidden="true"><use href="#beta-screen"/></svg><strong>AI-Wise Beta</strong><span>Showcase &amp; review</span></a>
           <a class="approval-gate" href="#tower/release" aria-label="Review Beta to Published release submissions"><span>Approval</span><svg viewBox="0 0 85 60" aria-hidden="true"><rect x="8" y="15" width="18" height="40" rx="3"/><path d="M26 29h47v10H26z"/><path class="gate-stripes" d="m35 29-7 10m23-10-7 10m23-10-7 10"/></svg></a>
           <a class="destination published" href="https://aiwise-eur.github.io/AI-Wise/"><svg viewBox="0 0 270 200" aria-hidden="true"><use href="#published-product"/></svg><strong>AI-Wise Published</strong><span>Open student site ↗</span></a>
         </div>
@@ -71,7 +75,7 @@
       <div class="map-caption"><span><i class="status-dot"></i> Create in Manager &amp; Studios</span><span>Control Tower → Beta → approval → Published</span></div>
     </section>
     <section id="room" hidden aria-labelledby="room-title"></section>
-    <noscript><p>This navigation prototype requires JavaScript. You can still <a href="../common/lobby.html">open the Beta module</a>.</p></noscript>
+    <noscript><p>This workspace requires JavaScript. You can still <a href="../common/lobby.html">open the Beta module</a>.</p></noscript>
   </main>
   <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <defs>

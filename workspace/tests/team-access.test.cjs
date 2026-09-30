@@ -17,7 +17,8 @@ function fixture(role='admin',hash='#team',respond=()=>({data:{members:[],total:
   AIWiseOverview:{setHome(){},open(){}},AIWiseCourses:{ready:Promise.resolve(),canLeave:()=>true,dispose(){},cards:()=>'',render:()=>renders.push('courses')},
   AIWiseContentStudio:{canLeave:()=>true,dispose(){},supports:()=>true,render:()=>renders.push('studio')},
   AIWiseControlTower:{canLeave:()=>true,dispose(){},render:()=>renders.push('tower')},
-  AIWiseBetaReview:{canLeave:()=>true,dispose(){},open:()=>renders.push('beta')}
+  AIWiseBetaReview:{canLeave:()=>true,dispose(){},open:()=>renders.push('beta')},
+  AIWiseBetaSpace:{canLeave:()=>true,dispose(){},render:()=>renders.push('beta')}
  };
  const context=vm.createContext({window,document,location,history:{replaceState:(_,__,url)=>{location.hash=new URL(url,'https://example.test').hash;}},AbortController,setTimeout,clearTimeout,URL,requestAnimationFrame:fn=>fn()});
  vm.runInContext(code('team-management.js'),context);vm.runInContext(code('workspace.js'),context);
@@ -41,7 +42,7 @@ test('role downgrade and sign-out clear administrator screens without a navigati
  await f.setAuth({status:'member',role:'member',user:{id:'admin-id'},message:'Member'});
  assert.equal(f.document.querySelector('.team-panel'),null);assert.match(f.document.getElementById('room').textContent,/Preview and share feedback/);
  await f.setAuth({status:'signed-out',role:null,user:null,message:'Sign in'});
- assert.equal(f.document.querySelector('.beta-welcome'),null);assert.match(f.document.getElementById('room').textContent,/Welcome to AI-Wise/);
+ assert.equal(f.document.querySelector('.beta-welcome'),null);assert.match(f.document.getElementById('room').textContent,/AI-Wise WorkSpace/);
 });
 test('late directory response does not reappear after role revocation',async()=>{
  let finish;const pending=new Promise(r=>finish=r);const f=fixture('admin','#team',()=>pending);await tick();

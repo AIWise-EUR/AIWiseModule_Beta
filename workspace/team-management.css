@@ -7,6 +7,15 @@ html:not([data-workspace-access="admin"]) .sidebar-module,
 html:not([data-workspace-access="admin"]) .sidebar-note { display:none; }
 html:not([data-workspace-access="admin"]):not([data-workspace-access="member"]) .sidebar-area[data-area-row="beta"] { display:none; }
 .workspace-access, .beta-welcome { max-width:720px; margin:48px auto; padding:32px; background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--sh); }
+.workspace-access-page { min-height:calc(100dvh - 96px); display:grid; place-items:center; padding:32px 0; }
+.workspace-access-page .workspace-access { width:min(100%,540px); margin:0; padding:48px 40px; text-align:center; border-radius:16px; }
+.workspace-access-mark { display:grid; place-items:center; width:56px; height:56px; margin:0 auto 24px; border-radius:14px; background:var(--signal); color:white; font:600 23px var(--font-heading); }
+.workspace-access-eyebrow { font:11px/1.6 var(--font-mono); color:var(--ink-3); margin:0 0 12px; }
+.workspace-access h1 { font-size:clamp(26px,4vw,34px); line-height:1.2; margin:0 0 16px; }
+.workspace-access-intro { color:var(--ink-2); font-size:15px; line-height:1.7; margin:0; }
+.workspace-access-status { color:var(--ink-3); font-size:13px; line-height:1.7; margin:24px 0; }
+.workspace-access .button { min-height:46px; justify-content:center; width:100%; }
+@media(max-width:600px) { .workspace-access-page .workspace-access { padding:32px 24px; }.workspace-access-page { min-height:calc(100dvh - 120px); padding:16px 0; } }
 .beta-welcome svg { display:block; width:240px; max-width:100%; margin:0 auto 20px; }
 .team-summary { display:flex; flex-wrap:wrap; gap:16px 48px; margin:24px 0; }
 .team-summary p { margin:0; font-size:14px; line-height:1.8; }
@@ -40,3 +49,8 @@ html:not([data-workspace-access="admin"]):not([data-workspace-access="member"]) 
  .team-person .badge { margin-right:auto; }
  .workspace-access,.beta-welcome { margin:24px auto; padding:24px; }
 }
+html[data-workspace-access="none"] main { min-height:100dvh; padding-top:24px; padding-bottom:24px; display:grid; align-items:center; }
+@media(max-width:1000px) { html[data-workspace-access="none"] main { min-height:calc(100dvh - 56px); } }
+
+.workspace-access-logo { display:block; width:220px; max-width:85%; height:auto; margin:0 auto 36px; }
+.workspace-access h1 { margin-bottom:36px; }
