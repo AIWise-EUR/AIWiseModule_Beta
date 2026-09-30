@@ -34,7 +34,7 @@
   async function refresh() {
     const current = ++revision;
     const apply = next => { if (current === revision) set(next); };
-    apply({status: 'checking', user: state.user, message: 'Checking your account and team access…'});
+    apply({status: 'checking', user: state.user, role: state.role || null, message: 'Checking your account and team access…'});
     try {
       const backend = await client();
       const session = await backend.auth.getSession();
@@ -49,7 +49,7 @@
       const timeout = setTimeout(() => controller.abort(), 10000);
       let result;
       try {
-        result = await backend.from('workspace_members').select('user_id,active')
+        result = await backend.from('workspace_members').select('user_id,active,role')
           .eq('user_id', user.id).eq('active', true).maybeSingle().abortSignal(controller.signal);
       } finally { clearTimeout(timeout); }
       if (result.error) {
@@ -59,9 +59,10 @@
             'Signed in, but team access could not be checked. Check your connection and try again.'});
         return;
       }
-      const member = result.data?.user_id === user.id && result.data.active === true;
-      apply({status: member ? 'member' : 'not-member', user,
-        message: member ? 'Your development-team membership is verified.' :
+      const member = result.data?.user_id === user.id && result.data.active === true && ['member','admin'].includes(result.data.role);
+      const role = member ? result.data.role : null;
+      apply({status: member ? 'member' : 'not-member', user, role,
+        message: member ? (role === 'admin' ? 'Administrator access · Manage content and team access.' : 'Member access · Preview Beta and leave feedback.') :
           'Awaiting administrator approval. Ask your project administrator to enable development-team access. Reopen this window to check for approval.'});
     } catch (error) {
       apply({status: 'error', user: null, message: error.status === 401 || error.status === 403 ?

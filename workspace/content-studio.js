@@ -48,10 +48,10 @@
     s.host.querySelectorAll('[data-cs-save]').forEach(button => button.disabled = !s.ready || s.blocked || (!dirty() && s.raw !== null && !s.needsUpgrade));
     s.host.querySelectorAll('[data-cs-submit]').forEach(button => {
       button.disabled = !canSubmit(s);
-      button.title = window.AIWiseAuth?.snapshot().status !== 'member' ? 'Sign in with an approved team account to submit.' : button.disabled ? 'Save this chapter’s draft before sending it for review.' : 'Send the saved chapter to the review queue.';
+      button.title = window.AIWiseAuth?.snapshot().role !== 'admin' ? 'Administrator access is required to submit content.' : button.disabled ? 'Save this chapter’s draft before sending it for review.' : 'Send the saved chapter to the review queue.';
     });
   }
-  const canSubmit = s => s.ready && !s.blocked && !s.sourceStale && !s.needsUpgrade && !!s.raw && !dirty() && window.AIWiseAuth?.snapshot().status === 'member';
+  const canSubmit = s => s.ready && !s.blocked && !s.sourceStale && !s.needsUpgrade && !!s.raw && !dirty() && window.AIWiseAuth?.snapshot().status === 'member' && window.AIWiseAuth?.snapshot().role === 'admin';
   function openSubmission(s) {
     if (!canSubmit(s)) return;
     try {

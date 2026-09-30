@@ -158,13 +158,26 @@
     shell(area,'Records Office',hint(areas[area].name+' · Internal history','Saved checkpoints, previous versions, review notes, and restoration history will be available here. No history is being recorded by this navigation prototype.'),empty('Version records not connected','')+'<div class="toolbar">'+button('Return to '+areas[area].name,'#'+area)+'</div>',false);
   }
   function renderNotFound() {shell(null,'Area not found','',lead('That workspace address is not available.')+button('Back to map','#home'),false);}
-  function route(focus=true) {
-    if (!window.AIWiseControlTower.canLeave() || !window.AIWiseContentStudio.canLeave() || !window.AIWiseCourses.canLeave() || !window.AIWiseBetaReview.canLeave()) { history.replaceState(null, '', location.pathname + location.search + renderedHash); return; }
+  function route(focus=true, accessChanged=false) {
+    if (!accessChanged && (!window.AIWiseTeam.canLeave() || !window.AIWiseControlTower.canLeave() || !window.AIWiseContentStudio.canLeave() || !window.AIWiseCourses.canLeave() || !window.AIWiseBetaReview.canLeave())) { history.replaceState(null, '', location.pathname + location.search + renderedHash); return; }
+    window.AIWiseTeam.dispose();
     window.AIWiseControlTower.dispose();
     window.AIWiseContentStudio.dispose();
     window.AIWiseCourses.dispose();
     window.AIWiseBetaReview.dispose();
+    const access=window.AIWiseAuth.snapshot();
+    if(access.status!=='member' || !['admin','member'].includes(access.role)) {
+      home.hidden=true;room.hidden=false;window.AIWiseOverview.setHome(false);
+      const checking=access.status==='checking';
+      shell(null,checking?'Checking access…':access.user?'Workspace access':'Welcome to AI-Wise','',
+        `<div class="workspace-access"><p>${escape(access.message)}</p><button class="button primary" type="button" data-account>${access.user?'Open account':'Sign in or create account'}</button></div>`,false);
+      room.querySelector('[data-account]').onclick=()=>document.querySelector('.aw-account-trigger').click();
+      document.title='AI-Wise Workspace';return;
+    }
+    if(access.role==='member' && !['home','beta'].includes((location.hash.slice(1)||'home').split('/')[0]))
+      history.replaceState(null,'',location.pathname+location.search+'#home');
     if (location.hash.startsWith('#beta') && !renderedHash.startsWith('#beta')) betaReturn = renderedHash || '#home';
+    if(access.role==='member')betaReturn='#home';
     renderedHash = location.hash;
     pendingFetch?.abort(); pendingFetch=null;
     const [area='home', ...segments]=(location.hash.slice(1)||'home').split('/');
@@ -176,12 +189,18 @@
     });
     window.AIWiseSidebar.markCurrent();
     const isUpdates = area === 'updates';
-    const isHome=area==='home' || isUpdates || area==='beta';home.hidden=!isHome;room.hidden=isHome;
+    const reviewer=access.role==='member';
+    const isHome=!reviewer && (area==='home' || isUpdates || area==='beta');home.hidden=!isHome;room.hidden=isHome;
     if (isUpdates) { history.replaceState(null, '', location.pathname + location.search + '#home'); renderedHash = '#home'; window.AIWiseSidebar.markCurrent(); }
     window.AIWiseOverview.setHome(isHome);
-    if(isHome) { document.title=area==='beta'?'AI-Wise Beta · Preview':'AI-Wise Workspace'; window.AIWiseMotion.enter(home); if(area==='beta')renderBeta(part); }
+    if(reviewer) {
+      shell(null,'AI-Wise Beta','',`<div class="beta-welcome"><svg viewBox="0 0 270 200" aria-hidden="true"><use href="#beta-screen"/></svg><h2>Preview and share feedback</h2><p>Explore the module, highlight content and leave comments for the team.</p>${button('Open Beta preview','#beta',true)}</div>`,false);
+      document.title='AI-Wise Beta · Workspace';if(area==='beta')renderBeta(part);
+    }
+    else if(isHome) { document.title=area==='beta'?'AI-Wise Beta · Preview':'AI-Wise Workspace'; window.AIWiseMotion.enter(home); if(area==='beta')renderBeta(part); }
     else {
-      if(area==='profiler')renderProfiler(part);
+      if(area==='team')window.AIWiseTeam.render(shell);
+      else if(area==='profiler')renderProfiler(part);
       else if(area==='manager')renderManager(part);
       else if(area==='studio')renderStudio(part);
       else if(area==='courses')window.AIWiseCourses.render(part, shell);
@@ -197,7 +216,17 @@
     if (isUpdates) window.AIWiseOverview.open();
     if(focus && area==='tower' && part && !part.includes('/')) document.querySelector('.ct-queue')?.scrollIntoView({block:'start'});
   }
-  window.AIWiseCourses.ready.then(() => { window.addEventListener('hashchange',()=>route()); route(false); });
+  let ready=false, accessKey='';
+  window.AIWiseAuth.subscribe(auth=>{
+    const role=auth.status==='member'&&['admin','member'].includes(auth.role)?auth.role:auth.status==='checking'?'checking':'none';
+    document.documentElement.dataset.workspaceAccess=role;
+    if(auth.status==='checking')return;
+    const key=auth.status+':'+(auth.user?.id||'')+':'+(auth.role||'');
+    if(key===accessKey)return;accessKey=key;
+    window.AIWiseSidebar.close(false);
+    if(ready)route(false,true);
+  });
+  window.AIWiseCourses.ready.then(() => { ready=true;window.addEventListener('hashchange',()=>route());route(false,true); });
   // Native fragment scrolling must not hide the header on direct #home links.
   window.addEventListener('load', () => requestAnimationFrame(() => window.scrollTo(0, 0)));
 })();

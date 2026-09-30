@@ -10,7 +10,7 @@
     return Error(e?.message || 'Shared requests could not be reached. Check your connection and retry.');
   }
   async function client() {
-    if (window.AIWiseAuth.snapshot().status !== 'member') throw Error('Sign in with an approved team account to use shared review.');
+    if (window.AIWiseAuth.snapshot().status !== 'member' || window.AIWiseAuth.snapshot().role !== 'admin') throw Error('Administrator access is required for content review.');
     return window.AIWiseBackend.getClient();
   }
   async function query(request) {
@@ -31,12 +31,12 @@
   }
   async function refresh() {
     const token=++generation, user=window.AIWiseAuth.snapshot();
-    if (user.status!=='member') { rows=[];role=null;error='Sign in with an approved team account to view shared submissions.';loaded=false;notify();return snapshot(); }
+    if (user.status!=='member' || user.role!=='admin') { rows=[];role=null;error='Administrator access is required for content review.';loaded=false;notify();return snapshot(); }
     try {
       const backend=await client();
       const [ownRole,records]=await Promise.all([query(backend.rpc('workspace_role')),query(backend.from('workspace_submissions').select('*').order('submitted_at',{ascending:false}))]);
       if(token!==generation)return snapshot();
-      if(!ownRole)throw Error('Team access has been revoked.');
+      if(ownRole!=='admin')throw Error('Administrator access is required for content review.');
       role=ownRole;rows=records.map(convert);error='';loaded=true;
     } catch(e) { if(token!==generation)return snapshot(); rows=[];role=null;loaded=false;error=friendly(e).message; }
     notify();return snapshot();
@@ -44,7 +44,7 @@
   async function submit({course,chapter,raw,slots,baseSlots,baseRelease,summary,locale='en',sourceRelease=null}) {
     const backend=await client(), user=window.AIWiseAuth.snapshot().user;
     const saved=JSON.parse(raw), owner=user.id;
-    const assertOwner=()=>{const now=window.AIWiseAuth.snapshot();if(now.status!=='member'||now.user?.id!==owner)throw Error('Your account changed. Reopen the submission form.');};
+    const assertOwner=()=>{const now=window.AIWiseAuth.snapshot();if(now.status!=='member'||now.role!=='admin'||now.user?.id!==owner)throw Error('Your account changed. Reopen the submission form.');};
     // Stable per-account content ID makes a lost response safe to retry, including across tabs.
     const bytes=new TextEncoder().encode(user.id+'\n'+course+'\n'+chapter+'\n'+locale+'\n'+raw);
     const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -60,8 +60,8 @@
   }
   window.AIWiseSharedStudio=Object.freeze({snapshot,refresh,submit,decide});
   window.AIWiseAuth.subscribe(state=>{
-    const key=state.status+':'+(state.user?.id||'');
+    const key=state.status+':'+(state.user?.id||'')+':'+(state.role||'');
     if(key===identity)return;identity=key;generation++;rows=[];role=null;loaded=false;error='';notify();
-    if(state.status==='member')refresh();
+    if(state.status==='member' && state.role==='admin')refresh();
   });
 })();

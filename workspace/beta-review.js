@@ -66,8 +66,7 @@
     if(!rows.length){const p=document.createElement('p');p.className='br-empty';p.textContent=member()?'No '+(filter==='all'?'':filter+' ')+'feedback on this page.':'Team feedback appears here after sign-in.';s.list.append(p);return;}
     rows.forEach(row=>{
       const article=document.createElement('article');article.className='br-comment';article.id='br-'+row.id;
-      const own=window.AIWiseAuth.snapshot().user?.id===row.author_id;
-      article.innerHTML=`<div class="br-comment-head"><strong>${esc(row.author_name)}</strong><span>${row.resolved?'Resolved':esc(kinds[row.anchor.kind])}</span></div><time>${esc(new Date(row.created_at).toLocaleString())}</time><button class="br-location" type="button">${esc(row.anchor.excerpt)}</button><p class="br-comment-body">${esc(row.body)}</p><p class="br-anchor-status" role="status"></p><div class="br-replies">${s.replies.filter(r=>r.memo_id===row.id).map(r=>`<div><strong>${esc(r.author_name)}</strong><p>${esc(r.body)}</p></div>`).join('')}</div><div class="br-comment-actions"><button type="button" class="button" data-reply>Reply</button>${own||s.role==='admin'?`<button type="button" class="button" data-resolve>${row.resolved?'Reopen':'Resolve'}</button>`:''}</div>`;
+      article.innerHTML=`<div class="br-comment-head"><strong>${esc(row.author_name)}</strong><span>${row.resolved?'Resolved':esc(kinds[row.anchor.kind])}</span></div><time>${esc(new Date(row.created_at).toLocaleString())}</time><button class="br-location" type="button">${esc(row.anchor.excerpt)}</button><p class="br-comment-body">${esc(row.body)}</p><p class="br-anchor-status" role="status"></p><div class="br-replies">${s.replies.filter(r=>r.memo_id===row.id).map(r=>`<div><strong>${esc(r.author_name)}</strong><p>${esc(r.body)}</p></div>`).join('')}</div><div class="br-comment-actions"><button type="button" class="button" data-reply>Reply</button>${s.role==='admin'?`<button type="button" class="button" data-resolve>${row.resolved?'Reopen':'Resolve'}</button>`:''}</div>`;
       article.querySelector('.br-location').onclick=async()=>{
         const node=await A.locate(s.doc,row.anchor);if(!active(s))return;
         if(!node){article.querySelector('.br-anchor-status').textContent='Content changed since this comment. The original location is unavailable.';return;}
@@ -230,7 +229,7 @@
     s.frame.addEventListener('load',()=>connect(s));
     s.unsubscribe=window.AIWiseAuth.subscribe(auth=>{
       if(auth.status==='checking' && auth.user?.id===s.owner){modal.querySelector('[data-add]').disabled=true;return;}
-      const identity=auth.status+':'+(auth.user?.id||'');s.owner=auth.user?.id;if(identity===s.identity){modal.querySelector('[data-add]').disabled=auth.status!=='member'||!s.doc;return;}s.identity=identity;s.request++;resetDraft(s);s.rows=[];s.replies=[];renderList(s);draw(s);modal.querySelector('[data-add]').disabled=auth.status!=='member'||!s.doc;if(s.page)refresh(s);
+      const identity=auth.status+':'+(auth.user?.id||'')+':'+(auth.role||'');s.owner=auth.user?.id;if(identity===s.identity){modal.querySelector('[data-add]').disabled=auth.status!=='member'||!s.doc;return;}s.identity=identity;s.request++;resetDraft(s);s.rows=[];s.replies=[];renderList(s);draw(s);modal.querySelector('[data-add]').disabled=auth.status!=='member'||!s.doc;if(s.page)refresh(s);
     });
     const chapter=['c1','c2','c3'].includes(part)?part:null;
     if(['aws1','ped','other'].includes(part))s.course.value=part;
