@@ -76,3 +76,6 @@
 .br-past-memo p { white-space:pre-wrap; line-height:1.6; }
 .br-history [data-older] { width:100%; margin-top:14px; }
 .br-history [data-history-status]:empty { display:none; }
+
+.br-panel>[data-history] { margin-top:24px; padding-top:20px; border-top:1px solid var(--line); }
+.br-panel .br-history { margin-bottom:0; padding-bottom:0; border-bottom:0; }

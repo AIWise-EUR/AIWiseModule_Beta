@@ -45,7 +45,7 @@
    }catch(e){if(valid()&&token===epoch){target.textContent=e.message;const retry=document.createElement('button');retry.className='button';retry.textContent='Retry feedback';retry.type='button';retry.onclick=()=>loadFeedback(item,++epoch);target.append(retry);}}
   }
   function choose(item,scroll=true){
-   if(!item||!canSelect())return;selected=item;details.open=true;picker.value=item.id;items.forEach(i=>i.node.toggleAttribute('data-review-selected',i===item));paintItem();
+   if(!item||!canSelect())return;selected=item;details.open=true;picker.value=item.id;items.forEach(i=>i.node.toggleAttribute('data-review-selected',i===item));paintItem();host.scrollIntoView({block:'nearest',behavior:window.AIWiseMotion.reduced()?'auto':'smooth'});
    if(scroll){reveal(item.node);item.node.scrollIntoView({block:'center',behavior:window.AIWiseMotion.reduced()?'auto':'smooth'});}
   }
   picker.onchange=()=>{if(!canSelect()){picker.value=selected?.id||'';message.textContent='Post or cancel your draft before opening item history.';return;}message.textContent='';choose(items.find(i=>i.id===picker.value));};
