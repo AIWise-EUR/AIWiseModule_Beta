@@ -70,15 +70,16 @@
   }
   function render(shell) {
     dispose();if(!admin())return;
-    shell(null,'Team management','',`<p class="room-lead">Approve accounts and manage access to AI-Wise.</p><div class="team-summary"><p><strong>Members</strong><br>Beta preview and feedback</p><p><strong>Administrators</strong><br>Content, approvals and team management</p></div><section class="team-panel" aria-label="Team accounts"><form class="team-search"><label for="team-search">Find a person</label><div><input id="team-search" type="search" maxlength="100" placeholder="Name or email"><button class="button" type="submit" data-load>Search</button><button class="button" type="button" data-refresh data-load>Refresh</button></div></form><p data-total></p><p role="status" aria-live="polite" data-message></p><ul class="team-people" data-list></ul><div class="team-pagination"><button class="button" type="button" data-prev disabled>Previous</button><span data-page></span><button class="button" type="button" data-next disabled>Next</button></div></section>`,false);
+    shell(null,'Team management','',`<p class="room-lead">Approve accounts and manage access to AI-Wise.</p><div class="team-summary"><p><strong>Members</strong><br>Beta preview and feedback</p><p><strong>Administrators</strong><br>Content, approvals and team management</p></div><div data-team-invitations></div><section class="team-panel" aria-label="Team accounts"><form class="team-search"><label for="team-search">Find a person</label><div><input id="team-search" type="search" maxlength="100" placeholder="Name or email"><button class="button" type="submit" data-load>Search</button><button class="button" type="button" data-refresh data-load>Refresh</button></div></form><p data-total></p><p role="status" aria-live="polite" data-message></p><ul class="team-people" data-list></ul><div class="team-pagination"><button class="button" type="button" data-prev disabled>Previous</button><span data-page></span><button class="button" type="button" data-next disabled>Next</button></div></section>`,false);
     const root=document.querySelector('.team-panel'),s=session={root,owner:window.AIWiseAuth.snapshot().user.id,search:'',offset:0,epoch:0,busy:false,rows:[],dialog:null};
     s.message=root.querySelector('[data-message]');s.list=root.querySelector('[data-list]');
     root.querySelector('form').onsubmit=e=>{e.preventDefault();s.search=root.querySelector('input').value.trim();s.offset=0;load(s);};
     root.querySelector('[data-refresh]').onclick=()=>load(s);
     root.querySelector('[data-prev]').onclick=()=>{s.offset=Math.max(0,s.offset-50);load(s);};
     root.querySelector('[data-next]').onclick=()=>{s.offset+=50;load(s);};
+    s.invites=window.AIWiseInvites?.mount(document.querySelector('[data-team-invitations]'));
     load(s);
   }
-  function dispose(){const s=session;session=null;if(!s)return;s.epoch++;s.dialog?.close();s.dialog?.remove();}
-  window.AIWiseTeam=Object.freeze({render,dispose,canLeave:()=>!session?.busy&&!session?.dialog});
+  function dispose(){const s=session;session=null;if(!s)return;s.epoch++;s.invites?.dispose();s.dialog?.close();s.dialog?.remove();}
+  window.AIWiseTeam=Object.freeze({render,dispose,canLeave:()=>!session?.busy&&!session?.dialog&&(session?.invites?.canLeave()??true)});
 })();

@@ -54,3 +54,12 @@ html[data-workspace-access="none"] main { min-height:100dvh; padding-top:24px; p
 
 .workspace-access-logo { display:block; width:220px; max-width:85%; height:auto; margin:0 auto 36px; }
 .workspace-access h1 { margin-bottom:36px; }
+
+.team-invitations { margin:0 0 24px; }
+.invite-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+.invite-heading h2 { margin:0; }.invite-heading>.button { flex-shrink:0; }
+.invite-settings { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.team-dialog input { display:block; width:100%; min-width:0; min-height:42px; padding:8px 12px; margin-bottom:18px; border:1px solid var(--line); border-radius:5px; background:white; color:var(--ink); font:inherit; box-sizing:border-box; }
+.team-dialog input[readonly] { font-size:12px; }
+.team-invitations .toolbar { flex-shrink:0; }
+@media(max-width:600px){.invite-heading { flex-direction:column; }.invite-settings { grid-template-columns:1fr; }.team-invitations .toolbar { flex-wrap:wrap; }}

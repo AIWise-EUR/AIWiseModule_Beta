@@ -73,10 +73,10 @@
     dialog.dataset.status = value.status;
     dialog.classList.toggle('aw-my-page',!!value.user);
     trigger.querySelector('.aw-account-caption').hidden=!value.user;
-    trigger.setAttribute('aria-label',value.user?'My page · '+(value.user.displayName||'Account'):'Sign in');
+    trigger.setAttribute('aria-label',value.user?(document.body.hasAttribute('data-invitation-entry')?'Account · ':'My page · ')+(value.user.displayName||'Account'):'Sign in');
     dialog.querySelector('#aw-account-title').textContent = value.user ? 'Account settings' : signup ? 'Create your account' : retrySignIn ? 'Sign-in failed' : 'Team sign in';
     dialog.querySelector('#aw-account-status').textContent = !value.user && signup && value.status !== 'checking' ?
-      'Create an account, confirm your email, then ask an administrator to approve team access.' : value.message;
+      (document.body.hasAttribute('data-invitation-entry')?'Create an account and confirm your email, then return here to accept your invitation.':'Create an account, confirm your email, then ask an administrator to approve team access.') : (document.body.hasAttribute('data-invitation-entry')&&value.status==='not-member'?'Signed in. Close this window to review and accept your invitation.':value.message);
     const accountEmail = dialog.querySelector('#aw-account-email');
     accountEmail.textContent = value.user?.email || ''; accountEmail.hidden = !value.user;
     form.hidden = !!value.user;
@@ -125,7 +125,7 @@
     cancelClose = window.AIWiseMotion.after(dialog, closeNow);
   }
   function open() {
-    window.AIWiseSidebar.close(false);
+    window.AIWiseSidebar?.close(false);
     cancelClose?.(); cancelClose = null; window.AIWiseMotion.cancel(dialog);
     error.textContent = ''; retrySignIn = false; paint(state);
     dialog.showModal(); window.AIWiseMotion.enter(dialog);
@@ -162,7 +162,7 @@
       mode = 'signin'; signupName.value = '';
       if (result.confirmationRequired) {
         cooldown();
-        showNotice('If this address can be registered, check your inbox and spam folder for a confirmation link, then sign in. If you already have an account, sign in with your existing password. Team access requires administrator approval.');
+        showNotice(document.body.hasAttribute('data-invitation-entry')?'Check your inbox for a confirmation link, then return here and sign in to accept your invitation. If you already have an account, sign in with your existing password.':'If this address can be registered, check your inbox and spam folder for a confirmation link, then sign in. If you already have an account, sign in with your existing password. Team access requires administrator approval.');
       }
     });
     else action(async () => { await window.AIWiseAuth.signIn(loginEmail, loginPassword); showNotice(''); }, true);
