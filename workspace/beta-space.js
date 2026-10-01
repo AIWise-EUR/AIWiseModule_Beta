@@ -15,28 +15,27 @@
   }finally{clearTimeout(timer);}
  }
  const date=value=>new Date(value).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+ const inbox=()=>window.AIWiseReviewInbox;
+ function badges(info,id){const base='#beta/'+(id||'current');return `<div class="beta-version-stats"><a href="${base}"><span aria-hidden="true">↻</span> ${info.changes} ${info.changes===1?'update':'updates'} <small>${info.unreadChanges} unread</small></a><a href="${base}?tab=feedback"><span aria-hidden="true">▤</span> ${info.memoCount} feedback ${info.memoCount===1?'memo':'memos'} <small>${info.unreadMemos} unread</small></a></div>`;}
  async function load(s){
-  const epoch=s.epoch=(s.epoch||0)+1;s.message.textContent='Loading review space…';
+  if(s.loading||!active(s))return;s.loading=true;const epoch=s.epoch=(s.epoch||0)+1;s.message.textContent='Updating your counts…';
   try{
-   const [versions,review]=await Promise.all([
-    request(b=>b.from('workspace_beta_versions').select('id,number,title,summary,author_name,created_at,published_at').order('number',{ascending:false}).range(0,199)),
-    window.AIWiseBetaChecklist.request('workspace_beta_review_context',{p_version:null})
-   ]);if(!active(s)||s.epoch!==epoch)return;
-   s.message.textContent='';s.versions=versions;
-   const progress=window.AIWiseBetaChecklist.progress(review),count=review.changes.length;
-   s.root.querySelector('[data-current-summary]').textContent=count?`${count} ${count===1?'change':'changes'} · ${progress.reviewed} reviewed · ${progress.open} open ${progress.open===1?'memo':'memos'}`:'No new changes against the comparison version.';
-   s.root.querySelector('[data-current-baseline]').textContent=review.previous_number?`Compared with V${review.previous_number}${review.previous_kind==='snapshot'?' · earlier review snapshot':''}`:'First publication · review all approved content';
-   const picker=s.root.querySelector('[data-version]');picker.innerHTML=versions.map(v=>`<option value="${v.id}">V${v.number} · ${esc(v.created_at?.slice(0,10))}${v.published_at?'':' · Review snapshot'}</option>`).join('');
-   if(s.selected&&versions.some(v=>v.id===s.selected))picker.value=s.selected;
-   s.root.querySelector('[data-version-count]').textContent=`Earlier versions (${versions.length}${versions.length===200?'+':''})`;
-   s.root.querySelector('[data-archive-empty]').hidden=!!versions.length;s.root.querySelector('[data-archive-controls]').hidden=!versions.length;
-   const details=()=>{s.selected=picker.value;const v=versions.find(v=>v.id===s.selected);s.root.querySelector('[data-version-info]').textContent=v?`${date(v.created_at)}${v.summary?' · '+v.summary:''}`:'';};picker.onchange=details;details();
-   s.root.querySelector('[data-open]').disabled=false;s.root.querySelector('[data-open-archive]').disabled=!versions.length;
-  }catch(e){if(active(s)&&s.epoch===epoch){s.message.textContent=e.message;s.root.querySelector('[data-open]').disabled=true;s.root.querySelector('[data-open-archive]').disabled=true;}}
+   const versions=await request(b=>b.from('workspace_beta_versions').select('id,number,title,summary,author_name,created_at,published_at').order('number',{ascending:false}).range(0,s.limit));
+   const visible=versions.slice(0,s.limit);
+   const summaries=await Promise.all([null,...visible.map(v=>v.id)].map(async id=>{const data=id&&s.contexts?.get(id)||await window.AIWiseBetaChecklist.request('workspace_beta_review_context',{p_version:id});if(id){s.contexts ||=new Map();s.contexts.set(id,data);}return {data,info:await inbox().summary(id,data)};}));
+   if(!active(s)||s.epoch!==epoch)return;
+   const current=summaries[0];s.message.textContent='Counts update automatically every 15 seconds. Unread is personal to your account.';
+   s.root.querySelector('[data-current-summary]').innerHTML=badges(current.info,null);
+   s.root.querySelector('[data-current-baseline]').textContent=current.data.previous_number?`Updates since V${current.data.previous_number}${current.data.previous_kind==='snapshot'?' · earlier snapshot':''}`:'No earlier comparison version';
+   s.root.querySelector('[data-version-list]').innerHTML=visible.map((v,i)=>`<article class="beta-version-row"><div><h3>V${v.number} <span>· ${esc(v.created_at?.slice(0,10))}</span></h3><small>${v.published_at?'Published version':'Earlier review snapshot'}</small>${badges(summaries[i+1].info,v.id)}</div><a class="button" href="#beta/${v.id}">Open →</a></article>`).join('')||'<p>No earlier versions yet.</p>';
+   s.root.querySelector('[data-version-more]').hidden=versions.length<=s.limit;
+   s.root.querySelector('[data-open]').disabled=false;
+  }catch(e){if(active(s)){s.message.textContent=e.message;s.root.querySelector('[data-open]').disabled=false;}}
+  finally{s.loading=false;}
  }
  async function render(shell,part=''){
   dispose();const [id,query='']=part.split('?');const params=new URLSearchParams(query);
-  const owner=who().user?.id,s=session={owner,busy:false,dialog:null,selected:params.get('version')};
+  const owner=who().user?.id,s=session={owner,busy:false,dialog:null,selected:params.get('version'),limit:5};
   if((id==='current'||validId(id))&&params.get('publish')==='1'&&who().role==='admin'){s.release=window.AIWisePublishedRelease.render(shell,{fromBeta:true});return;}
   if(id==='current'||validId(id)){
    shell(null,'AI-Wise Beta','', '<p role="status" data-preview-status>Loading preview…</p>',false);
@@ -45,17 +44,19 @@
     if(!active(s))return;
     if(id!=='current'&&(!version||version.id!==id||!Array.isArray(version.content)))throw Error('This review version is not available.');
     preview={owner,version:version||{id:'current',content:draft.current_content}};container.replaceChildren();container.classList.add('beta-preview-page');
-    const first=!params.has('page')&&!params.has('memo')&&!params.has('item')?window.AIWiseBetaChecklist.firstChange(review):null;
+    let first=null;if(!params.has('page')&&!params.has('memo')&&!params.has('item')&&params.get('tab')!=='feedback'){try{const items=await inbox().changes(version?.id||null,review);first=items.find(r=>r.unread)||items[0]||null;}catch{first=window.AIWiseBetaChecklist.firstChange(review);}}if(!active(s))return;
     const start=first?new URLSearchParams(window.AIWiseBetaChecklist.previewLink(version?.id,first).split('?')[1]):params;
-    window.AIWiseBetaReview.open('',()=>{location.hash='#beta';},{container,version,draft,review,initialPage:start.get('page'),memo:params.get('memo'),item:start.get('item'),scope:start.get('scope')});
+    window.AIWiseBetaReview.open('',()=>{location.hash='#beta';},{container,version,draft,review,initialPage:start.get('page'),memo:params.get('memo'),item:start.get('item'),scope:start.get('scope'),tab:params.get('tab')});
    }catch(e){if(active(s)){const status=container.querySelector('[data-preview-status]')||container.appendChild(document.createElement('p'));status.textContent=e.message;const a=document.createElement('a');a.href='#beta';a.className='button';a.textContent='Back to review versions';container.append(a);}}return;
   }
-  shell(null,'AI-Wise Beta','',`<p class="room-lead">Review approved changes here before they reach students.</p><div class="beta-space beta-home-simple"><section class="beta-current"><div><span class="beta-eyebrow">READY FOR TEAM REVIEW</span><h2>Current review</h2><p>Studio approvals collect here. Open the preview to check changes and leave feedback.</p><p class="beta-review-summary" data-current-summary role="status"></p><small data-current-baseline></small></div><div class="beta-current-actions"><button type="button" class="button primary" data-open disabled>Open preview →</button>${who().role==='admin'?'<a class="button" href="#beta/current?publish=1">Publish…</a>':''}<button type="button" class="beta-text-action" data-refresh>Refresh</button></div></section><p role="status" data-space-message></p><details class="beta-archive"><summary data-version-count>Earlier versions</summary><p data-archive-empty hidden>No earlier versions yet.</p><div data-archive-controls><label for="beta-version">Version</label><div class="beta-version-choice"><select id="beta-version" data-version></select><button type="button" class="button" data-open-archive disabled>Open version →</button></div><p class="beta-version-info" data-version-info></p></div></details></div>`,false);
-  document.getElementById('room-title')?.focus();
-  s.root=document.querySelector('.beta-space');s.message=s.root.querySelector('[data-space-message]');
-  s.root.querySelector('[data-open]').onclick=()=>{const page=['c1','c2','c3'].includes(id)?`common/aiwise-${id}-final.html?course=aws1`:null;location.hash='#beta/current'+(page?'?page='+encodeURIComponent(page):'');};
-  s.root.querySelector('[data-open-archive]').onclick=()=>{const selected=s.root.querySelector('[data-version]').value;if(validId(selected))location.hash='#beta/'+selected;};
-  s.root.querySelector('[data-refresh]').onclick=()=>load(s);await load(s);
+  shell(null,'AI-Wise Beta','',`<p class="room-lead">Choose a version to check its updates and leave feedback.</p><div class="beta-space beta-home-simple"><section class="beta-current"><div><span class="beta-eyebrow">UNPUBLISHED</span><h2>Next publication</h2><p>Approved Studio changes collect here until they are published.</p><div data-current-summary></div><small data-current-baseline></small></div><div class="beta-current-actions"><button type="button" class="button primary" data-open>Open →</button><button type="button" class="beta-text-action" data-refresh>Refresh counts</button></div></section><p role="status" data-space-message></p><section class="beta-version-archive"><h2>Saved versions</h2><div data-version-list></div><button class="button" type="button" data-version-more hidden>Load more versions</button></section></div>`,false);
+  document.getElementById('room-title')?.focus();s.root=document.querySelector('.beta-space');s.message=s.root.querySelector('[data-space-message]');
+  s.root.querySelector('[data-open]').onclick=()=>{location.hash='#beta/current';};
+  s.root.querySelector('[data-refresh]').onclick=()=>load(s);
+  s.root.querySelector('[data-version-more]').onclick=()=>{s.limit+=5;load(s);};
+  const update=()=>{if(!document.hidden)load(s);};s.abort=new AbortController();
+  window.addEventListener('focus',update,{signal:s.abort.signal});window.addEventListener('aiwise:reading-changed',update,{signal:s.abort.signal});
+  s.timer=setInterval(update,15000);await load(s);
  }
  function snapshot(id,course,locale){
   if(!preview||preview.version?.id!==id||who().user?.id!==preview.owner||!['member','checking'].includes(who().status))throw Error('This review version is not available.');
@@ -63,6 +64,6 @@
   if(locale==='nl')for(const english of preview.version.content.filter(r=>r.course===course&&r.locale==='en'))if(!rows.some(r=>r.chapter===english.chapter))rows.push({...english,locale:'nl',fallback_locale:'en'});
   return JSON.parse(JSON.stringify(rows));
  }
- function dispose(){const s=session;session=null;preview=null;s?.release?.();s?.dialog?.close();s?.dialog?.remove();document.getElementById('room')?.classList.remove('beta-preview-page');}
+ function dispose(){const s=session;session=null;preview=null;clearInterval(s?.timer);s?.abort?.abort();s?.release?.();s?.dialog?.close();s?.dialog?.remove();document.getElementById('room')?.classList.remove('beta-preview-page');}
  window.AIWiseBetaSpace=Object.freeze({render,dispose,snapshot,canLeave:()=>!session?.busy&&!session?.dialog});
 })();

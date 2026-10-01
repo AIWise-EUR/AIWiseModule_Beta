@@ -226,8 +226,10 @@
     refreshPicker(s); s.frame.contentWindow.scrollTo(0, y);
   }
   function openEditor(s, index) {
+    if(s.feedback?.canLeave&&!s.feedback.canLeave())return;
     closePicker(s); selectItem(s, index, true);
     const item = s.items[index];
+    s.feedback?.();if(window.AIWiseStudioFeedback)s.feedback=window.AIWiseStudioFeedback.mount(s.host.querySelector("[data-cs-feedback]"),{course:s.isCommon?"common":s.courseId,chapter:s.chapter,locale:s.locale,key:item.path,extraKey:item.titlePath,node:targetNode(s,index),doc:s.frame.contentDocument});
     s.host.querySelector('#cs-editor-title').textContent = s.isCommon ? item.title : item.example === undefined ? label(item.path) : `Example ${item.example + 1}`;
     const container = s.host.querySelector('.cs-fields'); container.replaceChildren();
     function field(value, path, name, valuePath = item.path) {
@@ -273,6 +275,7 @@
   }
   function closeEditor(s) {
     if (!s.dialog.open || s.cancelEditorClose) return;
+    if(s.feedback?.canLeave&&!s.feedback.canLeave())return;
     if (reduceMotion()) { s.dialog.close(); return; }
     s.dialog.classList.add('cs-closing');
     s.cancelEditorClose = finishAfterMotion(s.dialog, '--cs-motion-panel', () => {
@@ -483,7 +486,7 @@
           <div class="cs-resize-handle" role="separator" aria-orientation="vertical" aria-label="Resize editor" aria-controls="cs-editor-body" tabindex="0" title="Drag to resize. Use Left or Right arrow keys."></div>
           <div class="cs-editor-body" id="cs-editor-body"><div class="cs-editor-head"><div><h2 id="cs-editor-title">${isCommon ? 'Common' : 'Course'} item</h2><button type="button" class="button" data-cs-close autofocus>Close</button></div>
             <p id="cs-editor-help">Changes appear as you type. Save draft to keep them in this browser. Reset applies to this chapter only.</p></div>
-            <div class="cs-fields"></div><div class="cs-editor-foot"><p class="cs-status" role="status"></p><div>
+            <section class="cs-feedback" data-cs-feedback></section><div class="cs-fields"></div><div class="cs-editor-foot"><p class="cs-status" role="status"></p><div>
               <button type="button" class="cs-reset-link" data-cs-reset data-cs-ready disabled>Reset chapter draft</button>
               <button type="button" class="button primary" data-cs-save disabled>Save draft</button><button type="button" class="button" data-cs-close>Back to preview</button>
             </div></div></div></dialog>
@@ -659,6 +662,7 @@
       host.querySelectorAll('[data-cs-close]').forEach(button => button.addEventListener('click', () => closeEditor(s)));
       s.dialog.addEventListener('cancel', e => { e.preventDefault(); closeEditor(s); });
       s.dialog.addEventListener('close', () => {
+        s.feedback?.();s.feedback=null;
         // A queued close event must not steal focus from a picker the user has already reopened.
         const active = document.activeElement;
         if (session === s && (active === document.body || s.dialog.contains(active)))
@@ -673,7 +677,7 @@
   window.AIWiseAuth?.subscribe(() => { if(session) controls(session); });
   window.addEventListener('beforeunload', event => { if (dirty()) { event.preventDefault(); event.returnValue = ''; } });
   window.AIWiseContentStudio = {render, supports,
-    canLeave: () => !dirty() || confirm(`Leave ${session?.isCommon ? 'Common' : 'Content'} Studio without saving your edits?`),
-    dispose: () => { const old = session; session = null; old?.abort.abort(); old?.cancelPickerClose?.(); old?.cancelEditorClose?.(); if (old?.dialog.open) old.dialog.close(); if (old?.submitDialog.open) old.submitDialog.close(); }
+    canLeave: () => (!session?.feedback?.canLeave||session.feedback.canLeave()) && (!dirty() || confirm(`Leave ${session?.isCommon ? 'Common' : 'Content'} Studio without saving your edits?`)),
+    dispose: () => { const old = session; session = null; old?.feedback?.();old?.abort.abort(); old?.cancelPickerClose?.(); old?.cancelEditorClose?.(); if (old?.dialog.open) old.dialog.close(); if (old?.submitDialog.open) old.submitDialog.close(); }
   };
 })();
