@@ -59,3 +59,12 @@ The existing connection-check function alone does not enable publishing.
 The separate `AI-Wise/main` student release path is not changed by this setup.
 
 For separately approved **Beta → student Published** releases, follow [PUBLISHED_RELEASES_SETUP.md](PUBLISHED_RELEASES_SETUP.md). This is independent of Studio → Beta automatic commits.
+
+
+### Workspace page feedback and review checklist
+
+Run `WORKSPACE_FEEDBACK_REVIEW_SETUP.sql` once in SQL Editor after the existing Beta versions and Published release migrations. It creates the shared administrator feedback inbox and the version-specific review checklist, with active membership checks, RLS, derived author names, retry protection and optimistic updates. Existing saved versions are retained. No new secret, Edge Function, cron or Verify JWT setting is required. This file mirrors migration `20261001075603_workspace_feedback_review_flow.sql`; use one copy only.
+
+Check the Feedback bubble with a member account, then inspect and reply from an administrator account. A member must see only their own page messages. In Beta, select a saved version, inspect a change and mark it reviewed; another teammate should see the reviewer name after refreshing. Publish this version carries the same version into the existing prepare/approve/deploy workflow. Review progress is advisory and approval remains administrator-only.
+
+Local verification: `PGLITE_MODULE=/path/to/@electric-sql/pglite node supabase/tests/workspace_feedback_review.cjs`. This creates a disposable database and verifies inbox privacy, authoritative identity, replies, RLS, retries, version/language comparisons, concurrency and revocation. It does not apply SQL to the live project.
