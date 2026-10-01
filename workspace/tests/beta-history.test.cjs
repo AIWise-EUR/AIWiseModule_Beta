@@ -21,7 +21,7 @@ test('current Beta explains comparison scope without querying saved content',()=
  const w={AIWiseAuth:{snapshot:()=>({status:'member',user:{id:'owner'}})},AIWiseBackend:{getClient:()=>{throw Error('unexpected request')}}};
  vm.runInNewContext(source,{window:w,AbortController,setTimeout,clearTimeout});
  const result=w.AIWiseBetaHistory.attach({host:document.querySelector('#host'),doc:document,version:null,canSelect:()=>true});
- assert.match(document.querySelector('[data-comparison]').textContent,/Choose a saved/);result.dispose();assert.equal(document.querySelector('[data-history-item]'),null);
+ assert.match(document.querySelector('[data-comparison]').textContent,/Reopen Beta/);result.dispose();assert.equal(document.querySelector('[data-history-item]'),null);
 });
 test('saved history excludes head-only text, loads previous snapshots and clears all marks on dispose',async()=>{
  const {document,window:dom}=parseHTML('<html><head><title data-review-common-key="c1.extra-1">Title</title></head><body><main data-current-block="c1"><h2 data-review-common-key="c1.block-0">New heading</h2></main><div id="host"></div></body></html>');

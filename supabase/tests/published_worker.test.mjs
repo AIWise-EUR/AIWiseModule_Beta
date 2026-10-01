@@ -16,7 +16,8 @@ function fixture(options={}){
    if(p==='/auth/v1/user')return json({id:uuid});
    if(p.endsWith('/workspace_role'))return json(options.role||'admin');
    if(p.endsWith('/workspace_release_status'))return json(true);
-   if(p.endsWith('/workspace_store_release'))return json(body.p_id);
+   if(p.endsWith('/workspace_store_release_candidate'))return json(body.p_id);
+   if(p.endsWith('/workspace_release_candidate'))return json({content:version.content,fingerprint:'approved-copy'});
    if(p==='/rest/v1/workspace_beta_versions')return json([version]);
    if(p.endsWith('/workspace_release_check_worker'))return json(body.p_secret==='f'.repeat(64));
    if(p.endsWith('/workspace_release_claim')){if(state!=='queued')return json(null);state='processing';return json(queued);}
@@ -70,9 +71,11 @@ test('extra file cannot enter the target repository',async()=>{const f=fixture()
 test('Pages deployment status is independent of commit success',async()=>{for(const deploy of ['success','failure']){const f=fixture({deploy});await f.run();assert.equal(f.finished[0].p_error,null);assert.equal(f.updates[0].deployment_status,deploy);}});
 
 test('preparing reads exact source revisions and stores a server-built package without committing',async()=>{
- const f=fixture({prepare:true}),r=await f.run(undefined,{operation:'prepare',id:uuid,version_id:version.id,files:{'evil.js':'untrusted'},repository:'evil'});
- assert.equal(r.status,200);const save=f.calls.find(c=>c.url.pathname.endsWith('/workspace_store_release')).body;
- assert.equal(save.p_source,'b'.repeat(40));assert.equal(save.p_target,'a'.repeat(40));assert.equal(save.p_version,version.id);assert.equal(save.p_files['evil.js'],undefined);
+ const f=fixture({prepare:true}),r=await f.run(undefined,{operation:'prepare',id:uuid,fingerprint:'approved-copy',files:{'evil.js':'untrusted'},repository:'evil'});
+ assert.equal(r.status,200);const save=f.calls.find(c=>c.url.pathname.endsWith('/workspace_store_release_candidate')).body;
+ assert.equal(save.p_source,'b'.repeat(40));assert.equal(save.p_target,'a'.repeat(40));assert.equal(save.p_fingerprint,'approved-copy');assert.deepEqual(save.p_content,version.content);assert.equal(JSON.parse(save.p_files['published-content.json']).version_number,null);assert.equal(save.p_files['evil.js'],undefined);
  assert.equal(f.calls.some(c=>c.url.hostname==='api.github.com'&&c.url.pathname.startsWith('/repos/')&&c.method!=='GET'),false);
  assert.equal(f.calls.some(c=>c.url.pathname.endsWith('/workspace_release_claim')),false);
 });
+
+test('preparation refuses a stale review fingerprint and the retired saved-version payload',async()=>{for(const body of [{operation:'prepare',id:uuid,fingerprint:'stale'},{operation:'prepare',id:uuid,version_id:version.id}]){const f=fixture({prepare:true}),r=await f.run(undefined,body);assert([400,409].includes(r.status));assert.equal(f.calls.some(c=>c.url.hostname==='api.github.com'),false);}});

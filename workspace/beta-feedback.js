@@ -3,6 +3,7 @@
   'use strict';
   function message(error) {
     if(['42P01','PGRST205'].includes(error?.code)) return Error('Team feedback is not ready yet. Ask the administrator to finish setup.');
+    if(error?.code==='40001')return Error('This Beta cycle was published. Reopen Beta before posting your memo.');
     if(error?.code==='42501')return Error('Your team access could not be verified. Reopen your account and try again.');
     if(error?.code==='23514'&&error.message?.startsWith('Choose active teammates'))return Error(error.message);
     if(['23514','23503'].includes(error?.code))return Error('This location or thread is no longer available. Reload the preview and select it again.');

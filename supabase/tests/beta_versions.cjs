@@ -1,3 +1,4 @@
+// Historical migration contract; publish_cycles.cjs tests the current full migration chain.
 /* Disposable Postgres fixture. Never changes live accounts, roles or content. */
 const {PGlite}=require(process.env.PGLITE_MODULE||'@electric-sql/pglite');
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
@@ -8,7 +9,7 @@ const root=path.resolve(__dirname,'../..');
  create table auth.users(id uuid primary key,raw_user_meta_data jsonb default '{}',email text,email_confirmed_at timestamptz,created_at timestamptz default now(),deleted_at timestamptz,is_anonymous boolean default false);
  create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
  grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
- for(const f of fs.readdirSync(path.join(root,'supabase/migrations')).filter(f=>f.endsWith('.sql')).sort())await db.exec(fs.readFileSync(path.join(root,'supabase/migrations',f),'utf8'));
+ for(const f of fs.readdirSync(path.join(root,'supabase/migrations')).filter(f=>f.endsWith('.sql')&&f<'20261001083839').sort())await db.exec(fs.readFileSync(path.join(root,'supabase/migrations',f),'utf8'));
 
  const admin='11111111-1111-4111-8111-111111111111',member='22222222-2222-4222-8222-222222222222',paused='33333333-3333-4333-8333-333333333333';
  for(const [id,name] of [[admin,'Admin'],[member,'Reviewer'],[paused,'Paused']])await db.query("insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values($1,$2,now(),$3)",[id,name+'@example.test',JSON.stringify({display_name:name})]);

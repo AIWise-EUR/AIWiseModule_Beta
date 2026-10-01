@@ -47,7 +47,7 @@
     const [submissions,versions]=await Promise.all([
      request(s,b=>b.from('workspace_submissions').select('id,summary,status,submitted_at').eq('author_id',s.owner).order('submitted_at',{ascending:false}).limit(5)),
      request(s,b=>b.from('workspace_beta_versions').select('id,number,title,created_at').eq('author_id',s.owner).order('created_at',{ascending:false}).limit(5))
-    ]);rows.push(...submissions.map(r=>({href:pageLink('#tower/request/'+r.id),title:r.summary.slice(0,100),detail:'My submission · '+r.status,at:r.submitted_at})),...versions.map(r=>({href:pageLink('#beta/'+r.id),title:'V'+r.number+' · '+r.title,detail:'Review version I created',at:r.created_at})));
+    ]);rows.push(...submissions.map(r=>({href:pageLink('#tower/request/'+r.id),title:r.summary.slice(0,100),detail:'My submission · '+r.status,at:r.submitted_at})),...versions.map(r=>({href:pageLink('#beta/'+r.id),title:'V'+r.number+' · '+r.created_at.slice(0,10),detail:'Version I created',at:r.created_at})));
    }
    return rows.sort((a,b)=>b.at.localeCompare(a.at)).slice(0,7);
   },'Your feedback'+(s.role==='admin'?', submissions and review versions':'')+' will appear here.');
