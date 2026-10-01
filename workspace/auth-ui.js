@@ -74,7 +74,7 @@
     dialog.classList.toggle('aw-my-page',!!value.user);
     trigger.querySelector('.aw-account-caption').hidden=!value.user;
     trigger.setAttribute('aria-label',value.user?'My page · '+(value.user.displayName||'Account'):'Sign in');
-    dialog.querySelector('#aw-account-title').textContent = value.user ? 'My page' : signup ? 'Create your account' : retrySignIn ? 'Sign-in failed' : 'Team sign in';
+    dialog.querySelector('#aw-account-title').textContent = value.user ? 'Account settings' : signup ? 'Create your account' : retrySignIn ? 'Sign-in failed' : 'Team sign in';
     dialog.querySelector('#aw-account-status').textContent = !value.user && signup && value.status !== 'checking' ?
       'Create an account, confirm your email, then ask an administrator to approve team access.' : value.message;
     const accountEmail = dialog.querySelector('#aw-account-email');
@@ -133,7 +133,8 @@
     if (!state.user && !email.disabled) email.focus({preventScroll: true});
     else dialog.querySelector('.aw-account-close').focus({preventScroll: true});
   }
-  trigger.addEventListener('click', open);
+  trigger.addEventListener('click', () => { if(state.user&&window.AIWiseMyPage)window.AIWiseMyPage.open();else open(); });
+  window.AIWiseAccount=Object.freeze({open});
   dialog.querySelector('.aw-account-close').addEventListener('click', close);
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
   const outside = event => { const r = dialog.getBoundingClientRect(); return event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom; };
