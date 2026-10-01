@@ -282,7 +282,7 @@
       '<div class="toolbar">'+link('Back to requests','#tower/'+request.route)+controls+'</div>'+
       `<div class="ct-detail-meta">${badge(request.shared?'Team':'Browser only')}${badge(statusLabel(request),request.shared&&request.status==='approved'?'ct-approved':'')}${request.priority==='urgent'?badge('Urgent','ct-urgent'):''}<span>Requested by <strong>${esc(request.author.name)}</strong></span><span>${esc(date(request.submittedAt))}</span></div>`+
       (parent?`<div class="ct-previous">${link('Previous submission',href(parent.id))}<p><strong>Previous decision</strong></p><p class="ct-preserve">${esc(parent.decision?.reason||'No decision reason recorded.')}</p><details><summary>Compare with the previous submission</summary>${textBlock('Previous target and version',parent.target+' · '+parent.version)}${textBlock('Previous request details',parent.details)}${textBlock('Previous expected outcome',parent.outcome)}</details></div>`:'')+
-      `<div class="ct-detail-grid"><article class="ct-detail-card">${submittedContent(request.commonSnapshot || request.contentSnapshot)}${fields.map(([title,value])=>textBlock(title,value)).join('')}${reference(request.targetRef)}</article><aside><section class="ct-detail-card"><h2>Review &amp; decision</h2>${legacyContent(request) ? resubmitGuide(request) : request.shared && request.status==='pending' && window.AIWiseSharedStudio.snapshot().role !== 'admin' ? '<p>Awaiting administrator review. Only administrators can make a decision.</p>' : request.status==='pending'?`<p>Review the target reference and request before recording a decision as <strong>${esc(request.shared ? (window.AIWiseAuth.snapshot().user?.displayName || 'Administrator') : person||'your local profile')}</strong>.</p><form id="ct-decision-form">${field('decisionReason','Decision reason','','For a revision request, specify exactly what needs to change.',true)}<p id="ct-decision-message" class="ct-message" role="alert" tabindex="-1"></p><div class="ct-decision-buttons"><button class="button primary" value="approved" type="submit">${request.shared?'Approve & apply to Beta':'Approve'}</button><button class="button" value="revision" type="submit">Request revision</button><button class="button ct-reject" value="rejected" type="submit">Reject</button></div></form>`:request.decision?`<p><strong>${esc(statuses[request.status])}</strong> by ${esc(request.decision.by)}</p><p class="ct-preserve">${esc(request.decision.reason)}</p>`:'<p>Save and submit the draft to request a review.</p>'}</section><section class="ct-detail-card"><h2>Application</h2>${request.shared ? `<p><strong>${request.status==='approved'?'Applied to Beta':request.status==='pending'?'Awaiting approval':'Not applied'}</strong></p><p>${request.status==='approved'?'This approved version was applied to Beta. A later approval may replace it.':'Administrator approval applies this chapter to Beta.'} Published stays unchanged.</p>${request.status==='approved'?link('Preview in Beta →',betaLink(request),true):''}` : '<p><strong>Not applied</strong></p><p>This browser-only request does not change Beta or Published.</p>'}</section><section class="ct-detail-card"><h2>Request history</h2><ol class="ct-history">${history}</ol></section></aside></div>`);
+      `<div class="ct-detail-grid"><article class="ct-detail-card">${contentReview(request,fields)}</article><aside><section class="ct-detail-card"><h2>Review &amp; decision</h2>${legacyContent(request) ? resubmitGuide(request) : request.shared && request.status==='pending' && window.AIWiseSharedStudio.snapshot().role !== 'admin' ? '<p>Awaiting administrator review. Only administrators can make a decision.</p>' : request.status==='pending'?`<p>Review the target reference and request before recording a decision as <strong>${esc(request.shared ? (window.AIWiseAuth.snapshot().user?.displayName || 'Administrator') : person||'your local profile')}</strong>.</p><form id="ct-decision-form">${field('decisionReason','Decision reason','','For a revision request, specify exactly what needs to change.',true)}<p id="ct-decision-message" class="ct-message" role="alert" tabindex="-1"></p><div class="ct-decision-buttons"><button class="button primary" value="approved" type="submit">${request.shared?'Approve & apply to Beta':'Approve'}</button><button class="button" value="revision" type="submit">Request revision</button><button class="button ct-reject" value="rejected" type="submit">Reject</button></div></form>`:request.decision?`<p><strong>${esc(statuses[request.status])}</strong> by ${esc(request.decision.by)}</p><p class="ct-preserve">${esc(request.decision.reason)}</p>`:'<p>Save and submit the draft to request a review.</p>'}</section><section class="ct-detail-card"><h2>Application</h2>${request.shared ? `<p><strong>${request.status==='approved'?'Applied to Beta':request.status==='pending'?'Awaiting approval':'Not applied'}</strong></p><p>${request.status==='approved'?'This approved version was applied to Beta. A later approval may replace it.':'Administrator approval applies this chapter to Beta.'} Published stays unchanged.</p>${request.status==='approved'?link('Preview in Beta →',betaLink(request),true):''}` : '<p><strong>Not applied</strong></p><p>This browser-only request does not change Beta or Published.</p>'}</section><section class="ct-detail-card"><h2>Request history</h2><ol class="ct-history">${history}</ol></section></aside></div>`);
     const localProfile=document.querySelector('.ct-local');
     if(request.shared && localProfile)localProfile.hidden=true;
     if(request.shared && request.status==='approved' && window.AIWiseGitHubPublishing){
@@ -322,6 +322,41 @@
         JSON.stringify(draft.slots) !== JSON.stringify(input.slots) || JSON.stringify(draft.baseSlots) !== JSON.stringify(input.baseSlots))
       throw Error('This saved draft cannot be submitted. Reload the editor and try again.');
     return window.AIWiseSharedStudio.submit({...input, course:'common'});
+  }
+  const contentLabel = key => key.replace(/^(?:c[123]|map)\./, '').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[._]/g, ' ').replace(/^./, c => c.toUpperCase());
+  function sameContent(a,b) {
+    if (a === b) return true;
+    if (!a || !b || typeof a !== 'object' || typeof b !== 'object' || Array.isArray(a) !== Array.isArray(b)) return false;
+    const keys=Object.keys(a);
+    return keys.length===Object.keys(b).length && keys.every(key=>Object.hasOwn(b,key)&&sameContent(a[key],b[key]));
+  }
+  function changedFields(before,after,path=[]) {
+    if (sameContent(before,after)) return [];
+    if (before && after && typeof before==='object' && typeof after==='object' && Array.isArray(before)===Array.isArray(after)) {
+      return [...new Set([...Object.keys(before),...Object.keys(after)])].flatMap(key=>changedFields(before[key],after[key],[...path,Array.isArray(after)?'Item '+(Number(key)+1):contentLabel(key)]));
+    }
+    return [{before,after,path}];
+  }
+  function comparisonValue(value) {
+    if (value===undefined) return '<p class="ct-change-empty">Not present</p>';
+    if (value===null || value==='') return '<p class="ct-change-empty">Empty</p>';
+    if (Array.isArray(value)) return value.length?'<ol>'+value.map(v=>'<li>'+comparisonValue(v)+'</li>').join('')+'</ol>':'<p class="ct-change-empty">Empty list</p>';
+    if (typeof value==='object') return Object.keys(value).length?'<dl>'+Object.entries(value).map(([key,v])=>'<dt>'+esc(contentLabel(key))+'</dt><dd>'+comparisonValue(v)+'</dd>').join('')+'</dl>':'<p class="ct-change-empty">Empty</p>';
+    return '<p class="ct-preserve">'+esc(value)+'</p>';
+  }
+  function contentReview(request,fields) {
+    const snapshot=request.commonSnapshot||request.contentSnapshot;
+    const details=fields.map(([title,value])=>textBlock(title,value)).join('')+reference(request.targetRef);
+    if (!snapshot) return details;
+    const baseline=snapshot.baseSlots;
+    const changes=baseline?[...new Set([...Object.keys(baseline),...Object.keys(snapshot.slots)])].flatMap(key=>{
+      const rows=changedFields(baseline[key],snapshot.slots[key]);
+      if (!rows.length) return [];
+      const common=snapshot.scope==='common'||snapshot.course==='common';
+      const title=common?snapshot.blockTitles?.[key]||String(Object.values(baseline[key]||snapshot.slots[key]||{})[0]||'Shared content').trim().slice(0,90):contentLabel(key);
+      return [`<section class="ct-change-item"><h3>${esc(title)}</h3>${rows.map(row=>`${row.path.length?'<h4>'+esc(row.path.join(' · '))+'</h4>':''}<div class="ct-change-pair"><section class="ct-change-before" aria-label="Before"><h5>Before</h5>${comparisonValue(row.before)}</section><section class="ct-change-after" aria-label="After"><h5>After</h5>${comparisonValue(row.after)}</section></div>`).join('')}</section>`];
+    }):[];
+    return '<section class="ct-content-changes"><h2>Changes</h2>'+ (changes.length?changes.join(''):'<p>'+ (baseline?'No content changes in this request.':'The earlier content is unavailable for comparison.')+'</p>')+'</section><details class="ct-request-details"><summary>Request details</summary>'+details+submittedContent(snapshot)+'</details>';
   }
   function submittedContent(snapshot) {
     if (!snapshot) return '';
