@@ -28,7 +28,7 @@
     if(!current()||generation!==epoch)return;
     enabled=setting===true;rows=r.filter(r=>valid(r.id));review=context;
     if(!review?.fingerprint)throw {code:'PGRST202'};
-    const p=window.AIWiseBetaChecklist.progress(review);root.querySelector('[data-release-review]').textContent=(review.previous_number?'Since V'+review.previous_number+': ':'First publication: ')+p.reviewed+' of '+p.total+' items reviewed · '+p.open+' open memos';
+    const p=window.AIWiseBetaChecklist.progress(review);root.querySelector('[data-release-review]').textContent=(review.previous_number?'Since V'+review.previous_number+(review.previous_kind==='snapshot'?' (review snapshot)':'')+': ':'First publication: ')+p.reviewed+' of '+p.total+' items reviewed · '+p.open+' open memos';
     message.textContent=!enabled?'Student publishing is not enabled yet.':'';draw();
    }catch(e){if(current()&&generation===epoch){enabled=false;controls();message.textContent=['PGRST202','PGRST205','42P01','42883','42703'].includes(e?.code)?'Publish-based version setup is not ready yet.':'Release status could not be loaded. Refresh to retry.';}}
    finally{if(current())timer=setTimeout(load,15000);else root.replaceChildren();}

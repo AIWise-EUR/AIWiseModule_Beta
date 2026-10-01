@@ -11,6 +11,16 @@ test('comparison respects exact slot, nested values, language and English fallba
  assert.equal(H.changed(a,version({title:'A',body:['Text']},{title:'A',body:['Text']}),item,'nl'),true);
  assert.equal(H.value(a,{...item,course:'ped'},'en').content,undefined);
 });
+test('rolling preview loads the exact server-selected legacy baseline and leaves unchanged content unmarked',async()=>{
+ const {document}=parseHTML('<html><head></head><body><main data-current-block="c1"><h2 data-review-common-key="c1.block-0">Same heading</h2></main><div id="host"></div></body></html>');
+ const previous={...version('Same heading'),id:'legacy',number:1,published_at:null};const calls=[];
+ const q={select:()=>q,eq:(key,value)=>{calls.push([key,value]);return q;},limit:()=>q,abortSignal:async()=>({data:[previous]})};
+ const w={AIWiseAuth:{snapshot:()=>({status:'member',user:{id:'owner'}})},AIWiseBackend:{getClient:async()=>({from:()=>q})},AIWiseBetaAnchors:{path:()=> 'body>main>h2'}};
+ vm.runInNewContext(source,{window:w,AbortController,setTimeout,clearTimeout});
+ const result=w.AIWiseBetaHistory.attach({host:document.querySelector('#host'),doc:document,version:null,draft:{current_content:previous.content,previous_id:'legacy',previous_number:1},course:'aws1',locale:'en',canSelect:()=>true});
+ await new Promise(resolve=>setTimeout(resolve,0));assert.deepEqual(calls,[['id','legacy']]);
+ assert.match(document.querySelector('[data-comparison]').textContent,/0 changed items since V1 \(review snapshot\)/);assert.equal(document.querySelectorAll('[data-review-changed]').length,0);result.dispose();
+});
 test('historical feedback matches exact block or descendants, never similarly named neighbors',()=>{
  const p='body>main:nth-of-type(1)>section:nth-of-type(1)';
  assert.equal(H.atLocation({path:p},p),true);assert.equal(H.atLocation({path:p+'>p:nth-of-type(1)'},p),true);
@@ -27,8 +37,8 @@ test('saved history excludes head-only text, loads previous snapshots and clears
  const {document,window:dom}=parseHTML('<html><head><title data-review-common-key="c1.extra-1">Title</title></head><body><main data-current-block="c1"><h2 data-review-common-key="c1.block-0">New heading</h2></main><div id="host"></div></body></html>');
  const current={...version({heading:'New heading'}),id:'new',number:2},previous={...version({heading:'Old heading'}),id:'old',number:1,title:'Earlier',author_name:'Tester',created_at:'2026-09-30'};
  let auth={status:'member',user:{id:'owner'}};
- const q={select:()=>q,lt:()=>q,order:()=>q,limit:()=>q,abortSignal:async()=>({data:[previous]})};
- const w={AIWiseAuth:{snapshot:()=>auth},AIWiseBackend:{getClient:async()=>({from:()=>q})},AIWiseBetaAnchors:{path:()=> 'body>main:nth-of-type(1)>h2:nth-of-type(1)'}};
+ const q={select:()=>q,eq:()=>q,lt:()=>q,order:()=>q,limit:()=>q,abortSignal:async()=>({data:[previous]})};
+ const w={AIWiseAuth:{snapshot:()=>auth},AIWiseBackend:{getClient:async()=>({from:()=>q,rpc:()=>({abortSignal:async()=>({data:{previous_id:previous.id}})})})},AIWiseBetaAnchors:{path:()=> 'body>main:nth-of-type(1)>h2:nth-of-type(1)'}};
  vm.runInNewContext(source,{window:w,AbortController,setTimeout,clearTimeout});
  const result=w.AIWiseBetaHistory.attach({host:document.querySelector('#host'),doc:document,version:current,course:'aws1',locale:'en',canSelect:()=>true});
  document.querySelector('[data-mark-changes]').checked=true;
