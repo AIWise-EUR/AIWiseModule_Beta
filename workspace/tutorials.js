@@ -11,6 +11,7 @@
   if(document.querySelector('#my-page[open]'))return 'my-page';if(document.querySelector('#aw-account-dialog[open]'))return 'account';
   if(document.body.classList.contains('profiler-page'))return 'profiler';
   const [area='home',part='']=location.hash.slice(1).split('/');
+  if(area==='beta'&&location.hash.includes('publish=1'))return 'release';
   if(area==='beta')return document.querySelector('.br-page')||/^(current|[a-f0-9-]{36})(?:\?|$)/.test(part)?'beta-preview':'beta';
   if(['common','studio'].includes(area))return document.querySelector('#cs-studio')||(area==='common'?['c1','c2','c3','map']:['aws1','ped','other']).includes(part)?area+'-editor':area;
   if(area==='tower')return part==='release'||location.hash==='#tower/new/release'?'release':'tower';

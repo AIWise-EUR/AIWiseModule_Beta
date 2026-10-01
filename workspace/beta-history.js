@@ -11,7 +11,7 @@
  function changed(a,b,item,locale){return stable(value(a,item,locale))!==stable(value(b,item,locale));}
  function text(value){if(value==null)return 'Not included in this version.';if(typeof value==='string')return value;if(Array.isArray(value))return value.map(text).join('\n\n');return Object.entries(value).map(([k,v])=>/^Text |^Heading |^Emphasis |^List text /.test(k)?text(v):k+': '+text(v)).join('\n');}
  function atLocation(anchor,path){return anchor.path===path||anchor.path.startsWith(path+'>');}
- function attach({host,doc,version,page,course,locale,canSelect,reveal}){
+ function attach({host,doc,version,page,course,locale,initialItem,initialScope,canSelect,reveal}){
   let live=true,epoch=0,busy=false,versions=version?[version]:[],more=true,items=[],selected=null;
   const owner=window.AIWiseAuth.snapshot().user?.id,abort=new AbortController();
   const valid=()=>live&&window.AIWiseAuth.snapshot().user?.id===owner&&window.AIWiseAuth.snapshot().status==='member';
@@ -31,8 +31,17 @@
   function paintItem(){
    const item=selected;if(!item)return;
    const current=value(version,item,locale),previous=versions[1]?value(versions[1],item,locale):null;
-   content.innerHTML=`<h3>${esc(item.title)}</h3><p class="br-history-note">${item.course==='common'?'Common Studio':'Content Studio'}${current.locale!==locale?' · Saved English fallback':''}</p>${previous?`<details class="br-value" open><summary>${item.changed?'Changed':'Unchanged'} since V${versions[1].number}</summary>${item.changed?`<h4>Before · V${versions[1].number}</h4><pre>${esc(text(previous.content))}</pre>`:''}<h4>This version · V${version.number}</h4><pre>${esc(text(current.content))}</pre></details>`:`<pre>${esc(text(current.content))}</pre>`}<h4>Earlier versions</h4><div data-version-history>${versions.slice(1).map(v=>`<details class="br-value"><summary>V${v.number} · ${esc(v.title)}</summary><p>${esc(v.author_name)} · ${esc(new Date(v.created_at).toLocaleDateString())}</p><pre>${esc(text(value(v,item,locale).content))}</pre></details>`).join('')||'<p>No earlier saved version.</p>'}</div><h4>Earlier feedback at this location</h4><p class="br-history-note">Original quotes are shown below. Check them if the page layout has changed.</p><div data-item-feedback>Loading feedback…</div>`;
-   older.hidden=!more;loadFeedback(item,++epoch);
+   content.innerHTML=`<h3>${esc(item.title)}</h3><p class="br-history-note">${item.course==='common'?'Common Studio':'Content Studio'}${current.locale!==locale?' · Saved English fallback':''}</p>${previous?`<details class="br-value" open><summary>${item.changed?'Changed':'Unchanged'} since V${versions[1].number}</summary>${item.changed?`<h4>Before · V${versions[1].number}</h4><pre>${esc(text(previous.content))}</pre>`:''}<h4>This version · V${version.number}</h4><pre>${esc(text(current.content))}</pre></details>`:`<pre>${esc(text(current.content))}</pre>`}<div data-history-review></div><h4>Earlier versions</h4><div data-version-history>${versions.slice(1).map(v=>`<details class="br-value"><summary>V${v.number} · ${esc(v.title)}</summary><p>${esc(v.author_name)} · ${esc(new Date(v.created_at).toLocaleDateString())}</p><pre>${esc(text(value(v,item,locale).content))}</pre></details>`).join('')||'<p>No earlier saved version.</p>'}</div><h4>Earlier feedback at this location</h4><p class="br-history-note">Original quotes are shown below. Check them if the page layout has changed.</p><div data-item-feedback>Loading feedback…</div>`;
+   older.hidden=!more;loadFeedback(item,++epoch);loadCheck(item,epoch);
+  }
+  async function loadCheck(item,token){
+   if(!window.AIWiseBetaChecklist)return;const host=content.querySelector('[data-history-review]');
+   try{const data=await window.AIWiseBetaChecklist.request('workspace_beta_review_context',{p_version:version.id});if(!valid()||token!==epoch)return;
+    if(!data.changes.some(c=>c.course===item.course&&c.chapter===item.chapter&&c.locale===locale&&c.key===item.key))return;
+    const check=data.checks.find(c=>c.course===item.course&&c.chapter===item.chapter&&c.locale===locale&&c.item_key===item.key);
+    host.innerHTML=`<p class="beta-review-summary">${check?.reviewed?'✓ Reviewed by '+esc(check.reviewer_name):'Needs review'}</p><button class="button" type="button">${check?.reviewed?'Mark as needs review':'Mark reviewed'}</button><p role="status"></p>`;
+    const button=host.querySelector('button');button.onclick=async()=>{if(!valid()||!canSelect())return;button.disabled=true;try{await window.AIWiseBetaChecklist.request('workspace_check_beta_item',{p_version:version.id,p_course:item.course,p_chapter:item.chapter,p_locale:locale,p_key:item.key,p_reviewed:!check?.reviewed,p_expected:check?.updated_at||null});if(valid()&&token===epoch)await loadCheck(item,token);}catch(e){if(valid()&&token===epoch)host.querySelector('[role=status]').textContent=e.message;}finally{if(valid())button.disabled=false;}};
+   }catch(e){if(valid()&&token===epoch){host.textContent=e.message;const retry=document.createElement('button');retry.className='button';retry.type='button';retry.textContent='Retry review status';retry.onclick=()=>loadCheck(item,token);host.append(retry);}}
   }
   async function loadFeedback(item,token){
    const ids=versions.slice(1).map(v=>v.id),target=content.querySelector('[data-item-feedback]');
@@ -62,9 +71,9 @@
      items.forEach(item=>{item.changed=!!versions[1]&&changed(version,versions[1],item,locale);item.node.dataset.reviewItem=item.id;});
      items.sort((a,b)=>Number(b.changed)-Number(a.changed));
      picker.innerHTML='<option value="">Select an item…</option>'+items.map(item=>`<option value="${item.id}">${item.changed?'Changed · ':''}${esc(item.title)}</option>`).join('');picker.disabled=!items.length;
-     const count=items.filter(i=>i.changed).length;comparison.textContent=!items.length?'This page has no Studio content to compare.':versions[1]?`${count} changed ${count===1?'item':'items'} since V${versions[1].number}. Select an item to view its history.`:'First saved version. No earlier version to compare.';toggle.disabled=!count;mark();
+     const count=items.filter(i=>i.changed).length;comparison.textContent=!items.length?'This page has no Studio content to compare.':versions[1]?`${count} changed ${count===1?'item':'items'} since V${versions[1].number}. Select an item to view its history.`:'First saved version. No earlier version to compare.';toggle.disabled=!count;mark();if(initialItem){const target=items.find(i=>i.key===initialItem&&(!initialScope||i.course===initialScope));if(target)choose(target);else message.textContent='This item is not visible on this page. Its before/after text is available in the review checklist.';initialItem=null;}
     }
-    older.hidden=!more||!selected;message.textContent='';if(selected)paintItem();
+    older.hidden=!more||!selected;if(!message.textContent.startsWith('This item'))message.textContent='';if(selected)paintItem();
    }catch(e){if(valid()){message.textContent=e.message;older.hidden=false;older.textContent='Retry history';}}
    finally{busy=false;if(valid())older.disabled=false;}
   }
