@@ -98,3 +98,23 @@
 
 .beta-check-options { font-size:12px; margin:12px 0; }.beta-check-options>summary { cursor:pointer; color:var(--ink-3); padding:4px 0; }
 .beta-preview-checklist .beta-change-row>.toolbar { margin:12px 0; }
+
+/* A single entry point for current review; archives stay secondary. */
+.beta-home-simple { max-width:1000px; }
+.beta-current { display:flex; align-items:center; justify-content:space-between; gap:32px; padding:32px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.beta-current>div:first-child { max-width:660px; }
+.beta-eyebrow { display:block; font:11px/1.5 var(--font-mono); letter-spacing:.08em; color:var(--signal); margin-bottom:12px; }
+.beta-current h2 { font-size:28px; margin:0 0 12px; }
+.beta-current p { line-height:1.7; color:var(--ink-2); }
+.beta-current small { color:var(--ink-3); font-size:12px; }
+.beta-current-actions { display:flex; flex-direction:column; align-items:stretch; gap:10px; flex-shrink:0; }
+.beta-text-action { border:0; background:transparent; color:var(--signal); padding:10px 4px; font:600 13px var(--font-body); cursor:pointer; text-underline-offset:3px; }
+.beta-text-action:hover { text-decoration:underline; }
+.beta-text-action:focus-visible { outline:2px solid var(--signal); outline-offset:3px; border-radius:4px; }
+.beta-text-action:disabled { opacity:.5; cursor:wait; }
+.beta-archive { margin-top:30px; }
+.beta-archive>summary { cursor:pointer; padding:12px 0; font-weight:600; }
+.beta-archive label { display:block; font-size:12px; margin:20px 0 8px; }
+.beta-archive .beta-version-choice { align-items:end; }
+.beta-archive .beta-version-choice .aw-select { flex:1; min-width:180px; }
+@media(max-width:700px) { .beta-current { flex-direction:column; align-items:stretch; gap:20px; }.beta-current-actions { flex-direction:row; flex-wrap:wrap; }.beta-current h2 { font-size:24px; } }

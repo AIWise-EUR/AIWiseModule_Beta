@@ -16,7 +16,7 @@ function fixture(role='admin',failure=null){
 }
 test('Beta starts with real versions and safely escaped metadata; members cannot create versions',async()=>{
  const c=fixture('member');await c.api.render(c.shell);
- assert.equal(c.document.querySelector('[data-create]'),null);
+ assert.equal(c.document.querySelector('[data-create]'),null);assert.equal(c.document.querySelector('.beta-flow'),null);assert.equal(c.document.querySelector('.beta-feed-grid'),null);
  assert.equal(c.document.querySelector('img'),null);assert.match(c.document.querySelector('[data-version]').textContent,/V1 · 2026-09-30/);
  c.document.querySelector('[data-open]').onclick();assert.equal(c.location.hash,'#beta/current');
 });

@@ -1,6 +1,6 @@
 # Beta → Published releases
 
-This is separate from Studio → Beta automatic commits. An administrator selects a **saved Beta review version**, prepares its release, and explicitly approves **Publish to students**. The worker commits the frozen package to `AIWise-EUR/AI-Wise`, branch `main`. GitHub Pages hosting stays unchanged.
+This is separate from Studio → Beta automatic commits. An administrator reviews the **accumulated approved Beta content**, checks its publication copy, and explicitly approves **Publish to students**. Publish creates the numbered, dated version. The worker commits the frozen package to `AIWise-EUR/AI-Wise`, branch `main`. GitHub Pages hosting stays unchanged.
 
 ## Apply once in Supabase
 
@@ -15,11 +15,13 @@ Verify JWT is off because scheduled requests do not carry a user's JWT. Authenti
 
 ## Use in Workspace
 
-1. In **AI-Wise Beta**, create a saved review version and finish the team review.
-2. Open **Publish to students** (also available at **Control Tower → Beta → Published**).
-3. Select the saved version and click **Prepare release**. This only stores a frozen release package; it does not write to GitHub.
-4. Review the version, then click **Publish to students** and confirm the named version.
-5. The release progresses through queued → publishing → committed → deployed. Commit success and Pages deployment success are separate. Links open the actual commit and deployment run.
+1. In **AI-Wise Beta**, open the current preview and finish the team review. Earlier versions remain available in a collapsed list.
+2. Open **Publish…** (also available at **Control Tower → Beta → Published**).
+3. Choose **Review publication**. This prepares the content and opens final confirmation; it does not write to GitHub. An existing matching prepared copy is reused.
+4. Confirm **Publish to students**. This saves the numbered version and starts publication.
+5. Follow the visual steps: review and confirmation → GitHub update → website live. Commit success and Pages deployment success are separate; links open the actual commit and deployment run.
+
+Prepared copies do not appear in publication history. If an earlier approval failed with `DELETE requires a WHERE clause`, apply `PUBLISH_APPROVAL_FIX.sql` in the SQL Editor. This preserves safe-update protection and scopes temporary-review cleanup to the publication cutoff. It replaces the approval function without publishing anything; no Edge Function redeployment is required.
 
 A site change after preparation stops the release with “The student site changed. Prepare a new release.” Review and prepare again. Connection failures retry with bounded backoff; failed jobs offer Retry publish. A deployment failure does not repeat the commit—use Deployment details to investigate the Pages run.
 
