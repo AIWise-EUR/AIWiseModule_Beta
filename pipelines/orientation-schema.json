@@ -1,0 +1,1387 @@
+{
+  "c1": {
+    "html_sha256": "a05a5337de6e800bed0455ac343baa8165106520eb0121e6d6cd20f692e86b34",
+    "slots": {
+      "c1.block-0": {
+        "Heading 1": ""
+      },
+      "c1.block-1": {
+        "Text 1": ""
+      },
+      "c1.block-2": {
+        "Heading 1": ""
+      },
+      "c1.block-3": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": ""
+      },
+      "c1.block-4": {
+        "Diagram label 1": "",
+        "Diagram label 2": "",
+        "Diagram label 3": "",
+        "Diagram label 4": "",
+        "Diagram label 5": "",
+        "Diagram label 6": "",
+        "Diagram label 7": "",
+        "Diagram label 8": "",
+        "Diagram label 9": "",
+        "Diagram label 10": "",
+        "Diagram label 11": "",
+        "Diagram label 12": "",
+        "Diagram label 13": "",
+        "Diagram label 14": "",
+        "Diagram label 15": "",
+        "Diagram label 16": "",
+        "Diagram label 17": "",
+        "Diagram label 18": "",
+        "Diagram label 19": "",
+        "Diagram label 20": "",
+        "Diagram label 21": "",
+        "Diagram label 22": "",
+        "Diagram label 23": "",
+        "Diagram label 24": "",
+        "Diagram label 25": "",
+        "Diagram label 26": "",
+        "Diagram label 27": "",
+        "Diagram label 28": "",
+        "Diagram label 29": "",
+        "Diagram label 30": "",
+        "Emphasis 1": "",
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c1.block-5": {
+        "Heading 1": ""
+      },
+      "c1.block-6": {
+        "Text 1": ""
+      },
+      "c1.block-7": {
+        "Heading 1": ""
+      },
+      "c1.block-8": {
+        "Text 1": ""
+      },
+      "c1.block-9": {
+        "Text 1": ""
+      },
+      "c1.block-10": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c1.block-11": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c1.block-12": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c1.block-13": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c1.block-14": {
+        "Text 1": ""
+      },
+      "c1.block-15": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": ""
+      },
+      "c1.block-16": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": ""
+      },
+      "c1.block-17": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": ""
+      },
+      "c1.block-18": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": ""
+      },
+      "c1.block-19": {
+        "Emphasis 1": "",
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": "",
+        "Text 7": "",
+        "Text 8": "",
+        "Text 9": "",
+        "Text 10": "",
+        "Text 11": "",
+        "Text 12": "",
+        "Text 13": ""
+      },
+      "c1.extra-0": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "alt 1": ""
+      },
+      "c1.extra-1": {
+        "Text 1": ""
+      },
+      "c1.extra-2": {
+        "Text 1": ""
+      },
+      "c1.extra-3": {
+        "Text 1": ""
+      },
+      "c1.extra-4": {
+        "Text 1": ""
+      },
+      "c1.extra-5": {
+        "Text 1": ""
+      },
+      "c1.extra-6": {
+        "Text 1": ""
+      },
+      "c1.extra-7": {
+        "Text 1": ""
+      },
+      "c1.extra-8": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c1.extra-9": {
+        "Text 1": ""
+      },
+      "c1.extra-10": {
+        "Text 1": ""
+      },
+      "c1.extra-11": {
+        "Text 1": ""
+      },
+      "c1.extra-12": {
+        "Text 1": ""
+      },
+      "c1.extra-13": {
+        "Navigation c1 1": "",
+        "Navigation c2 1": "",
+        "Navigation c3 1": "",
+        "Navigation c1 section 1 1": "",
+        "Navigation c1 section 2 1": "",
+        "Navigation c1 section 3 1": "",
+        "Navigation c2 section 1 1": "",
+        "Navigation c2 section 2 1": "",
+        "Navigation c2 section 3 1": "",
+        "Navigation c3 section 1 1": "",
+        "Navigation c3 section 2 1": "",
+        "Navigation c3 section 3 1": "",
+        "subsections 1": "",
+        "slide 1": "",
+        "example 1": "",
+        "of 1": "",
+        "thinking 1": "",
+        "typing 1": "",
+        "processing 1": "",
+        "adopt 1": "",
+        "modify 1": "",
+        "discard 1": "",
+        "self 1": "",
+        "ai 1": "",
+        "team 1": "",
+        "copy 1": "",
+        "copied 1": "",
+        "course 1": "",
+        "change 1": "",
+        "choose course 1": "",
+        "course help 1": "",
+        "feedback 1": "",
+        "send feedback 1": "",
+        "close feedback 1": "",
+        "feedback question 1": "",
+        "feedback placeholder 1": "",
+        "feedback thanks 1": ""
+      },
+      "c1.extra-14": {
+        "Page title 1": ""
+      },
+      "c1.extra-15": {
+        "title 1": ""
+      }
+    }
+  },
+  "c2": {
+    "html_sha256": "732f398cfda2c168a128fc945978fdf9f180df09e949874241aaf8596415c9ea",
+    "slots": {
+      "c2.block-0": {
+        "Heading 1": ""
+      },
+      "c2.block-1": {
+        "Text 1": ""
+      },
+      "c2.block-2": {
+        "Heading 1": ""
+      },
+      "c2.block-3": {
+        "Text 1": ""
+      },
+      "c2.block-4": {
+        "Text 1": ""
+      },
+      "c2.block-5": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Emphasis 1": ""
+      },
+      "c2.block-6": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": ""
+      },
+      "c2.block-7": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": "",
+        "Text 7": "",
+        "Text 8": "",
+        "Text 9": ""
+      },
+      "c2.block-8": {
+        "Text 1": ""
+      },
+      "c2.block-9": {
+        "Text 1": ""
+      },
+      "c2.block-10": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": "",
+        "Text 7": "",
+        "Text 8": "",
+        "Text 9": "",
+        "Text 10": "",
+        "Text 11": "",
+        "Text 12": "",
+        "Text 13": "",
+        "Text 14": ""
+      },
+      "c2.block-11": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-12": {
+        "Text 1": ""
+      },
+      "c2.block-13": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": ""
+      },
+      "c2.block-14": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": ""
+      },
+      "c2.block-15": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": "",
+        "Text 7": "",
+        "Text 8": "",
+        "Text 9": "",
+        "Text 10": "",
+        "Text 11": "",
+        "Text 12": "",
+        "Text 13": "",
+        "Text 14": "",
+        "Text 15": "",
+        "Text 16": "",
+        "Text 17": "",
+        "Text 18": "",
+        "Text 19": "",
+        "Text 20": "",
+        "Text 21": "",
+        "Text 22": "",
+        "Text 23": "",
+        "Text 24": "",
+        "Text 25": ""
+      },
+      "c2.block-16": {
+        "Heading 1": ""
+      },
+      "c2.block-17": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-18": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-19": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-20": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-21": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-22": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-23": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-24": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-25": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-26": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-27": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-28": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-29": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-30": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-31": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": "",
+        "Text 7": "",
+        "Text 8": "",
+        "Text 9": "",
+        "Text 10": "",
+        "Text 11": "",
+        "Text 12": "",
+        "Text 13": "",
+        "Text 14": "",
+        "Text 15": "",
+        "Text 16": "",
+        "Text 17": "",
+        "Text 18": "",
+        "Text 19": "",
+        "Text 20": "",
+        "Text 21": "",
+        "Text 22": "",
+        "Text 23": "",
+        "Text 24": "",
+        "Text 25": "",
+        "Text 26": "",
+        "Text 27": "",
+        "Text 28": "",
+        "Text 29": "",
+        "Text 30": "",
+        "Text 31": "",
+        "Text 32": "",
+        "Text 33": "",
+        "Text 34": "",
+        "Text 35": "",
+        "Text 36": "",
+        "Text 37": "",
+        "Text 38": "",
+        "Text 39": "",
+        "Text 40": ""
+      },
+      "c2.block-32": {
+        "Heading 1": ""
+      },
+      "c2.block-33": {
+        "Text 1": ""
+      },
+      "c2.block-34": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-35": {
+        "Text 1": ""
+      },
+      "c2.block-36": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": ""
+      },
+      "c2.block-37": {
+        "Text 1": "",
+        "Text 2": "",
+        "Diagram label 1": "",
+        "Diagram label 2": "",
+        "Diagram label 3": "",
+        "Diagram label 4": "",
+        "Diagram label 5": "",
+        "Diagram label 6": "",
+        "Diagram label 7": "",
+        "Diagram label 8": "",
+        "Diagram label 9": "",
+        "Diagram label 10": "",
+        "Diagram label 11": "",
+        "Diagram label 12": "",
+        "Diagram label 13": "",
+        "Diagram label 14": "",
+        "Diagram label 15": "",
+        "Diagram label 16": "",
+        "Diagram label 17": "",
+        "Diagram label 18": "",
+        "Diagram label 19": "",
+        "Diagram label 20": "",
+        "Diagram label 21": "",
+        "Diagram label 22": "",
+        "Diagram label 23": "",
+        "Diagram label 24": "",
+        "Diagram label 25": "",
+        "Diagram label 26": "",
+        "Diagram label 27": ""
+      },
+      "c2.block-38": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": ""
+      },
+      "c2.block-39": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": ""
+      },
+      "c2.block-40": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": ""
+      },
+      "c2.block-41": {
+        "Text 1": ""
+      },
+      "c2.block-42": {
+        "Text 1": ""
+      },
+      "c2.block-43": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.block-44": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": ""
+      },
+      "c2.extra-0": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "alt 1": ""
+      },
+      "c2.extra-1": {
+        "Text 1": ""
+      },
+      "c2.extra-2": {
+        "Text 1": ""
+      },
+      "c2.extra-3": {
+        "Text 1": ""
+      },
+      "c2.extra-4": {
+        "Text 1": ""
+      },
+      "c2.extra-5": {
+        "Text 1": ""
+      },
+      "c2.extra-6": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c2.extra-7": {
+        "Text 1": ""
+      },
+      "c2.extra-8": {
+        "Text 1": ""
+      },
+      "c2.extra-9": {
+        "Text 1": ""
+      },
+      "c2.extra-10": {
+        "Text 1": ""
+      },
+      "c2.extra-11": {
+        "Navigation c1 1": "",
+        "Navigation c2 1": "",
+        "Navigation c3 1": "",
+        "Navigation c1 section 1 1": "",
+        "Navigation c1 section 2 1": "",
+        "Navigation c1 section 3 1": "",
+        "Navigation c2 section 1 1": "",
+        "Navigation c2 section 2 1": "",
+        "Navigation c2 section 3 1": "",
+        "Navigation c3 section 1 1": "",
+        "Navigation c3 section 2 1": "",
+        "Navigation c3 section 3 1": "",
+        "subsections 1": "",
+        "slide 1": "",
+        "example 1": "",
+        "of 1": "",
+        "thinking 1": "",
+        "typing 1": "",
+        "processing 1": "",
+        "adopt 1": "",
+        "modify 1": "",
+        "discard 1": "",
+        "self 1": "",
+        "ai 1": "",
+        "team 1": "",
+        "copy 1": "",
+        "copied 1": "",
+        "course 1": "",
+        "change 1": "",
+        "choose course 1": "",
+        "course help 1": "",
+        "feedback 1": "",
+        "send feedback 1": "",
+        "close feedback 1": "",
+        "feedback question 1": "",
+        "feedback placeholder 1": "",
+        "feedback thanks 1": ""
+      },
+      "c2.extra-12": {
+        "Page title 1": ""
+      },
+      "c2.extra-13": {
+        "aria-label 1": ""
+      },
+      "c2.extra-14": {
+        "aria-label 1": ""
+      },
+      "c2.extra-15": {
+        "aria-label 1": ""
+      },
+      "c2.extra-16": {
+        "aria-label 1": ""
+      },
+      "c2.extra-17": {
+        "aria-label 1": ""
+      }
+    }
+  },
+  "c3": {
+    "html_sha256": "7bb1671b926abe025f29367b03cfd9b6e10a75a774339432d595b038f40b3c31",
+    "slots": {
+      "c3.block-0": {
+        "Heading 1": ""
+      },
+      "c3.block-1": {
+        "Text 1": ""
+      },
+      "c3.block-2": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": ""
+      },
+      "c3.block-3": {
+        "Heading 1": ""
+      },
+      "c3.block-4": {
+        "Text 1": "",
+        "Text 2": "",
+        "Emphasis 1": "",
+        "Text 3": ""
+      },
+      "c3.block-5": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c3.block-6": {
+        "Text 1": ""
+      },
+      "c3.block-7": {
+        "Text 1": ""
+      },
+      "c3.block-8": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": ""
+      },
+      "c3.block-9": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Emphasis 1": "",
+        "Text 4": "",
+        "Emphasis 2": "",
+        "Text 5": "",
+        "Text 6": ""
+      },
+      "c3.block-10": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Emphasis 1": "",
+        "Text 4": "",
+        "Emphasis 2": "",
+        "Text 5": "",
+        "Text 6": ""
+      },
+      "c3.block-11": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Emphasis 1": "",
+        "Text 4": "",
+        "Emphasis 2": "",
+        "Text 5": "",
+        "Text 6": ""
+      },
+      "c3.block-12": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Emphasis 1": "",
+        "Text 4": "",
+        "Emphasis 2": "",
+        "Text 5": "",
+        "Text 6": ""
+      },
+      "c3.block-13": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Emphasis 1": "",
+        "Text 4": "",
+        "Emphasis 2": "",
+        "Text 5": "",
+        "Text 6": ""
+      },
+      "c3.block-14": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Emphasis 1": "",
+        "Text 4": "",
+        "Emphasis 2": "",
+        "Text 5": "",
+        "Text 6": ""
+      },
+      "c3.block-15": {
+        "Text 1": ""
+      },
+      "c3.block-16": {
+        "Text 1": ""
+      },
+      "c3.block-17": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": ""
+      },
+      "c3.block-18": {
+        "Text 1": "",
+        "Text 2": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": "",
+        "List text 4": ""
+      },
+      "c3.block-19": {
+        "Text 1": "",
+        "Text 2": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": ""
+      },
+      "c3.block-20": {
+        "Text 1": "",
+        "Text 2": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": ""
+      },
+      "c3.block-21": {
+        "Text 1": "",
+        "Text 2": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": ""
+      },
+      "c3.block-22": {
+        "Text 1": "",
+        "Text 2": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": ""
+      },
+      "c3.block-23": {
+        "Text 1": "",
+        "Text 2": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": ""
+      },
+      "c3.block-24": {
+        "Text 1": ""
+      },
+      "c3.block-25": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": "",
+        "Text 7": "",
+        "Text 8": "",
+        "Text 9": "",
+        "Text 10": "",
+        "Text 11": "",
+        "Text 12": "",
+        "Text 13": "",
+        "Text 14": ""
+      },
+      "c3.block-26": {
+        "Heading 1": ""
+      },
+      "c3.block-27": {
+        "Text 1": "",
+        "Emphasis 1": "",
+        "Text 2": "",
+        "Text 3": ""
+      },
+      "c3.block-28": {
+        "Text 1": ""
+      },
+      "c3.block-29": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": "",
+        "Text 7": "",
+        "Text 8": ""
+      },
+      "c3.block-30": {
+        "Text 1": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": "",
+        "Emphasis 1": ""
+      },
+      "c3.block-31": {
+        "Text 1": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": "",
+        "List text 4": "",
+        "List text 5": "",
+        "Emphasis 1": ""
+      },
+      "c3.block-32": {
+        "Text 1": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": "",
+        "List text 4": "",
+        "Emphasis 1": ""
+      },
+      "c3.block-33": {
+        "Text 1": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": "",
+        "Emphasis 1": ""
+      },
+      "c3.block-34": {
+        "Heading 1": ""
+      },
+      "c3.block-35": {
+        "Text 1": "",
+        "Text 2": "",
+        "Emphasis 1": "",
+        "Text 3": ""
+      },
+      "c3.block-36": {
+        "Table text 1": "",
+        "Table text 2": "",
+        "Table text 3": "",
+        "Table text 4": "",
+        "Table text 5": "",
+        "Table text 6": "",
+        "Table text 7": "",
+        "Table text 8": "",
+        "Table text 9": "",
+        "Table text 10": "",
+        "Table text 11": "",
+        "Table text 12": "",
+        "Table text 13": "",
+        "Text 1": ""
+      },
+      "c3.block-37": {
+        "Text 1": ""
+      },
+      "c3.block-38": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": "",
+        "Text 7": "",
+        "Text 8": ""
+      },
+      "c3.block-39": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c3.block-40": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "List text 1": "",
+        "Text 4": "",
+        "List text 2": "",
+        "Text 5": "",
+        "List text 3": ""
+      },
+      "c3.block-41": {
+        "Text 1": "",
+        "Emphasis 1": "",
+        "List text 1": "",
+        "Emphasis 2": "",
+        "List text 2": "",
+        "Emphasis 3": "",
+        "List text 3": ""
+      },
+      "c3.block-42": {
+        "Text 1": "",
+        "Text 2": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": ""
+      },
+      "c3.block-43": {
+        "Text 1": "",
+        "List text 1": "",
+        "List text 2": "",
+        "List text 3": "",
+        "List text 4": "",
+        "Text 2": ""
+      },
+      "c3.block-44": {
+        "Text 1": "",
+        "Link text 1": ""
+      },
+      "c3.block-45": {
+        "Heading 1": ""
+      },
+      "c3.block-46": {
+        "Text 1": ""
+      },
+      "c3.block-47": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c3.block-48": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": ""
+      },
+      "c3.block-49": {
+        "Text 1": ""
+      },
+      "c3.block-50": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": "",
+        "Text 7": "",
+        "Text 8": "",
+        "Text 9": "",
+        "Text 10": "",
+        "Text 11": "",
+        "Text 12": "",
+        "Text 13": "",
+        "Text 14": "",
+        "Text 15": "",
+        "Text 16": "",
+        "Text 17": "",
+        "Text 18": "",
+        "Text 19": "",
+        "Text 20": "",
+        "Text 21": ""
+      },
+      "c3.block-51": {
+        "Text 1": ""
+      },
+      "c3.block-52": {
+        "Table text 1": "",
+        "Table text 2": "",
+        "Table text 3": "",
+        "Table text 4": "",
+        "Table text 5": "",
+        "Table text 6": "",
+        "Table text 7": "",
+        "Table text 8": "",
+        "Table text 9": "",
+        "Table text 10": ""
+      },
+      "c3.block-53": {
+        "Text 1": ""
+      },
+      "c3.block-54": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": "",
+        "Text 7": "",
+        "Text 8": "",
+        "Text 9": "",
+        "Text 10": ""
+      },
+      "c3.block-55": {
+        "Emphasis 1": "",
+        "Text 1": ""
+      },
+      "c3.block-56": {
+        "Emphasis 1": "",
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "Text 4": "",
+        "Text 5": "",
+        "Text 6": "",
+        "Text 7": "",
+        "Text 8": "",
+        "Text 9": "",
+        "Text 10": "",
+        "Text 11": "",
+        "Text 12": "",
+        "Text 13": "",
+        "Text 14": "",
+        "Text 15": "",
+        "Text 16": "",
+        "Text 17": "",
+        "Text 18": "",
+        "Text 19": "",
+        "Text 20": "",
+        "Text 21": "",
+        "Text 22": "",
+        "Text 23": "",
+        "Text 24": "",
+        "Text 25": "",
+        "Text 26": "",
+        "Text 27": "",
+        "Text 28": "",
+        "Text 29": "",
+        "Text 30": "",
+        "Text 31": "",
+        "Text 32": "",
+        "Text 33": "",
+        "Text 34": "",
+        "Text 35": "",
+        "Text 36": "",
+        "Text 37": "",
+        "Text 38": "",
+        "Text 39": ""
+      },
+      "c3.extra-0": {
+        "Text 1": "",
+        "Text 2": "",
+        "Text 3": "",
+        "alt 1": ""
+      },
+      "c3.extra-1": {
+        "Text 1": ""
+      },
+      "c3.extra-2": {
+        "Text 1": ""
+      },
+      "c3.extra-3": {
+        "Text 1": ""
+      },
+      "c3.extra-4": {
+        "Text 1": ""
+      },
+      "c3.extra-5": {
+        "Text 1": ""
+      },
+      "c3.extra-6": {
+        "Text 1": ""
+      },
+      "c3.extra-7": {
+        "Text 1": ""
+      },
+      "c3.extra-8": {
+        "Text 1": ""
+      },
+      "c3.extra-9": {
+        "Text 1": ""
+      },
+      "c3.extra-10": {
+        "Text 1": ""
+      },
+      "c3.extra-11": {
+        "Text 1": ""
+      },
+      "c3.extra-12": {
+        "Text 1": ""
+      },
+      "c3.extra-13": {
+        "Text 1": ""
+      },
+      "c3.extra-14": {
+        "Text 1": ""
+      },
+      "c3.extra-15": {
+        "Text 1": ""
+      },
+      "c3.extra-16": {
+        "Text 1": ""
+      },
+      "c3.extra-17": {
+        "Text 1": ""
+      },
+      "c3.extra-18": {
+        "Text 1": ""
+      },
+      "c3.extra-19": {
+        "Text 1": ""
+      },
+      "c3.extra-20": {
+        "Text 1": ""
+      },
+      "c3.extra-21": {
+        "Text 1": ""
+      },
+      "c3.extra-22": {
+        "Text 1": ""
+      },
+      "c3.extra-23": {
+        "Text 1": ""
+      },
+      "c3.extra-24": {
+        "Text 1": ""
+      },
+      "c3.extra-25": {
+        "Text 1": ""
+      },
+      "c3.extra-26": {
+        "Text 1": ""
+      },
+      "c3.extra-27": {
+        "Text 1": ""
+      },
+      "c3.extra-28": {
+        "Text 1": ""
+      },
+      "c3.extra-29": {
+        "Text 1": ""
+      },
+      "c3.extra-30": {
+        "Text 1": ""
+      },
+      "c3.extra-31": {
+        "Text 1": ""
+      },
+      "c3.extra-32": {
+        "Text 1": ""
+      },
+      "c3.extra-33": {
+        "Text 1": ""
+      },
+      "c3.extra-34": {
+        "Text 1": ""
+      },
+      "c3.extra-35": {
+        "Text 1": ""
+      },
+      "c3.extra-36": {
+        "Text 1": ""
+      },
+      "c3.extra-37": {
+        "Text 1": ""
+      },
+      "c3.extra-38": {
+        "Text 1": "",
+        "Text 2": ""
+      },
+      "c3.extra-39": {
+        "Text 1": ""
+      },
+      "c3.extra-40": {
+        "Text 1": ""
+      },
+      "c3.extra-41": {
+        "Text 1": ""
+      },
+      "c3.extra-42": {
+        "Text 1": ""
+      },
+      "c3.extra-43": {
+        "Navigation c1 1": "",
+        "Navigation c2 1": "",
+        "Navigation c3 1": "",
+        "Navigation c1 section 1 1": "",
+        "Navigation c1 section 2 1": "",
+        "Navigation c1 section 3 1": "",
+        "Navigation c2 section 1 1": "",
+        "Navigation c2 section 2 1": "",
+        "Navigation c2 section 3 1": "",
+        "Navigation c3 section 1 1": "",
+        "Navigation c3 section 2 1": "",
+        "Navigation c3 section 3 1": "",
+        "subsections 1": "",
+        "slide 1": "",
+        "example 1": "",
+        "of 1": "",
+        "thinking 1": "",
+        "typing 1": "",
+        "processing 1": "",
+        "adopt 1": "",
+        "modify 1": "",
+        "discard 1": "",
+        "self 1": "",
+        "ai 1": "",
+        "team 1": "",
+        "copy 1": "",
+        "copied 1": "",
+        "course 1": "",
+        "change 1": "",
+        "choose course 1": "",
+        "course help 1": "",
+        "feedback 1": "",
+        "send feedback 1": "",
+        "close feedback 1": "",
+        "feedback question 1": "",
+        "feedback placeholder 1": "",
+        "feedback thanks 1": ""
+      },
+      "c3.extra-44": {
+        "Page title 1": ""
+      },
+      "c3.extra-45": {
+        "aria-label 1": ""
+      }
+    }
+  },
+  "map": {
+    "html_sha256": "53e83761440c46757fa5a0144678bca8bda2a417f1942c20940fa88f84d1e897",
+    "slots": {
+      "map.extra-0": {
+        "Text 1": ""
+      },
+      "map.extra-1": {
+        "Text 1": ""
+      },
+      "map.extra-2": {
+        "Text 1": ""
+      },
+      "map.extra-3": {
+        "Text 1": ""
+      },
+      "map.extra-4": {
+        "Text 1": ""
+      },
+      "map.extra-5": {
+        "Text 1": ""
+      },
+      "map.extra-6": {
+        "Text 1": ""
+      },
+      "map.extra-7": {
+        "Text 1": ""
+      },
+      "map.extra-8": {
+        "Text 1": ""
+      },
+      "map.extra-9": {
+        "Text 1": ""
+      },
+      "map.extra-10": {
+        "Text 1": ""
+      },
+      "map.extra-11": {
+        "Text 1": ""
+      },
+      "map.extra-12": {
+        "Text 1": ""
+      },
+      "map.extra-13": {
+        "Text 1": ""
+      },
+      "map.extra-14": {
+        "Text 1": ""
+      },
+      "map.extra-15": {
+        "Text 1": ""
+      },
+      "map.extra-16": {
+        "Text 1": ""
+      },
+      "map.extra-17": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-18": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-19": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-20": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-21": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-22": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-23": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-24": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-25": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-26": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-27": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-28": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-29": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-30": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-31": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-32": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-33": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-34": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-35": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-36": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-37": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-38": {
+        "Label 1": "",
+        "Category 1": "",
+        "Description 1": ""
+      },
+      "map.extra-39": {
+        "internet 1": "",
+        "same architecture 1": "",
+        "different mode 1": "",
+        "training cycle 1": "",
+        "inference cycle 1": ""
+      },
+      "map.extra-40": {
+        "Page title 1": ""
+      }
+    }
+  }
+}

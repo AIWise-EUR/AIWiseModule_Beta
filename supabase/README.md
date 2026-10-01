@@ -57,3 +57,5 @@ Control Tower shows commit and Pages deployment status separately. Enable the se
 worker and recovery schedule following [GITHUB_PUBLISHING_SETUP.md](GITHUB_PUBLISHING_SETUP.md).
 The existing connection-check function alone does not enable publishing.
 The separate `AI-Wise/main` student release path is not changed by this setup.
+
+For separately approved **Beta → student Published** releases, follow [PUBLISHED_RELEASES_SETUP.md](PUBLISHED_RELEASES_SETUP.md). This is independent of Studio → Beta automatic commits.

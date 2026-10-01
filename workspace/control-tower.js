@@ -314,6 +314,7 @@
   async function render(part, shellFunction) {
     dispose();shell=shellFunction;problem='';
     const version=renderVersion;
+    if(part==='release'||part==='new/release'){cleanup.push(window.AIWisePublishedRelease.render(shell));return;}
     shell('tower','Control Tower','', '<p role="status">Loading requests…</p>',false);
     const shared=await window.AIWiseSharedStudio.refresh();
     if(version!==renderVersion)return;
