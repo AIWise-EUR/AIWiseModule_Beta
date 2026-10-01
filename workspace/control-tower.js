@@ -25,6 +25,8 @@
   const date = value => value ? new Date(value).toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }) : 'Not submitted';
   let shell, db, person = '', problem = '', dirty = false, cleanup = [], mapView = 'map', flow = 'submission', renderVersion = 0;
   const personKey = () => person.trim().toLocaleLowerCase();
+  // Signed-in members are named by their verified account; the local profile is only a fallback.
+  const accountName = () => window.AIWiseAuth.snapshot().user?.displayName || '';
   const badge = (text, style = '') => `<span class="ct-tag ${style}">${esc(text)}</span>`;
   const link = (text, url, primary = false) => `<a class="button${primary ? ' primary' : ''}" href="${url}">${esc(text)}</a>`;
   const note = text => `<p class="notice">${esc(text)}</p>`;
@@ -87,15 +89,15 @@
     return `<span class="ct-counts"><span><b>${n.pending}</b> Pending</span><span><b>${n.fresh}</b> New</span><span class="${Number(n.urgent) ? 'ct-urgent' : ''}"><b>${n.urgent}</b> Urgent</span></span>`;
   }
   function chrome(body) {
-    return `<div class="toolbar"><span>${esc(window.AIWiseSharedStudio.snapshot().error || (window.AIWiseSharedStudio.snapshot().loaded ? "Team submissions connected · " + window.AIWiseSharedStudio.snapshot().role : "Sign in to view team submissions."))}</span><button class="button" id="ct-refresh-shared" type="button">Refresh requests</button></div><div class="ct-local"><form id="ct-person-form"><label for="ct-person">Your name · local profile</label><div><input id="ct-person" maxlength="80" value="${esc(person)}" placeholder="Enter your name" required><button class="button" type="submit">Set name</button></div></form></div><p id="ct-message" class="ct-message" role="alert" tabindex="-1">${esc(problem)}</p>${body}`;
+    return `<div class="toolbar"><span>${esc(window.AIWiseSharedStudio.snapshot().error || (window.AIWiseSharedStudio.snapshot().loaded ? "Team submissions connected · " + window.AIWiseSharedStudio.snapshot().role : "Sign in to view team submissions."))}</span><button class="button" id="ct-refresh-shared" type="button">Refresh requests</button></div>${accountName() ? '' : `<div class="ct-local"><form id="ct-person-form"><label for="ct-person">Your name · local profile</label><div><input id="ct-person" maxlength="80" value="${esc(person)}" placeholder="Enter your name" required><button class="button" type="submit">Set name</button></div></form></div>`}<p id="ct-message" class="ct-message" role="alert" tabindex="-1">${esc(problem)}</p>${body}`;
   }
   // Page explanations live in the heading's help note; the request context stays as a short lead line.
   const pageHelp = {'Control Tower': 'Follow requests between workspaces, review the exact request, and record a decision.'};
-  const localHelp = '<p>Team submissions are shared with active members. Administrators can approve and apply Content Studio and Common Studio chapters to Beta. Existing browser-local requests remain separate and cannot publish content. The local profile applies only to those older prototype requests.</p>';
+  const localHelp = '<p>Team submissions are shared with active members. Administrators can approve and apply Content Studio and Common Studio chapters to Beta. Existing browser-local requests remain separate and cannot publish content. Those older prototype requests record your account name; a local profile name is asked for only when the account has none.</p>';
   function show(title, context, body) {
     shell('tower', title, (pageHelp[title] ? `<p>${esc(pageHelp[title])}</p>` : '') + localHelp, (context ? `<p class="room-lead">${esc(context)}</p>` : '') + chrome(body), false);
     document.getElementById('ct-refresh-shared').onclick = () => { if(!dirty || confirm('Discard unsaved review text and refresh?')) refresh(); };
-    document.getElementById('ct-person-form').addEventListener('submit', e => {
+    document.getElementById('ct-person-form')?.addEventListener('submit', e => {
       e.preventDefault();
       if (dirty) { fail(Error('Save this draft before changing your local profile.')); return; }
       try {
@@ -318,7 +320,7 @@
     shell('tower','Control Tower','', '<p role="status">Loading requests…</p>',false);
     const shared=await window.AIWiseSharedStudio.refresh();
     if(version!==renderVersion)return;
-    try {person=localStorage.getItem(PERSON)||'';db=read();}catch(error){problem=error.message||'Browser storage is unavailable.';db={schema:1,requests:[]};}
+    try {person=accountName()||localStorage.getItem(PERSON)||'';db=read();}catch(error){problem=error.message||'Browser storage is unavailable.';db={schema:1,requests:[]};}
     db.requests.push(...shared.rows);
     const [view='',id='']=part.split('/');
     if(view==='request'){detail(id);return;}
