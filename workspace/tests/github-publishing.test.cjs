@@ -4,14 +4,14 @@ const source=fs.readFileSync(path.join(__dirname,'../github-publishing.js'),'utf
 const settle=()=>new Promise(r=>setTimeout(r,0));
 function fixture(job,options={}){
  const {document}=parseHTML('<html><body><section id="host"></section></body></html>');
- let state={status:'member',role:options.role||'admin',user:{id:'owner'}},calls=[],finish;
+ let state={status:'member',role:options.role||'admin',user:{id:'owner'}},calls=[],reports=[],finish;
  const wait=options.pending?new Promise(r=>finish=r):Promise.resolve();
  const chain={select:()=>chain,eq:()=>chain,maybeSingle:()=>chain,abortSignal:async()=>{await wait;return {data:job};}};
  const client={from:name=>{calls.push(name);return chain;},rpc:name=>{calls.push(name);return {abortSignal:async()=>({data:options.enabled!==false,error:options.error})};}};
  const window={AIWiseAuth:{snapshot:()=>state},AIWiseBackend:{getClient:async()=>client}};
  vm.runInNewContext(source,{window,document,AbortController,setTimeout:()=>1,clearTimeout:()=>{}});
- const host=document.querySelector('#host'),dispose=window.AIWiseGitHubPublishing.mount(host,'submission');
- return{host,calls,dispose,finish,setAuth:s=>state=s};
+ const host=document.querySelector('#host'),dispose=window.AIWiseGitHubPublishing.mount(host,'submission',{onStatus:s=>reports.push(s)});
+ return{host,calls,reports,dispose,finish,setAuth:s=>state=s};
 }
 test('commit success is separate from deployment success, and both links are fixed to the Beta repo',async()=>{
  const f=fixture({status:'committed',commit_sha:'a'.repeat(40),deployment_status:'building',deployment_run_id:123});await settle();
@@ -38,3 +38,5 @@ test('deployed content fallback is language-specific and cannot replace saved re
  window.location.href+='&review_version=version';const before=urls.length;
  await assert.rejects(()=>window.AIWiseBetaContent.read('common','nl'),/Workspace/);assert.equal(urls.length,before);
 });
+
+test('only sync failures and unconfirmed deployments request attention; successful Beta sync is not student publication',async()=>{for(const [job,attention] of [[{status:'committed',deployment_status:'success'},false],[{status:'committed',deployment_status:'building'},false],[{status:'failed'},true],[{status:'committed',deployment_status:'failure'},true],[{status:'committed',deployment_status:'unknown'},true]]){const f=fixture(job);await settle();assert.equal(f.reports.at(-1).attention,attention);assert.match(f.host.textContent,/separate from publishing to students/);if(job.deployment_status==='success')assert.match(f.host.textContent,/Beta deployment completed/);f.dispose();}});
