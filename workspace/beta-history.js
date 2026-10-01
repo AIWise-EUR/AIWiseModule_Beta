@@ -11,7 +11,7 @@
  function changed(a,b,item,locale){return stable(value(a,item,locale))!==stable(value(b,item,locale));}
  function text(value){if(value==null)return 'Not included in this version.';if(typeof value==='string')return value;if(Array.isArray(value))return value.map(text).join('\n\n');return Object.entries(value).map(([k,v])=>/^Text |^Heading |^Emphasis |^List text /.test(k)?text(v):k+': '+text(v)).join('\n');}
  function atLocation(anchor,path){return anchor.path===path||anchor.path.startsWith(path+'>');}
- function attach({host,doc,version,draft,page,course,locale,initialItem,initialScope,onReviewed=()=>{},canSelect,reveal}){
+ function attach({host,doc,version,draft,page,course,locale,initialItem,initialScope,onReviewed=()=>{},onViewed=()=>{},canSelect,reveal}){
   const rolling=!version;if(rolling&&draft)version={id:null,number:null,content:draft.current_content};
   let live=true,epoch=0,busy=false,versions=version?[version]:[],more=true,items=[],selected=null;
   const owner=window.AIWiseAuth.snapshot().user?.id,abort=new AbortController();
@@ -24,7 +24,7 @@
    finally{clearTimeout(timer);abort.signal.removeEventListener('abort',cancel);}
   }
   async function all(make){let rows=[],offset=0;while(valid()){const batch=await query(b=>make(b).range(offset,offset+199));rows.push(...batch);if(batch.length<200)return rows;offset+=batch.length;}return [];}
-  host.innerHTML='<details class="br-history" open><summary>Changes &amp; history</summary><p data-comparison role="status"></p><label class="br-change-toggle"><input type="checkbox" data-mark-changes checked> Highlight changes</label><label class="br-item-label" for="br-history-item">Content item</label><select id="br-history-item" data-history-item disabled><option>Select an item…</option></select><div data-item-detail></div><button type="button" class="button" data-older hidden>Load earlier versions</button><p role="status" data-history-status></p></details>';
+  host.innerHTML='<details class="br-history" open><summary>Selected item · changes &amp; history</summary><p data-comparison role="status"></p><label class="br-change-toggle"><input type="checkbox" data-mark-changes checked> Highlight changes</label><label class="br-item-label" for="br-history-item">Content item</label><select id="br-history-item" data-history-item disabled><option>Select an item…</option></select><div data-item-detail></div><button type="button" class="button" data-older hidden>Load earlier versions</button><p role="status" data-history-status></p></details>';
   const details=host.querySelector('details'),picker=host.querySelector('[data-history-item]'),content=host.querySelector('[data-item-detail]'),message=host.querySelector('[data-history-status]'),older=host.querySelector('[data-older]'),comparison=host.querySelector('[data-comparison]'),toggle=host.querySelector('[data-mark-changes]');
   const style=doc.createElement('style');style.textContent='[data-review-changed]{outline:2px solid #a87c1d;outline-offset:4px;background-color:#fff4ce55} body:not([data-beta-mode]) [data-review-item]{cursor:pointer} [data-review-selected]{outline:3px solid #35617f!important;outline-offset:5px}';doc.head.append(style);
   function mark(){items.forEach(item=>{item.node.toggleAttribute('data-review-changed',!!toggle.checked&&!!item.changed);});}
@@ -55,16 +55,16 @@
    }catch(e){if(valid()&&token===epoch){target.textContent=e.message;const retry=document.createElement('button');retry.className='button';retry.textContent='Retry feedback';retry.type='button';retry.onclick=()=>loadFeedback(item,++epoch);target.append(retry);}}
   }
   function choose(item,scroll=true,focusPanel=true){
-   if(!item||!canSelect())return;selected=item;details.open=true;picker.value=item.id;items.forEach(i=>i.node.toggleAttribute('data-review-selected',i===item));paintItem();if(focusPanel)host.scrollIntoView({block:'nearest',behavior:window.AIWiseMotion.reduced()?'auto':'smooth'});
-   if(scroll){reveal(item.node);item.node.scrollIntoView({block:'center',behavior:window.AIWiseMotion.reduced()?'auto':'smooth'});}
+   if(!item||!canSelect())return;selected=item;details.open=true;picker.value=item.id;items.forEach(i=>i.node.toggleAttribute('data-review-selected',i===item));paintItem();onViewed(item);if(focusPanel)host.scrollIntoView({block:'nearest',behavior:window.AIWiseMotion.reduced()?'auto':'smooth'});
+   if(scroll){reveal(item.node);const view=doc.defaultView;view.scrollTo({top:Math.max(0,view.scrollY+item.node.getBoundingClientRect().top-view.innerHeight/2+item.node.getBoundingClientRect().height/2),behavior:window.AIWiseMotion.reduced()?'auto':'smooth'});}
   }
   picker.onchange=()=>{if(!canSelect()){picker.value=selected?.id||'';message.textContent='Post or cancel your draft before opening item history.';return;}message.textContent='';choose(items.find(i=>i.id===picker.value));};
   doc.addEventListener('click',event=>{if(!canSelect()||event.target.closest('a,button,input,select,textarea,summary,[data-beta-overlay]'))return;const node=event.target.closest('[data-review-item]');if(node)choose(items.find(i=>i.node===node),false);},{signal:abort.signal});
   async function loadOlder(initial=false){
    if(busy)return;busy=true;older.disabled=true;message.textContent='Loading version history…';
-   try{let rows;
+   try{let rows,context;
     if(initial){
-     const context=rolling?draft:await query(b=>b.rpc('workspace_beta_review_context',{p_version:version.id}));
+     context=rolling?draft:await query(b=>b.rpc('workspace_beta_review_context',{p_version:version.id}));
      rows=context.previous_id?await query(b=>b.from('workspace_beta_versions').select('*').eq('id',context.previous_id).limit(1)):[];
      if(context.previous_id&&!rows.length)throw Error('The comparison version could not be loaded. Please retry.');
     }else rows=await query(b=>b.from('workspace_beta_versions').select('*').lt('number',versions.at(-1).number).order('number',{ascending:false}).limit(5));
@@ -75,18 +75,18 @@
      const nodes=[...doc.querySelectorAll('[data-review-common-key],[data-slot]')].filter(node=>node!==doc.body&&doc.body.contains(node));
      items=nodes.map((node,index)=>{const common=node.hasAttribute('data-review-common-key'),key=common?node.dataset.reviewCommonKey:node.dataset.slot;
       if(node.dataset.anatomyCopy)node=[...doc.querySelectorAll('#nodes [data-id]')].find(n=>n.getAttribute('data-id')===node.dataset.anatomyCopy)||node;return {id:String(index),node,key,chapter:common?chapter:key.split('.')[0],course:common?'common':course,path:window.AIWiseBetaAnchors.path(node),title:(node.textContent.trim().replace(/\s+/g,' ')||node.getAttribute('aria-label')||'Supporting content').slice(0,90)};}).filter(item=>value(version,item,locale).content!==undefined);
-     items.forEach(item=>{item.changed=!versions[1]||changed(version,versions[1],item,locale);item.node.dataset.reviewItem=item.id;});
+     items.forEach(item=>{item.changed=!versions[1]||changed(version,versions[1],item,locale);item.node.dataset.reviewItem=item.id;item.node.dataset.reviewContentKey=item.key;item.node.dataset.reviewContentCourse=item.course;});
      items.sort((a,b)=>Number(b.changed)-Number(a.changed));
      picker.innerHTML='<option value="">Select an item…</option>'+items.map(item=>`<option value="${item.id}">${item.changed?'Changed · ':''}${esc(item.title)}</option>`).join('');picker.disabled=!items.length;
-     const count=items.filter(i=>i.changed).length;comparison.textContent=!items.length?'This page has no Studio content to compare.':versions[1]?`${count} changed ${count===1?'item':'items'} since V${versions[1].number}${versions[1].published_at?'':' (review snapshot)'}. Select an item to view its history.`:'No earlier comparison version. All included content needs review.';toggle.disabled=!count;mark();if(initialItem){const target=items.find(i=>i.key===initialItem&&(!initialScope||i.course===initialScope));if(target)choose(target,true,false);else message.textContent='This item is not visible on this page. Its before/after text is available in the review checklist.';initialItem=null;}
+     const count=items.filter(i=>i.changed).length;comparison.textContent=!items.length?'This page has no Studio content to compare.':versions[1]?`${count} changed ${count===1?'item':'items'} since V${versions[1].number}${versions[1].published_at?'':' (review snapshot)'}. Select an item to view its history.`:'No earlier comparison version. All included content needs review.';toggle.disabled=!count;mark();if(initialItem){const target=items.find(i=>i.key===initialItem&&(!initialScope||i.course===initialScope));if(target)choose(target,true,false);else {const row=(context.changes||[]).find(r=>r.key===initialItem&&(!initialScope||r.course===initialScope)&&r.locale===locale);if(row){selected={...row,title:row.key,path:'',id:'missing'};content.innerHTML='<h3>'+esc(row.key)+'</h3><p>This item has no visible location on this page.</p><h4>Before</h4><pre>'+esc(text(row.before))+'</pre><h4>After</h4><pre>'+esc(text(row.after))+'</pre><div data-history-review></div>';loadCheck(selected,++epoch);onViewed(selected);}else message.textContent='This item is not available on this page.';}initialItem=null;}
     }
-    older.hidden=!more||!selected;if(!message.textContent.startsWith('This item'))message.textContent='';if(selected)paintItem();
+    older.hidden=!more||!selected;if(!message.textContent.startsWith('This item'))message.textContent='';if(selected?.node)paintItem();
    }catch(e){if(valid()){message.textContent=e.message;older.hidden=false;older.textContent='Retry history';}}
    finally{busy=false;if(valid())older.disabled=false;}
   }
   older.onclick=()=>loadOlder(items.length===0);
   if(version)loadOlder(true);else{comparison.textContent='Reopen Beta to load the approved content and review changes.';picker.hidden=true;host.querySelector('.br-item-label').hidden=true;toggle.parentElement.hidden=true;}
-  return {refreshReview(){if(selected)paintItem();},dispose(){live=false;epoch++;abort.abort();style.remove();items.forEach(item=>['data-review-changed','data-review-selected','data-review-item'].forEach(attr=>item.node.removeAttribute(attr)));host.replaceChildren();}};
+  return {refreshReview(){if(selected?.node)paintItem();},dispose(){live=false;epoch++;abort.abort();style.remove();items.forEach(item=>['data-review-changed','data-review-selected','data-review-item','data-review-content-key','data-review-content-course'].forEach(attr=>item.node.removeAttribute(attr)));host.replaceChildren();}};
  }
  window.AIWiseBetaHistory=Object.freeze({attach,value,changed,atLocation});
 })();
