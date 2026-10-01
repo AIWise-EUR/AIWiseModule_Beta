@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "sequence": 3,
+  "course": "ped",
+  "chapter": "c2",
+  "locale": "en",
+  "submission_id": "aeee9a33-04f7-4442-a278-5eb08a913437",
+  "source_release": null,
+  "approved_at": "2026-10-01T15:35:48.885404+00:00",
+  "slots": {
+    "c2.examples": [
+      {
+        "title": "Connecting an article to an argument in a scientific essay",
+        "typing": "\"How can I use this article to support my statement in my scientific essay?\"",
+        "thinking": "I want to use this article in my scientific essay because I think it supports my statement, but I'm not sure how to make the connection. My statement is that schools should play a larger role in preventing child maltreatment. Based on its findings, I think that the article could support an argument about the importance of early identification and support in schools, but I am not sure how to translate this idea into a strong argument.",
+        "processing": "The full text of the article is processed. Main findings, theoretical concepts, and conclusions are extracted. The most statistically likely \"helpful\" response pattern for \"how can I use this article to support my statement\" is activated. → Generate a comprehensive answer covering multiple possible ways to translate the article into an argument: relevant findings, connections between evidence and the statement, theoretical explanations, and possible ways to integrate the article into the essay. Present them as options. Sound confident and thorough.",
+        "typing_note": "[upload a PDF]"
+      },
+      {
+        "title": "Creating practice questions",
+        "typing": "\"Make me some MCQs on chapter 4.\"",
+        "thinking": "My exam is next week and I want to test myself on chapter 4. The professor always writes tricky MCQs where two options look almost the same and you have to know the exact definition to tell them apart. I need questions that are at that level, not the easy ones where you can guess by elimination.",
+        "processing": "Full chapter text is processed. Key concepts, definitions, and relationships identified. \"MCQ\" triggers a default format: one correct answer, three distractors, medium difficulty, recall focused. → Generate questions that cover the chapter evenly, make distractors plausible but clearly distinguishable from the correct answer.",
+        "typing_note": "[pastes chapter 4 text]"
+      },
+      {
+        "title": "Summarizing a paper",
+        "typing": "\"Can you summarize this paper?\"",
+        "thinking": "I read this paper but I am not sure I understood the method section. I think they used a between subjects design but the way they describe the groups is confusing. I do not need a full summary, I just need someone to explain the design so I can figure out whether their conclusion actually follows from it.",
+        "processing": "Full paper is processed. All sections weighted. \"Summarize\" triggers a default structure: background, aim, method, key findings, conclusion. Roughly equal coverage across sections. → Produce something that reads like a complete, balanced overview. Sound clear and organized.",
+        "typing_note": "[uploads PDF]"
+      },
+      {
+        "title": "Understanding a concept",
+        "typing": "\"What are protective factors?\"",
+        "thinking": "The professor used the term \"protective factors\" in the lecture today and I kind of got it from context, but when I tried to explain it to my friend I couldn't. I think it has something to do with factors that help children develop positively, but I am not sure how it differs from simply having a good environment or fewer risk factors.",
+        "processing": "A definition request. \"Protective factors\" is a well represented concept in the training data. → Generate a clear, textbook style definition. Add an example. Possibly mention related terms. Present a self contained explanation, covering the concept broadly rather than targeting any specific point of confusion.",
+        "typing_note": ""
+      },
+      {
+        "title": "Asking for feedback on your writing",
+        "typing": "\"What do you think of this? Any feedback?\"",
+        "thinking": "I spent two hours on this introduction and I think I explain the pedagogical dilemma clearly, but I am not sure whether the last two sentences lead naturally to my statement. My tutor told me last time that I tend to overcomplicate my sentences and explanations, and I want to know if I am doing that again here.",
+        "processing": "A paragraph is provided. Feedback requested with no specific focus. → Scan for grammar, clarity, structure, and argument strength across the entire paragraph. Generate a balanced set of comments covering multiple aspects. Highlight positives first, then suggest improvements. Distribute attention evenly across the whole text.",
+        "typing_note": "[pastes paragraph]"
+      },
+      {
+        "title": "Writing a motivation letter",
+        "typing": "\"Help me write a motivation letter for a youth care internship.\"",
+        "thinking": "I am applying for an internship at a youth care organization, and I really want it because I would like to gain practical experience working with children and families. I have some relevant experience from my courses and volunteer work, but I am not sure whether it is enough to mention in my motivation letter. The deadline is tomorrow and I saw that they value \"independent thinkers\" but I do not want to sound arrogant.",
+        "processing": "A motivation letter for a youth care internship. No specific organization, no specific tasks, no applicant background, no deadline pressure, no tone preference. → Generate a polished, general purpose motivation letter template. Use broadly applicable language about \"passion for children and youth\" and \"eagerness to learn.\" Structure it in a standard format. Sound professional and enthusiastic.",
+        "typing_note": ""
+      }
+    ],
+    "c2.sat_example": {
+      "note": "The example ends here, but the S.A.T process does not have to stop here. If the student feels that the idea still needs to be developed or wants to ask for feedback, they can start another Self–Team or Self–AI cycle.",
+      "phases": [
+        {
+          "label": "Self–AI",
+          "steps": [
+            {
+              "name": "Intent",
+              "text": "A student wants to write their scientific essay about child maltreatment. They are interested in the role schools can play in preventing it and have a rough idea of what the statement could be: schools are important to prevent child maltreatment. However, they are unsure whether this is specific and arguable enough for the assignment.",
+              "actor": "self"
+            },
+            {
+              "name": "Operationalize",
+              "text": "The student asks AI in which ways they could be more specific regarding the statement. AI suggests exploring different types of schools, different forms of prevention, and different roles within schools where the responsibility to prevent child maltreatment should lie.",
+              "actor": "ai"
+            },
+            {
+              "name": "Judge",
+              "text": "The student considers the alternatives and decides that they will focus on primary schools and the role of teachers. Their statement is now: primary school teachers are important to prevent child maltreatment.",
+              "actor": "self"
+            },
+            {
+              "name": "Refine",
+              "text": "The student asks AI to help refine the wording of their statement without changing its underlying position. AI suggests changing \"are important\" for \"should play a larger role\". The student now has a specific and arguable statement: primary school teachers should play a larger role in preventing child maltreatment.",
+              "actor": "ai"
+            }
+          ]
+        },
+        {
+          "label": "Self–Team",
+          "steps": [
+            {
+              "name": "Present",
+              "text": "In class, the student shares their statement with their classmates and asks for their feedback.",
+              "actor": "self"
+            },
+            {
+              "name": "Feedback",
+              "text": "Overall, the student's classmates understand the statement and think it's a good dilemma. One classmate asks whether prevention refers to primary prevention, aimed at all students, or secondary prevention, aimed at children who have risk factors for maltreatment.",
+              "actor": "team"
+            },
+            {
+              "name": "Integrate",
+              "text": "The student realizes that the statement is still too general. They reflect on the question raised by their classmate and agree that they should be more specific regarding that element.",
+              "actor": "self"
+            },
+            {
+              "name": "Expand",
+              "text": "The student and their classmates discuss whether primary or secondary prevention fits the statement better. During the discussion, another classmate asks what kind of preventive measures they are thinking about.",
+              "actor": "team"
+            }
+          ]
+        },
+        {
+          "label": "Self–AI",
+          "steps": [
+            {
+              "name": "Intent",
+              "text": "The student wants to make the statement more specific regarding the type of prevention and the preventive measures teachers could use. However, they realize they lack knowledge about these concepts.",
+              "actor": "self"
+            },
+            {
+              "name": "Operationalize",
+              "text": "The student asks AI to clarify the concepts and provide some examples.",
+              "actor": "ai"
+            },
+            {
+              "name": "Judge",
+              "text": "The student evaluates the explanations and the examples and decides that education about recognizing inappropriate behavior and seeking help fits their intended focus best. They also decide that they want the intervention to be delivered as part of regular classroom education to all students.",
+              "actor": "self"
+            },
+            {
+              "name": "Refine",
+              "text": "The student asks AI to help formulate a statement that is more specific, including the new insights. AI suggests several formulations, and the student selects the one that best reflects their intended position: primary school teachers should play a larger role in the prevention of child maltreatment by providing all students with education on recognizing inappropriate behavior and seeking help.",
+              "actor": "ai"
+            }
+          ]
+        }
+      ]
+    },
+    "c2.sat_example_title": "Developing a scientific essay statement through S.A.T loop"
+  }
+}
