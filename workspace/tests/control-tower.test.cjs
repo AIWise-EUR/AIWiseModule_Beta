@@ -29,3 +29,22 @@ test('failed Team approval keeps request pending and shows the error without a B
 });
 test('Common map approval opens the map in the current review and preserves language',async()=>{const f=fixture({shared:true,status:'approved',route:'common',chapter:'map',locale:'nl'});await f.render();const link=f.document.querySelector('a[href^="#beta/current"]');const params=new URLSearchParams(link.getAttribute('href').split('?')[1]);assert.equal(params.get('page'),'common/aiwise-c1-anatomy-2d.html?course=aws1&lang=nl');assert.equal(params.get('scope'),'common');});
 test('unrelated local Course Profiler requests retain their decision controls',async()=>{const f=fixture({route:'profiler',withSnapshot:false});await f.render();assert.ok(f.document.querySelector('[value="approved"]'));});
+
+test('comparison shows only edited nested fields; full request stays available in collapsed details',async()=>{
+ const f=fixture({shared:true});const s=f.r.contentSnapshot;
+ s.baseSlots={'c2.examples':[{title:'Before title',body:'Unchanged context'}],'c2.satExample':'Untouched','c2.satExampleTitle':'Before heading'};
+ s.slots={'c2.examples':[{title:'After title',body:'Unchanged context'}],'c2.satExample':'Untouched','c2.satExampleTitle':'After heading'};
+ f.r.targetRef='Internal copy identifier';f.r.details='Author summary';await f.render();
+ const main=f.document.querySelector('.ct-content-changes');assert.equal(main.querySelectorAll('.ct-change-pair').length,2);assert.match(main.textContent,/Before title/);assert.match(main.textContent,/After title/);assert.doesNotMatch(main.textContent,/Unchanged context|Untouched|Internal copy identifier|Author summary/);
+ const details=f.document.querySelector('.ct-request-details');assert.equal(details.hasAttribute('open'),false);assert.match(details.textContent,/Unchanged context|Internal copy identifier/);assert.match(details.textContent,/Author summary/);
+});
+test('Common comparisons handle removed, added, and empty text safely',async()=>{
+ const f=fixture({shared:true,route:'common',chapter:'c1'});const s=f.r.contentSnapshot;
+ s.baseSlots={'c1.block-1':{'Heading 1':'Introduction','Text 1':'Old text','Text 2':'To remove','Text 3':'To clear'}};
+ s.slots={'c1.block-1':{'Heading 1':'Introduction','Text 1':'<img src=x onerror=alert(1)>','Text 3':'','Text 4':'Added text'}};
+ await f.render();const main=f.document.querySelector('.ct-content-changes');assert.equal(main.querySelectorAll('.ct-change-pair').length,4);assert.equal(main.querySelector('img'),null);assert.match(main.textContent,/<img src=x onerror=alert\(1\)>/);assert.match(main.textContent,/Not present/);assert.match(main.textContent,/Empty/);assert.match(main.textContent,/Added text/);assert.match(main.querySelector('h3').textContent,/Introduction/);
+});
+test('JSON object ordering does not create changes, while added array items remain visible',async()=>{
+ const f=fixture({shared:true});const s=f.r.contentSnapshot;s.baseSlots={'c2.examples':[{title:'One',body:'Text'}]};s.slots={'c2.examples':[{body:'Text',title:'One'}]};await f.render();assert.match(f.document.querySelector('.ct-content-changes').textContent,/No content changes/);
+ s.slots['c2.examples'].push({title:'Two',body:'New item'});await f.render();const main=f.document.querySelector('.ct-content-changes');assert.equal(main.querySelectorAll('.ct-change-pair').length,1);assert.match(main.textContent,/Item 2/);assert.match(main.textContent,/New item/);assert.doesNotMatch(main.textContent,/One/);
+});
