@@ -62,7 +62,13 @@
   doc.addEventListener('click',event=>{if(!canSelect()||event.target.closest('a,button,input,select,textarea,summary,[data-beta-overlay]'))return;const node=event.target.closest('[data-review-item]');if(node)choose(items.find(i=>i.node===node),false);},{signal:abort.signal});
   async function loadOlder(initial=false){
    if(busy)return;busy=true;older.disabled=true;message.textContent='Loading version history…';
-   try{const rows=rolling&&initial&&!draft.previous_id?[]:await query(b=>{let q=b.from('workspace_beta_versions').select('*');if(rolling||version.published_at)q=q.not('published_at','is',null);if(versions.at(-1).number)q=q.lt('number',versions.at(-1).number);else if(rolling&&draft.previous_number)q=q.lt('number',draft.previous_number+1);return q.order('number',{ascending:false}).limit(initial?1:5);});if(!valid())return;
+   try{let rows;
+    if(initial){
+     const context=rolling?draft:await query(b=>b.rpc('workspace_beta_review_context',{p_version:version.id}));
+     rows=context.previous_id?await query(b=>b.from('workspace_beta_versions').select('*').eq('id',context.previous_id).limit(1)):[];
+     if(context.previous_id&&!rows.length)throw Error('The comparison version could not be loaded. Please retry.');
+    }else rows=await query(b=>b.from('workspace_beta_versions').select('*').lt('number',versions.at(-1).number).order('number',{ascending:false}).limit(5));
+    if(!valid())return;
     versions.push(...rows);more=rows.length===(initial?1:5);
     if(initial){
      const chapter=doc.querySelector('[data-current-block]')?.dataset.currentBlock||(doc.querySelector('[data-anatomy-copy]')?'map':null);
@@ -72,7 +78,7 @@
      items.forEach(item=>{item.changed=!versions[1]||changed(version,versions[1],item,locale);item.node.dataset.reviewItem=item.id;});
      items.sort((a,b)=>Number(b.changed)-Number(a.changed));
      picker.innerHTML='<option value="">Select an item…</option>'+items.map(item=>`<option value="${item.id}">${item.changed?'Changed · ':''}${esc(item.title)}</option>`).join('');picker.disabled=!items.length;
-     const count=items.filter(i=>i.changed).length;comparison.textContent=!items.length?'This page has no Studio content to compare.':versions[1]?`${count} changed ${count===1?'item':'items'} since V${versions[1].number}. Select an item to view its history.`:'First publication. All approved content needs review.';toggle.disabled=!count;mark();if(initialItem){const target=items.find(i=>i.key===initialItem&&(!initialScope||i.course===initialScope));if(target)choose(target);else message.textContent='This item is not visible on this page. Its before/after text is available in the review checklist.';initialItem=null;}
+     const count=items.filter(i=>i.changed).length;comparison.textContent=!items.length?'This page has no Studio content to compare.':versions[1]?`${count} changed ${count===1?'item':'items'} since V${versions[1].number}${versions[1].published_at?'':' (review snapshot)'}. Select an item to view its history.`:'No earlier comparison version. All included content needs review.';toggle.disabled=!count;mark();if(initialItem){const target=items.find(i=>i.key===initialItem&&(!initialScope||i.course===initialScope));if(target)choose(target);else message.textContent='This item is not visible on this page. Its before/after text is available in the review checklist.';initialItem=null;}
     }
     older.hidden=!more||!selected;if(!message.textContent.startsWith('This item'))message.textContent='';if(selected)paintItem();
    }catch(e){if(valid()){message.textContent=e.message;older.hidden=false;older.textContent='Retry history';}}
