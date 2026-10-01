@@ -17,3 +17,47 @@ body.has-sidebar .button { box-sizing:border-box; min-height:44px; border-radius
 .br-history #br-history-item { width:100%; margin-top:6px; }
 .cs-toolbar { --cs-control-height:44px; }
 #cs-example { border-radius:6px; box-shadow:none; font:400 13px/1.5 var(--font-body); }
+/* Styled option lists, including long editor and history lists. */
+.aw-select { display:inline-block; position:relative; min-width:0; width:100%; vertical-align:middle; font:400 13px/1.5 var(--font-body); }
+body .aw-select-native { position:absolute!important; width:1px!important; height:1px!important; min-height:0!important; padding:0!important; margin:0!important; opacity:0!important; pointer-events:none!important; clip-path:inset(50%); }
+.aw-select-trigger { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-width:0; height:44px; margin:0; padding:10px 12px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); font:400 13px/1.5 var(--font-body); text-align:left; cursor:pointer; }
+.aw-select-value { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; min-width:0; }
+.aw-select-arrow { flex:none; color:var(--ink-3); font-size:17px; line-height:1; }
+.aw-select-trigger:hover,.aw-select-trigger[aria-expanded=true] { border-color:var(--signal); }
+.aw-select-trigger:disabled { opacity:.55; cursor:not-allowed; }
+.aw-select-trigger[aria-invalid=true] { border-color:var(--danger); }
+.aw-select-error { display:block; color:var(--danger); margin-top:6px; }
+.aw-select-popup { position:fixed; inset:auto; margin:0; padding:6px; box-sizing:border-box; border:1px solid var(--line); border-radius:9px; background:var(--card); color:var(--ink); box-shadow:0 8px 28px #15121d24; font:400 13px/1.5 var(--font-body); overflow:auto; overscroll-behavior:contain; z-index:20000; }
+.aw-select-popup:popover-open,.aw-select-fallback { display:flex; flex-direction:column; }
+.aw-select-list { min-height:0; overflow:auto; overscroll-behavior:contain; }
+.aw-select-option { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:10px 12px; min-height:42px; border-radius:5px; cursor:pointer; overflow-wrap:anywhere; flex-shrink:0; }
+.aw-select-option:hover,.aw-select-option.is-active { background:var(--paper-2); }
+.aw-select-option[aria-selected=true] { color:var(--signal); background:#35617f12; font-weight:600; }
+.aw-select-option[aria-disabled=true] { opacity:.45; cursor:not-allowed; }
+.aw-select-check { flex:none; width:16px; color:var(--signal); }
+.aw-select-popup .aw-select-search { flex:none; box-sizing:border-box; width:100%; min-height:42px; margin:0 0 5px; border:1px solid var(--line); border-radius:5px; padding:9px 12px; background:var(--paper); color:var(--ink); font:inherit; }
+.aw-select-group { padding:10px 12px 5px; font-size:11px; font-weight:600; color:var(--ink-3); }
+.aw-select-empty { padding:14px 12px; margin:0; color:var(--ink-3); }
+.br-toolbar .aw-select,.cs-language .aw-select,.ct-field .aw-select { display:block; }
+.br-tools .br-target-label { flex:1 1 240px; max-width:420px; }
+.br-filter-label { min-width:140px; }
+.cs-toolbar .aw-select { flex:1 1 220px; width:auto; }
+.cs-language .aw-select { width:100%; }
+.br-history .aw-select { margin-top:6px; }
+.item-link { gap:16px; align-items:center; }
+.item-link>span { min-width:0; overflow-wrap:anywhere; }
+.item-link>small { flex-shrink:0; }
+@media(max-width:600px) { .cs-toolbar>.aw-select { flex-basis:100%; }.item-link { flex-wrap:wrap; gap:7px; }.br-filter-label { min-width:0; flex:1; } }
+#cs-examples-menu { padding:6px; border-radius:9px; box-shadow:0 8px 28px #15121d24; }
+#cs-examples-menu button { min-height:42px; padding:10px 12px; border:0; border-radius:5px; align-items:center; }
+#cs-examples-menu button:hover { background:var(--paper-2); }
+#cs-examples-menu button[aria-pressed=true] { background:#35617f12; color:var(--signal); }
+#cs-examples-menu button[aria-pressed=true]::after { content:'✓'; margin-left:auto; flex:none; }
+.cs-picker-heading { padding:10px 12px 5px; background:var(--card); color:var(--ink-3); font:600 11px/1.5 var(--font-body); }
+.cs-language { flex:0 0 140px; }
+
+#cs-examples-menu [hidden] { display:none!important; }
+#cs-examples-menu .cs-picker-heading { position:static; }
+.cs-picker-search { position:sticky; top:-6px; z-index:2; padding:0 0 6px; background:var(--card); }
+.cs-picker-search input { box-sizing:border-box; width:100%; height:42px; border:1px solid var(--line); border-radius:5px; padding:9px 12px; background:var(--paper); color:var(--ink); font:400 13px/1.5 var(--font-body); }
+.cs-picker-empty { padding:12px; color:var(--ink-3); font-size:13px; }

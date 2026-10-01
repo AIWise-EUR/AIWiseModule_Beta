@@ -165,6 +165,19 @@
   }
   function refreshPicker(s) {
     const menu = s.host.querySelector('#cs-examples-menu'); menu.replaceChildren();
+    const searchWrap = document.createElement('div'); searchWrap.className = 'cs-picker-search';
+    const search = document.createElement('input'); search.type = 'search'; search.placeholder = 'Find an item…'; search.setAttribute('aria-label', 'Find a studio item');
+    searchWrap.appendChild(search); menu.appendChild(searchWrap);
+    const empty = document.createElement('p'); empty.className = 'cs-picker-empty'; empty.textContent = 'No matching items'; empty.hidden = true; empty.setAttribute('role', 'status');
+    search.addEventListener('input', () => {
+      const query = search.value.trim().toLocaleLowerCase(); let matches = 0;
+      menu.querySelectorAll('[role="group"]').forEach(group => {
+        let count = 0;
+        group.querySelectorAll('button').forEach(button => { button.hidden = !button.textContent.toLocaleLowerCase().includes(query); if (!button.hidden) count++; });
+        group.hidden = !count; matches += count;
+      });
+      empty.hidden = !!matches;
+    });
     for (const chapter of s.isCommon ? common().chapters : ['c2', 'c3']) {
       const group = document.createElement('div'); group.setAttribute('role', 'group');
       group.setAttribute('aria-labelledby', 'cs-group-' + chapter);
@@ -188,6 +201,7 @@
       });
       menu.appendChild(group);
     }
+    menu.appendChild(empty);
     selectItem(s, s.index);
   }
   function updatePreview(s) {
@@ -625,18 +639,20 @@
       host.querySelector('[data-cs-edit]').addEventListener('click',()=>openEditor(s,s.index));
       host.querySelector('[data-cs-next]').addEventListener('click', () => selectItem(s, s.index + 1, true));
       const trigger = host.querySelector('#cs-example'), menu = host.querySelector('#cs-examples-menu');
-      const openPicker = () => { s.cancelPickerClose?.(); s.cancelPickerClose = null; menu.classList.remove('cs-closing'); menu.inert = false; menu.hidden = false; trigger.setAttribute('aria-expanded', 'true'); const selected = menu.querySelector('[aria-pressed="true"]'); selected?.focus({preventScroll: true}); if (selected) menu.scrollTop = Math.max(0, selected.offsetTop - 44); };
+      const openPicker = () => { s.cancelPickerClose?.(); s.cancelPickerClose = null; menu.classList.remove('cs-closing'); menu.inert = false; menu.hidden = false; trigger.setAttribute('aria-expanded', 'true'); const search = menu.querySelector('input'); if (search) { search.value = ''; search.dispatchEvent(new Event('input')); search.focus({preventScroll: true}); } menu.scrollTop = 0; };
       trigger.addEventListener('click', () => trigger.getAttribute('aria-expanded') === 'true' ? closePicker(s) : openPicker());
       trigger.addEventListener('keydown', e => { if (['ArrowDown','ArrowUp'].includes(e.key)) { e.preventDefault(); openPicker(); } });
       menu.addEventListener('keydown', e => {
-        const buttons = [...menu.querySelectorAll('button')], index = buttons.indexOf(document.activeElement), count = buttons.length;
-        const next = {ArrowDown: (index + 1) % count, ArrowUp: (index + count - 1) % count, Home: 0, End: count - 1}[e.key];
+        const buttons = [...menu.querySelectorAll('button')].filter(b => !b.hidden && !b.closest('[role="group"]').hidden), index = buttons.indexOf(document.activeElement), count = buttons.length;
+        if (!count || e.target.tagName === 'INPUT' && ['Home','End'].includes(e.key)) return;
+        if (e.target.tagName === 'INPUT' && e.key === 'Enter') { e.preventDefault(); buttons[0].click(); return; }
+        const next = {ArrowDown: (index + 1) % count, ArrowUp: index < 0 ? count - 1 : (index + count - 1) % count, Home: 0, End: count - 1}[e.key];
         if (next !== undefined) { e.preventDefault(); buttons[next].focus(); }
       });
       host.querySelector('.cs-picker').addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); closePicker(s, true); } });
       // Pressing a menu item must not move focus away first: Safari gives buttons no focus on click, so the
       // focusout below would close and inert the menu before the click lands. Focus stays on the trigger.
-      menu.addEventListener('mousedown', e => e.preventDefault());
+      menu.addEventListener('mousedown', e => { if (e.target.closest('button')) e.preventDefault(); });
       host.querySelector('.cs-picker').addEventListener('focusout', e => { if (e.relatedTarget && !e.currentTarget.contains(e.relatedTarget)) closePicker(s); });
       document.addEventListener('pointerdown', e => { if (!host.querySelector('.cs-picker').contains(e.target)) closePicker(s); }, {signal: s.abort.signal});
       setupEditorResize(s);

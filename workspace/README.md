@@ -172,3 +172,14 @@ Control Tower shows commit and Pages deployment status separately. Enable the se
 worker and recovery schedule following [../supabase/GITHUB_PUBLISHING_SETUP.md](../supabase/GITHUB_PUBLISHING_SETUP.md).
 The existing connection-check function alone does not enable publishing.
 The separate `AI-Wise/main` student release path is not changed by this setup.
+
+
+## Workspace guides and selection lists
+
+`select-controls.js` enhances single-choice selects in Workspace and Course Profiler while retaining the original select, field names, values, validation and change handlers. Option lists share the Workspace styles, display the selected item and search lists longer than eight choices. Arrow keys move through choices, Enter selects, Escape cancels and Tab continues navigation. Dynamically rendered controls and programmatic changes are mirrored. Common and Content Studio's chapter/item picker also supports search and keyboard selection. Module iframe controls are outside this enhancement.
+
+`tutorial-content.js`, `tutorials.js` and `tutorials.css` provide card guides for sign-in, first approved login, all Workspace areas, studio editors, Beta preview, publication, Account and My page. Members receive the Beta review welcome; administrators receive the content workflow welcome. Guides open on first visit and can be reopened from the top-right information button. Cards support Next/Back, direct card selection, arrow keys and touch swipes. A Workspace tour link reopens the role-appropriate welcome. Account sign-in completes before the welcome appears; no authentication behavior is changed.
+
+Dismissed guides are remembered under `aiwise_guides_v1:<account>:<role>:<guide>` in this browser. A different account, role or browser has separate first-visit state. Storage failure falls back to the current session. This preference is not synchronized through Supabase. The guide content identifies local/prototype areas without claiming they are shared or implemented.
+
+Validation: 67 Workspace unit tests pass, including new selection synchronization/keyboard/search tests and tutorial account/role/navigation tests. Local browser checks cover Beta course/page changes, searchable feedback targets, Studio item search, first sign-in and member onboarding, My page, guide reopening, Course Profiler and 390×844 layouts. The browser fixture uses local mock accounts and content; these checks do not create production submissions or feedback.
