@@ -1,3 +1,4 @@
+// Historical migration contract; publish_cycles.cjs tests the current full migration chain.
 /* Disposable database: releases cannot reach the public site without a separate admin approval. */
 const {PGlite}=require(process.env.PGLITE_MODULE||'@electric-sql/pglite');
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
@@ -8,7 +9,7 @@ const root=path.resolve(__dirname,'../..');
  create table auth.users(id uuid primary key,raw_user_meta_data jsonb default '{}',email text,email_confirmed_at timestamptz,created_at timestamptz default now(),deleted_at timestamptz,is_anonymous boolean default false);
  create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
  grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
- for(const f of fs.readdirSync(path.join(root,'supabase/migrations')).filter(f=>f.endsWith('.sql')).sort())await db.exec(fs.readFileSync(path.join(root,'supabase/migrations',f),'utf8'));
+ for(const f of fs.readdirSync(path.join(root,'supabase/migrations')).filter(f=>f.endsWith('.sql')&&f<'20261001083839').sort())await db.exec(fs.readFileSync(path.join(root,'supabase/migrations',f),'utf8'));
  const admin='11111111-1111-4111-8111-111111111111',member='22222222-2222-4222-8222-222222222222',version='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',id='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
  for(const user of [admin,member])await db.query('insert into auth.users(id,email,email_confirmed_at) values($1,$2,now())',[user,user+'@example.test']);
  await db.query("insert into workspace_members(user_id,role,active) values($1,'admin',true),($2,'member',true)",[admin,member]);

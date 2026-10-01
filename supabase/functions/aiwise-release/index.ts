@@ -28,7 +28,7 @@ function shape(value:any,base:any):boolean {
  return keys.every(k=>!['__proto__','constructor','prototype'].includes(k)&&(Object.hasOwn(base,k)?shape(value[k],base[k]):k==='typing_note'&&typeof value[k]==='string'))&&expected.every(k=>Object.hasOwn(value,k)||(k==='typing_note'));
 }
 export function buildRelease(id:string,version:any,sourceSha:string,targetSha:string,source:Record<string,string>):Record<string,string> {
- if(!UUID.test(id)||!UUID.test(version?.id)||!Number.isSafeInteger(version.number)||!SHA.test(sourceSha)||!SHA.test(targetSha)||!Array.isArray(version.content))throw new PublishError('invalid_release',400);
+ if(!UUID.test(id)||!UUID.test(version?.id)||!(version.number===null||Number.isSafeInteger(version.number))||!SHA.test(sourceSha)||!SHA.test(targetSha)||!Array.isArray(version.content))throw new PublishError('invalid_release',400);
  for(const path of SOURCE_FILES)if(typeof source[path]!=='string'||!source[path])throw new PublishError('source_file_unavailable');
  const parse=(path:string)=>JSON.parse(source[path]);
  const schemas=parse('pipelines/orientation-schema.json');
@@ -104,7 +104,7 @@ export function createHandler(deps: Dependencies) {
       const serviceHeaders = {apikey:service,Authorization:`Bearer ${service}`,'Content-Type':'application/json'};
       async function rpc(name: string, body: unknown = {}, userHeaders = serviceHeaders) {
         const response = await request(`${url}/rest/v1/rpc/${name}`,{method:'POST',headers:userHeaders,body:JSON.stringify(body)});
-        if (!response.ok) throw new PublishError('database_unavailable');
+        if (!response.ok) {const detail=await response.json().catch(()=>({}));throw new PublishError(detail.code==='40001'?'approved_content_changed':'database_unavailable',detail.code==='40001'?409:503);}
         return response.status === 204 ? null : response.json();
       }
       let actor='';
@@ -166,11 +166,12 @@ export function createHandler(deps: Dependencies) {
         return response.status===204?null:response.json();
       }
       if(action.operation==='prepare'){
-        if(!actor||!UUID.test(action.id||'')||!UUID.test(action.version_id||''))throw new PublishError('invalid_request',400);
-        const existing=await database(`workspace_releases?id=eq.${action.id}&select=id,version_id,author_id`);
-        if(existing.length){if(existing[0].version_id!==action.version_id||existing[0].author_id!==actor)throw new PublishError('release_identity_changed',409);return reply({ok:true,id:action.id});}
-        const versions=await database(`workspace_beta_versions?id=eq.${action.version_id}&select=id,number,content`);
-        if(versions.length!==1)throw new PublishError('saved_version_required',400);
+        if(!actor||!UUID.test(action.id||'')||action.version_id)throw new PublishError('invalid_request',400);
+        const existing=await database(`workspace_releases?id=eq.${action.id}&select=id,candidate_fingerprint,author_id`);
+        if(existing.length){if(!existing[0].candidate_fingerprint||existing[0].candidate_fingerprint!==action.fingerprint||existing[0].author_id!==actor)throw new PublishError('release_identity_changed',409);return reply({ok:true,id:action.id});}
+        const candidate=await rpc('workspace_release_candidate');
+        if(action.fingerprint!==candidate.fingerprint)throw new PublishError('approved_content_changed',409);
+        const version={id:action.id,number:null,content:candidate.content};
         await connect();
         const source=await github('/repos/AIWise-EUR/AIWiseModule_Beta/git/ref/heads/development');
         const target=await github(`${BASE}/git/ref/heads/${BRANCH}`);
@@ -181,8 +182,8 @@ export function createHandler(deps: Dependencies) {
           const response=await request(`https://api.github.com/repos/AIWise-EUR/AIWiseModule_Beta/contents/${path}?ref=${sourceSha}`,{headers:{Authorization:`Bearer ${token}`,Accept:'application/vnd.github.raw+json','X-GitHub-Api-Version':'2026-03-10','User-Agent':'AIWise-Release'}});
           if(!response.ok)throw new PublishError('source_file_unavailable');files[path]=await response.text();
         }));
-        const bundle=buildRelease(action.id,versions[0],sourceSha,targetSha,files);
-        await rpc('workspace_store_release',{p_id:action.id,p_version:action.version_id,p_author:actor,p_source:sourceSha,p_target:targetSha,p_files:bundle});
+        const bundle=buildRelease(action.id,version,sourceSha,targetSha,files);
+        await rpc('workspace_store_release_candidate',{p_id:action.id,p_author:actor,p_source:sourceSha,p_target:targetSha,p_files:bundle,p_content:candidate.content,p_fingerprint:candidate.fingerprint});
         return reply({ok:true,id:action.id});
       }
       async function commit(job:any){
@@ -202,7 +203,7 @@ export function createHandler(deps: Dependencies) {
         if(!SHA.test(parent?.tree?.sha))throw new PublishError('invalid_github_response');
         const tree=await github(`${BASE}/git/trees`,{method:'POST',body:JSON.stringify({base_tree:parent.tree.sha,tree:DEST_FILES.map(path=>({path,mode:'100644',type:'blob',content:job.files[path]}))})});
         if(!SHA.test(tree?.sha))throw new PublishError('invalid_github_response');
-        const created=await github(`${BASE}/git/commits`,{method:'POST',body:JSON.stringify({message:`Publish AI-Wise review V${job.version_number}\n\nAIWise-Release: ${job.id}`,tree:tree.sha,parents:[head]})});
+        const created=await github(`${BASE}/git/commits`,{method:'POST',body:JSON.stringify({message:`Publish AI-Wise V${job.version_number} · ${job.version_title}\n\nAIWise-Release: ${job.id}`,tree:tree.sha,parents:[head]})});
         if(!SHA.test(created?.sha))throw new PublishError('invalid_github_response');
         if(await rpc('workspace_release_lease_valid',{p_id:job.id,p_lease:job.lease_token})!==true)throw new PublishError('lease_expired');
         try{await github(`${BASE}/git/refs/heads/${BRANCH}`,{method:'PATCH',body:JSON.stringify({sha:created.sha,force:false})});}

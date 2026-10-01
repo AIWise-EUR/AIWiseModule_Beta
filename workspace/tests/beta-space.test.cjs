@@ -8,7 +8,7 @@ function fixture(role='admin',failure=null){
  let auth={status:'member',role,user:{id:'owner'}},opened;
  const version={id,number:1,title:'<img src=x onerror=alert(1)>',summary:'Saved copy',author_name:'Reviewer',created_at:'2026-09-30',content:[{course:'common',chapter:'c1',locale:'en',slots:{'c1.title':'Saved title'}}]};
  const make=table=>{const q={select:()=>q,eq:()=>q,contains:()=>q,order:()=>q,range:()=>q,limit:()=>q,single:()=>{q.singleRow=true;return q;},abortSignal:async()=>failure?{error:failure}:{data:table==='workspace_beta_versions'?(q.singleRow?version:[version]):[]}};return q;};
- const window={AIWiseAuth:{snapshot:()=>auth},AIWiseBackend:{getClient:async()=>({from:make})},AIWiseBetaReview:{open:(...args)=>{opened=args;}}};
+ const window={AIWiseBetaChecklist:{mount:()=>()=>{},request:async()=>({fingerprint:'copy',previous_id:null,changes:[],current_content:structuredClone(version.content)})},AIWiseAuth:{snapshot:()=>auth},AIWiseBackend:{getClient:async()=>({from:make})},AIWiseBetaReview:{open:(...args)=>{opened=args;}}};
  const location={hash:'#beta'};vm.runInNewContext(code('workspace/beta-space.js'),{window,document,location,URLSearchParams,AbortController,setTimeout,clearTimeout,crypto:require('node:crypto').webcrypto});
  const shell=(_a,_t,_h,body)=>{document.getElementById('room').innerHTML=body;};
  return {api:window.AIWiseBetaSpace,document,version,shell,opened:()=>opened,setAuth:a=>auth=a,location};
@@ -16,8 +16,8 @@ function fixture(role='admin',failure=null){
 test('Beta starts with real versions and safely escaped metadata; members cannot create versions',async()=>{
  const c=fixture('member');await c.api.render(c.shell);
  assert.equal(c.document.querySelector('[data-create]'),null);
- assert.equal(c.document.querySelector('img'),null);assert.match(c.document.querySelector('[data-version]').textContent,/Saved|img/);
- c.document.querySelector('[data-open]').onclick();assert.equal(c.location.hash,'#beta/'+id);
+ assert.equal(c.document.querySelector('img'),null);assert.match(c.document.querySelector('[data-version]').textContent,/V1 · 2026-09-30/);
+ c.document.querySelector('[data-open]').onclick();assert.equal(c.location.hash,'#beta/current');
 });
 test('Saved preview passes version identity, stays in-page and clones content; Dutch fallback is the saved English copy',async()=>{
  const c=fixture();await c.api.render(c.shell,id+'?page=common%2Faiwise-c1-final.html%3Fcourse%3Daws1&memo=abc');
@@ -42,3 +42,5 @@ test('Saved-version renderer uses the signed-in parent copy and never requests l
  vm.runInNewContext(code('pipelines/beta-content.js'),{window:top,URL,AbortController,setTimeout,clearTimeout});
  await assert.rejects(()=>top.AIWiseBetaContent.read('common','en'),/Workspace/);
 });
+
+test('next-release preview freezes the approved copy for this visit without creating a saved version',async()=>{const c=fixture();await c.api.render(c.shell,'current');assert.equal(c.opened()[2].version,null);assert.equal(c.opened()[2].draft.fingerprint,'copy');c.version.content[0].slots['c1.title']='A later approval';assert.equal(c.api.snapshot('current','common','en')[0].slots['c1.title'],'Saved title');c.api.dispose();});
