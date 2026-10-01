@@ -69,6 +69,13 @@ test('missing migration has an actionable message and no fake success',async()=>
  const f=fixture('admin','#team',()=>({error:{code:'PGRST202'}}));await tick();
  assert.match(f.document.querySelector('[data-message]').textContent,/not ready yet/);assert.equal(f.document.querySelectorAll('.team-person').length,0);
 });
+test('join requests are visible and default to Member approval while admins choose the final decision',async()=>{
+ const person={user_id:'new-id',email:'new@example.test',display_name:'New person',role:'member',active:false,access:'pending',version:0,confirmed:true,requested_at:'2026-10-01T00:00:00Z',invitation_name:'Shared link'};
+ const f=fixture('admin','#team',name=>name==='workspace_list_team'?{data:{members:[person],total:1,pending_requests:1}}:{data:{}});await tick();
+ assert.match(f.document.querySelector('[data-message]').textContent,/1 join request awaits approval/);assert.match(f.document.querySelector('.team-person').textContent,/Join request/);
+ f.document.querySelector('.team-person button').click();assert.equal(f.document.querySelector('#team-role').value,'member');assert.match(f.document.querySelector('.team-dialog').textContent,/Review join request/);
+ await f.document.querySelector('.team-dialog form').onsubmit({preventDefault(){}});const call=f.calls.find(c=>c.name==='workspace_set_team_access');assert.equal(call.args.p_role,'member');assert.equal(call.args.p_active,true);assert.equal(call.args.p_expected_version,0);
+});
 
 test('Auth derives the role from membership, preserves refresh state and observes revocation',async()=>{
  let membership={user_id:'u',active:true,role:'member'},selection;
