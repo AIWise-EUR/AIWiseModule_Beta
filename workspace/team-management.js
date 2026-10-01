@@ -29,14 +29,14 @@
     try {
       const result=await rpc('workspace_list_team',{p_search:s.search,p_offset:s.offset,p_limit:50});
       if(!active(s)||epoch!==s.epoch)return;
-      s.message.textContent='';s.rows=result.members;
+      s.message.textContent=result.pending_requests?result.pending_requests+' join '+(result.pending_requests===1?'request awaits':'requests await')+' approval.':'';s.rows=result.members;
       s.root.querySelector('[data-total]').textContent=result.total+' '+(result.total===1?'account':'accounts');
       s.root.querySelector('[data-page]').textContent=result.total?`${s.offset+1}–${s.offset+result.members.length} of ${result.total}`:'0 accounts';
       if(!s.rows.length)s.list.innerHTML='<p class="empty-state">No accounts found.</p>';
       for(const row of s.rows) {
         const item=document.createElement('li');item.className='team-person';
-        const label=!row.confirmed?'Email unconfirmed':({pending:'Awaiting approval',inactive:'Access paused',admin:'Administrator',member:'Member'})[row.access];
-        item.innerHTML=`<div class="team-person-name"><strong>${esc(row.display_name)}${row.user_id===s.owner?' <span class="team-you">You</span>':''}</strong><span>${esc(row.email)}</span></div><span class="badge">${esc(label)}</span><button class="button" type="button" ${!row.confirmed?'disabled':''}>${row.access==='pending'?'Review access':'Manage access'}</button>`;
+        const label=!row.confirmed?'Email unconfirmed':({pending:row.requested_at?'Join request':'Awaiting approval',inactive:'Access paused',admin:'Administrator',member:'Member'})[row.access];
+        item.innerHTML=`<div class="team-person-name"><strong>${esc(row.display_name)}${row.user_id===s.owner?' <span class="team-you">You</span>':''}</strong><span>${esc(row.email)}</span>${row.requested_at?`<span>Requested ${esc(new Date(row.requested_at).toLocaleDateString())} · ${esc(row.invitation_name||'Invitation link')}</span>`:''}</div><span class="badge">${esc(label)}</span><button class="button" type="button" ${!row.confirmed?'disabled':''}>${row.access==='pending'?'Review request':'Manage access'}</button>`;
         item.querySelector('button').setAttribute('aria-label',`${row.access==='pending'?'Review':'Manage'} access for ${row.display_name}`);
         item.querySelector('button').onclick=()=>edit(s,row);
         s.list.append(item);
@@ -49,7 +49,7 @@
   function edit(s,row) {
     if(!active(s)||!admin()||s.busy)return;
     const dialog=document.createElement('dialog');dialog.className='team-dialog';dialog.setAttribute('aria-labelledby','team-edit-title');
-    dialog.innerHTML=`<form><h2 id="team-edit-title">Manage access</h2><p><strong>${esc(row.display_name)}</strong><br>${esc(row.email)}</p><label for="team-role">Role</label><select id="team-role"><option value="member">Member</option><option value="admin">Administrator</option></select><p class="team-help">Members can preview Beta and leave feedback. Administrators can also edit content, review submissions and manage the team.</p><label for="team-active">Workspace access</label><select id="team-active"><option value="true">Active</option><option value="false">Paused</option></select><p class="team-help">Paused accounts cannot use Workspace or team feedback.</p>${row.user_id===s.owner?'<p class="team-self-note">You are changing your own access. Switching to Member takes you to Beta; pausing access closes your Workspace.</p>':''}<p role="alert" data-error></p><div class="toolbar"><button class="button" type="button" data-cancel>Cancel</button><button class="button primary" type="submit">Save access</button></div></form>`;
+    dialog.innerHTML=`<form><h2 id="team-edit-title">${row.access==='pending'?'Review join request':'Manage access'}</h2><p><strong>${esc(row.display_name)}</strong><br>${esc(row.email)}</p><label for="team-role">Role</label><select id="team-role"><option value="member">Member</option><option value="admin">Administrator</option></select><p class="team-help">Members can preview Beta and leave feedback. Administrators can also edit content, review submissions and manage the team.</p><label for="team-active">Workspace access</label><select id="team-active"><option value="true">${row.access==='pending'?'Approve request':'Active'}</option><option value="false">${row.access==='pending'?'Decline request':'Paused'}</option></select><p class="team-help">Paused accounts cannot use Workspace or team feedback.</p>${row.user_id===s.owner?'<p class="team-self-note">You are changing your own access. Switching to Member takes you to Beta; pausing access closes your Workspace.</p>':''}<p role="alert" data-error></p><div class="toolbar"><button class="button" type="button" data-cancel>Cancel</button><button class="button primary" type="submit">${row.access==='pending'?'Confirm decision':'Save access'}</button></div></form>`;
     document.body.append(dialog);s.dialog=dialog;const role=dialog.querySelector('#team-role'),enabled=dialog.querySelector('#team-active');
     role.value=row.role;enabled.value=String(row.access==='pending'||row.active);
     const close=()=>{if(s.busy)return;dialog.close();dialog.remove();s.dialog=null;};
