@@ -48,3 +48,12 @@ Automated browser tests exercise the real Supabase SDK against controlled Auth a
 Signup collects a required 1–50 character display name. Existing accounts can set or change it in the sidebar account dialog. The name is stored as Supabase Auth `user_metadata.display_name` through authenticated `auth.updateUser({data: ...})`; no new table or migration is required. Login continues to use email. Names are display labels, not unique usernames, and duplicate names are allowed. The sidebar and home greeting use the saved name after server-verified sign-in or session restore; accounts with no name show Account until they set one.
 
 Only display metadata is sent by this form. It never writes membership, roles or application metadata. Membership checks continue to use the immutable authenticated user ID and the `workspace_members` table. Name updates are shown as saved only after Auth confirms the updated user. The verified Auth snapshot exposes the same value as `user.displayName` and `user.name` for shared UI consumers. Other signed-in sessions obtain the name when account state is refreshed or the account dialog is reopened. Existing Control Tower browser-local profile names and historical records are not rewritten.
+
+
+## Approved-content GitHub commits
+
+Studio approvals can now enqueue automatic content commits to `AIWiseModule_Beta/development`.
+Control Tower shows commit and Pages deployment status separately. Enable the server queue,
+worker and recovery schedule following [GITHUB_PUBLISHING_SETUP.md](GITHUB_PUBLISHING_SETUP.md).
+The existing connection-check function alone does not enable publishing.
+The separate `AI-Wise/main` student release path is not changed by this setup.

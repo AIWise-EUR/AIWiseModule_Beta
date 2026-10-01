@@ -163,3 +163,12 @@ English storage keys and feedback URLs are preserved. Dutch drafts add `_nl` bef
 Beta has Page, Course and Language controls. Its actual module frame waits for approved common and course content before attaching feedback. The C1 map can also be opened directly. Internal chapter/course navigation carries the selected language. A page with no approved Dutch common/course content shows its English fallback with a visible notice. Feedback remains private to active members and separate for each language.
 
 Rollout requires `../supabase/CONTENT_LANGUAGES_SETUP.md`. This branch is not evidence that SQL or GitHub Pages was deployed. Run the language DOM tests plus the isolated PostgreSQL migration suite described there. Local browser checks use mock data and do not verify a live team account.
+
+
+## Approved-content GitHub commits
+
+Studio approvals can now enqueue automatic content commits to `AIWiseModule_Beta/development`.
+Control Tower shows commit and Pages deployment status separately. Enable the server queue,
+worker and recovery schedule following [../supabase/GITHUB_PUBLISHING_SETUP.md](../supabase/GITHUB_PUBLISHING_SETUP.md).
+The existing connection-check function alone does not enable publishing.
+The separate `AI-Wise/main` student release path is not changed by this setup.
