@@ -8,10 +8,11 @@ function fixture(role='admin',failure=null){
  let auth={status:'member',role,user:{id:'owner'}},opened;
  const version={id,number:1,title:'<img src=x onerror=alert(1)>',summary:'Saved copy',author_name:'Reviewer',created_at:'2026-09-30',content:[{course:'common',chapter:'c1',locale:'en',slots:{'c1.title':'Saved title'}}]};
  const make=table=>{const q={select:()=>q,eq:()=>q,contains:()=>q,order:()=>q,range:()=>q,limit:()=>q,single:()=>{q.singleRow=true;return q;},abortSignal:async()=>failure?{error:failure}:{data:table==='workspace_beta_versions'?(q.singleRow?version:[version]):[]}};return q;};
- const window={AIWiseBetaChecklist:{mount:()=>()=>{},request:async()=>({fingerprint:'copy',previous_id:null,changes:[],current_content:structuredClone(version.content)})},AIWiseAuth:{snapshot:()=>auth},AIWiseBackend:{getClient:async()=>({from:make})},AIWiseBetaReview:{open:(...args)=>{opened=args;}}};
+ const review={fingerprint:'copy',previous_id:null,changes:[],checks:[],current_content:structuredClone(version.content)},helper={};vm.runInNewContext(code('workspace/beta-checklist.js'),{window:helper,URLSearchParams});
+ const window={AIWiseBetaChecklist:{...helper.AIWiseBetaChecklist,mount:()=>()=>{},request:async()=>structuredClone(review)},AIWiseAuth:{snapshot:()=>auth},AIWiseBackend:{getClient:async()=>({from:make})},AIWiseBetaReview:{open:(...args)=>{opened=args;}}};
  const location={hash:'#beta'};vm.runInNewContext(code('workspace/beta-space.js'),{window,document,location,URLSearchParams,AbortController,setTimeout,clearTimeout,crypto:require('node:crypto').webcrypto});
  const shell=(_a,_t,_h,body)=>{document.getElementById('room').innerHTML=body;};
- return {api:window.AIWiseBetaSpace,document,version,shell,opened:()=>opened,setAuth:a=>auth=a,location};
+ return {api:window.AIWiseBetaSpace,document,version,review,shell,opened:()=>opened,setAuth:a=>auth=a,location};
 }
 test('Beta starts with real versions and safely escaped metadata; members cannot create versions',async()=>{
  const c=fixture('member');await c.api.render(c.shell);
@@ -44,3 +45,11 @@ test('Saved-version renderer uses the signed-in parent copy and never requests l
 });
 
 test('next-release preview freezes the approved copy for this visit without creating a saved version',async()=>{const c=fixture();await c.api.render(c.shell,'current');assert.equal(c.opened()[2].version,null);assert.equal(c.opened()[2].draft.fingerprint,'copy');c.version.content[0].slots['c1.title']='A later approval';assert.equal(c.api.snapshot('current','common','en')[0].slots['c1.title'],'Saved title');c.api.dispose();});
+
+test('version chooser has no separate checklist; opening preview selects the first pending change with its exact language and scope',async()=>{
+ const c=fixture();await c.api.render(c.shell);assert.equal(c.document.querySelector('[data-review-checklist]'),null);
+ c.review.changes=[{course:'common',chapter:'c1',locale:'en',key:'c1.title'},{course:'ped',chapter:'c2',locale:'nl',key:'c2.example'}];c.review.checks=[{course:'common',chapter:'c1',locale:'en',item_key:'c1.title',reviewed:true}];
+ await c.api.render(c.shell,'current');const o=c.opened()[2];assert.equal(o.item,'c2.example');assert.equal(o.scope,'ped');assert.equal(o.initialPage,'common/aiwise-c2-final.html?course=ped&lang=nl');assert.equal(o.review.fingerprint,'copy');
+ await c.api.render(c.shell,id);assert.equal(c.opened()[2].item,'c2.example');
+ await c.api.render(c.shell,'current?page=common%2Flobby.html%3Fcourse%3Daws1&memo=specific');assert.equal(c.opened()[2].memo,'specific');assert.equal(c.opened()[2].initialPage,'common/lobby.html?course=aws1');assert.equal(c.opened()[2].item,null);
+});

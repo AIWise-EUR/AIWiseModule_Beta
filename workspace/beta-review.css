@@ -79,3 +79,22 @@
 
 .br-panel>[data-history] { margin-top:24px; padding-top:20px; border-top:1px solid var(--line); }
 .br-panel .br-history { margin-bottom:0; padding-bottom:0; border-bottom:0; }
+
+/* Keep the review queue next to the content instead of on the version chooser. */
+.beta-preview-checklist { margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--line); }
+.beta-preview-checklist .beta-changes { margin:0; padding:0; background:transparent; border:0; }
+.beta-preview-checklist .beta-changes-head { gap:8px; align-items:center; }
+.beta-preview-checklist h2 { font-size:17px; margin:0; }
+.beta-preview-checklist [data-check-baseline] { font-size:12px; line-height:1.5; color:var(--ink-3); }
+.beta-preview-checklist [data-check-next] { margin-top:12px; width:100%; }
+.beta-preview-checklist .beta-change-tools { display:grid; grid-template-columns:1fr; gap:10px; }
+.beta-preview-checklist .beta-change-tools label,.beta-preview-checklist .beta-change-tools input { width:100%; min-width:0; box-sizing:border-box; }
+.beta-preview-checklist .beta-change-row summary { display:flex; flex-wrap:wrap; gap:8px; }
+.beta-preview-checklist .beta-change-row summary strong { flex-basis:100%; font-size:13px; }
+.beta-preview-checklist .beta-change-row pre { max-height:150px; overflow:auto; font-size:12px; }
+.beta-preview-checklist .beta-change-row .toolbar { flex-wrap:wrap; gap:8px; }
+.beta-preview-checklist [data-check-list] { max-height:360px; overflow:auto; }
+.beta-preview-checklist .button { font-size:12px; padding:8px 10px; }
+
+.beta-check-options { font-size:12px; margin:12px 0; }.beta-check-options>summary { cursor:pointer; color:var(--ink-3); padding:4px 0; }
+.beta-preview-checklist .beta-change-row>.toolbar { margin:12px 0; }
