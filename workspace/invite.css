@@ -1,0 +1,11 @@
+body { margin:0; min-height:100dvh; display:grid; place-items:center; padding:32px 20px; box-sizing:border-box; background:var(--paper); color:var(--ink); font-family:var(--font-body); }
+.invite-entry { width:min(100%,540px); box-sizing:border-box; padding:40px; background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--sh); }
+.invite-logo { display:block; width:180px; max-width:90%; margin:0 auto 24px; }
+.invite-eyebrow { font-size:13px; color:var(--ink-3); text-align:center; }
+.invite-entry h1 { font-family:var(--font-heading); font-size:28px; text-align:center; }
+.invite-entry h2 { font-size:18px; overflow-wrap:anywhere; }
+.invite-entry p { line-height:1.7; overflow-wrap:anywhere; }.invite-note { color:var(--ink-3); font-size:13px; }
+.invite-entry .aw-account-trigger { width:100%; justify-content:center; padding:12px; border:1px solid var(--line); border-radius:var(--r); background:transparent; color:var(--ink); cursor:pointer; margin-top:16px; }
+.invite-entry .aw-account-caption { display:none; }.invite-entry .aw-account-button { width:100%; box-sizing:border-box; text-align:center; text-decoration:none; }
+.invite-entry [role=alert] { color:var(--danger); }
+@media(max-width:600px){body{padding:16px}.invite-entry{padding:28px 24px}}
