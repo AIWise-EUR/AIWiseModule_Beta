@@ -2,17 +2,18 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const {parseHTML}=require(process.env.LINKEDOM_MODULE||'linkedom');
 const code=fs.readFileSync(path.join(__dirname,'../control-tower.js'),'utf8');
 const id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
-function fixture({shared=false,status='pending',route='studio',chapter='c2',locale='en',withSnapshot=true,failure=false}={}){
+function fixture({shared=false,status='pending',route='studio',chapter='c2',locale='en',withSnapshot=true,failure=false,attention}={}){
  const {document,window:dom}=parseHTML('<html><body><main id="room"></main></body></html>');
  const copy={schema:1,course:route==='common'?'common':'ped',chapter,locale,savedAt:'2026-10-01T00:00:00Z',slots:{[chapter+'.examples']:[{title:'New'}]},baseSlots:{[chapter+'.examples']:[{title:'Old'}]}};
  const r={id,shared,route,type:'submission',status,rev:1,title:'Course update',author:{name:'Author'},events:[],seenBy:{reviewer:'2026-10-01'},createdAt:'2026-10-01',submittedAt:'2026-10-01',...(withSnapshot?{contentSnapshot:copy}:{}),...(status==='approved'?{decision:{by:'Reviewer',reason:'Checked'}}:{})};
  const original={schema:1,requests:shared?[]:[r]};const store=new Map([['aiwise_control_tower_v1',JSON.stringify(original)]]);const calls=[];
  const state={rows:shared?[r]:[],role:'admin',loaded:true};
  const window={AIWiseAuth:{snapshot:()=>({status:'member',role:'admin',user:{displayName:'Reviewer'}}),subscribe:()=>{}},AIWiseSharedStudio:{snapshot:()=>state,refresh:async()=>state,decide:async(...args)=>{calls.push(args);if(failure)throw Error('Approval failed');r.status=args[2];r.rev++;r.decision={by:'Reviewer',reason:args[3]};}},addEventListener:()=>{}};
+ if(attention!==undefined)window.AIWiseGitHubPublishing={mount:(host,id,options)=>{host.textContent='Beta sync fixture';window.reportSync=options.onStatus;options.onStatus({attention});return ()=>{};}};
  const location={hash:'#tower/request/'+id};
  vm.runInNewContext(code,{window,document,location,URL,URLSearchParams,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},setTimeout,confirm:()=>true});
  const shell=(_route,title,help,body)=>{document.getElementById('room').innerHTML='<h1 id="room-title">'+title+'</h1>'+body;};
- return {r,document,dom,calls,store,original,api:window.AIWiseControlTower,render:()=>window.AIWiseControlTower.render('request/'+id,shell)};
+ return {r,document,dom,calls,store,original,reportSync:a=>window.reportSync({attention:a}),api:window.AIWiseControlTower,render:()=>window.AIWiseControlTower.render('request/'+id,shell)};
 }
 test('legacy pending and approved Studio requests keep all content and decisions but cannot approve locally',async()=>{
  for(const status of ['pending','approved']){const f=fixture({status});await f.render();assert.equal(f.document.querySelector('#ct-decision-form'),null);assert.match(f.document.querySelector('.ct-detail-grid').textContent,/Resubmit as a team request/);assert.match(f.document.querySelector('.ct-submitted-content').textContent,/New/);assert.ok(f.document.querySelector('a[href="?lang=en#studio/ped/c2"]'));assert.deepEqual(JSON.parse(f.store.get('aiwise_control_tower_v1')),f.original);assert.equal(f.calls.length,0);}
@@ -48,3 +49,6 @@ test('JSON object ordering does not create changes, while added array items rema
  const f=fixture({shared:true});const s=f.r.contentSnapshot;s.baseSlots={'c2.examples':[{title:'One',body:'Text'}]};s.slots={'c2.examples':[{body:'Text',title:'One'}]};await f.render();assert.match(f.document.querySelector('.ct-content-changes').textContent,/No content changes/);
  s.slots['c2.examples'].push({title:'Two',body:'New item'});await f.render();const main=f.document.querySelector('.ct-content-changes');assert.equal(main.querySelectorAll('.ct-change-pair').length,1);assert.match(main.textContent,/Item 2/);assert.match(main.textContent,/New item/);assert.doesNotMatch(main.textContent,/One/);
 });
+
+test('approved request combines next action and student-site explanation; normal processing details stay collapsed',async()=>{const f=fixture({shared:true,status:'approved',attention:false});await f.render();const aside=f.document.querySelector('.ct-detail-grid>aside');assert.equal(aside.querySelectorAll(':scope>section').length,1);assert.match(aside.textContent,/Next: review in Beta/);assert.match(aside.textContent,/this approval does not publish to students/);assert.equal(aside.querySelector('[data-processing]').hasAttribute('open'),false);assert.equal(aside.querySelector('[data-processing-alert]').hidden,true);});
+test('processing errors open the details once; polling respects a manual collapse and recovery clears the warning',async()=>{const f=fixture({shared:true,status:'approved',attention:true});await f.render();const details=f.document.querySelector('[data-processing]');assert.equal(details.open,true);assert.equal(f.document.querySelector('[data-processing-alert]').hidden,false);details.open=false;f.reportSync(true);assert.equal(details.open,false);f.reportSync(false);assert.equal(f.document.querySelector('[data-processing-alert]').hidden,true);f.reportSync(true);assert.equal(details.open,true);});
