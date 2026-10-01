@@ -100,3 +100,11 @@
 .ct-snapshot-fields dd { margin:4px 0 14px; }
 .ct-snapshot-list { padding-left:22px; }
 .ct-snapshot-list > li { margin:12px 0; }
+/* Saved-version releases share the existing Workspace controls and spacing. */
+.published-release { max-width:880px; }
+.published-release .ct-detail-section { padding:20px 0 24px; }
+.published-release .ct-detail-section h3 { font:600 18px/1.4 var(--font-body); text-transform:none; letter-spacing:0; color:var(--ink); }
+.published-release .ct-detail-section p { margin:10px 0 16px; }
+.published-release .ct-field { margin-top:20px; }
+.published-release details { margin-top:18px; font-size:13px; color:var(--ink-2); }
+.published-release summary { cursor:pointer; }
