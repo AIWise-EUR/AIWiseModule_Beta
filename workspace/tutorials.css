@@ -1,0 +1,31 @@
+.aw-guide-trigger { display:inline-flex; align-items:center; justify-content:center; width:36px; min-width:36px; height:36px; padding:0; margin-left:auto; border:1px solid var(--line); border-radius:50%; color:var(--signal); background:var(--card); font:600 17px/1 var(--font-heading); cursor:pointer; flex-shrink:0; }
+.aw-guide-trigger:hover { background:var(--paper-2); border-color:var(--signal); }
+.room-heading>.aw-guide-trigger { order:10; }
+.br-top>.aw-guide-trigger,.mp-header>.aw-guide-trigger,.aw-account-header>.aw-guide-trigger { margin-left:0; }
+.br-top>div:first-child,.mp-header>div:first-child,.aw-account-header>div:first-child { margin-right:auto; }
+.workspace-access { position:relative; }.workspace-access>.aw-guide-trigger { position:absolute; top:16px; right:16px; }
+.home-heading>.aw-guide-trigger { align-self:flex-start; margin-left:0; }
+.help-toggle { width:auto; min-width:36px; padding:4px 9px; font:500 11px/1.4 var(--font-body); border-radius:5px; }
+.aw-guide { width:min(580px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); padding:0; margin:auto; border:1px solid var(--line); border-radius:14px; background:var(--paper); color:var(--ink-2); box-shadow:0 18px 70px #15121d35; overflow:auto; font:14px/1.6 var(--font-body); }
+.aw-guide::backdrop { background:#15121d65; }
+.aw-guide-header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:20px 24px; border-bottom:1px solid var(--line-2); }
+.aw-guide-label { font:500 11px/1.5 var(--font-mono); color:var(--ink-3); }
+.aw-guide-close { width:36px; height:36px; border:1px solid var(--line); border-radius:6px; color:var(--ink-2); background:var(--card); font-size:22px; cursor:pointer; }
+.aw-guide-content { padding:28px 32px 14px; min-height:305px; touch-action:pan-y; }
+.aw-guide-count { margin:0 0 16px; font-size:12px; color:var(--signal); font-weight:600; }
+.aw-guide h2 { font:600 26px/1.25 var(--font-heading); letter-spacing:-.025em; color:var(--ink); margin:0 0 14px; }
+#aw-guide-description { margin:0 0 20px; color:var(--ink-2); }
+.aw-guide-steps { counter-reset:guide-step; padding:0; margin:0; list-style:none; display:grid; gap:12px; }
+.aw-guide-steps li { display:flex; gap:11px; align-items:flex-start; }
+.aw-guide-steps li::before { counter-increment:guide-step; content:counter(guide-step); flex:none; width:22px; height:22px; margin-top:1px; border-radius:50%; background:var(--paper-2); color:var(--signal); font-size:11px; font-weight:600; text-align:center; line-height:22px; }
+.aw-guide-dots { display:flex; justify-content:center; gap:4px; padding:10px 20px; }
+.aw-guide-dots button { width:28px; height:28px; padding:9px; border:0; background:none; cursor:pointer; }
+.aw-guide-dots button::after { content:''; display:block; width:8px; height:8px; border-radius:50%; background:var(--line); }
+.aw-guide-dots button[aria-current]::after { background:var(--signal); }
+.aw-guide-footer { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 24px; border-top:1px solid var(--line-2); }
+.aw-guide-footer>div { display:flex; gap:8px; }.aw-guide-footer .button { min-height:44px; padding:10px 16px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); font:500 13px/1.5 var(--font-body); cursor:pointer; }
+.aw-guide-footer .primary { background:var(--ink); color:var(--card); border-color:var(--ink); }.aw-guide-footer button:disabled { opacity:.45; cursor:default; }
+.aw-guide-skip { border:0; background:none; color:var(--ink-3); font:500 12px/1.5 var(--font-body); cursor:pointer; padding:10px 0; }
+.aw-guide-return { font-size:11px; text-align:center; color:var(--ink-3); margin:0; padding:0 24px 18px; }
+@media(max-width:600px) { .aw-guide-content { padding:24px 22px 12px; min-height:330px; }.aw-guide-header,.aw-guide-footer { padding:14px 18px; }.aw-guide h2 { font-size:23px; }.aw-guide-footer .button { padding:10px 13px; }.br-top { flex-wrap:wrap; }.br-top>div:first-child { flex:1 1 60%; } }
+.aw-guide-return button { border:0; padding:4px; background:none; color:var(--signal); font:inherit; text-decoration:underline; cursor:pointer; }
