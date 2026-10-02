@@ -16,7 +16,7 @@ test('rolling preview loads the exact server-selected legacy baseline and leaves
  const previous={...version('Same heading'),id:'legacy',number:1,published_at:null};const calls=[];
  const q={select:()=>q,eq:(key,value)=>{calls.push([key,value]);return q;},limit:()=>q,abortSignal:async()=>({data:[previous]})};
  const w={AIWiseAuth:{snapshot:()=>({status:'member',user:{id:'owner'}})},AIWiseBackend:{getClient:async()=>({from:()=>q})},AIWiseBetaAnchors:{path:()=> 'body>main>h2'}};
- vm.runInNewContext(source,{window:w,AbortController,setTimeout,clearTimeout});
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../preview-sections.js'),'utf8'),{window:w,URL});vm.runInNewContext(source,{window:w,AbortController,setTimeout,clearTimeout});
  const result=w.AIWiseBetaHistory.attach({host:document.querySelector('#host'),doc:document,version:null,draft:{current_content:previous.content,previous_id:'legacy',previous_number:1},course:'aws1',locale:'en',canSelect:()=>true});
  await new Promise(resolve=>setTimeout(resolve,0));assert.deepEqual(calls,[['id','legacy']]);
  assert.match(document.querySelector('[data-comparison]').textContent,/0 changed items since V1 \(review snapshot\)/);assert.equal(document.querySelectorAll('[data-review-changed]').length,0);result.dispose();
@@ -29,7 +29,7 @@ test('historical feedback matches exact block or descendants, never similarly na
 test('current Beta explains comparison scope without querying saved content',()=>{
  const {document}=parseHTML('<html><head></head><body><div id="host"></div></body></html>');
  const w={AIWiseAuth:{snapshot:()=>({status:'member',user:{id:'owner'}})},AIWiseBackend:{getClient:()=>{throw Error('unexpected request')}}};
- vm.runInNewContext(source,{window:w,AbortController,setTimeout,clearTimeout});
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../preview-sections.js'),'utf8'),{window:w,URL});vm.runInNewContext(source,{window:w,AbortController,setTimeout,clearTimeout});
  const result=w.AIWiseBetaHistory.attach({host:document.querySelector('#host'),doc:document,version:null,canSelect:()=>true});
  assert.match(document.querySelector('[data-comparison]').textContent,/Reopen Beta/);result.dispose();assert.equal(document.querySelector('[data-history-item]'),null);
 });
@@ -39,7 +39,7 @@ test('saved history excludes head-only text, loads previous snapshots and clears
  let auth={status:'member',user:{id:'owner'}};
  const q={select:()=>q,eq:()=>q,lt:()=>q,order:()=>q,limit:()=>q,abortSignal:async()=>({data:[previous]})};
  const w={AIWiseAuth:{snapshot:()=>auth},AIWiseBackend:{getClient:async()=>({from:()=>q,rpc:()=>({abortSignal:async()=>({data:{previous_id:previous.id}})})})},AIWiseBetaAnchors:{path:()=> 'body>main:nth-of-type(1)>h2:nth-of-type(1)'}};
- vm.runInNewContext(source,{window:w,AbortController,setTimeout,clearTimeout});
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../preview-sections.js'),'utf8'),{window:w,URL});vm.runInNewContext(source,{window:w,AbortController,setTimeout,clearTimeout});
  const result=w.AIWiseBetaHistory.attach({host:document.querySelector('#host'),doc:document,version:current,course:'aws1',locale:'en',canSelect:()=>true});
  document.querySelector('[data-mark-changes]').checked=true;
  await new Promise(resolve=>setTimeout(resolve,0));

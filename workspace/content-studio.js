@@ -171,6 +171,7 @@
     const empty = document.createElement('p'); empty.className = 'cs-picker-empty'; empty.textContent = 'No matching items'; empty.hidden = true; empty.setAttribute('role', 'status');
     search.addEventListener('input', () => {
       const query = search.value.trim().toLocaleLowerCase(); let matches = 0;
+      menu.querySelectorAll('.cs-picker-section').forEach(section=>{const buttons=[...section.querySelectorAll('button')];section.hidden=!!query&&!buttons.some(b=>b.textContent.toLocaleLowerCase().includes(query));section.open=!!query||section.contains(menu.querySelector('[aria-pressed="true"]'));});
       menu.querySelectorAll('[role="group"]').forEach(group => {
         let count = 0;
         group.querySelectorAll('button').forEach(button => { button.hidden = !button.textContent.toLocaleLowerCase().includes(query); if (!button.hidden) count++; });
@@ -185,7 +186,11 @@
       heading.id = 'cs-group-' + chapter;
       heading.textContent = s.isCommon ? (chapter==='map'?'':chapter.toUpperCase() + ' · ') + common().names[chapter] : chapter === 'c2' ? 'C2 · GenAI and human cognition' : 'C3 · How to engage with GenAI';
       group.appendChild(heading);
+      const sections=new Map();
       s.catalog[chapter].forEach((item, i) => {
+        const sectionName=item.section||(item.example!==undefined?'Worked examples':item.path.includes('sat_')?'Self–AI–Team':item.path.includes('template')?'Prompt templates':item.path.includes('full_example')?'Full worked example':'Techniques & practice');
+        if(!sections.has(sectionName)){const section=document.createElement('details');section.className='cs-picker-section';const summary=document.createElement('summary');summary.textContent=sectionName;section.append(summary);sections.set(sectionName,section);group.append(section);}
+        const section=sections.get(sectionName);if(chapter===s.chapter&&i===s.index)section.open=true;
         const button = document.createElement('button'); button.type = 'button';
         button.dataset.csChapter = chapter; button.dataset.csItem = String(i);
         if (chapter === s.chapter) button.dataset.csChoice = String(i);
@@ -197,7 +202,7 @@
           if (chapter === s.chapter) { selectItem(s, i, true); closePicker(s, true); }
           else { closePicker(s, true); location.hash = s.isCommon ? `#common/${chapter}/${i}` : `#studio/${s.courseId}/${chapter}/${i}`; }
         });
-        group.appendChild(button);
+        section.appendChild(button);
       });
       menu.appendChild(group);
     }
@@ -219,8 +224,8 @@
         target.classList.add('cs-editable'); target.tabIndex = 0;
         target.setAttribute('role', 'button'); target.setAttribute('aria-label', 'Edit ' + itemTitle(s, item));
         // Title and body open the same editor. Prevent a title click from also collapsing its details element.
-        target.onclick = event => { event.preventDefault(); openEditor(s, i); };
-        target.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openEditor(s, i); } };
+        target.onclick = event => { if(event.target!==target&&event.target.closest('a,button,input,select,textarea,summary'))return;event.preventDefault(); openEditor(s, i); };
+        target.onkeydown = event => { if (event.target===target&&(event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openEditor(s, i); } };
       });
     });
     refreshPicker(s); s.frame.contentWindow.scrollTo(0, y);
@@ -443,8 +448,14 @@
         const link = event.target.closest('a'); if (!link) return; event.preventDefault();
         const href = link.getAttribute('href') || '';
         if (href.startsWith('#')) scrollPreview(s, href.slice(1), true);
-        else message(s, 'Choose an item from another chapter in the item menu, or use Open in Beta to browse the module.');
+        else {const next=window.AIWisePreviewSections.destination(href,doc.baseURI,{course:s.isCommon?'aws1':s.courseId,locale:s.locale,root:new URL('../',location.href)});if(!next){message(s,'This link opens outside the module. Use Open in Beta to follow external resources.');return;}
+          const chapter=/aiwise-(c[123])-final\.html$/.exec(next.pathname)?.[1]||(next.pathname.endsWith('aiwise-c1-anatomy-2d.html')?'map':null);
+          if(chapter===s.chapter){if(next.hash)scrollPreview(s,decodeURIComponent(next.hash.slice(1)),true);return;}
+          if(chapter&&(s.isCommon||['c2','c3'].includes(chapter)))location.hash=s.isCommon?'#common/'+chapter:'#studio/'+s.courseId+'/'+chapter;
+          else location.hash='#beta/current?page='+encodeURIComponent(next.pathname.split('/').slice(-2).join('/')+next.search+next.hash);
+        }
       });
+      doc.querySelectorAll('[data-copy-template]').forEach(button=>button.addEventListener('click',async()=>{const block=button.closest('[data-copyable]')?.cloneNode(true);if(!block)return;block.querySelectorAll('[data-copy-template],.cs-edit-label').forEach(n=>n.remove());try{await navigator.clipboard.writeText(block.textContent.trim());message(s,'Prompt template copied.');}catch{message(s,'Select the template text and copy it with your keyboard.');}}));
       doc.addEventListener('submit', event => event.preventDefault());
       updatePreview(s); s.ready = true;
       s.host.querySelectorAll('[data-cs-ready]').forEach(node => node.disabled = false);
@@ -646,9 +657,9 @@
       trigger.addEventListener('click', () => trigger.getAttribute('aria-expanded') === 'true' ? closePicker(s) : openPicker());
       trigger.addEventListener('keydown', e => { if (['ArrowDown','ArrowUp'].includes(e.key)) { e.preventDefault(); openPicker(); } });
       menu.addEventListener('keydown', e => {
-        const buttons = [...menu.querySelectorAll('button')].filter(b => !b.hidden && !b.closest('[role="group"]').hidden), index = buttons.indexOf(document.activeElement), count = buttons.length;
+        const buttons = [...menu.querySelectorAll('summary,button')].filter(b => !b.hidden && !b.closest('[role="group"]').hidden && !b.closest('details[hidden]') && (b.tagName==='SUMMARY'||!b.closest('details:not([open])'))), index = buttons.indexOf(document.activeElement), count = buttons.length;
         if (!count || e.target.tagName === 'INPUT' && ['Home','End'].includes(e.key)) return;
-        if (e.target.tagName === 'INPUT' && e.key === 'Enter') { e.preventDefault(); buttons[0].click(); return; }
+        if (e.target.tagName === 'INPUT' && e.key === 'Enter') { e.preventDefault(); const match=buttons.find(b=>b.tagName==='BUTTON');(match||buttons[0]).click(); return; }
         const next = {ArrowDown: (index + 1) % count, ArrowUp: index < 0 ? count - 1 : (index + count - 1) % count, Home: 0, End: count - 1}[e.key];
         if (next !== undefined) { e.preventDefault(); buttons[next].focus(); }
       });

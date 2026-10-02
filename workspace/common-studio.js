@@ -28,7 +28,7 @@
           if (event.target.closest('a,button,summary,[role="button"],[data-slot],.carousel-container')) return;
           event.stopPropagation(); openEditor(s, index);
         });
-        node.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openEditor(s,index); } });
+        node.addEventListener('keydown', event => { if (event.target===node&&(event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openEditor(s,index); } });
       });
     }
     s.commonBlocks.forEach(block => {
