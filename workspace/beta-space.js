@@ -16,7 +16,11 @@
  }
  const date=value=>new Date(value).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
  const inbox=()=>window.AIWiseReviewInbox;
- function badges(info,id){const base='#beta/'+(id||'current');return `<div class="beta-version-stats"><a href="${base}"><span aria-hidden="true">↻</span> ${info.changes} ${info.changes===1?'update':'updates'} <small>${info.unreadChanges} unread</small></a><a href="${base}?tab=feedback"><span aria-hidden="true">▤</span> ${info.memoCount} feedback ${info.memoCount===1?'memo':'memos'} <small>${info.unreadMemos} unread</small></a></div>`;}
+ function badges(info,id){
+  const base='#beta/'+(id||'current');
+  const stat=(href,icon,total,label,unread)=>`<a class="beta-version-stat" href="${href}"><span class="beta-stat-total"><span aria-hidden="true">${icon}</span><strong>${total}</strong><span>${label}</span></span>${unread?`<small class="beta-unread">${unread} unread</small>`:''}</a>`;
+  return stat(base,'↻',info.changes,info.changes===1?'update':'updates',info.unreadChanges)+stat(base+'?tab=feedback','▤',info.memoCount,info.memoCount===1?'memo':'memos',info.unreadMemos);
+ }
  async function load(s){
   if(s.loading||!active(s))return;s.loading=true;const epoch=s.epoch=(s.epoch||0)+1;s.message.textContent='Updating your counts…';
   try{
@@ -24,10 +28,10 @@
    const visible=versions.slice(0,s.limit);
    const summaries=await Promise.all([null,...visible.map(v=>v.id)].map(async id=>{const data=id&&s.contexts?.get(id)||await window.AIWiseBetaChecklist.request('workspace_beta_review_context',{p_version:id});if(id){s.contexts ||=new Map();s.contexts.set(id,data);}return {data,info:await inbox().summary(id,data)};}));
    if(!active(s)||s.epoch!==epoch)return;
-   const current=summaries[0];s.message.textContent='Counts update automatically every 15 seconds. Unread is personal to your account.';
+   const current=summaries[0];s.message.textContent='Unread is personal to you. Counts refresh automatically.';
    s.root.querySelector('[data-current-summary]').innerHTML=badges(current.info,null);
-   s.root.querySelector('[data-current-baseline]').textContent=current.data.previous_number?`Updates since V${current.data.previous_number}${current.data.previous_kind==='snapshot'?' · earlier snapshot':''}`:'No earlier comparison version';
-   s.root.querySelector('[data-version-list]').innerHTML=visible.map((v,i)=>`<article class="beta-version-row"><div><h3>V${v.number} <span>· ${esc(v.created_at?.slice(0,10))}</span></h3><small>${v.published_at?'Published version':'Earlier review snapshot'}</small>${badges(summaries[i+1].info,v.id)}</div><a class="button" href="#beta/${v.id}">Open →</a></article>`).join('')||'<p>No earlier versions yet.</p>';
+   s.root.querySelector('[data-current-baseline]').textContent=current.data.previous_number?`Since V${current.data.previous_number}${current.data.previous_kind==='snapshot'?' · earlier snapshot':''}`:'No earlier comparison version';
+   s.root.querySelector('[data-version-list]').innerHTML=visible.map((v,i)=>`<article class="beta-version-row"><div class="beta-version-meta"><h3>V${v.number} <span>· ${esc(v.created_at?.slice(0,10))}</span></h3><small>${v.published_at?'Published':'Earlier snapshot'}</small></div><div class="beta-version-stats">${badges(summaries[i+1].info,v.id)}</div><a class="button beta-version-open" href="#beta/${v.id}" aria-label="Open V${v.number}">Open →</a></article>`).join('')||'<p>No earlier versions yet.</p>';
    s.root.querySelector('[data-version-more]').hidden=versions.length<=s.limit;
    s.root.querySelector('[data-open]').disabled=false;
   }catch(e){if(active(s)){s.message.textContent=e.message;s.root.querySelector('[data-open]').disabled=false;}}
@@ -49,7 +53,7 @@
     window.AIWiseBetaReview.open('',()=>{location.hash='#beta';},{container,version,draft,review,initialPage:start.get('page'),memo:params.get('memo'),item:start.get('item'),scope:start.get('scope'),tab:params.get('tab')});
    }catch(e){if(active(s)){const status=container.querySelector('[data-preview-status]')||container.appendChild(document.createElement('p'));status.textContent=e.message;const a=document.createElement('a');a.href='#beta';a.className='button';a.textContent='Back to review versions';container.append(a);}}return;
   }
-  shell(null,'AI-Wise Beta','',`<p class="room-lead">Choose a version to check its updates and leave feedback.</p><div class="beta-space beta-home-simple"><section class="beta-current"><div><span class="beta-eyebrow">UNPUBLISHED</span><h2>Next publication</h2><p>Approved Studio changes collect here until they are published.</p><div data-current-summary></div><small data-current-baseline></small></div><div class="beta-current-actions"><button type="button" class="button primary" data-open>Open →</button><button type="button" class="beta-text-action" data-refresh>Refresh counts</button></div></section><p role="status" data-space-message></p><section class="beta-version-archive"><h2>Saved versions</h2><div data-version-list></div><button class="button" type="button" data-version-more hidden>Load more versions</button></section></div>`,false);
+  shell(null,'AI-Wise Beta','',`<p class="room-lead">Choose a version. Approved changes collect in Next publication until published.</p><div class="beta-space beta-home-simple"><div class="beta-list-heading"><h2>Versions</h2><button type="button" class="button" data-refresh>↻ Refresh</button></div><div class="beta-version-columns" aria-hidden="true"><span>Version</span><span>Updates</span><span>Feedback</span><span></span></div><section class="beta-version-row beta-version-current" aria-label="Next publication"><div class="beta-version-meta"><h3>Next publication</h3><small><span class="beta-version-status">Unpublished</span><span data-current-baseline></span></small></div><div class="beta-version-stats" data-current-summary><span class="beta-stat-loading">Loading…</span><span></span></div><button type="button" class="button primary beta-version-open" data-open>Open →</button></section><div data-version-list></div><button class="button beta-version-more" type="button" data-version-more hidden>Load more versions</button><p role="status" data-space-message></p></div>`,false);
   document.getElementById('room-title')?.focus();s.root=document.querySelector('.beta-space');s.message=s.root.querySelector('[data-space-message]');
   s.root.querySelector('[data-open]').onclick=()=>{location.hash='#beta/current';};
   s.root.querySelector('[data-refresh]').onclick=()=>load(s);
