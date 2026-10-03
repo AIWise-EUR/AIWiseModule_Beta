@@ -1,0 +1,220 @@
+{
+  "schema": 1,
+  "sequence": 1,
+  "course": "common",
+  "chapter": "c1",
+  "locale": "en",
+  "submission_id": "453c3273-6707-41ce-9fa6-d1515ca05908",
+  "source_release": null,
+  "approved_at": "2026-10-01T07:30:10.908177+00:00",
+  "slots": {
+    "c1.block-0": {
+      "Heading 1": "What is Generative AI?"
+    },
+    "c1.block-1": {
+      "Text 1": "\n        The word \"GenAI\" is everywhere. But familiarity with a term is not the same as understanding what the thing actually is. This block builds that understanding : from where it came from, to what it is made of.\n      "
+    },
+    "c1.block-2": {
+      "Heading 1": "What is AI? What is GenAI?"
+    },
+    "c1.block-3": {
+      "Text 1": "\n        You have heard the term many times. But what exactly is GenAI, and how did it emerge?\n      ",
+      "Text 2": "\n        Artificial intelligence has been developing for more than sixty years. The timeline below traces that broader history. Early systems such as ELIZA in the 1960s relied entirely on rules. They matched patterns in user input and returned prewritten responses. They did not learn from data, and they did not generate new content. Later systems such as Siri, Google Now, and Alexa could retrieve information and respond to voice input, but they still mainly depended on recognition, classification, and retrieval.\n      ",
+      "Text 3": "\n        GenAI marks a different point in that history. Systems such as ChatGPT do not simply return stored answers. They generate responses by producing new text based on statistical patterns learned from large amounts of human written language. This is a different mechanism from the one used in earlier systems.\n      ",
+      "Text 4": "\n        It is also useful to be precise about the terms. AI is the broadest category and includes many different kinds of systems, such as recommendation engines, fraud detection tools, image classifiers, and medical decision support systems. GenAI is a more specific category within AI. It refers to systems that generate new content rather than simply classifying, ranking, or retrieving information. Large language models, or LLMs, are a further subset within GenAI. They are models designed to generate language based on patterns learned from large amounts of text. Systems such as ChatGPT or Claude are best understood in this way: they are GenAI systems built on LLMs.\n      "
+    },
+    "c1.block-4": {
+      "Text 1": " The developmental stream from rule-based conversational systems to Generative AI (adapted from Yenduri et al., 2024, Figure 2). The qualitative shift occurs at ChatGPT (2022): for the first time, the system generates new text rather than retrieving or matching pre-written responses. ",
+      "Text 2": "Source: Yenduri, G. et al. (2024). GPT — A Comprehensive Review on Enabling Technologies, Potential Applications, Emerging Challenges, and Future Directions. IEEE Access, 12, 54608–54649. DOI: 10.1109/ACCESS.2024.3389497",
+      "Emphasis 1": "Figure 1.",
+      "Diagram label 1": "ELIZA",
+      "Diagram label 2": "1960",
+      "Diagram label 3": "Pattern",
+      "Diagram label 4": "matching",
+      "Diagram label 5": "PARRY",
+      "Diagram label 6": "1970",
+      "Diagram label 7": "Psychological",
+      "Diagram label 8": "concepts",
+      "Diagram label 9": "ALICE",
+      "Diagram label 10": "1995",
+      "Diagram label 11": "Language",
+      "Diagram label 12": "analysis",
+      "Diagram label 13": "Siri",
+      "Diagram label 14": "2010",
+      "Diagram label 15": "Personal",
+      "Diagram label 16": "assistant",
+      "Diagram label 17": "Google Now",
+      "Diagram label 18": "2012",
+      "Diagram label 19": "Answers &",
+      "Diagram label 20": "actions",
+      "Diagram label 21": "Alexa",
+      "Diagram label 22": "2014",
+      "Diagram label 23": "Intelligent",
+      "Diagram label 24": "assistant",
+      "Diagram label 25": "ChatGPT",
+      "Diagram label 26": "2022",
+      "Diagram label 27": "Generates",
+      "Diagram label 28": "human-like text",
+      "Diagram label 29": "Retrieval and rule-based systems",
+      "Diagram label 30": "Generative AI"
+    },
+    "c1.block-5": {
+      "Heading 1": "What is GenAI made of?"
+    },
+    "c1.block-6": {
+      "Text 1": "\n        When a response sounds fluent or well targeted, it is easy to start anthropomorphizing the system, that is, treating it as if it were a mind or an entity that understands in the human sense. This reaction is natural, but this diagram is meant to interrupt that intuition. Its purpose is not to make you memorize every component one by one. Rather, it is to help you see GenAI more clearly as a system made up of physical and informational parts that work together to produce each response. Clearing away that fog is an important first step toward understanding GenAI and using it more appropriately.\n      "
+    },
+    "c1.block-7": {
+      "Heading 1": "What GenAI is good at — and where it structurally falls short"
+    },
+    "c1.block-8": {
+      "Text 1": "\n        Knowing how GenAI works makes its strengths and limitations predictable rather than surprising. Each limitation below is not a design flaw — it follows directly from the mechanism described in Section 2.\n      "
+    },
+    "c1.block-9": {
+      "Text 1": "\n          Strengths\n        "
+    },
+    "c1.extra-0": {
+      "alt 1": "Erasmus University Rotterdam",
+      "Text 1": "AI-Wise",
+      "Text 2": "Core Blocks",
+      "Text 3": " › C1 · What is GenAI?\n  "
+    },
+    "c1.extra-1": {
+      "Text 1": "Core Blocks Navigation"
+    },
+    "c1.extra-2": {
+      "Text 1": "C1 · Core Block"
+    },
+    "c1.extra-3": {
+      "Text 1": "Section 1"
+    },
+    "c1.extra-4": {
+      "Text 1": "Section 2"
+    },
+    "c1.extra-5": {
+      "Text 1": "Section 3"
+    },
+    "c1.extra-6": {
+      "Text 1": "↑"
+    },
+    "c1.extra-7": {
+      "Text 1": "↓"
+    },
+    "c1.extra-8": {
+      "Text 1": "Core Blocks",
+      "Text 2": "← Back to Home"
+    },
+    "c1.extra-9": {
+      "Text 1": "← Back to Home"
+    },
+    "c1.block-10": {
+      "Text 1": "Brainstorming and idea generation",
+      "Text 2": "GenAI samples broadly across its training distribution, which makes it effective at producing a wide range of starting points quickly. When you are unsure where to begin a research question or essay argument, it can surface angles you had not considered. Use it to generate options, not to select among them."
+    },
+    "c1.block-11": {
+      "Text 1": "Structuring and outlining",
+      "Text 2": "Because GenAI has processed enormous quantities of academic writing, it has strong pattern-matching over conventional structures — argument flow, section sequencing, paragraph organisation. It can draft a plausible skeleton for a literature review or discussion section. Treat the output as a scaffold to critique and rebuild, not a final form."
+    },
+    "c1.block-12": {
+      "Text 1": "Paraphrasing and reformulating",
+      "Text 2": "Restating a concept in different words or at a different level of complexity is a core strength. If you understand something but cannot articulate it clearly, GenAI can help you find the phrasing. This is most useful after you have already worked through the source material yourself."
+    },
+    "c1.block-13": {
+      "Text 1": "Summarising large volumes of text",
+      "Text 2": "GenAI can compress a long document into key points quickly. For an initial orientation to an unfamiliar topic or body of literature, this can save time. The risk is that compression always involves selection — you cannot verify what was left out without reading the original."
+    },
+    "c1.block-14": {
+      "Text 1": "\n          Limitations\n        "
+    },
+    "c1.block-15": {
+      "Text 1": "Sourcing and citation",
+      "Text 2": "Hallucination is not a bug — it is a structural consequence of the generation mechanism. The model produces the most statistically plausible next token, and a plausible-sounding citation is often more likely than an admission of uncertainty. References produced by GenAI must be verified against actual databases before use. Never cite a source you have not read.",
+      "Text 3": "Why: logits/softmax assigns high probability to fluent, confident-sounding output — including fictional references (Shanahan, 2024; Huang et al., 2025)"
+    },
+    "c1.block-16": {
+      "Text 1": "Critical analysis and original argumentation",
+      "Text 2": "GenAI has no genuine position on anything. What appears to be an argument is a statistically likely sequence of tokens associated with argument-shaped text. For tasks requiring you to evaluate evidence, take a stance, or construct an original claim, GenAI output is a starting point for thinking — not a substitute for it.",
+      "Text 3": "Why: output is sampled from a distribution over training text — there is no reasoning agent holding a view (Shanahan, 2024)"
+    },
+    "c1.block-17": {
+      "Text 1": "Multi-step reasoning",
+      "Text 2": "Each token is generated conditioned on previous tokens, which means early errors propagate and compound. For tasks involving calculation, logical chains, or sequential inference — such as working through a statistical method or a philosophical argument step by step — errors in early steps often go uncorrected. Always verify reasoning-intensive outputs manually.",
+      "Text 3": "Why: autoregressive generation has no backtracking mechanism — errors in the sequence condition all subsequent tokens (Naveed et al., 2025)"
+    },
+    "c1.block-18": {
+      "Text 1": "Specialist and current knowledge",
+      "Text 2": "Training data has a cutoff date, and rarer domains are underrepresented in the corpus. GenAI may produce confident-sounding output on recent publications, niche subfields, or local institutional knowledge that is partially or wholly inaccurate. For literature searches and factual claims in your field, always go to primary sources and verified databases.",
+      "Text 3": "Why: model weights encode a fixed snapshot of training data — post-cutoff and low-frequency knowledge is absent or unreliable (Yenduri et al., 2024)"
+    },
+    "c1.block-19": {
+      "Text 1": " Shanahan, M. (2024). Talking about Large Language Models. ",
+      "Text 2": "Communications of the ACM",
+      "Text 3": ", 67(2), 68–79. · Naveed, H. et al. (2025). A Comprehensive Overview of Large Language Models. ",
+      "Text 4": "ACM Transactions on Intelligent Systems and Technology",
+      "Text 5": ". · Yenduri, G. et al. (2024). GPT — A Comprehensive Review on Enabling Technologies, Potential Applications, Emerging Challenges, and Future Directions. ",
+      "Text 6": "IEEE Access",
+      "Text 7": ", 12, 54608–54649. · Huang, L. et al. (2025). A Survey on Hallucination in Large Language Models. ",
+      "Text 8": "ACM Transactions on Information Systems",
+      "Text 9": ". · Vaswani, A. et al. (2017). Attention Is All You Need. ",
+      "Text 10": "NeurIPS 2017",
+      "Text 11": ". · Ouyang, L. et al. (2022). Training Language Models to Follow Instructions with Human Feedback. ",
+      "Text 12": "NeurIPS 2022",
+      "Text 13": ".\n    ",
+      "Emphasis 1": "Sources:"
+    },
+    "c1.extra-10": {
+      "Text 1": "Next"
+    },
+    "c1.extra-11": {
+      "Text 1": "C2 · What is AI for us?"
+    },
+    "c1.extra-12": {
+      "Text 1": "Continue to C2 →"
+    },
+    "c1.extra-13": {
+      "ai 1": "AI",
+      "of 1": "of",
+      "copy 1": "Copy",
+      "self 1": "Self",
+      "team 1": "Team",
+      "adopt 1": "Adopt",
+      "slide 1": "Go to slide",
+      "change 1": "Change",
+      "copied 1": "Copied",
+      "course 1": "Course",
+      "modify 1": "Modify",
+      "typing 1": "What you type",
+      "discard 1": "Discard",
+      "example 1": "Example",
+      "feedback 1": "Feedback",
+      "thinking 1": "What you are actually thinking",
+      "processing 1": "How the model actually processes this",
+      "course help 1": "AI-Wise adapts its examples, explanations, and prompt templates to your course. You can change this at any time.",
+      "subsections 1": "subsections toggle",
+      "Navigation c1 1": "C1: What is AI?",
+      "Navigation c2 1": "C2: What is AI for us?",
+      "Navigation c3 1": "C3: How do we use AI?",
+      "choose course 1": "Choose your course",
+      "send feedback 1": "Send feedback",
+      "close feedback 1": "Close feedback",
+      "feedback thanks 1": "Thank you — your feedback has been noted.",
+      "feedback question 1": "What's on your mind?",
+      "feedback placeholder 1": "Share a thought, suggestion, or issue...",
+      "Navigation c1 section 1 1": "History & Development",
+      "Navigation c1 section 2 1": "Anatomy of GenAI",
+      "Navigation c1 section 3 1": "GenAI Output Traits",
+      "Navigation c2 section 1 1": "AI vs Human Intelligence",
+      "Navigation c2 section 2 1": "Human vs GenAI",
+      "Navigation c2 section 3 1": "Collaboration Framework",
+      "Navigation c3 section 1 1": "Prompt",
+      "Navigation c3 section 2 1": "Critique",
+      "Navigation c3 section 3 1": "Integrate"
+    },
+    "c1.extra-14": {
+      "Page title 1": "AI-Wise · C1: What is GenAI?"
+    },
+    "c1.extra-15": {
+      "title 1": "GenAI System Map"
+    }
+  }
+}
