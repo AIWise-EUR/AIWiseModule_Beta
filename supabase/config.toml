@@ -1,4 +1,5 @@
 [functions.github-publish]
+# Source folder name. The function deployed in the project has the slug GitHub-Publish.
 # Scheduled requests use a Vault-held secret; browser requests validate Auth + current admin role.
 verify_jwt = false
 

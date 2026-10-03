@@ -9,8 +9,11 @@ Keep the existing `clever-action` connection-check function unchanged.
    [`migrations/20261001051757_workspace_github_publishing.sql`](migrations/20261001051757_workspace_github_publishing.sql).
    This adds a durable approval queue and guarded status/retry functions. Processing
    starts disabled. Currently approved copies are queued for their initial commits.
-2. In **Edge Functions**, create **`github-publish`**, paste all of
+2. In **Edge Functions**, create **`GitHub-Publish`**, paste all of
    [`functions/github-publish/index.ts`](functions/github-publish/index.ts), and deploy.
+   The project's deployed function uses this exact slug, and the slug is case-sensitive:
+   `ENABLE_GITHUB_PUBLISHING.sql` calls `/functions/v1/GitHub-Publish`, and a lowercase
+   `github-publish` URL returns 404, which leaves approvals queued without a commit.
    Set **Verify JWT OFF for this new function only**. The scheduled database caller
    uses a random server-only secret instead of a user JWT. The function validates
    that secret against its stored hash; browser calls separately validate the user

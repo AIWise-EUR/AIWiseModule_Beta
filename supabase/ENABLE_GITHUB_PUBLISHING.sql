@@ -1,4 +1,5 @@
--- Apply AFTER the queue migration and deployment of github-publish (Verify JWT OFF).
+-- Apply AFTER the queue migration and deployment of the GitHub-Publish function (Verify JWT OFF).
+-- The URL below uses the deployed function's exact, case-sensitive slug.
 -- Enables automatic Beta commits. Does not publish to the student repository.
 begin;
 create extension if not exists pg_net with schema extensions;
@@ -26,7 +27,7 @@ begin
  select decrypted_secret into secret from vault.decrypted_secrets where name='aiwise_github_worker';
  if secret is null then return; end if;
  perform net.http_post(
-  url:='https://cvcvdiohckwgpgoxibia.supabase.co/functions/v1/github-publish',
+  url:='https://cvcvdiohckwgpgoxibia.supabase.co/functions/v1/GitHub-Publish',
   headers:=jsonb_build_object('Content-Type','application/json','x-aiwise-worker',secret),
   body:='{}'::jsonb,timeout_milliseconds:=120000);
 end;

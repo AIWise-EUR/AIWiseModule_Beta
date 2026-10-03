@@ -77,7 +77,7 @@ const root=path.resolve(__dirname,'../..');
  await db.exec(setup);
  assert.equal((await db.query('select count(*)::int n from cron.job')).rows[0].n,1);
  const wake=(await db.query('select * from net.test_requests')).rows[0];
- assert.equal(wake.url,'https://cvcvdiohckwgpgoxibia.supabase.co/functions/v1/github-publish');
+ assert.equal(wake.url,'https://cvcvdiohckwgpgoxibia.supabase.co/functions/v1/GitHub-Publish');
  assert.equal(wake.headers['x-aiwise-worker'].length,64);
  assert.equal((await db.query('select workspace_github_check_worker($1) ok',[wake.headers['x-aiwise-worker']])).rows[0].ok,true);
  await db.exec("update workspace_github_jobs set deployment_status='success';delete from net.test_requests;select aiwise_private.kick_github_worker();");
