@@ -1,18 +1,18 @@
 {
   "schema": 1,
-  "sequence": 1,
+  "sequence": 2,
   "course": "common",
   "chapter": "c1",
   "locale": "en",
-  "submission_id": "453c3273-6707-41ce-9fa6-d1515ca05908",
+  "submission_id": "c370cf55-a7fa-46e4-a47b-206308201b96",
   "source_release": null,
-  "approved_at": "2026-10-01T07:30:10.908177+00:00",
+  "approved_at": "2026-10-01T08:27:47.923752+00:00",
   "slots": {
     "c1.block-0": {
       "Heading 1": "What is Generative AI?"
     },
     "c1.block-1": {
-      "Text 1": "\n        The word \"GenAI\" is everywhere. But familiarity with a term is not the same as understanding what the thing actually is. This block builds that understanding : from where it came from, to what it is made of.\n      "
+      "Text 1": "\n        The word \"GenAI\" is everywhere. But familiarity with a term is not the same as understanding what the thing actually is. This block builds that understanding : From where it came from, to what it is made of.\n      "
     },
     "c1.block-2": {
       "Heading 1": "What is AI? What is GenAI?"
