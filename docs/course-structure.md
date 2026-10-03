@@ -1,0 +1,146 @@
+# Bachelor – course structure
+
+Working record for moving AI-Wise from a flat course list (`aws1`, `ped`, `other`) to
+courses identified by **bachelor and course**, each with its own student URL.
+
+This file is the handoff point between people and agents (Claude, Codex). Read
+[Status](#status) first, update it when a step changes state, and add a line to the
+[Log](#log) at the end of every working session.
+
+## Decisions
+
+Agreed with the project owner (Seyoon) between 2 and 4 October 2026.
+
+1. **One repository, one Publish.** The existing all-courses student site stays. Each
+   course also gets its own folder and URL in the same `AI-Wise` repository. A single
+   Publish updates every URL in one commit, so Common content can never differ between
+   courses. Separate repositories per course were rejected for that reason.
+2. **Identity is (bachelor, course).** Every course belongs to one bachelor. The study
+   year is part of the course name, not a level of its own. The same course name under
+   two bachelors is two separate entries; nothing is shared between them automatically.
+3. **Three content layers, one direction of inheritance.**
+
+   | Layer | Applies to | Holds |
+   |---|---|---|
+   | Common | every course | C1 and shared copy |
+   | Bachelor default | every course of that bachelor | orientation examples (C2, C3) |
+   | Course | that course only | optional overrides of the examples; activity pages; preset prompts |
+
+   A course without its own examples shows the bachelor default. Activity pages are
+   always owned by the course and are never inherited.
+4. **Restructure now.** `aws1` and `ped` are not kept as course IDs. Their examples
+   become the bachelor defaults of Psychology and Pedagogical Sciences. Only a handful
+   of approvals exist today, so this is the cheapest moment.
+5. **"Other courses" is removed.** It has no place in a bachelor – course list.
+6. **Separation, not access control.** A course URL pins its course and carries only
+   that course's content, so students do not wander into another course. Someone who
+   knows another URL can still open it; there is no login.
+7. **Share links page.** The workspace gets a read-only list, grouped by bachelor, with
+   one row per course: name, status (live / not published yet), URL, copy, open.
+8. **Claude implements; Codex continues from this record.** Do not work on the same
+   step from two agents at once.
+
+### Courses at the start
+
+| Bachelor | Course | Examples | Activities | URL path |
+|---|---|---|---|---|
+| Psychology | B1 – Academic Writing Skills I | Psychology default | yes (today's AWS I pages) | `psychology/aws1/` |
+| Psychology | B1 – Psychodiagnostics | Psychology default | none yet | `psychology/psychodiagnostics/` |
+| Pedagogical Sciences | B1 – 1.1 Inleiding in opvoeding en onderwijs | Pedagogical Sciences default | none yet | `pedagogical-sciences/inleiding/` |
+
+URL paths are final once a link has been given to students.
+
+## Open questions
+
+- **Earlier versions V1–V5.** Proposed: leave the stored snapshots untouched, with
+  their old IDs, and translate `aws1 → psychology`, `ped → pedagogical-sciences` only
+  when a new cycle is compared with them. Awaiting the owner's confirmation.
+- **Granularity of a course override.** Proposed: per slot, merged over the bachelor
+  default (the same `baseline || slots` rule approvals already use), so a course can
+  change one example without copying the chapter.
+
+## Where the course list is fixed today
+
+Checked against `development` at `e0a9c49`. These are the places that must read the
+registry instead of a literal list.
+
+**Database**
+
+- `workspace_content_sources.course` check constraint and the paired chapter check
+  (`20260930062634_orientation_content_languages.sql`). `workspace_submissions` and
+  `workspace_beta_content` reference this table by `(course, chapter, locale)`.
+- `workspace_beta_memos.page` check: the allowed `?course=` values are in a regular
+  expression in the same migration.
+- Review inbox: `20261001164531_review_inbox.sql`, line 26.
+- Tables that store a course value without a constraint: `workspace_github_jobs`,
+  `workspace_beta_checks`, `aiwise_private.beta_draft_checks`, and the `content` JSON of
+  `workspace_beta_versions` and `workspace_releases`.
+
+**Workspace**
+
+- `beta-review.js` (three lists), `control-tower.js`, `tutorials.js`
+- Display names: `beta-checklist.js`, `beta-item-details.js`, `beta-update-list.js`,
+  `shared-studio.js`, plus literal names in `workspace.js`, `courses.js`,
+  `content-studio.js`, `overview.js`
+- `courses.js` reads `common/courses/index.json` and keeps added courses in
+  `localStorage` only. It is not a shared registry.
+
+**Module pages and loaders**
+
+- `pipelines/course-loader.js`: file path per course in `fetchCourse`, the `extends`
+  merge, and the course chooser. `data-force-course` on `<html>` already pins a course.
+- `pipelines/beta-content.js` and `pipelines/published-content.js`: allowed course list.
+- `common/courses/index.json`, `common/courses/other.json`,
+  `course-specific/aws1/course-specific-content_aws1.json`, `course-specific/ped/ped.json`
+
+**Edge Functions**
+
+- `supabase/functions/aiwise-release/index.ts`: required content keys, the three course
+  files, and a fixed set of eleven flat destination files. The matching allowlist is in
+  `workspace_store_release_candidate` (`20261001083839_publish_based_versions.sql`).
+- `supabase/functions/github-publish/index.ts`: allowed course list and the
+  `content/approved/<locale>/<course>/<chapter>.json` path.
+
+## Plan
+
+Steps 1–3 ship together. In between, the workspace and the database would disagree
+about which courses exist.
+
+| # | Step | Owner action in Supabase |
+|---|---|---|
+| 1 | **Registry.** Tables for bachelors and courses (bachelor, name, URL path, has activities). Seed the three courses above. | run SQL |
+| 2 | **Content layers.** Move `aws1` → Psychology default and `ped` → Pedagogical Sciences default; retire `other`; replace the fixed checks with references to the registry; resolve a course as course override over bachelor default. | run SQL |
+| 3 | **Workspace and loaders.** Studio, Control Tower, Beta and the module loaders read the registry and always show "bachelor – course". | none |
+| 4 | **Per-course publishing.** The release contains the all-courses site plus one folder per course with a pinned course and only that course's content. Widen the release file allowlist. | run SQL, redeploy `aiwise-release` and `GitHub-Publish` |
+| 5 | **Share links page.** | none |
+| 6 | **Activities.** Move the AWS I activity pages into `psychology/aws1/`. | none |
+
+Every step that changes SQL or an Edge Function needs a setup note in `supabase/` in
+the style of the existing `*_SETUP.md` files, because only the owner can apply it.
+
+## Status
+
+| # | Step | State | Notes |
+|---|---|---|---|
+| 1 | Registry | not started | |
+| 2 | Content layers | not started | blocked on the V1–V5 question |
+| 3 | Workspace and loaders | not started | |
+| 4 | Per-course publishing | not started | |
+| 5 | Share links page | not started | design agreed; no search box, no per-row description |
+| 6 | Activities | not started | |
+
+## How to verify
+
+- `sh checks/run-tests.sh` runs the existing tests under Deno (36 files, about 17
+  seconds). Run it before every push.
+- `deno run --allow-read=. --allow-net=cvcvdiohckwgpgoxibia.supabase.co,api.github.com,aiwise-eur.github.io,raw.githubusercontent.com checks/live-check.ts`
+  checks the live setup without credentials or writes. Run it after the owner applies
+  SQL or redeploys a function.
+- Tests in `workspace/tests/` and `supabase/tests/` were written with the features and
+  run under Node as well. Extend them for new behaviour; do not rewrite them for Deno.
+- Neither covers what only the live project shows: deployed function names, real rows,
+  Supabase safeguards. After each owner action, confirm in the workspace as well.
+
+## Log
+
+- **2026-10-04** (Claude) Recorded the decisions and the plan. No code changed.
