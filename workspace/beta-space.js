@@ -64,8 +64,10 @@
  }
  function snapshot(id,course,locale){
   if(!preview||preview.version?.id!==id||who().user?.id!==preview.owner||!['member','checking'].includes(who().status))throw Error('This review version is not available.');
-  const rows=preview.version.content.filter(r=>r.course===course&&r.locale===locale);
-  if(locale==='nl')for(const english of preview.version.content.filter(r=>r.course===course&&r.locale==='en'))if(!rows.some(r=>r.chapter===english.chapter))rows.push({...english,locale:'nl',fallback_locale:'en'});
+  // A version saved before the bachelor structure names its scopes "aws1" and "ped".
+  const scope=r=>window.AIWiseCourseRegistry.scope(r.course)===course;
+  const rows=preview.version.content.filter(r=>scope(r)&&r.locale===locale);
+  if(locale==='nl')for(const english of preview.version.content.filter(r=>scope(r)&&r.locale==='en'))if(!rows.some(r=>r.chapter===english.chapter))rows.push({...english,locale:'nl',fallback_locale:'en'});
   return JSON.parse(JSON.stringify(rows));
  }
  function dispose(){const s=session;session=null;preview=null;clearInterval(s?.timer);s?.abort?.abort();s?.release?.();s?.dialog?.close();s?.dialog?.remove();document.getElementById('room')?.classList.remove('beta-preview-page');}

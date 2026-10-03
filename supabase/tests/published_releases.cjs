@@ -17,8 +17,11 @@ const root=path.resolve(__dirname,'../..');
  async function service(sql,args=[]){await db.exec('reset role;set role service_role');return db.query(sql,args);}
  await as(admin,'select workspace_create_beta_version($1,$2,$3)',[version,'Private review title','Private summary']);
  const v=(await as(admin,'select id,number,content from workspace_beta_versions')).rows[0];v.number=Number(v.number);
- const {buildRelease,SOURCE_FILES}=await import('../functions/aiwise-release/index.ts');
+ // This test runs the earlier schema, whose versions name scopes "aws1", "ped" and "other".
+ v.content=v.content.filter(r=>r.course!=='other').map(r=>({...r,course:{aws1:'psychology',ped:'pedagogical-sciences'}[r.course]||r.course}));
+ const {buildRelease,readRegistry,SOURCE_FILES}=await import('../functions/aiwise-release/index.ts');
  const sources=Object.fromEntries(SOURCE_FILES.map(f=>[f,fs.readFileSync(path.join(root,f),'utf8')]));
+ for(const b of readRegistry(sources['common/courses/registry.json']).bachelors)sources[b.content]=fs.readFileSync(path.join(root,b.content),'utf8');
  if(process.env.RELEASE_FIXTURE_DIR){fs.mkdirSync(process.env.RELEASE_FIXTURE_DIR,{recursive:true});fs.writeFileSync(path.join(process.env.RELEASE_FIXTURE_DIR,'version.json'),JSON.stringify(v));}
  const files=buildRelease(id,v,'a'.repeat(40),'b'.repeat(40),sources);
  const store='select workspace_store_release($1,$2,$3,$4,$5,$6)';const args=[id,version,admin,'a'.repeat(40),'b'.repeat(40),files];

@@ -178,7 +178,7 @@
   function collectSubitems(courses) {
     subitems = {
       manager: courses.map(c => [`courses/${c.id}/manager`, c.short_name, c.full_name]),
-      studio: courses.map(c => [`studio/${c.id}`, c.short_name, c.full_name]),
+      studio: window.AIWiseCourseRegistry.bachelors().map(b => [`studio/${b.id}`, b.name, b.name + ' examples']),
       beta: [...commonItems, ...courses.filter(c => c.connected).map(c => [`beta/${c.id}`, c.short_name, c.full_name])]
     };
     for (const id of parents) sidebar.querySelector(`[data-subitems="${id}"]`).replaceChildren(...subitems[id].map(subitem));

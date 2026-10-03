@@ -1,4 +1,5 @@
-/* Approved Beta content only. Pending submissions and review metadata are private. */
+/* Approved Beta content only. Pending submissions and review metadata are private.
+   Content is stored per scope: "common", or a bachelor id from common/courses/registry.json. */
 (() => {
   'use strict';
   const script=typeof document==='undefined'?null:document.currentScript?.src;
@@ -29,7 +30,7 @@
   }
   async function read(course, locale = 'en', sources = false) {
     if (!['en','nl'].includes(locale)) throw Error('Unsupported content language.');
-    if (!['aws1','ped','other','common'].includes(course)) return [];
+    if (!/^[a-z][a-z0-9-]{0,39}$/.test(course)) return [];
     // Saved review copies are read only through the signed-in parent Workspace.
     let context=window, version=null;
     try {

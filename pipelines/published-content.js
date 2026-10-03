@@ -14,7 +14,7 @@
   })().catch(e=>{pending=null;throw e;});return pending;
  }
  async function read(course,locale='en'){
-  if(!['common','aws1','ped','other'].includes(course)||!['en','nl'].includes(locale))throw Error('Unsupported content.');
+  if(!/^[a-z][a-z0-9-]{0,39}$/.test(course)||!['en','nl'].includes(locale))throw Error('Unsupported content.');
   const data=await release(),rows=data.content.filter(r=>r.course===course&&r.locale===locale);
   if(locale==='nl')for(const en of data.content.filter(r=>r.course===course&&r.locale==='en'))if(!rows.some(r=>r.chapter===en.chapter))rows.push({...en,locale:'nl',fallback_locale:'en'});
   return structuredClone(rows);

@@ -1,16 +1,15 @@
 /* Course-slot authoring: local drafts, team submissions and approved Beta baseline. */
 (() => {
   'use strict';
-  const COURSES = Object.freeze({
-    aws1: {label: 'Academic Writing Skills I', source: '../course-specific/aws1/course-specific-content_aws1.json'},
-    ped: {label: 'Pedagogical Sciences', source: '../course-specific/ped/ped.json'},
-    other: {label: 'Other courses', source: '../common/courses/other.json'}
-  });
+  // Course examples are edited once per bachelor; every course of that bachelor shows them.
+  const registry = () => window.AIWiseCourseRegistry;
+  const bachelor = id => registry().bachelors().find(b => b.id === id);
+  const scopeConfig = id => { const b = bachelor(id); return b ? {label: b.name, source: '../' + b.content} : null; };
   const language = () => window.AIWiseLanguage;
   const chapterURL = chapter => `../common/${chapter === 'map' ? 'aiwise-c1-anatomy-2d' : 'aiwise-'+chapter+'-final'}.html`;
   const common = () => window.AIWiseCommonStudio;
   const targetNode = (s, index) => s.isCommon ? common().target(s, index) : s.frame.contentDocument.getElementById('cs-item-' + index);
-  const supports = id => Object.hasOwn(COURSES, id);
+  const supports = id => !!bachelor(id);
   const clone = value => JSON.parse(JSON.stringify(value));
   const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const get = (data, path) => path.split('.').reduce((value, key) => value?.[key], data);
@@ -448,7 +447,7 @@
         const link = event.target.closest('a'); if (!link) return; event.preventDefault();
         const href = link.getAttribute('href') || '';
         if (href.startsWith('#')) scrollPreview(s, href.slice(1), true);
-        else {const next=window.AIWisePreviewSections.destination(href,doc.baseURI,{course:s.isCommon?'aws1':s.courseId,locale:s.locale,root:new URL('../',location.href)});if(!next){message(s,'This link opens outside the module. Use Open in Beta to follow external resources.');return;}
+        else {const next=window.AIWisePreviewSections.destination(href,doc.baseURI,{course:registry().previewCourse(s.isCommon?'common':s.courseId),locale:s.locale,root:new URL('../',location.href)});if(!next){message(s,'This link opens outside the module. Use Open in Beta to follow external resources.');return;}
           const chapter=/aiwise-(c[123])-final\.html$/.exec(next.pathname)?.[1]||(next.pathname.endsWith('aiwise-c1-anatomy-2d.html')?'map':null);
           if(chapter===s.chapter){if(next.hash)scrollPreview(s,decodeURIComponent(next.hash.slice(1)),true);return;}
           if(chapter&&(s.isCommon||['c2','c3'].includes(chapter)))location.hash=s.isCommon?'#common/'+chapter:'#studio/'+s.courseId+'/'+chapter;
@@ -463,11 +462,26 @@
     } catch { message(s, 'The preview could not be prepared. Reload to try again; saved drafts are unchanged.', true); }
   }
 
-  async function render(shell, courseId = 'aws1', chapter = 'c2', itemIndex = 0) {
+  // Drafts saved before the bachelor structure are stored under the earlier scope id.
+  function adoptEarlierDrafts(scope, locale) {
+    for (const alias of bachelor(scope)?.aliases || []) for (const chapter of ['c2','c3']) {
+      try {
+        const from = language().draftKey(alias, chapter, locale), to = language().draftKey(scope, chapter, locale), raw = localStorage.getItem(from);
+        if (raw === null || localStorage.getItem(to) !== null) continue;
+        const saved = JSON.parse(raw);
+        if (saved?.course !== alias) continue;
+        localStorage.setItem(to, JSON.stringify({...saved, course: scope})); localStorage.removeItem(from);
+      } catch { /* An unreadable earlier draft is left where it is. */ }
+    }
+  }
+  async function render(shell, courseId, chapter = 'c2', itemIndex = 0) {
     const isCommon = courseId === 'common', locale=language().current();
     if (isCommon ? !common().chapters.includes(chapter) : !supports(courseId) || !['c2','c3'].includes(chapter)) throw Error('Course editor not connected');
-    const config = isCommon ? {label: 'AI-Wise Common', source: COURSES.aws1.source} : COURSES[courseId], chapterName = chapter.toUpperCase();
-    shell(isCommon ? 'common' : 'studio', config.label, `<p>${chapterName} ${isCommon ? 'shared content · Course examples are read-only.' : 'course content · Common content is read-only.'} Drafts stay in this browser. Saving does not update Beta or Published.</p><p data-cs-coverage></p><p><a href="${language().url(new URL(chapterURL(chapter),location.href).href+(isCommon?'':'?course='+courseId),locale)}" target="_blank" rel="noopener">Open ${chapterName} in Beta ↗</a></p>`, `
+    // Common Studio shows one bachelor's examples as read-only context.
+    const context = isCommon ? registry().bachelors()[0].id : courseId, preview = registry().course(registry().previewCourse(context));
+    const config = isCommon ? {label: 'AI-Wise Common', source: scopeConfig(context).source} : scopeConfig(courseId), chapterName = chapter.toUpperCase();
+    if (!isCommon) adoptEarlierDrafts(courseId, locale);
+    shell(isCommon ? 'common' : 'studio', config.label, `<p>${chapterName} ${isCommon ? 'shared content · Course examples are read-only.' : 'examples · Shown in ' + registry().coursesOf(courseId).map(c => c.name.replace(/[&<>"']/g, '')).join(', ') + ' · Common content is read-only.'} Drafts stay in this browser. Saving does not update Beta or Published.</p><p data-cs-coverage></p><p><a href="${language().url(new URL(chapterURL(chapter),location.href).href+(isCommon?'':'?course='+preview.id),locale)}" target="_blank" rel="noopener">Open ${chapterName} in Beta ↗</a></p>`, `
       <div id="cs-studio">
         <div class="cs-toolbar">
           <label class="cs-language">Language<select data-cs-language><option value="en">English</option><option value="nl">Nederlands</option></select></label>
@@ -525,17 +539,17 @@
       const otherChapter = chapter === 'c2' ? 'c3' : 'c2';
       const [html, sourceData, otherHTML, releases, contextReleases, englishReleases, seeds] = await Promise.all([
         fetch(url, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Preview unavailable'); return r.text(); }),
-        fetch(config.source, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); }).then(async data=>{if(courseId!=='other')return data;const response=await fetch(COURSES.aws1.source,{signal:s.abort.signal,cache:'no-cache'});if(!response.ok)throw Error('Default examples unavailable');return {...await response.json(),course:data.course};}),
+        fetch(config.source, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); }).then(data=>({...data,course:{id:preview.id,short_name:preview.short_name,full_name:preview.full_name,bachelor:preview.bachelor}})),
         fetch(new URL(`../common/aiwise-${otherChapter}-final.html`, location.href), {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Item list unavailable'); return r.text(); }),
         window.AIWiseBetaContent.read(courseId,locale),
-        window.AIWiseBetaContent.read(isCommon ? 'aws1' : 'common',locale),
+        window.AIWiseBetaContent.read(isCommon ? context : 'common',locale),
         window.AIWiseBetaContent.read(courseId,'en'),
         locale==='nl'?window.AIWiseBetaContent.sources(courseId,'nl'):Promise.resolve([])
       ]);
       if (session !== s) return;
       const data = window.AIWiseBetaContent.apply(sourceData, isCommon ? contextReleases : releases);
       s.baseRelease = releases.find(r => r.chapter === chapter)?.submission_id || null;
-      if (!isCommon && data.course?.id !== s.courseId) throw Error('Wrong course');
+      if (!isCommon && data.course?.bachelor !== s.courseId) throw Error('Wrong course');
       s.source = data;
       s.englishRelease=locale==='nl'?(englishReleases.find(r=>r.chapter===chapter)?.submission_id||null):null;
       const englishData=window.AIWiseBetaContent.apply(sourceData,isCommon?[]:englishReleases);

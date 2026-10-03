@@ -37,7 +37,7 @@
       summary += ` · ${data.pending} pending · ${data.urgent} urgent`;
       updates.push(...data.updates);
     } catch { notices.push({title:'Request records are unavailable. Open Control Tower for details.', href:'#tower/all', at:''}); }
-    for (const [id, label] of [['aws1', 'AWS1'], ['ped', 'PED'], ['other','Other courses']]) for (const chapter of ['c2','c3']) for(const locale of ['en','nl']) {
+    for (const {id, name: label} of window.AIWiseCourseRegistry.bachelors()) for (const chapter of ['c2','c3']) for(const locale of ['en','nl']) {
       try {
         const raw = localStorage.getItem(window.AIWiseLanguage.draftKey(id,chapter,locale));
         if (raw) {
@@ -92,7 +92,7 @@
   document.addEventListener('visibilitychange', schedule);
   reduced.addEventListener('change', () => { paused = reduced.matches; paint(); schedule(); });
   window.addEventListener('aiwise:shared-studio', () => { if(home) refresh(); });
-  window.addEventListener('storage', event => { if (home && (!event.key || /^aiwise_(common|content)_studio_/.test(event.key) || ['aiwise_common_studio_c1_v1','aiwise_common_studio_c2_v1','aiwise_common_studio_c3_v1','aiwise_control_tower_v1','aiwise_content_studio_aws1_c2_v1','aiwise_content_studio_ped_c2_v1','aiwise_content_studio_aws1_c3_v1','aiwise_content_studio_ped_c3_v1'].includes(event.key))) refresh(); });
+  window.addEventListener('storage', event => { if (home && (!event.key || /^aiwise_(common|content)_studio_/.test(event.key) || event.key === 'aiwise_control_tower_v1')) refresh(); });
   function closeNow(restore = true) {
     cancelClose?.(); cancelClose = null;
     window.AIWiseMotion.cancel(dialog); dialog.classList.remove('updates-closing');

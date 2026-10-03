@@ -8,6 +8,7 @@ publisher bot.
 ## Layout
 
 - `common/`, `course-specific/`, `pipelines/` — module pages and their loaders
+- `common/courses/registry.json` — the bachelors and their courses; the only place a course is declared
 - `workspace/` — team workspace (Studio, Control Tower, Beta review, Published)
 - `supabase/` — migrations, Edge Functions, setup notes, tests
 - `content/approved/` — approved content committed by the bot; do not edit by hand

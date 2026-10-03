@@ -62,6 +62,21 @@ await check('Approved Beta content is readable', async () => {
   return `${beta.length} approved ${beta.length === 1 ? 'copy' : 'copies'}: ` + beta.map(r => `${r.course}/${r.chapter}/${r.locale}`).join(', ');
 });
 
+// The database's content scopes and the repository's registry must name the same bachelors.
+await check('Database scopes match the course registry', async () => {
+  const response = await get(`${supabaseUrl}/rest/v1/workspace_content_scopes?select=id,kind,name,retired&order=id`, publicHeaders);
+  if (response.status === 404) { await response.body?.cancel(); throw new Skip('The content scopes table is not applied yet (supabase/CONTENT_SCOPES_SETUP.md).'); }
+  must(response.ok, `Supabase returned ${response.status}`);
+  const scopes = await response.json(), registry = JSON.parse(await read('common/courses/registry.json'));
+  const live = scopes.filter((s: { kind: string; retired: boolean }) => s.kind === 'bachelor' && !s.retired).map((s: { id: string; name: string }) => `${s.id}=${s.name}`).sort();
+  const listed = registry.bachelors.map((b: { id: string; name: string }) => `${b.id}=${b.name}`).sort();
+  must(scopes.some((s: { id: string }) => s.id === 'common'), 'The common scope is missing.');
+  must(live.join('|') === listed.join('|'), `Database has [${live.join(', ')}]; registry has [${listed.join(', ')}].`);
+  const unknown = beta.filter(row => !scopes.some((s: { id: string; retired: boolean }) => s.id === row.course && !s.retired)).map(row => row.course);
+  must(!unknown.length, `Approved content uses scopes that are not active: ${[...new Set(unknown)].join(', ')}`);
+  return live.join(', ');
+});
+
 // 3. Every approved copy has reached GitHub as the same submission (Studio approval -> automatic Beta commit).
 await check('Each approved copy is committed to the Beta repository', async () => {
   must(beta.length, 'No approved content to compare.');

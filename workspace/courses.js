@@ -1,15 +1,13 @@
-/* Workspace course registration. Runtime course files remain unchanged. */
+/* Workspace course pages. Registered courses come from the bachelor – course registry;
+   courses added here are kept in this browser only. */
 (() => {
   'use strict';
   const KEY = 'aiwise_workspace_courses_v1';
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let baseline = [], loadError = '', form = null, initial = '', snapshot = null;
   const valid = c => c && /^[a-z][a-z0-9-]{0,39}$/.test(c.id) && typeof c.short_name === 'string' && c.short_name.trim().length > 0 && c.short_name.length <= 40 && typeof c.full_name === 'string' && c.full_name.trim().length > 0 && c.full_name.length <= 160;
-  const root = new URL('../', document.currentScript.src);
-  const ready = fetch(new URL('common/courses/index.json', root)).then(r => { if (!r.ok) throw Error(); return r.json(); }).then(data => {
-    if (!Array.isArray(data) || !data.every(valid) || new Set(data.map(c => c.id)).size !== data.length) throw Error();
-    baseline = data;
-  }).catch(() => { loadError = 'The course list could not be loaded. Reload the page to try again.'; });
+  const registry = window.AIWiseCourseRegistry;
+  const ready = registry.ready.then(() => { loadError = registry.error(); baseline = registry.courses(); });
   function read() {
     if (loadError) throw Error(loadError);
     let raw;
@@ -18,7 +16,7 @@
     if (raw !== null) {
       try {
         const data = JSON.parse(raw);
-        if (data.schema !== 1 || !Array.isArray(data.courses) || !data.courses.every(valid) || data.courses.some(c => c.id === 'other') || new Set(data.courses.map(c => c.id)).size !== data.courses.length) throw Error();
+        if (data.schema !== 1 || !Array.isArray(data.courses) || !data.courses.every(valid) || new Set(data.courses.map(c => c.id)).size !== data.courses.length) throw Error();
         entries = data.courses;
       } catch { throw Error('Saved course information could not be read. It has been left unchanged.'); }
     }
@@ -26,19 +24,21 @@
   }
   function list() {
     const {entries} = read();
-    const merged = new Map(baseline.filter(c => c.id !== 'other').map(c => [c.id, {...c, connected: true}]));
-    entries.forEach(c => merged.set(c.id, {...c, connected: merged.has(c.id)}));
+    const merged = new Map(baseline.map(c => [c.id, {...c, connected: true}]));
+    entries.forEach(c => merged.set(c.id, {...merged.get(c.id), ...c, connected: merged.has(c.id)}));
     return [...merged.values()];
   }
-  const hasStudio = id => !!window.AIWiseContentStudio?.supports(id);
+  // Course examples are edited once per bachelor and shown in every course of that bachelor.
+  const hasStudio = course => !!course.bachelor && !!window.AIWiseContentStudio?.supports(course.bachelor);
+  const studioHref = course => '#studio/' + course.bachelor;
   function get(id) { return list().find(c => c.id === id); }
   const addCard = () => '<a class="card link course-add" href="#courses/new"><span class="course-plus" aria-hidden="true">+</span><h3>Add course</h3><p>Register a course in Courses.</p><span class="arrow">Go to Courses →</span></a>';
   function cards(area) {
     try {
       return list().map(c => {
-        const editable = area === 'studio' && hasStudio(c.id);
-        const href = editable ? '#studio/' + c.id : '#courses/' + c.id;
-        return `<a class="card link" href="${href}"><span class="badge">${editable ? 'Available' : c.connected ? 'Existing course' : 'Setup needed'}</span><h3>${esc(c.full_name)}</h3><p>${editable ? 'Edit course content in the C2 and C3 module previews.' : esc(c.short_name) + ' · Manage course information and connections.'}</p><span class="arrow">${editable ? 'Open editor' : 'Manage course'} →</span></a>`;
+        const editable = area === 'studio' && hasStudio(c);
+        const href = editable ? studioHref(c) : '#courses/' + c.id;
+        return `<a class="card link" href="${href}"><span class="badge">${editable ? 'Available' : c.connected ? 'Existing course' : 'Setup needed'}</span><h3>${esc(c.full_name)}</h3><p>${editable ? 'Edit the ' + esc(c.bachelor_name) + ' examples in the C2 and C3 module previews.' : esc(c.short_name) + ' · Manage course information and connections.'}</p><span class="arrow">${editable ? 'Open editor' : 'Manage course'} →</span></a>`;
       }).join('') + addCard();
     } catch (error) { return `<p class="notice">${esc(error.message)}</p>` + addCard(); }
   }
@@ -47,11 +47,11 @@
     campus.classList.add('course-campus');
     const targets = {
       'profiler-manager': {href: `#courses/${course.id}/manager`, note: `${course.short_name} · Course materials`},
-      studio: {href: hasStudio(course.id) ? '#studio/' + course.id : '', note: hasStudio(course.id) ? `${course.short_name} · C2 and C3 content` : 'Course editor not connected'},
+      studio: {href: hasStudio(course) ? studioHref(course) : '', note: hasStudio(course) ? `${course.bachelor_name} · C2 and C3 content` : 'Course editor not connected'},
       'common-studio': {href:'#common', note:'Shared across all courses'},
       tower: {href:'', note:'Course request view not connected'},
       beta: {href:course.connected ? `#beta/${course.id}` : '', note:course.connected ? `${course.short_name} · Working version` : 'Course preview not connected'},
-      published: {href:course.id === 'aws1' ? 'https://aiwise-eur.github.io/AI-Wise/' : '', note:course.id === 'aws1' ? `${course.short_name} · Student site ↗` : 'Course release not connected'}
+      published: {href:course.connected ? 'https://aiwise-eur.github.io/AI-Wise/' : '', note:course.connected ? `${course.short_name} · Student site ↗` : 'Course release not connected'}
     };
     for (const [name, target] of Object.entries(targets)) {
       const node = campus.querySelector('.destination.' + name);
@@ -106,7 +106,7 @@
           const course = Object.fromEntries(new FormData(form));
           Object.keys(course).forEach(k => { course[k] = course[k].trim(); });
           if (!valid(course)) throw Error('Enter a valid course ID and both course names.');
-          if (['new','other','edit','__proto__','constructor','prototype'].includes(course.id)) throw Error('This course ID is reserved. Choose another ID.');
+          if (['new','edit','common','__proto__','constructor','prototype'].includes(course.id)) throw Error('This course ID is reserved. Choose another ID.');
           const current = read();
           if (current.raw !== snapshot) throw Error('Course information changed in another tab. Copy your changes, then reopen this form.');
           if (isNew && list().some(c => c.id === course.id)) throw Error('This course ID already exists. Choose another ID.');
@@ -126,17 +126,17 @@
       if (view === 'manager') {
         shell('courses', `${c.full_name} · Course Profiler Manager`, '<p>The teacher tool opens its current browser profile. It does not automatically load this course.</p>',
           `<div class="toolbar"><a class="button primary" href="course-profiler/">Open Course Profiler</a><a class="button" href="#courses/${c.id}">Back to course</a></div>` +
-          (c.id === 'aws1' ? '<div class="cards"><a class="card link" href="#manager/prompts"><h3>Preset Prompts</h3><p>Academic Writing Skills I course and activity prompts.</p><span class="arrow">Read prompts →</span></a><a class="card link" href="#manager/activities"><h3>AI Activities</h3><p>The seven Academic Writing Skills I activity pages.</p><span class="arrow">View activities →</span></a></div>' : '<div class="empty-state"><h2>Course materials not connected</h2><p>This course does not yet have a connected profile, preset prompts, or activity package.</p></div>'), false);
+          (c.activities ? '<div class="cards"><a class="card link" href="#manager/prompts"><h3>Preset Prompts</h3><p>Academic Writing Skills I course and activity prompts.</p><span class="arrow">Read prompts →</span></a><a class="card link" href="#manager/activities"><h3>AI Activities</h3><p>The seven Academic Writing Skills I activity pages.</p><span class="arrow">View activities →</span></a></div>' : '<div class="empty-state"><h2>Course materials not connected</h2><p>This course does not yet have a connected profile, preset prompts, or activity package.</p></div>'), false);
         return;
       }
       const destination = (title, description, href, action) => `<div class="card"><h3>${title}</h3><p>${description}</p>${href ? `<a class="button" href="${href}">${action}</a>` : '<span class="badge">Setup needed</span>'}</div>`;
       shell('courses', c.full_name, `<p>${esc(c.full_name)} materials · Common Studio is shared across courses and shown in grayscale. Unconnected areas are labeled on the map.</p>`, `<div class="toolbar course-view-toolbar"><div class="view-switch" role="group" aria-label="Course view"><button id="course-map-view" type="button" aria-pressed="true">▦ Map</button><button id="course-list-view" type="button" aria-pressed="false">☷ List</button></div><a class="button" href="#courses/${c.id}/edit">Edit course details</a><a class="button" href="#courses">All courses</a></div>` + courseMap(c) + `<div id="course-material-list" class="cards course-hub" hidden>` +
-        destination('Course Profiler Manager', c.id === 'aws1' ? 'Review the course and activity prompts.' : 'A course profile and activity package still need to be connected.', `#courses/${c.id}/manager`, 'Open course materials') +
-        destination('Content Studio', hasStudio(c.id) ? 'Edit the course examples in AI Orientation.' : 'The Orientation editor is not connected for this course yet.', hasStudio(c.id) ? '#studio/' + c.id : '', 'Open editor') +
-        destination('AI Activities', c.id === 'aws1' ? 'Inspect the seven existing activity pages.' : 'Activity pages still need to be connected.', c.id === 'aws1' ? '#manager/activities' : '', 'View activities') +
+        destination('Course Profiler Manager', c.activities ? 'Review the course and activity prompts.' : 'A course profile and activity package still need to be connected.', `#courses/${c.id}/manager`, 'Open course materials') +
+        destination('Content Studio', hasStudio(c) ? 'Edit the ' + esc(c.bachelor_name) + ' examples in AI Orientation. Every course of this bachelor shows them.' : 'The Orientation editor is not connected for this course yet.', hasStudio(c) ? studioHref(c) : '', 'Open editor') +
+        destination('AI Activities', c.activities ? 'Inspect the seven existing activity pages.' : 'Activity pages still need to be connected.', c.activities ? '#manager/activities' : '', 'View activities') +
         destination('AI-Wise Beta', c.connected ? 'Preview this course in the current Beta module.' : 'A Beta module is not connected yet.', c.connected ? '#beta/' + c.id : '', 'Open Beta') +
         destination('Control Tower', 'The course request view is not connected yet.', '', '') +
-        destination('AI-Wise Published', c.id === 'aws1' ? 'Open the existing student site for Academic Writing Skills I.' : 'A student release is not connected for this course.', c.id === 'aws1' ? 'https://aiwise-eur.github.io/AI-Wise/' : '', 'Open student site') +
+        destination('AI-Wise Published', c.connected ? 'Open the student site.' : 'A student release is not connected for this course.', c.connected ? 'https://aiwise-eur.github.io/AI-Wise/' : '', 'Open student site') +
         destination('Common Studio', 'Shared content used across courses.', '#common', 'Open shared content') + '</div>', false);
       wireCourseViews();
       return;

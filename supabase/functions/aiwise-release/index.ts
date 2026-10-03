@@ -15,8 +15,29 @@ class PublishError extends Error {
 export const SOURCE_FILES = [
  ...['c1','c2','c3'].map(c=>`common/aiwise-${c}-final.html`),'common/aiwise-c1-anatomy-2d.html',
  'pipelines/orientation-schema.json','pipelines/published-content.js','pipelines/common-content.js','pipelines/course-loader.js','pipelines/content-language.js','pipelines/feedback-widget.js','common/ui-effects.js',
- 'course-specific/aws1/course-specific-content_aws1.json','course-specific/ped/ped.json','common/courses/other.json','common/courses/index.json',
+ 'common/courses/registry.json',
 ];
+const ID = /^[a-z][a-z0-9-]{0,39}$/;
+// common/courses/registry.json names each bachelor's content file; a course is "<bachelor>.<course>".
+export function readRegistry(text:string) {
+ let registry:any;
+ try{registry=JSON.parse(text);}catch{throw new PublishError('source_structure_changed');}
+ const bachelors=registry?.bachelors,courses=registry?.courses,text80=(v:any)=>typeof v==='string'&&v.trim().length>0&&v.length<=160;
+ if(registry?.schema!==1||!Array.isArray(bachelors)||!bachelors.length||!Array.isArray(courses)||!courses.length)throw new PublishError('source_structure_changed');
+ const names=new Map<string,any>(),keys=new Set<string>(),aliases=new Set<string>();
+ for(const b of bachelors){
+  if(!ID.test(b?.id||'')||b.id==='common'||names.has(b.id)||!text80(b.name)||!/^course-specific\/[a-z0-9_-]+\/[a-zA-Z0-9_.-]+\.json$/.test(b.content||''))throw new PublishError('source_structure_changed');
+  names.set(b.id,b);
+ }
+ const list=courses.map((c:any)=>{
+  const b=names.get(c?.bachelor),key=c?.bachelor+'.'+c?.id,alias=c?.aliases??[];
+  if(!b||!ID.test(c.id||'')||keys.has(key)||!text80(c.name)||!text80(c.short_name)||!Array.isArray(alias)||alias.some((a:any)=>!ID.test(a||'')||aliases.has(a)))throw new PublishError('source_structure_changed');
+  keys.add(key);alias.forEach((a:string)=>aliases.add(a));
+  return {id:key,short_name:c.short_name,full_name:b.name+' – '+c.name,bachelor:b.id,aliases:alias};
+ });
+ for(const b of bachelors)if(!list.some((c:any)=>c.bachelor===b.id))throw new PublishError('source_structure_changed');
+ return {bachelors:bachelors.map((b:any)=>({id:b.id,name:b.name,content:b.content})),courses:list};
+}
 export const DEST_FILES = ['aiwise-c1-final.html','aiwise-c2-final.html','aiwise-c3-final.html','aiwise-c1-anatomy-2d.html','published-content.json','published-content.js','published-common-content.js','published-course-loader.js','published-content-language.js','published-ui-effects.js','published-feedback-widget.js'];
 function canonical(v:any):string {return Array.isArray(v)?'['+v.map(canonical).join(',')+']':v&&typeof v==='object'?'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canonical(v[k])).join(',')+'}':JSON.stringify(v);}
 const object=(v:any)=>v!==null&&typeof v==='object'&&!Array.isArray(v);
@@ -32,12 +53,16 @@ export function buildRelease(id:string,version:any,sourceSha:string,targetSha:st
  for(const path of SOURCE_FILES)if(typeof source[path]!=='string'||!source[path])throw new PublishError('source_file_unavailable');
  const parse=(path:string)=>JSON.parse(source[path]);
  const schemas=parse('pipelines/orientation-schema.json');
- const aws1=parse('course-specific/aws1/course-specific-content_aws1.json'),ped=parse('course-specific/ped/ped.json'),other=parse('common/courses/other.json');
- if(other.extends!=='aws1'||Object.keys(other).some(k=>!['extends','course'].includes(k)))throw new PublishError('source_structure_changed');
- const courses:any={aws1,ped,other:{...aws1,course:{...aws1.course,...other.course}}};
- const manifest=parse('common/courses/index.json');
- if(!Array.isArray(manifest)||manifest.map((r:any)=>r.id).sort().join('|')!=='aws1|other|ped')throw new PublishError('source_structure_changed');
- const required=new Set(['common/c1','common/c2','common/c3','common/map',...['aws1','ped','other'].flatMap(c=>[c+'/c2',c+'/c3'])]),seen=new Set();
+ const registry=readRegistry(source['common/courses/registry.json']);
+ // Approved examples are stored per bachelor; every course of a bachelor is published with them.
+ const scopes:any={};
+ for(const b of registry.bachelors){
+  if(typeof source[b.content]!=='string'||!source[b.content])throw new PublishError('source_file_unavailable');
+  scopes[b.id]=parse(b.content);
+ }
+ const manifest=registry.courses;
+ const courses:any=Object.fromEntries(manifest.map((c:any)=>[c.id,{...scopes[c.bachelor],course:{id:c.id,short_name:c.short_name,full_name:c.full_name,bachelor:c.bachelor}}]));
+ const required=new Set(['common/c1','common/c2','common/c3','common/map',...registry.bachelors.flatMap((b:any)=>[b.id+'/c2',b.id+'/c3'])]),seen=new Set();
  const content=version.content.map((row:any)=>{
   const {course,chapter,locale,slots}=row,key=course+'/'+chapter,identity=key+'/'+locale;
   if(!required.has(key)||!['en','nl'].includes(locale)||seen.has(identity)||!object(slots)||(row.submission_id!=null&&!UUID.test(row.submission_id))||(locale==='nl'&&!row.submission_id))throw new PublishError('invalid_version_content',400);
@@ -47,7 +72,7 @@ export function buildRelease(id:string,version:any,sourceSha:string,targetSha:st
   else {
    const html=source[`common/aiwise-${chapter}-final.html`];
    const paths=[...html.matchAll(/data-slot="([^"]+)"/g)].map(m=>m[1]).filter(p=>p.startsWith(chapter+'.'));
-   expected=Object.fromEntries([...new Set(paths)].map(p=>[p,p.split('.').reduce((v:any,k)=>v?.[k],courses[course])]).filter(([,value])=>value!==undefined));
+   expected=Object.fromEntries([...new Set(paths)].map(p=>[p,p.split('.').reduce((v:any,k)=>v?.[k],scopes[course])]).filter(([,value])=>value!==undefined));
   }
   if(!object(expected)||Object.keys(slots).sort().join('|')!==Object.keys(expected).sort().join('|')||!Object.keys(expected).every(k=>shape(slots[k],expected[k])))throw new PublishError('version_structure_changed',409);
   return {course,chapter,locale,slots,submission_id:row.submission_id||null};
@@ -71,7 +96,7 @@ export function buildRelease(id:string,version:any,sourceSha:string,targetSha:st
  out['published-ui-effects.js']=source['common/ui-effects.js'];
  let loader=out['published-course-loader.js'];
  const replaceRequired=(text:string,pattern:RegExp,value:string)=>{if(!pattern.test(text))throw new PublishError('source_structure_changed');return text.replace(pattern,value);};
- loader=replaceRequired(loader,/  function fetchCourse\(id, seen\) \{[\s\S]*?(?=  function load\()/,'  function fetchCourse(id) { return window.AIWisePublished.course(id); }\n\n');
+ loader=replaceRequired(loader,/  function fetchCourse\(id\) \{[\s\S]*?(?=  function load\()/,'  function fetchCourse(id) { return window.AIWisePublished.course(id); }\n\n');
  loader=replaceRequired(loader,/  function fetchManifest\(\) \{[\s\S]*?(?=  var UI_CSS)/,'  function fetchManifest() { return window.AIWisePublished.manifest(); }\n\n');
  out['published-course-loader.js']=loader.replace('new URL("../", document.currentScript.src)','new URL("./", document.currentScript.src)').replace('Approved Beta content could not be loaded.','Published content could not be loaded.');
  out['published-content-language.js']=replaceRequired(out['published-content-language.js'],/\/\\\/common\\\/\|\\\/course-specific\\\/\/.test\(next.pathname\)/,'next.pathname.startsWith(new URL("./", location.href).pathname)');
@@ -178,10 +203,13 @@ export function createHandler(deps: Dependencies) {
         const sourceSha=source?.object?.sha,targetSha=target?.object?.sha;
         if(!SHA.test(sourceSha)||!SHA.test(targetSha))throw new PublishError('invalid_github_response');
         const files:Record<string,string>={};
-        await Promise.all(SOURCE_FILES.map(async path=>{
+        const fetchSource=async (path:string)=>{
           const response=await request(`https://api.github.com/repos/AIWise-EUR/AIWiseModule_Beta/contents/${path}?ref=${sourceSha}`,{headers:{Authorization:`Bearer ${token}`,Accept:'application/vnd.github.raw+json','X-GitHub-Api-Version':'2026-03-10','User-Agent':'AIWise-Release'}});
           if(!response.ok)throw new PublishError('source_file_unavailable');files[path]=await response.text();
-        }));
+        };
+        await Promise.all(SOURCE_FILES.map(fetchSource));
+        // The registry decides which bachelor content files belong to this release.
+        await Promise.all(readRegistry(files['common/courses/registry.json']).bachelors.map((b:any)=>fetchSource(b.content)));
         const bundle=buildRelease(action.id,version,sourceSha,targetSha,files);
         await rpc('workspace_store_release_candidate',{p_id:action.id,p_author:actor,p_source:sourceSha,p_target:targetSha,p_files:bundle,p_content:candidate.content,p_fingerprint:candidate.fingerprint});
         return reply({ok:true,id:action.id});

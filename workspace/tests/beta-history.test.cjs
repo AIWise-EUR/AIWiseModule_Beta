@@ -1,4 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+require('./registry.cjs').everywhere();
 const {parseHTML}=require(process.env.LINKEDOM_MODULE||'linkedom');
 const source=fs.readFileSync(path.join(__dirname,'../beta-history.js'),'utf8');
 const window={};vm.runInNewContext(source,{window});const H=window.AIWiseBetaHistory;

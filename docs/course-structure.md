@@ -50,14 +50,43 @@ Agreed with the project owner (Seyoon) between 2 and 4 October 2026.
 
 URL paths are final once a link has been given to students.
 
+9. **Earlier versions stay as saved.** V1–V5, prepared releases and finished commit
+   jobs keep the ids they were frozen with (`aws1`, `ped`, `other`). When a newer cycle
+   is compared with them, those ids are read as today's, so the rename is not a change.
+
+## How it is built
+
+- **Registry: `common/courses/registry.json`.** The single list of bachelors and
+  courses. Module pages, the workspace and the release builder all read this file.
+  A course is addressed as `<bachelor>.<course>` (`psychology.aws1`); its URL path is
+  `<bachelor>/<course>/`. `aliases` map the earlier ids to today's: on a course, for
+  links and remembered choices (`?course=aws1`); on a bachelor, for the scope ids
+  inside saved versions.
+- **Content scope.** Approved content is stored per scope: `common` or a bachelor id.
+  The `course` column of the content tables holds the scope. Every course of a
+  bachelor is rendered from that bachelor's rows and its content file.
+- **Database: `workspace_content_scopes`.** Lists the valid scopes. The database knows
+  bachelors, not courses, so adding a course to an existing bachelor is a registry edit
+  with no SQL. The bachelors in this table and in the registry must match;
+  `supabase/tests/content_scopes.cjs` and `checks/live-check.ts` both compare them.
+- **Workspace.** `workspace/course-registry.js` exposes the registry as
+  `window.AIWiseCourseRegistry` (`courses()`, `bachelors()`, `scope()`, `scopeName()`,
+  `previewCourse()`). Content Studio is opened per bachelor (`#studio/psychology`).
+
 ## Open questions
 
-- **Earlier versions V1–V5.** Proposed: leave the stored snapshots untouched, with
-  their old IDs, and translate `aws1 → psychology`, `ped → pedagogical-sciences` only
-  when a new cycle is compared with them. Awaiting the owner's confirmation.
-- **Granularity of a course override.** Proposed: per slot, merged over the bachelor
-  default (the same `baseline || slots` rule approvals already use), so a course can
-  change one example without copying the chapter.
+- **Course overrides (layer 3) are not built.** The registry and the database can
+  describe them later (a third scope kind), but today every course shows its
+  bachelor's examples unchanged. No course needs an override yet. Proposed when one
+  does: per slot, merged over the bachelor default.
+- **Browser tests are stale.** The five `workspace/tests/*.browser.cjs` files still use
+  `aws1`/`ped` routes and were neither updated nor run: they need Playwright and
+  Chromium, which the machine this was written on does not have. Update them on a
+  machine that can run them.
+- **Module pages are cached for up to ten minutes.** Their `course-loader.js` URL
+  was not version-bumped, because that changes the page hash recorded in
+  `pipelines/orientation-schema.json`. A stale copy falls back to default examples
+  until the cache expires.
 
 ## Where the course list is fixed today
 
@@ -108,12 +137,13 @@ about which courses exist.
 
 | # | Step | Owner action in Supabase |
 |---|---|---|
-| 1 | **Registry.** Tables for bachelors and courses (bachelor, name, URL path, has activities). Seed the three courses above. | run SQL |
-| 2 | **Content layers.** Move `aws1` → Psychology default and `ped` → Pedagogical Sciences default; retire `other`; replace the fixed checks with references to the registry; resolve a course as course override over bachelor default. | run SQL |
-| 3 | **Workspace and loaders.** Studio, Control Tower, Beta and the module loaders read the registry and always show "bachelor – course". | none |
-| 4 | **Per-course publishing.** The release contains the all-courses site plus one folder per course with a pinned course and only that course's content. Widen the release file allowlist. | run SQL, redeploy `aiwise-release` and `GitHub-Publish` |
+| 1 | **Registry.** `common/courses/registry.json` with the three courses above. | none |
+| 2 | **Content scopes.** `aws1` → `psychology`, `ped` → `pedagogical-sciences`; retire `other`; replace the fixed checks with a scopes table. | run SQL |
+| 3 | **Workspace, loaders, functions.** Studio, Control Tower, Beta, the module loader and both Edge Functions read the registry. | redeploy `GitHub-Publish` and `aiwise-release` |
+| 4 | **Per-course publishing.** The release contains the all-courses site plus one folder per course with a pinned course and only that course's content. Widen the release file allowlist. | run SQL, redeploy `aiwise-release` |
 | 5 | **Share links page.** | none |
 | 6 | **Activities.** Move the AWS I activity pages into `psychology/aws1/`. | none |
+| 7 | **Course overrides**, when a course first needs its own examples. | run SQL |
 
 Every step that changes SQL or an Edge Function needs a setup note in `supabase/` in
 the style of the existing `*_SETUP.md` files, because only the owner can apply it.
@@ -122,17 +152,18 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 
 | # | Step | State | Notes |
 |---|---|---|---|
-| 1 | Registry | not started | |
-| 2 | Content layers | not started | blocked on the V1–V5 question |
-| 3 | Workspace and loaders | not started | |
+| 1 | Registry | built, on `claude/course-structure` | |
+| 2 | Content scopes | built, on `claude/course-structure` | owner applies `supabase/CONTENT_SCOPES_SETUP.md` when the branch is merged |
+| 3 | Workspace, loaders, functions | built, on `claude/course-structure` | signed-in workspace screens were not seen in a browser; see Log |
 | 4 | Per-course publishing | not started | |
 | 5 | Share links page | not started | design agreed; no search box, no per-row description |
 | 6 | Activities | not started | |
+| 7 | Course overrides | not started | not needed yet |
 
 ## How to verify
 
-- `sh checks/run-tests.sh` runs the existing tests under Deno (36 files, about 17
-  seconds). Run it before every push.
+- `sh checks/run-tests.sh` runs the tests under Deno (38 files, under 30 seconds).
+  Run it before every push.
 - `deno run --allow-read=. --allow-net=cvcvdiohckwgpgoxibia.supabase.co,api.github.com,aiwise-eur.github.io,raw.githubusercontent.com checks/live-check.ts`
   checks the live setup without credentials or writes. Run it after the owner applies
   SQL or redeploys a function.
@@ -144,3 +175,12 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 ## Log
 
 - **2026-10-04** (Claude) Recorded the decisions and the plan. No code changed.
+- **2026-10-04** (Claude) Built steps 1–3 on `claude/course-structure`. The owner chose
+  to keep V1–V5 as saved (decision 9) and to drop "Other courses". All tests pass under
+  Deno. Seen working in a real browser against the unchanged live database: module
+  pages for all three courses and for the earlier ids, the course chooser, Course
+  Profiler, and Content Studio for both bachelors and for Common (opened without
+  signing in, by calling its render function). Not seen: anything behind sign-in
+  (Control Tower, Beta review, submissions, approvals) and everything after the SQL
+  change, which only the owner can apply. Verify those on the Beta site right after
+  rollout.

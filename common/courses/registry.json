@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "bachelors": [
+    {
+      "id": "psychology",
+      "name": "Psychology",
+      "content": "course-specific/aws1/course-specific-content_aws1.json",
+      "aliases": [
+        "aws1"
+      ]
+    },
+    {
+      "id": "pedagogical-sciences",
+      "name": "Pedagogical Sciences",
+      "content": "course-specific/ped/ped.json",
+      "aliases": [
+        "ped"
+      ]
+    }
+  ],
+  "courses": [
+    {
+      "bachelor": "psychology",
+      "id": "aws1",
+      "name": "B1 – Academic Writing Skills I",
+      "short_name": "AWS I",
+      "activities": "course-specific/aws1/sub-lobby.html",
+      "aliases": [
+        "aws1",
+        "other"
+      ]
+    },
+    {
+      "bachelor": "psychology",
+      "id": "psychodiagnostics",
+      "name": "B1 – Psychodiagnostics",
+      "short_name": "Psychodiagnostics"
+    },
+    {
+      "bachelor": "pedagogical-sciences",
+      "id": "inleiding",
+      "name": "B1 – 1.1 Inleiding in opvoeding en onderwijs",
+      "short_name": "Inleiding",
+      "aliases": [
+        "ped"
+      ]
+    }
+  ]
+}

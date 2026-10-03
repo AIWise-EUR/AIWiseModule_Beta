@@ -1,4 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+require('./registry.cjs').everywhere();
 const {parseHTML}=require(process.env.LINKEDOM_MODULE||'linkedom');
 const root=path.resolve(__dirname,'../..'),code=p=>fs.readFileSync(path.join(root,p),'utf8');
 const id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -48,8 +49,8 @@ test('next-release preview freezes the approved copy for this visit without crea
 
 test('version chooser has no separate checklist; opening preview selects the first pending change with its exact language and scope',async()=>{
  const c=fixture();await c.api.render(c.shell);assert.equal(c.document.querySelector('[data-review-checklist]'),null);
- c.review.changes=[{course:'common',chapter:'c1',locale:'en',key:'c1.title'},{course:'ped',chapter:'c2',locale:'nl',key:'c2.example'}];c.review.checks=[{course:'common',chapter:'c1',locale:'en',item_key:'c1.title',reviewed:true}];
- await c.api.render(c.shell,'current');const o=c.opened()[2];assert.equal(o.item,'c2.example');assert.equal(o.scope,'ped');assert.equal(o.initialPage,'common/aiwise-c2-final.html?course=ped&lang=nl');assert.equal(o.review.fingerprint,'copy');
+ c.review.changes=[{course:'common',chapter:'c1',locale:'en',key:'c1.title'},{course:'pedagogical-sciences',chapter:'c2',locale:'nl',key:'c2.example'}];c.review.checks=[{course:'common',chapter:'c1',locale:'en',item_key:'c1.title',reviewed:true}];
+ await c.api.render(c.shell,'current');const o=c.opened()[2];assert.equal(o.item,'c2.example');assert.equal(o.scope,'pedagogical-sciences');assert.equal(o.initialPage,'common/aiwise-c2-final.html?course=pedagogical-sciences.inleiding&lang=nl');assert.equal(o.review.fingerprint,'copy');
  await c.api.render(c.shell,id);assert.equal(c.opened()[2].item,'c2.example');
  await c.api.render(c.shell,'current?page=common%2Flobby.html%3Fcourse%3Daws1&memo=specific');assert.equal(c.opened()[2].memo,'specific');assert.equal(c.opened()[2].initialPage,'common/lobby.html?course=aws1');assert.equal(c.opened()[2].item,null);
 });

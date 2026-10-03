@@ -26,10 +26,13 @@ test('English draft keys are unchanged; Dutch drafts and URLs are independent',(
  assert.equal(a.url('../common/aiwise-c1-final.html?course=ped&lang=nl','en'),'https://example.test/repo/common/aiwise-c1-final.html?course=ped');
 });
 test('Beta feedback preserves English keys and uses canonical Dutch keys',()=>{
- const c={window:{addEventListener(){}},document:{currentScript:{src:'https://example.test/repo/workspace/beta-review.js'}},URL,URLSearchParams};
+ const c={window:{addEventListener(){}},document:{currentScript:{src:'https://example.test/repo/workspace/beta-review.js'}},URL,URLSearchParams};require('./registry.cjs')(c.window);
  vm.runInNewContext(read('workspace/beta-review.js'),c);const key=c.window.AIWiseBetaReview.pageKey;
- assert.equal(key('https://example.test/repo/common/aiwise-c1-final.html?course=ped'),'common/aiwise-c1-final.html?course=ped');
- assert.equal(key('https://example.test/repo/common/aiwise-c1-final.html?lang=nl&course=ped'),'common/aiwise-c1-final.html?course=ped&lang=nl');
+ // An earlier course id addresses the same page as the course it now names.
+ assert.equal(key('https://example.test/repo/common/aiwise-c1-final.html?course=ped'),'common/aiwise-c1-final.html?course=pedagogical-sciences.inleiding');
+ assert.equal(key('https://example.test/repo/common/aiwise-c1-final.html?course=psychology.psychodiagnostics'),'common/aiwise-c1-final.html?course=psychology.psychodiagnostics');
+ assert.equal(key('https://example.test/repo/common/aiwise-c1-final.html?course=unknown'),'common/aiwise-c1-final.html');
+ assert.equal(key('https://example.test/repo/common/aiwise-c1-final.html?lang=nl&course=ped'),'common/aiwise-c1-final.html?course=pedagogical-sciences.inleiding&lang=nl');
  assert.equal(key('https://example.test/repo/common/aiwise-c1-anatomy-2d.html?lang=nl'),'common/aiwise-c1-anatomy-2d.html?lang=nl');
  assert.equal(key('https://other.test/repo/common/aiwise-c1-final.html'),null);
 });
@@ -50,11 +53,10 @@ test('existing English common drafts gain new fields without losing edits; chang
  assert.equal(upgrade({...saved,locale:'nl'},base),null);
  assert.equal(upgrade({...saved,baseSlots:{'c1.block-0':{'Heading 1':'Old release'}}},base),null);
 });
-test('all course slots render for AWS1, PED and Others, including translated runtime labels',()=>{
- for(const course of ['aws1','ped','other'])for(const chapter of ['c2','c3']){
+test('all course slots render for every bachelor, including translated runtime labels',()=>{
+ for(const {id:course,content} of JSON.parse(read('common/courses/registry.json')).bachelors)for(const chapter of ['c2','c3']){
   const {document}=parseHTML(read(`common/aiwise-${chapter}-final.html`));
-  const data=JSON.parse(read(course==='ped'?'course-specific/ped/ped.json':'course-specific/aws1/course-specific-content_aws1.json'));
-  if(course==='other')data.course=JSON.parse(read('common/courses/other.json')).course;
+  const data=JSON.parse(read(content));
   const c={window:{AIWiseCommonContent:api},document,URL,console};
   Object.defineProperty(document,'currentScript',{value:{src:'https://example.test/pipelines/course-loader.js',hasAttribute:()=>true}});
   vm.runInNewContext(read('pipelines/course-loader.js'),c);

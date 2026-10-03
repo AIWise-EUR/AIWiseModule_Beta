@@ -4,7 +4,9 @@
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const stable=v=>JSON.stringify(v,(_,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(k=>[k,x[k]])):x);
  function value(version,item,locale){
-  const rows=version.content.filter(r=>r.course===item.course&&r.chapter===item.chapter);
+  // Versions saved before the bachelor structure name the same scope "aws1" or "ped".
+  const scope=window.AIWiseCourseRegistry.scope(item.course);
+  const rows=version.content.filter(r=>window.AIWiseCourseRegistry.scope(r.course)===scope&&r.chapter===item.chapter);
   const row=rows.find(r=>r.locale===locale)||rows.find(r=>r.locale==='en');
   return {content:row?.slots?.[item.key],locale:row?.locale||locale};
  }
@@ -64,8 +66,10 @@
     if(initial){
      const chapter=doc.querySelector('[data-current-block]')?.dataset.currentBlock||(doc.querySelector('[data-anatomy-copy]')?'map':null);
      const nodes=[...doc.querySelectorAll('[data-review-common-key],[data-slot]')].filter(node=>node!==doc.body&&doc.body.contains(node));
+     // Items carry the scope id the shown version was saved with, so its changes and checks match.
+     const scope=version.content.find(r=>window.AIWiseCourseRegistry.scope(r.course)===course)?.course||course;
      items=nodes.map((node,index)=>{const common=node.hasAttribute('data-review-common-key'),key=common?node.dataset.reviewCommonKey:node.dataset.slot;
-      if(node.dataset.anatomyCopy)node=[...doc.querySelectorAll('#nodes [data-id]')].find(n=>n.getAttribute('data-id')===node.dataset.anatomyCopy)||node;return {id:String(index),node,key,chapter:common?chapter:key.split('.')[0],course:common?'common':course,path:window.AIWiseBetaAnchors.path(node),title:window.AIWisePreviewSections.title(node)||'Supporting content'};}).filter(item=>value(version,item,locale).content!==undefined);
+      if(node.dataset.anatomyCopy)node=[...doc.querySelectorAll('#nodes [data-id]')].find(n=>n.getAttribute('data-id')===node.dataset.anatomyCopy)||node;return {id:String(index),node,key,chapter:common?chapter:key.split('.')[0],course:common?'common':scope,path:window.AIWiseBetaAnchors.path(node),title:window.AIWisePreviewSections.title(node)||'Supporting content'};}).filter(item=>value(version,item,locale).content!==undefined);
      items.forEach(item=>{item.changed=!versions[1]||changed(version,versions[1],item,locale);item.node.dataset.reviewItem=item.id;item.node.dataset.reviewContentKey=item.key;item.node.dataset.reviewContentCourse=item.course;});
      items.sort((a,b)=>Number(b.changed)-Number(a.changed));
      sections=window.AIWisePreviewSections.sections(doc);

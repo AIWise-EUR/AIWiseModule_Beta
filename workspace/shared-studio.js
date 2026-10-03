@@ -2,7 +2,6 @@
 (() => {
   'use strict';
   let identity = '', generation = 0, rows = [], role = null, error = '', loaded = false;
-  const names = {other:'Other courses',common:'AI-Wise Common',aws1:'Academic Writing Skills I',ped:'Pedagogical Sciences'};
   function snapshot() { return {rows:rows.map(r=>({...r})),role,error,loaded}; }
   function notify() { window.dispatchEvent(new Event('aiwise:shared-studio')); }
   function friendly(e) {
@@ -19,7 +18,7 @@
     finally { clearTimeout(timer); }
   }
   function convert(r) {
-    const name=names[r.course] || r.course, language=r.locale==='nl'?'Nederlands':'English';
+    const name=r.course==='common'?'AI-Wise Common':window.AIWiseCourseRegistry.scopeName(r.course), language=r.locale==='nl'?'Nederlands':'English';
     return {shared:true,id:r.id,route:r.course === 'common' ? 'common' : 'studio',type:'submission',status:r.status,rev:r.revision,
       title:`${name} · ${r.chapter.toUpperCase()} · ${language} content update`,target:`${name} · ${r.chapter.toUpperCase()} · ${language}`,
       version:'Saved draft · '+r.saved_at,targetRef:'Shared content copy · '+r.id,

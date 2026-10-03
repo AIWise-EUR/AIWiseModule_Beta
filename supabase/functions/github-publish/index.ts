@@ -21,7 +21,7 @@ function canonical(value: any): string {
 export function artifact(job: Job) {
   const chapters = job.course === 'common' ? ['c1','c2','c3','map'] : ['c2','c3'];
   if (!Number.isSafeInteger(job.sequence) || job.sequence < 1 || !UUID.test(job.submission_id) ||
-      !['common','aws1','ped','other'].includes(job.course) || !chapters.includes(job.chapter) || !['en','nl'].includes(job.locale)) throw new PublishError('invalid_job');
+      !/^[a-z][a-z0-9-]{0,39}$/.test(job.course || '') || !chapters.includes(job.chapter) || !['en','nl'].includes(job.locale)) throw new PublishError('invalid_job');
   const p = job.payload;
   if (p?.schema !== 1 || p.course !== job.course || p.chapter !== job.chapter || p.locale !== job.locale || p.submission_id !== job.submission_id ||
       !p.slots || Array.isArray(p.slots) || typeof p.slots !== 'object' || !Number.isFinite(Date.parse(p.approved_at)) ||

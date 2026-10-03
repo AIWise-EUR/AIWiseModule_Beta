@@ -15,9 +15,6 @@
     c1: {name: 'C1 · What is GenAI?', area: 'Common', url: '../common/aiwise-c1-final.html'},
     c2: {name: 'C2 · GenAI and human cognition', area: 'Common', url: '../common/aiwise-c2-final.html'},
     c3: {name: 'C3 · How to engage with GenAI', area: 'Common', url: '../common/aiwise-c3-final.html'},
-    aws1: {name: 'Academic Writing Skills I', area: 'Course Specific', url: '../common/lobby.html?course=aws1'},
-    ped: {name: 'Pedagogical Sciences', area: 'Course Specific', url: '../common/lobby.html?course=ped'},
-    other: {name: 'Others', area: 'Course Specific preview', url: '../common/lobby.html?course=other'}
   };
   const activityPages = [
     ['Exploring a topic','exploring-topic.html'], ['Formulating a research question','research-question.html'],
@@ -130,8 +127,10 @@
   function renderStudio(part) {
     const [courseId, chapter = 'c2', itemIndex = '0', extra] = part.split('/');
     if (window.AIWiseContentStudio.supports(courseId) && ['c2','c3'].includes(chapter) && /^\d+$/.test(itemIndex) && Number.isSafeInteger(Number(itemIndex)) && !extra) { window.AIWiseContentStudio.render(shell, courseId, chapter, Number(itemIndex)); return; }
-    if (part) { window.AIWiseCourses.render(part, shell); return; }
-    shell('studio','Content Studio',hint(areas.studio.note,'Editing scope: Course Specific sections within AI Orientation. AI-Wise Common is outside this area.'),'<div class="cards">'+window.AIWiseCourses.cards('studio')+card('Other courses','Default course examples and templates.','#studio/other','Open editor')+'</div>');
+    if (part) { renderNotFound(); return; }
+    // One editor per bachelor: its examples are shown in every course of that bachelor.
+    const registry = window.AIWiseCourseRegistry;
+    shell('studio','Content Studio',hint(areas.studio.note,'Editing scope: Course Specific sections within AI Orientation. Examples are edited per bachelor and shown in every course of that bachelor. AI-Wise Common is outside this area.'),'<div class="cards">'+registry.bachelors().map(b=>card(b.name,'Shown in '+registry.coursesOf(b.id).map(c=>c.name).join(', ')+'.','#studio/'+b.id,'Open editor','Available')).join('')+'</div>');
   }
 
   function renderCommon(part) {

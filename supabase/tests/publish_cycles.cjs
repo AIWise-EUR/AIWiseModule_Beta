@@ -27,7 +27,8 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
  await as(member,mark,markArgs(item));await as(member,mark,markArgs(unchanged));assert.equal((await context()).checks.length,2);
  for(const actor of [null,member,admin])await assert.rejects(()=>as(actor,'select workspace_release_candidate()'));
  await assert.rejects(()=>as(member,'select * from aiwise_private.beta_draft_checks'));
- const {buildRelease,SOURCE_FILES}=await import('../functions/aiwise-release/index.ts');const source=Object.fromEntries(SOURCE_FILES.map(f=>[f,fs.readFileSync(path.join(root,f),'utf8')]));
+ const {buildRelease,readRegistry,SOURCE_FILES}=await import('../functions/aiwise-release/index.ts');const source=Object.fromEntries(SOURCE_FILES.map(f=>[f,fs.readFileSync(path.join(root,f),'utf8')]));
+ for(const b of readRegistry(source['common/courses/registry.json']).bachelors)source[b.content]=fs.readFileSync(path.join(root,b.content),'utf8');
  const store='select workspace_store_release_candidate($1,$2,$3,$4,$5,$6,$7)';
  async function prepare(){const c=(await service('select workspace_release_candidate() c'))[0].c,id=crypto.randomUUID(),files=buildRelease(id,{id,number:null,content:c.content},'a'.repeat(40),'b'.repeat(40),source),args=[id,admin,'a'.repeat(40),'b'.repeat(40),files,c.content,c.fingerprint];await service(store,args);await service(store,args);return {id,args};}
  assert.equal((await service('select workspace_release_candidate() c'))[0].c.fingerprint,ctx.fingerprint,'worker and review use the same fallback');

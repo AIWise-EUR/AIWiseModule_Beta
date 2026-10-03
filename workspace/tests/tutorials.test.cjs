@@ -1,11 +1,12 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const registry=require('./registry.cjs');
 const {parseHTML}=require(process.env.LINKEDOM_MODULE||'linkedom'),dir=path.join(__dirname,'..');const settle=()=>new Promise(r=>setTimeout(r,0));
 function fixture(options={}){
  const dom=parseHTML('<html><body><main id="room"><div class="room-heading"><h1>Workspace</h1></div></main></body></html>'),{document}=dom;
  dom.HTMLElement.prototype.showModal=function(){this.setAttribute('open','');};dom.HTMLElement.prototype.close=function(){this.removeAttribute('open');};
  let state=options.state||{status:'member',role:'admin',user:{id:'one'}},listener;const store=options.store||new Map(),events={};
  const location={pathname:'/workspace/',hash:options.hash||'#home'};
- const window={AIWiseAuth:{snapshot:()=>state,subscribe:fn=>{listener=fn;fn(state);}},addEventListener:(n,fn)=>events[n]=fn};
+ const window={AIWiseAuth:{snapshot:()=>state,subscribe:fn=>{listener=fn;fn(state);}},addEventListener:(n,fn)=>events[n]=fn};registry(window);
  const sandbox={window,document,location,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>{if(options.blockStorage)throw Error();store.set(k,v);}},MutationObserver:class{observe(){}},queueMicrotask,matchMedia:()=>({matches:true})};
  vm.runInNewContext(fs.readFileSync(path.join(dir,'tutorial-content.js'),'utf8'),sandbox);vm.runInNewContext(fs.readFileSync(path.join(dir,'tutorials.js'),'utf8'),sandbox);
  return{document,api:window.AIWiseTutorials,store,content:window.AIWiseTutorialContent,state:s=>{state=s;listener(s);},route:hash=>{location.hash=hash;events.hashchange();},refresh:()=>window.AIWiseTutorials.refresh()};
@@ -28,7 +29,7 @@ test('new page guides open once, while hash changes do not close a newly opened 
  f.route('#beta/current');await settle();assert.ok(f.document.querySelector('.aw-guide'));dismiss(f);f.route('#home');await settle();dismiss(f);f.route('#beta/current');await settle();assert.equal(f.document.querySelector('.aw-guide'),null);
 });
 test('Common and Content editor guides have separate first-visit preferences',async()=>{
- const f=fixture();await settle();dismiss(f);f.route('#common/c1');await settle();assert.match(f.document.querySelector('.aw-guide-count').textContent,/Common Studio editor/);dismiss(f);f.route('#studio/ped');await settle();assert.match(f.document.querySelector('.aw-guide-count').textContent,/Content Studio editor/);dismiss(f);
+ const f=fixture();await settle();dismiss(f);f.route('#common/c1');await settle();assert.match(f.document.querySelector('.aw-guide-count').textContent,/Common Studio editor/);dismiss(f);f.route('#studio/pedagogical-sciences');await settle();assert.match(f.document.querySelector('.aw-guide-count').textContent,/Content Studio editor/);dismiss(f);
 });
 test('role revocation clears an open administrator guide and members cannot open administrator tours',async()=>{
  const f=fixture();await settle();dismiss(f);f.api.open('team');assert.match(f.document.querySelector('.aw-guide-count').textContent,/Team management/);f.state({status:'member',role:'member',user:{id:'one'}});await settle();assert.match(f.document.querySelector('.aw-guide-count').textContent,/Welcome to AI-Wise Beta/);dismiss(f);f.api.open('team');assert.equal(f.document.querySelector('.aw-guide'),null);

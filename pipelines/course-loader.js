@@ -1,27 +1,28 @@
 /**
  * course-loader.js
- * Fills course specific slots from course-specific/<id>/ JSON files.
- * Shared course defaults and the manifest live in common/courses/.
+ * Fills course specific slots. common/courses/registry.json lists the
+ * bachelors and their courses. A course is addressed as
+ * "<bachelor>.<course>" (for example "psychology.aws1"); its examples come
+ * from the bachelor's content file, so every course of a bachelor shows the
+ * same examples.
  *
  * Which course:
  *   0. data-force-course on <html> (single-course deployments; wins over everything)
  *   1. ?course=<id> in the URL (also remembered for later pages)
  *   2. previously remembered course (localStorage)
  *   3. data-default-course on <html>, else "aws1"
+ * Earlier ids ("aws1", "ped", "other") are listed as aliases in the registry
+ * and resolve to their course.
  *
  * Slots:
  *   <el data-slot="course.short_name"></el>              text slot, filled with textContent
  *   <el data-slot="c2.examples" data-slot-type="carousel"> list slot, rendered by a renderer
  *
- * A course file may declare  "extends": "<base-id>"  — the base course
- * is fetched and deep-merged under it, so the file only needs the keys
- * that differ from the base.
- *
  * The loader also injects the course chooser UI on every page that
  * includes it: a fixed "Course" pill (bottom left) and a modal listing
- * the courses from common/courses/index.json. The modal opens automatically on
+ * the courses from the registry. The modal opens automatically on
  * a first visit (no remembered course, none in the URL). Opt out per
- * page with  <html data-no-course-ui>.
+ * page with  <html data-no-course-ui>; a forced course never shows it.
  *
  * When every slot is filled the loader sets window.AIWISE_COURSE and
  * dispatches "aiwise:course-loaded" on document. Page scripts that
@@ -242,44 +243,41 @@
 
   /* ── load ──────────────────────────────────────────────── */
 
-  /* plain objects merge key by key; anything else (strings, arrays) is replaced */
-  function deepMerge(base, override) {
-    var isObj = function (v) { return v !== null && typeof v === "object" && !Array.isArray(v); };
-    if (!isObj(override)) return override;
-    var out = {};
-    if (isObj(base)) Object.keys(base).forEach(function (k) { out[k] = base[k]; });
-    Object.keys(override).forEach(function (k) { out[k] = deepMerge(out[k], override[k]); });
-    return out;
+  function findCourse(list, id) {
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+    for (var j = 0; j < list.length; j++) if ((list[j].aliases || []).indexOf(id) !== -1) return list[j];
+    return null;
   }
 
-  function fetchCourse(id, seen) {
-    seen = seen || {};
-    if (seen[id]) return Promise.reject(new Error("circular extends: " + id));
-    seen[id] = true;
-    var path = id === "aws1"
-      ? "course-specific/aws1/course-specific-content_aws1.json"
-      : id === "other"
-        ? "common/courses/other.json"
-        : "course-specific/" + encodeURIComponent(id) + "/" + encodeURIComponent(id) + ".json";
-    return fetch(new URL(path, ROOT_URL), { cache: "no-cache" })
-      .then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then(function (data) {
-        if (!data.extends) return data;
-        return fetchCourse(data.extends, seen).then(function (base) {
-          var merged = deepMerge(base, data);
-          delete merged.extends;
-          return merged;
+  function fetchCourse(id) {
+    return fetchManifest().then(function (list) {
+      var entry = findCourse(list, id);
+      if (!entry) throw new Error("unknown course: " + id);
+      return fetch(new URL(entry.content, ROOT_URL), { cache: "no-cache" })
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          data.course = { id: entry.id, short_name: entry.short_name, full_name: entry.full_name, bachelor: entry.bachelor };
+          return data;
         });
-      });
+    });
   }
 
   function load(id, isFallback) {
-    return Promise.resolve(window.AIWiseCommonReady).then(function(){return fetchCourse(id);})
+    return Promise.resolve(window.AIWiseCommonReady).then(fetchManifest)
+      .then(function (list) {
+        var entry = findCourse(list, id) || findCourse(list, DEFAULT_ID) || list[0];
+        if (!entry) throw new Error("no courses registered");
+        /* replace a remembered earlier id with the course it now names */
+        try { if (entry.id !== id && localStorage.getItem(STORAGE_KEY) === id) localStorage.setItem(STORAGE_KEY, entry.id); } catch (e) {}
+        id = entry.id;
+        return fetchCourse(id);
+      })
       .then(function (data) {
-        return window.AIWiseBetaContent ? window.AIWiseBetaContent.read(id,window.AIWiseLanguage?.current() || "en").then(function(rows) { var chapter=document.querySelector('[data-current-block]')?.dataset.currentBlock;
+        /* approved examples are stored per bachelor */
+        return window.AIWiseBetaContent ? window.AIWiseBetaContent.read(data.course.bachelor,window.AIWiseLanguage?.current() || "en").then(function(rows) { var chapter=document.querySelector('[data-current-block]')?.dataset.currentBlock;
           if(window.AIWiseLanguage?.current()==='nl' && ['c2','c3'].includes(chapter) && (!rows.some(r=>r.chapter===chapter)||rows.find(r=>r.chapter===chapter)?.fallback_locale==='en')) {
             var note=document.createElement('p');note.dataset.languageNotice='';note.setAttribute('role','status');note.textContent='Nederlands course examples are not approved yet. English examples are shown.';
             note.style.cssText='padding:12px;background:#fff3e8;color:#682b1b';document.querySelector('main')?.prepend(note);
@@ -308,12 +306,21 @@
   var manifestCache = null;
   function fetchManifest() {
     if (manifestCache) return Promise.resolve(manifestCache);
-    return fetch(new URL("common/courses/index.json", ROOT_URL), { cache: "no-cache" })
+    return fetch(new URL("common/courses/registry.json", ROOT_URL), { cache: "no-cache" })
       .then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();
       })
-      .then(function (list) { manifestCache = list; return list; });
+      .then(function (registry) {
+        var bachelors = {};
+        registry.bachelors.forEach(function (b) { bachelors[b.id] = b; });
+        manifestCache = registry.courses.map(function (c) {
+          var b = bachelors[c.bachelor];
+          return { id: c.bachelor + "." + c.id, short_name: c.short_name, full_name: b.name + " – " + c.name,
+            bachelor: c.bachelor, content: b.content, aliases: c.aliases || [] };
+        });
+        return manifestCache;
+      });
   }
 
   var UI_CSS = "" +
@@ -424,7 +431,7 @@
   }
 
   function initUI(firstVisit) {
-    if (document.documentElement.hasAttribute("data-no-course-ui")) return;
+    if (document.documentElement.hasAttribute("data-no-course-ui") || document.documentElement.getAttribute("data-force-course")) return;
     fetchManifest()
       .then(function (list) {
         var build = function () { buildUI(list, firstVisit); };

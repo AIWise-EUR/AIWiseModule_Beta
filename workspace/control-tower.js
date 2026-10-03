@@ -25,6 +25,8 @@
   const date = value => value ? new Date(value).toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }) : 'Not submitted';
   let shell, db, person = '', problem = '', dirty = false, cleanup = [], mapView = 'map', flow = 'submission', renderVersion = 0;
   const personKey = () => person.trim().toLocaleLowerCase();
+  // Requests saved before the bachelor structure name their scope "aws1" or "ped".
+  const studioScope = id => window.AIWiseCourseRegistry.scope(id) || id;
   // Signed-in members are named by their verified account; the local profile is only a fallback.
   const accountName = () => window.AIWiseAuth.snapshot().user?.displayName || '';
   const badge = (text, style = '') => `<span class="ct-tag ${style}">${esc(text)}</span>`;
@@ -44,14 +46,14 @@
   }
   function betaLink(r) {
     const copy = r.contentSnapshot;
-    const page = (copy.chapter === 'map' ? 'common/aiwise-c1-anatomy-2d.html' : 'common/aiwise-' + copy.chapter + '-final.html') + '?course=' + (copy.course === 'common' ? 'aws1' : copy.course) + (copy.locale === 'nl' ? '&lang=nl' : '');
+    const page = (copy.chapter === 'map' ? 'common/aiwise-c1-anatomy-2d.html' : 'common/aiwise-' + copy.chapter + '-final.html') + '?course=' + window.AIWiseCourseRegistry.previewCourse(copy.course) + (copy.locale === 'nl' ? '&lang=nl' : '');
     const params = new URLSearchParams({page});
     const changed = Object.keys(copy.slots || {}).find(key => JSON.stringify(copy.slots[key]) !== JSON.stringify(copy.baseSlots?.[key]));
     if (changed) { params.set('item', changed); params.set('scope', copy.course); }
     return '#beta/current?' + params;
   }
   function validSnapshot(s) {
-    return s && s.schema === 1 && ['aws1','ped','other'].includes(s.course) && ['c2','c3'].includes(s.chapter) &&
+    return s && s.schema === 1 && /^[a-z][a-z0-9-]{0,39}$/.test(s.course || '') && s.course !== 'common' && ['c2','c3'].includes(s.chapter) &&
       Number.isFinite(Date.parse(s.savedAt)) && s.slots && typeof s.slots === 'object' && !Array.isArray(s.slots) &&
       s.baseSlots && typeof s.baseSlots === 'object' && !Array.isArray(s.baseSlots) &&
       Object.keys(s.slots).length > 0 && Object.keys(s.slots).every(path => path.startsWith(s.chapter + '.') && Object.hasOwn(s.baseSlots, path));
@@ -213,7 +215,7 @@
     show(original?'Edit draft':previous?'Resubmit request':'New request', label(route) + ' · ' + types[type],
       '<div class="toolbar">'+link('Back to requests','#tower/'+route)+(previous?link('Previous submission',href(previous.id)):'')+'</div>'+
       (previous?.commonSnapshot ? note('The submitted copy is retained. To change the content, save and send a new draft from Common Studio.') + link('Open Common Studio', '#common/' + previous.commonSnapshot.chapter) : '')+
-      (previous?.contentSnapshot ? note('The existing submitted content copy is retained here. To change the content itself, save and send a new draft from Content Studio.') + link('Open Content Studio', '#studio/' + previous.contentSnapshot.course + '/' + previous.contentSnapshot.chapter) : '')+
+      (previous?.contentSnapshot ? note('The existing submitted content copy is retained here. To change the content itself, save and send a new draft from Content Studio.') + link('Open Content Studio', '#studio/' + studioScope(previous.contentSnapshot.course) + '/' + previous.contentSnapshot.chapter) : '')+
       (previous?note('This creates a new submission linked to the previous request. Explain the response to the review; the previous submission and decision remain unchanged.'):'')+
       `<form id="ct-request-form" class="ct-form"><div class="ct-form-meta">${badge(types[type])}<strong>${esc(label(route))}</strong><span>Requestor: ${esc(original?.author.name||person||'Set your name above')}</span></div>`+
       (!original&&!previous?`<label class="ct-field">Request route<select id="ct-route">${Object.keys(routes).map(id=>`<option value="${id}" ${id===route?'selected':''}>${esc(label(id))} · ${types[routes[id].type]}</option>`).join('')}</select></label>`:'')+
@@ -275,7 +277,7 @@
       try {update(request.id,request.rev,r=>{r.seenBy={...r.seenBy,[personKey()]:now()};});request=db.requests.find(r=>r.id===id);}catch(error){problem=error.message;}
     }
     const parent=db.requests.find(r=>r.id===request.parentId),child=db.requests.find(r=>r.parentId===id);
-    const controls=legacyContent(request) ? '' : request.shared ? (request.status==='revision'?link(request.contentSnapshot.course === 'common' ? 'Open Common Studio' : 'Open Content Studio', '?lang='+(request.contentSnapshot.locale||'en')+(request.contentSnapshot.course === 'common' ? '#common/' + request.contentSnapshot.chapter : '#studio/'+request.contentSnapshot.course+'/'+request.contentSnapshot.chapter),true):'') : request.status==='draft'?link('Edit draft','#tower/edit/'+id,true):request.status==='revision'?(child?link('Open resubmission',href(child.id),true):link('Revise and resubmit','#tower/resubmit/'+id,true)):'';
+    const controls=legacyContent(request) ? '' : request.shared ? (request.status==='revision'?link(request.contentSnapshot.course === 'common' ? 'Open Common Studio' : 'Open Content Studio', '?lang='+(request.contentSnapshot.locale||'en')+(request.contentSnapshot.course === 'common' ? '#common/' + request.contentSnapshot.chapter : '#studio/'+studioScope(request.contentSnapshot.course)+'/'+request.contentSnapshot.chapter),true):'') : request.status==='draft'?link('Edit draft','#tower/edit/'+id,true):request.status==='revision'?(child?link('Open resubmission',href(child.id),true):link('Revise and resubmit','#tower/resubmit/'+id,true)):'';
     const history=request.events.map(e=>`<li><div><strong>${esc(e.action)}</strong><span>${esc(e.by)} · ${esc(date(e.at))}</span></div>${e.reason?`<p class="ct-preserve">${esc(e.reason)}</p>`:''}</li>`).join('');
     const fields=[['Target item / course',request.target],['Exact version',request.version],['Target reference',request.targetRef],['Request details',request.details],['Expected outcome',request.outcome],...extras[request.type].map(([key,title])=>[title,request[key]]),['References',request.references],...(request.priority==='urgent'?[['Urgency reason',request.urgentReason]]:[]),...(request.parentId?[['Response to previous review',request.response]]:[])];
     show(request.title||'Untitled draft',label(request.route)+' · '+types[request.type],
