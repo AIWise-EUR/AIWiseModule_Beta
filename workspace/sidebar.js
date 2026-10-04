@@ -6,6 +6,7 @@
   const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>';
   const chevron = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>';
   // Areas flagged with children open a second column listing their items; the current item is marked.
+  // Under Courses, each bachelor opens the same column beside its own row, listing that bachelor's courses.
   const areas = [
     ['home', 'Workspace', `${base}#home`, '▦'],
     ['profiler', 'Course Profiler', `${base}course-profiler/`, '◇'],
@@ -69,10 +70,13 @@
     }
   }
   // The parent area of the current page, so the drawer opens with its items shown.
+  const bachelorKey = id => 'bachelor:' + id;
+  const isBachelor = id => id.startsWith('bachelor:');
   function currentParent() {
     if (profiler) return '';
     const [area = '', part, third] = location.hash.slice(1).split('/');
     if (area === 'courses' && third === 'manager') return 'manager';
+    if (area === 'courses' && part && !third) { const course = window.AIWiseCourseRegistry.course(part); return course ? bachelorKey(course.bachelor) : ''; }
     if (area === 'profiler' && ['prompts', 'activities'].includes(part)) return 'manager';
     if (area === 'records') return parents.includes(part) ? part : '';
     return parents.includes(area) ? area : '';
@@ -123,24 +127,51 @@
       if (inline) inline.hidden = !on;
     });
     const area = areas.find(entry => entry[0] === expanded);
-    panelTitle.textContent = area ? area[1] : '';
+    panelTitle.textContent = area ? area[1] : isBachelor(expanded) ? window.AIWiseCourseRegistry.scopeName(expanded.slice(9)) : '';
     panelList.replaceChildren(...(expanded ? subitems[expanded].map(subitem) : []));
+    placePanel();
     markCurrent();
     if (focus && expanded) itemLinks(expanded)[0]?.focus({preventScroll: true});
   }
-  sidebar.querySelectorAll('[data-area-row]').forEach(row => {
-    const id = row.dataset.areaRow, link = row.querySelector('a'), button = row.querySelector('.sidebar-expand');
-    if (!button) return;
+  // A bachelor's courses open beside its row; an area's items start at the top of the column.
+  function placePanel() {
+    const row = isBachelor(expanded) ? sidebar.querySelector(`[data-area-row="${expanded}"]`) : null;
+    panel.classList.toggle('sidebar-panel-beside', !!row);
+    panel.style.paddingTop = '';
+    if (!row) return;
+    const top = row.getBoundingClientRect().top - sidebar.getBoundingClientRect().top;
+    panel.style.paddingTop = Math.max(18, Math.min(top, sidebar.clientHeight - panelList.offsetHeight - 18)) + 'px';
+  }
+  sidebar.querySelector('.sidebar-main').addEventListener('scroll', placePanel, {passive: true});
+  window.addEventListener('resize', placePanel);
+  function hoverOpens(row, id) {
     row.addEventListener('pointerenter', event => {
       if (event.pointerType !== 'mouse') return;
       clearTimeout(hoverTimer);
       hoverTimer = setTimeout(() => setExpanded(id), 150);
     });
     row.addEventListener('pointerleave', () => clearTimeout(hoverTimer));
+  }
+  sidebar.querySelectorAll('[data-area-row]').forEach(row => {
+    const id = row.dataset.areaRow, link = row.querySelector('a'), button = row.querySelector('.sidebar-expand');
+    if (!button) return;
+    hoverOpens(row, id);
     link.addEventListener('focus', () => setExpanded(id));
     link.addEventListener('keydown', event => { if (event.key === 'ArrowRight') { event.preventDefault(); setExpanded(id, true); } });
     button.addEventListener('click', () => { clearTimeout(hoverTimer); setExpanded(expanded === id ? '' : id, expanded !== id); });
   });
+  // A bachelor has no page of its own: its row only opens the list of its courses.
+  function bachelorRow(bachelor) {
+    const id = bachelorKey(bachelor.id), row = document.createElement('div');
+    row.className = 'sidebar-area sidebar-bachelor'; row.dataset.areaRow = id;
+    row.innerHTML = `<button type="button" class="sidebar-bachelor-name sidebar-expand" data-area="${id}" aria-expanded="false" aria-controls="workspace-sidebar-panel"><span></span>${chevron}</button><div class="sidebar-subitems" data-subitems="${id}" hidden></div>`;
+    const button = row.querySelector('button');
+    button.querySelector('span').textContent = bachelor.name;
+    hoverOpens(row, id);
+    button.addEventListener('keydown', event => { if (event.key === 'ArrowRight') { event.preventDefault(); setExpanded(id, true); } });
+    button.addEventListener('click', () => { clearTimeout(hoverTimer); setExpanded(expanded === id ? '' : id, expanded !== id); });
+    return row;
+  }
   sidebar.addEventListener('keydown', event => {
     const item = event.target.closest('[data-sub]');
     if (!item) return;
@@ -171,6 +202,8 @@
       if (!profiler && area === 'courses' && !third && link.dataset.courseId === part) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
+    const bachelor = !profiler && area === 'courses' && part && !third ? window.AIWiseCourseRegistry.course(part)?.bachelor : '';
+    sidebar.querySelectorAll('.sidebar-bachelor-name').forEach(button => button.classList.toggle('sidebar-parent-open', !!bachelor && button.dataset.area === bachelorKey(bachelor)));
     const add = sidebar.querySelector('.sidebar-add-course');
     if (!profiler && area === 'courses' && part === 'new') add.setAttribute('aria-current', 'page');
     else add.removeAttribute('aria-current');
@@ -181,13 +214,16 @@
       studio: window.AIWiseCourseRegistry.bachelors().map(b => [`studio/${b.id}`, b.name, b.name + ' examples']),
       beta: [...commonItems, ...courses.filter(c => c.connected).map(c => [`beta/${c.id}`, c.short_name, c.full_name])]
     };
-    for (const id of parents) sidebar.querySelector(`[data-subitems="${id}"]`).replaceChildren(...subitems[id].map(subitem));
+    for (const bachelor of window.AIWiseCourseRegistry.bachelors())
+      subitems[bachelorKey(bachelor.id)] = courses.filter(c => c.connected && c.bachelor === bachelor.id).map(c => [`courses/${c.id}`, c.name, c.full_name]);
+    for (const id of Object.keys(subitems)) sidebar.querySelector(`[data-subitems="${id}"]`)?.replaceChildren(...subitems[id].map(subitem));
   }
   function renderCourses() {
     const container = document.getElementById('sidebar-course-list');
     try {
       const courses = window.AIWiseCourses.list();
-      container.replaceChildren(...courses.map(course => {
+      // Registered courses are reached through their bachelor; a course added in this browser has none and is listed directly.
+      container.replaceChildren(...window.AIWiseCourseRegistry.bachelors().map(bachelorRow), ...courses.filter(course => !course.connected).map(course => {
         const link = document.createElement('a');
         link.href = `${base}#courses/${course.id}`;
         link.dataset.courseId = course.id; link.textContent = course.full_name;

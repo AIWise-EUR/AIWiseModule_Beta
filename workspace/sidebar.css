@@ -86,6 +86,12 @@ html[data-workspace-access]:not([data-workspace-access="admin"]) .sidebar-admin 
 .workspace-sidebar #sidebar-course-list a { margin-left: 20px; padding-left: 24px; font-size: 12px; overflow-wrap: anywhere; }
 .sidebar-course-status { margin: 8px 12px; color: var(--ink-3); font: 11px/1.5 var(--font-body); }
 .workspace-sidebar .sidebar-add-course { color: var(--signal); }
+/* Bachelors under Courses: a row that opens its courses in the second column, beside the row. */
+.workspace-sidebar .sidebar-bachelor { grid-template-columns: minmax(0, 1fr); }
+.workspace-sidebar .sidebar-bachelor-name { justify-content: space-between; gap: 8px; width: auto; height: auto; min-height: 40px; margin: 0 4px 0 20px; padding: 8px 8px 8px 24px; color: var(--ink-2); font: 12px/1.4 var(--font-body); text-align: left; }
+.workspace-sidebar .sidebar-bachelor-name svg { flex: none; }
+.workspace-sidebar .sidebar-bachelor-name.sidebar-parent-open { color: var(--ink); font-weight: 600; }
+.sidebar-panel-beside #sidebar-panel-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 .sidebar-resources { border-top:1px solid var(--line); padding-top:16px; margin-bottom:14px; }
 .sidebar-resources .workspace-navigation { display:grid; gap:4px; }
