@@ -153,8 +153,8 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | # | Step | State | Notes |
 |---|---|---|---|
 | 1 | Registry | on `development` | |
-| 2 | Content scopes | on `development`; **owner is applying `supabase/CONTENT_SCOPES_SETUP.md`** | Studio and approvals do not work until the SQL and both function deploys are done |
-| 3 | Workspace, loaders, functions | on `development` | signed-in workspace screens were not seen in a browser; see Log |
+| 2 | Content scopes | live | SQL applied by the owner on 2026-10-04 |
+| 3 | Workspace, loaders, functions | live | signed-in screens and the two redeployed functions still need a first real use; see Log |
 | 4 | Per-course publishing | not started | |
 | 5 | Share links page | not started | design agreed; no search box, no per-row description |
 | 6 | Activities | not started | |
@@ -185,3 +185,4 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   change, which only the owner can apply. Verify those on the Beta site right after
   rollout.
 - **2026-10-04** (Claude) Merged `claude/course-structure` into `development` at the owner's request. Owner steps pending: the SQL script, then redeploy `GitHub-Publish` and `aiwise-release`.
+- **2026-10-04** (Claude) The owner ran the SQL script and redeployed both functions. `checks/live-check.ts` passes all seven checks: scopes match the registry and the approved PED chapter is served under `pedagogical-sciences`. Seen on the Beta site: `?course=ped` opens Pedagogical Sciences – Inleiding with the approved examples. Still to confirm by use: signed-in workspace screens, the next approval's automatic commit (new `GitHub-Publish` code) and the next release preparation (new `aiwise-release` code).
