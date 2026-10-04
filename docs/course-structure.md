@@ -152,9 +152,9 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 
 | # | Step | State | Notes |
 |---|---|---|---|
-| 1 | Registry | built, on `claude/course-structure` | |
-| 2 | Content scopes | built, on `claude/course-structure` | owner applies `supabase/CONTENT_SCOPES_SETUP.md` when the branch is merged |
-| 3 | Workspace, loaders, functions | built, on `claude/course-structure` | signed-in workspace screens were not seen in a browser; see Log |
+| 1 | Registry | on `development` | |
+| 2 | Content scopes | on `development`; **owner is applying `supabase/CONTENT_SCOPES_SETUP.md`** | Studio and approvals do not work until the SQL and both function deploys are done |
+| 3 | Workspace, loaders, functions | on `development` | signed-in workspace screens were not seen in a browser; see Log |
 | 4 | Per-course publishing | not started | |
 | 5 | Share links page | not started | design agreed; no search box, no per-row description |
 | 6 | Activities | not started | |
@@ -184,3 +184,4 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   (Control Tower, Beta review, submissions, approvals) and everything after the SQL
   change, which only the owner can apply. Verify those on the Beta site right after
   rollout.
+- **2026-10-04** (Claude) Merged `claude/course-structure` into `development` at the owner's request. Owner steps pending: the SQL script, then redeploy `GitHub-Publish` and `aiwise-release`.
