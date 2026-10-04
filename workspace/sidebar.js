@@ -2,7 +2,7 @@
 (() => {
   const profiler = document.body.classList.contains('profiler-page');
   const base = profiler ? '../' : '';
-  let open = false, expanded = '', hoverTimer;
+  let open = false, expanded = '', hoverTimer, leaveTimer;
   const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>';
   const chevron = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>';
   // Areas flagged with children open a floating list of their items beside their row; the current item is marked.
@@ -83,7 +83,7 @@
   }
   function toggle(value, focus = true) {
     open = value;
-    clearTimeout(hoverTimer);
+    clearTimeout(hoverTimer); clearTimeout(leaveTimer);
     if (value) renderCourses();
     paint();
     setExpanded(value ? currentParent() : '');
@@ -122,6 +122,7 @@
     sidebar.dataset.expanded = expanded;
     sidebar.querySelectorAll('[data-area-row]').forEach(row => {
       const on = row.dataset.areaRow === expanded;
+      row.classList.toggle('sidebar-row-open', on);
       row.querySelector('.sidebar-expand')?.setAttribute('aria-expanded', String(on));
       const inline = row.querySelector('.sidebar-subitems');
       if (inline) inline.hidden = !on;
@@ -143,13 +144,24 @@
   }
   sidebar.querySelector('.sidebar-main').addEventListener('scroll', placePanel, {passive: true});
   window.addEventListener('resize', placePanel);
+  // With a mouse, the list follows the pointer: it closes shortly after the pointer leaves both the row and the list.
+  function closeSoon(event) {
+    if (event.pointerType !== 'mouse') return;
+    clearTimeout(leaveTimer);
+    leaveTimer = setTimeout(() => {
+      if (panel.contains(document.activeElement)) document.activeElement.blur();
+      setExpanded('');
+    }, 250);
+  }
+  panel.addEventListener('pointerenter', () => clearTimeout(leaveTimer));
+  panel.addEventListener('pointerleave', closeSoon);
   function hoverOpens(row, id) {
     row.addEventListener('pointerenter', event => {
       if (event.pointerType !== 'mouse') return;
-      clearTimeout(hoverTimer);
+      clearTimeout(hoverTimer); clearTimeout(leaveTimer);
       hoverTimer = setTimeout(() => setExpanded(id), 150);
     });
-    row.addEventListener('pointerleave', () => clearTimeout(hoverTimer));
+    row.addEventListener('pointerleave', event => { clearTimeout(hoverTimer); if (expanded === id) closeSoon(event); });
   }
   sidebar.querySelectorAll('[data-area-row]').forEach(row => {
     const id = row.dataset.areaRow, link = row.querySelector('a'), button = row.querySelector('.sidebar-expand');
