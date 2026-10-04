@@ -1,11 +1,12 @@
 /* Overlay navigation: opening it never changes the page's available width. */
 .has-sidebar { --sidebar-width: 56px; padding-left: var(--sidebar-width); }
 .workspace-sidebar, .sidebar-rail, .sidebar-backdrop, .sidebar-toggle { box-sizing: border-box; }
-.workspace-sidebar { --sidebar-main: 248px; --sidebar-panel: 236px; position: fixed; inset: 0 auto 0 0; width: var(--sidebar-main); z-index: 72; display: grid; grid-template-columns: var(--sidebar-main) minmax(0, 1fr); background: var(--paper-2); border-right: 1px solid var(--line); overflow: hidden; box-shadow: var(--sh); transform: translateX(-100%); visibility: hidden; transition: transform .2s ease, width .2s ease, visibility 0s linear .2s; }
-/* A second column slides out for the expanded area's items; the main column keeps its width. */
-.workspace-sidebar:not([data-expanded=""]) { width: calc(var(--sidebar-main) + var(--sidebar-panel)); }
-.sidebar-main { display: flex; flex-direction: column; min-width: 0; padding: 18px 12px; overflow-y: auto; overscroll-behavior: contain; }
-.sidebar-panel { width: var(--sidebar-panel); padding: 18px 12px; border-left: 1px solid var(--line); background: var(--card); overflow-y: auto; overscroll-behavior: contain; visibility: hidden; opacity: 0; transition: opacity .2s ease, visibility 0s linear .2s; }
+/* The drawer itself is only the main column; the area beside it stays clear except for the floating item list. */
+.workspace-sidebar { --sidebar-main: 248px; --sidebar-panel: 236px; --sidebar-gap: 8px; position: fixed; inset: 0 auto 0 0; width: var(--sidebar-main); z-index: 72; display: grid; grid-template-columns: var(--sidebar-main) minmax(0, 1fr); pointer-events: none; transform: translateX(-100%); visibility: hidden; transition: transform .2s ease, width .2s ease, visibility 0s linear .2s; }
+/* The expanded row's items float beside that row, sized to their content. */
+.workspace-sidebar:not([data-expanded=""]) { width: calc(var(--sidebar-main) + var(--sidebar-gap) + var(--sidebar-panel)); }
+.sidebar-main { display: flex; flex-direction: column; min-width: 0; padding: 18px 12px; overflow-y: auto; overscroll-behavior: contain; background: var(--paper-2); border-right: 1px solid var(--line); box-shadow: var(--sh); pointer-events: auto; }
+.sidebar-panel { box-sizing: border-box; align-self: start; width: var(--sidebar-panel); max-height: calc(100vh - 16px); margin-left: var(--sidebar-gap); padding: 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); box-shadow: var(--sh); pointer-events: auto; overflow-y: auto; overscroll-behavior: contain; visibility: hidden; opacity: 0; transition: opacity .2s ease, visibility 0s linear .2s; }
 .workspace-sidebar:not([data-expanded=""]) .sidebar-panel { visibility: visible; opacity: 1; transition-delay: 0s; }
 .sidebar-panel-list { display: grid; gap: 3px; }
 .sidebar-panel-list a { display: flex; align-items: center; min-height: 40px; padding: 8px 12px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font: 13px/1.4 var(--font-body); overflow-wrap: anywhere; }
@@ -59,7 +60,6 @@ html[data-workspace-access]:not([data-workspace-access="admin"]) .sidebar-admin 
 @media (max-width: 1000px) {
   .has-sidebar, .has-sidebar.sidebar-expanded { --sidebar-width: 0px; padding-left: 0; padding-top: 56px; }
   .sidebar-rail { inset: 8px auto auto 8px; padding: 2px; width: 40px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
-  .workspace-sidebar { box-shadow: var(--sh); }
   .profiler-navigation { padding: 10px 16px; gap: 8px 16px; }
   .profiler-navigation .nav-note { flex-basis: 100%; margin-left: 0; }
 }
@@ -86,12 +86,12 @@ html[data-workspace-access]:not([data-workspace-access="admin"]) .sidebar-admin 
 .workspace-sidebar #sidebar-course-list a { margin-left: 20px; padding-left: 24px; font-size: 12px; overflow-wrap: anywhere; }
 .sidebar-course-status { margin: 8px 12px; color: var(--ink-3); font: 11px/1.5 var(--font-body); }
 .workspace-sidebar .sidebar-add-course { color: var(--signal); }
-/* Bachelors under Courses: a row that opens its courses in the second column, beside the row. */
+/* Bachelors under Courses: a row that opens its courses beside it. */
 .workspace-sidebar .sidebar-bachelor { grid-template-columns: minmax(0, 1fr); }
 .workspace-sidebar .sidebar-bachelor-name { justify-content: space-between; gap: 8px; width: auto; height: auto; min-height: 40px; margin: 0 4px 0 20px; padding: 8px 8px 8px 24px; color: var(--ink-2); font: 12px/1.4 var(--font-body); text-align: left; }
 .workspace-sidebar .sidebar-bachelor-name svg { flex: none; }
 .workspace-sidebar .sidebar-bachelor-name.sidebar-parent-open { color: var(--ink); font-weight: 600; }
-.sidebar-panel-beside #sidebar-panel-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+#sidebar-panel-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 .sidebar-resources { border-top:1px solid var(--line); padding-top:16px; margin-bottom:14px; }
 .sidebar-resources .workspace-navigation { display:grid; gap:4px; }

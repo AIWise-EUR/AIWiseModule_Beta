@@ -5,8 +5,8 @@
   let open = false, expanded = '', hoverTimer;
   const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>';
   const chevron = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>';
-  // Areas flagged with children open a second column listing their items; the current item is marked.
-  // Under Courses, each bachelor opens the same column beside its own row, listing that bachelor's courses.
+  // Areas flagged with children open a floating list of their items beside their row; the current item is marked.
+  // Under Courses, each bachelor opens the same list with that bachelor's courses.
   const areas = [
     ['home', 'Workspace', `${base}#home`, '▦'],
     ['profiler', 'Course Profiler', `${base}course-profiler/`, '◇'],
@@ -133,14 +133,13 @@
     markCurrent();
     if (focus && expanded) itemLinks(expanded)[0]?.focus({preventScroll: true});
   }
-  // A bachelor's courses open beside its row; an area's items start at the top of the column.
+  // The item list floats beside the row that opened it, kept inside the window.
   function placePanel() {
-    const row = isBachelor(expanded) ? sidebar.querySelector(`[data-area-row="${expanded}"]`) : null;
-    panel.classList.toggle('sidebar-panel-beside', !!row);
-    panel.style.paddingTop = '';
+    const row = expanded ? sidebar.querySelector(`[data-area-row="${expanded}"]`) : null;
+    panel.style.marginTop = '';
     if (!row) return;
-    const top = row.getBoundingClientRect().top - sidebar.getBoundingClientRect().top;
-    panel.style.paddingTop = Math.max(18, Math.min(top, sidebar.clientHeight - panelList.offsetHeight - 18)) + 'px';
+    const edge = 8, top = row.getBoundingClientRect().top - sidebar.getBoundingClientRect().top - panelList.offsetTop;
+    panel.style.marginTop = Math.max(edge, Math.min(top, sidebar.clientHeight - panel.offsetHeight - edge)) + 'px';
   }
   sidebar.querySelector('.sidebar-main').addEventListener('scroll', placePanel, {passive: true});
   window.addEventListener('resize', placePanel);
