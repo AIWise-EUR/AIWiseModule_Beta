@@ -1,13 +1,54 @@
 {
   "schema": 1,
-  "sequence": 7,
+  "sequence": 10,
   "course": "psychology",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "29b69d9a-fab2-4557-b9d2-6286e4770939",
+  "submission_id": "80f83cd9-140e-4f15-8bcb-42ca4a14d9fc",
   "source_release": null,
-  "approved_at": "2026-10-05T13:54:21.115412+00:00",
+  "approved_at": "2026-10-05T16:39:50.86526+00:00",
   "slots": {
+    "_studio": {
+      "boxes": [
+        {
+          "id": "box-a024abd9-0878-475f-841f-268fa581ee9d",
+          "size": 0,
+          "slot": "c2.sat_example",
+          "align": "left",
+          "anchor": 0,
+          "fields": [
+            [
+              {
+                "text": "N"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": ":"
+              }
+            ],
+            [
+              {
+                "text": "T"
+              },
+              {
+                "text": "he example ends here, but the SAT process does not have to stop here. If the student feels that the idea still needs to be developed or wants to ask for feedback, they can start another Self-Team or Self-AI cycle."
+              }
+            ]
+          ],
+          "template": "text"
+        }
+      ],
+      "formats": [],
+      "version": 1
+    },
     "c2.examples": [
       {
         "title": "Connecting studies in a literature review",
@@ -58,22 +99,22 @@
           "steps": [
             {
               "name": "Intent",
-              "text": "",
+              "text": "A student wants to write their literature review about social media and mental health. They are interested in whether social media use is related to people’s self-esteem, and have a rough idea of what the research question could be: Does social media affect self-esteem? However, they are unsure whether this is specific enough for the assignment.",
               "actor": "self"
             },
             {
               "name": "Operationalize",
-              "text": "",
+              "text": "The student asks AI how they could make their research question more specific. AI suggests considering different types of social media use, different aspects of self-esteem, different age groups, and possible psychological mechanisms that could explain the relationship. ",
               "actor": "ai"
             },
             {
               "name": "Judge",
-              "text": "",
+              "text": "The student considers these possibilities and decides that they will focus on passive social media use, self-esteem among adolescents, and upward social comparison. Their new research question is: How is passive social media use related to adolescents’ self-esteem, and does upward social comparison play a role in this relationship?  ",
               "actor": "self"
             },
             {
               "name": "Refine",
-              "text": "",
+              "text": "The student asks AI to help refine the wording of their research question without changing what they want to investigate. AI suggests changing the second question from a yes/no question to an open question, in order to be able to give a broader explanation. The student now has a specific research question: How is passive social media use related to adolescents’ self-esteem, and what role does upward social comparison play in this relationship? ",
               "actor": "ai"
             }
           ]
@@ -83,22 +124,22 @@
           "steps": [
             {
               "name": "Present",
-              "text": "",
+              "text": "In class, the student shares their research question with their classmates and asks for their feedback. ",
               "actor": "self"
             },
             {
               "name": "Feedback",
-              "text": "",
+              "text": "Overall, the student’s classmates understand the idea and think the topic is interesting. One classmate suggests choosing only one of the two questions for specificity and feasibility: whether passive social media is associated with self-esteem, or whether upward social comparison specifically explains this association.  ",
               "actor": "team"
             },
             {
               "name": "Integrate",
-              "text": "",
+              "text": "The student agrees with their classmate and decides to narrow down the research question. They will explore the general association between social media and self-esteem, without making any a priori assumption about the mechanisms involved.",
               "actor": "self"
             },
             {
               "name": "Expand",
-              "text": "",
+              "text": "The student and their classmates discuss the research question further. Another classmate points out that the relationship might not be straightforward: for example, some studies may find negative associations, while others may find positive, weak or no associations. This makes the student realize that they should avoid making any assumptions about the direction of the relationship before starting to read the literature. The student is now happy with their research question and ready to start planning the literature search. ",
               "actor": "team"
             }
           ]
@@ -130,6 +171,6 @@
         }
       ]
     },
-    "c2.sat_example_title": "Psychology S.A.T example"
+    "c2.sat_example_title": "S.A.T worked example"
   }
 }
