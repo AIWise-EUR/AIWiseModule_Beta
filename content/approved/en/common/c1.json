@@ -1,13 +1,39 @@
 {
   "schema": 1,
-  "sequence": 5,
+  "sequence": 8,
   "course": "common",
   "chapter": "c1",
   "locale": "en",
-  "submission_id": "b9ec80b7-1c0a-4c24-b295-0a46dd1e1d02",
+  "submission_id": "59f31469-f327-4d7e-a710-4eec97ace5c4",
   "source_release": null,
-  "approved_at": "2026-10-05T12:51:10.199524+00:00",
+  "approved_at": "2026-10-05T16:20:43.273524+00:00",
   "slots": {
+    "_studio": {
+      "boxes": [
+        {
+          "id": "box-bf539733-c472-4141-b573-31429ee36767",
+          "size": 0,
+          "slot": "c1.block-8",
+          "align": "left",
+          "anchor": 0,
+          "fields": [
+            [
+              {
+                "text": "Academic responsibility"
+              }
+            ],
+            [
+              {
+                "text": "the fact that GenAI can help you with some activities does not remove your responsibility for your own development and work as a student. Using GenAI appropriately means remaining actively in control of your thinking and writing process. Always follow the ESSB principles and guidelines for GenAI use."
+              }
+            ]
+          ],
+          "template": "text"
+        }
+      ],
+      "formats": [],
+      "version": 1
+    },
     "c1.block-0": {
       "Heading 1": "What is Generative AI?"
     },
