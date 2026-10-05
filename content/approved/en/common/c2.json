@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 9,
+  "sequence": 12,
   "course": "common",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "f49dc055-81c9-49e2-8158-263841b48991",
+  "submission_id": "724af4d1-48f3-40c0-8e39-736e12d6c66c",
   "source_release": null,
-  "approved_at": "2026-10-05T16:20:59.5576+00:00",
+  "approved_at": "2026-10-05T16:44:43.69695+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -70,7 +70,7 @@
       "Text 1": "Part A: Input channel asymmetry"
     },
     "c2.block-5": {
-      "Text 1": "Think about the last time you saw an elephant. Not in a photo, but in real life. You didn't just see it. You smelled it. You heard it breathe. You felt the ground vibrate slightly under its weight. All of that entered your brain at once, and all of it shaped what \"elephant\" means to you.",
+      "Text 1": "Think about the last time you saw an elephant. Not in a photo, but in real life. You didn't just see it. You smelled it. You heard it breathe. You felt the ground vibrate slightly under its weight. All of that entered your brain at once, and all of it shaped what \"elephant\" means to you. In addition to that, depending on your cultural background, experiences, and beliefs, you may see an elephant as a symbol of nature protection, as a spiritual animal, as a symbol of good luck, or even as a zoo animal. And talking to somebody about it may enrich your own perspective and meaning.",
       "Text 2": "Now think about what happens when a language model encounters the word \"elephant.\" It receives a token. A numerical code that represents the word. That's it. No smell, no sound, no sense of scale. Just a number in a sequence of numbers.",
       "Text 3": "This is the most basic difference between human cognition and GenAI: ",
       "Emphasis 1": "the input is not the same."
