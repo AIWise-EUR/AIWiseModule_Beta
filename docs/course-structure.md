@@ -163,6 +163,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 9 | Studio block editing | live; signed-in submission verified | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
 | 10 | Psychology SAT empty template | source prepared; owner SQL pending | [Setup](../supabase/PSYCHOLOGY_SAT_SETUP.md); existing requests remain unchanged |
 | 11 | Studio draft recovery | implemented; deployment verification pending | [Visual comparison and backups](studio-draft-recovery.md); no SQL or function changes |
+| 12 | AI Port | in progress (Claude, branch `development-q6ets7`) | [Brief, express inlet, GitHub setup](ai-port.md); touches `workspace/ai-port.*`, one line in `content-studio.js`, the guides, `CLAUDE.md` |
 
 ## How to verify
 
@@ -177,6 +178,10 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- 2026-10-05 (Claude) Started the AI Port on `development-q6ets7`: a brief for the
+  member's own Claude/ChatGPT and an express inlet that applies the answer to the Studio
+  draft. Record and member setup in `ai-port.md`. No SQL or Edge Function change.
 
 - 2026-10-05 — Added real three-way comparison of saved browser drafts and current
   Beta in Common and Content Studio. Visual explanation, explicit overlap choices,

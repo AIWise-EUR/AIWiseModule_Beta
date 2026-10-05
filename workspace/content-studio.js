@@ -729,7 +729,10 @@
       };
       languageStatus();
       s.saved = clone(s.values); message(s, status, s.blocked);
-      window.AIWiseStudioEditing?.mount(s,{update:()=>updatePreview(s),controls:()=>controls(s),open:()=>openEditor(s,s.index),message:text=>message(s,text)});
+      const editingAPI={update:()=>updatePreview(s),controls:()=>controls(s),open:()=>openEditor(s,s.index),message:text=>message(s,text),save:()=>save(s),submit:()=>openSubmission(s),canSubmit:()=>canSubmit(s),dirty,label};
+      window.AIWiseStudioEditing?.mount(s,editingAPI);
+      // The AI Port writes through the same path as the box tools; it detaches itself on dispose.
+      window.AIWiseAIPort?.attachStudio(s,editingAPI);
       host.querySelectorAll('[data-cs-save]').forEach(button => button.addEventListener('click', () => save(s)));
       host.querySelector('[data-cs-reset]').addEventListener('click', () => reset(s));
       host.querySelectorAll('[data-cs-submit]').forEach(button => button.addEventListener('click', () => openSubmission(s)));

@@ -19,7 +19,8 @@ publisher bot.
 
 1. `git fetch` and start from the latest `development`.
 2. Read the record for the area you are touching. Active work:
-   [docs/course-structure.md](docs/course-structure.md) — bachelor – course structure.
+   [docs/course-structure.md](docs/course-structure.md) — bachelor – course structure;
+   [docs/ai-port.md](docs/ai-port.md) — the team's own AI assistants and the WorkSpace.
 3. More than one agent works here. If a record names a step as in progress, do not
    start on it; pick another or ask the owner.
 

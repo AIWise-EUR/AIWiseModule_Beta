@@ -8,7 +8,7 @@
  function remember(a,id){const k=key(a,id);seen.add(k);try{localStorage.setItem(k,'seen');}catch{}}
  function context(){
   const a=auth();if(a.status!=='member')return 'login';
-  if(document.querySelector('#my-page[open]'))return 'my-page';if(document.querySelector('#aw-account-dialog[open]'))return 'account';
+  if(document.querySelector('#ai-port[open]'))return 'ai-port';if(document.querySelector('#my-page[open]'))return 'my-page';if(document.querySelector('#aw-account-dialog[open]'))return 'account';
   if(document.body.classList.contains('profiler-page'))return 'profiler';
   const [area='home',part='']=location.hash.slice(1).split('/');
   if(area==='beta'&&location.hash.includes('publish=1'))return 'release';
@@ -26,7 +26,7 @@
  function show(id,trigger){
   const a=auth();if(!guides[id]||a.status==='checking')return;
   if(a.status!=='member'&&id!=='login')return;
-  if(a.role==='member'&&!['login','welcome-member','beta','beta-preview','my-page','account'].includes(id))return;
+  if(a.role==='member'&&!['login','welcome-member','beta','beta-preview','my-page','ai-port','account'].includes(id))return;
   if(session)close(false);window.AIWiseSelectControls?.close();
   dialog=document.createElement('dialog');dialog.className='aw-guide';dialog.setAttribute('aria-labelledby','aw-guide-title');dialog.setAttribute('aria-describedby','aw-guide-description');
   session={id,auth:a,owner:identity(a),route:location.pathname+location.hash,trigger,index:0,cards:cards(id,a)};
