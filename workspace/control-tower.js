@@ -33,7 +33,7 @@
   const link = (text, url, primary = false) => `<a class="button${primary ? ' primary' : ''}" href="${url}">${esc(text)}</a>`;
   const note = text => `<p class="notice">${esc(text)}</p>`;
   const legacyContent = r => !r.shared && ['studio','common'].includes(r.route);
-  const statusLabel = r => legacyContent(r) ? 'Resubmit as a team request' : r.shared && r.status === 'pending' ? 'Awaiting approval' : r.shared && r.status === 'approved' ? 'Applied to Beta' : statuses[r.status];
+  const statusLabel = r => legacyContent(r) ? 'Resubmit as a team request' : r.shared && r.status === 'pending' ? 'Awaiting approval' : r.shared && r.status === 'approved' ? (r.approvalResult?.no_op?'Already in Beta':'Applied to Beta') : statuses[r.status];
   function studioLink(r) {
     const copy = r.commonSnapshot || r.contentSnapshot;
     const common = r.route === 'common';
@@ -285,10 +285,10 @@
       '<div class="toolbar">'+link('Back to requests','#tower/'+request.route)+controls+'</div>'+
       `<div class="ct-detail-meta">${badge(request.shared?'Team':'Browser only')}${badge(statusLabel(request),request.shared&&request.status==='approved'?'ct-approved':'')}${request.priority==='urgent'?badge('Urgent','ct-urgent'):''}<span>Requested by <strong>${esc(request.author.name)}</strong></span><span>${esc(date(request.submittedAt))}</span></div>`+
       (parent?`<div class="ct-previous">${link('Previous submission',href(parent.id))}<p><strong>Previous decision</strong></p><p class="ct-preserve">${esc(parent.decision?.reason||'No decision reason recorded.')}</p><details><summary>Compare with the previous submission</summary>${textBlock('Previous target and version',parent.target+' · '+parent.version)}${textBlock('Previous request details',parent.details)}${textBlock('Previous expected outcome',parent.outcome)}</details></div>`:'')+
-      `<div class="ct-detail-grid"><article class="ct-detail-card">${contentReview(request,fields)}</article><aside><section class="ct-detail-card"><h2>${request.shared && request.status==='approved'?'Applied to Beta':'Review &amp; decision'}</h2>${legacyContent(request) ? resubmitGuide(request) : request.shared && request.status==='pending' && window.AIWiseSharedStudio.snapshot().role !== 'admin' ? '<p>Awaiting administrator review. Only administrators can make a decision.</p>' : request.status==='pending'?`<p>Review the target reference and request before recording a decision as <strong>${esc(request.shared ? (window.AIWiseAuth.snapshot().user?.displayName || 'Administrator') : person||'your local profile')}</strong>.</p><form id="ct-decision-form">${field('decisionReason','Decision reason','','For a revision request, specify exactly what needs to change.',true)}<p id="ct-decision-message" class="ct-message" role="alert" tabindex="-1"></p><div class="ct-decision-buttons"><button class="button primary" value="approved" type="submit">${request.shared?'Approve & apply to Beta':'Approve'}</button><button class="button" value="revision" type="submit">Request revision</button><button class="button ct-reject" value="rejected" type="submit">Reject</button></div></form>`:request.decision?`<p><strong>${esc(statuses[request.status])}</strong> by ${esc(request.decision.by)}</p><p class="ct-preserve">${esc(request.decision.reason)}</p>`:'<p>Save and submit the draft to request a review.</p>'}${nextStep(request)}</section><details class="ct-detail-card ct-processing" data-processing><summary>Processing details <span class="ct-processing-alert" data-processing-alert hidden>Needs attention</span></summary><div data-github-status></div><section class="ct-processing-history"><h3>Request history</h3><p>Who submitted and reviewed this request, with their notes.</p><ol class="ct-history">${history||'<li>No activity recorded yet.</li>'}</ol></section></details></aside></div>`);
+      `<div class="ct-detail-grid"><article class="ct-detail-card">${contentReview(request,fields)}</article><aside><section class="ct-detail-card"><h2>${request.shared && request.status==='approved'?(request.approvalResult?.no_op?'Already in Beta':'Applied to Beta'):'Review &amp; decision'}</h2>${legacyContent(request) ? resubmitGuide(request) : request.shared && request.status==='pending' && window.AIWiseSharedStudio.snapshot().role !== 'admin' ? '<p>Awaiting administrator review. Only administrators can make a decision.</p>' : request.status==='pending'?`<p>Review the target reference and request before recording a decision as <strong>${esc(request.shared ? (window.AIWiseAuth.snapshot().user?.displayName || 'Administrator') : person||'your local profile')}</strong>.</p><form id="ct-decision-form">${field('decisionReason','Decision reason','','For a revision request, specify exactly what needs to change.',true)}<p id="ct-decision-message" class="ct-message" role="alert" tabindex="-1"></p><div class="ct-decision-buttons"><button class="button primary" value="approved" type="submit">${request.shared?'Approve & apply to Beta':'Approve'}</button><button class="button" value="revision" type="submit">Request revision</button><button class="button ct-reject" value="rejected" type="submit">Reject</button></div></form>`:request.decision?`<p><strong>${esc(statuses[request.status])}</strong> by ${esc(request.decision.by)}</p><p class="ct-preserve">${esc(request.decision.reason)}</p>`:'<p>Save and submit the draft to request a review.</p>'}${nextStep(request)}</section><details class="ct-detail-card ct-processing" data-processing><summary>Processing details <span class="ct-processing-alert" data-processing-alert hidden>Needs attention</span></summary><div data-github-status></div><section class="ct-processing-history"><h3>Request history</h3><p>Who submitted and reviewed this request, with their notes.</p><ol class="ct-history">${history||'<li>No activity recorded yet.</li>'}</ol></section></details></aside></div>`);
     const localProfile=document.querySelector('.ct-local');
     if(request.shared && localProfile)localProfile.hidden=true;
-    if(request.shared && request.status==='approved' && window.AIWiseGitHubPublishing){
+    if(request.shared && request.status==='approved' && !request.approvalResult?.no_op && window.AIWiseGitHubPublishing){
       const host=document.querySelector('[data-github-status]'),details=document.querySelector('[data-processing]'),alert=document.querySelector('[data-processing-alert]');
       let needsAttention=false;
       cleanup.push(window.AIWiseGitHubPublishing.mount(host,request.id,{onStatus:({attention})=>{
@@ -307,7 +307,10 @@
         if(!['approved','revision','rejected'].includes(status)||!reason)throw Error('Enter a reason and choose a decision.');
         if(request.shared){
           decisionForm.querySelectorAll('button').forEach(b=>b.disabled=true);
-          await window.AIWiseSharedStudio.decide(request.id,request.rev,status,reason);
+          if(status==='approved'){
+            const applied=await window.AIWiseApprovalReview.review(request,reason);
+            if(!applied){decisionForm.querySelectorAll('button').forEach(b=>b.disabled=false);return;}
+          }else await window.AIWiseSharedStudio.decide(request.id,request.rev,status,reason);
         } else { requirePerson();
         update(request.id,request.rev,r=>{if(r.status!=='pending')throw Error('This request already has a decision.');r.status=status;r.decision={status,reason,by:person,at:now()};event(r,statuses[status],reason);}); }
         dirty=false;await refresh();document.getElementById('room-title')?.focus({preventScroll:true});
@@ -316,6 +319,7 @@
   }
   function nextStep(request) {
     if (!request.shared) return '';
+    if (request.status==='approved' && request.approvalResult?.no_op) return '<div class="ct-next-step"><h3>Already reflected in Beta</h3><p>The reviewed result was already in Beta. This approval recorded the decision without replacing content or creating another deployment.</p>'+link('Preview in Beta →',betaLink(request),true)+'<p>Publishing to students remains a separate action.</p></div>';
     if (request.status==='approved') return '<div class="ct-next-step"><h3>Next: review in Beta</h3><p>Your changes were added to the current Beta review copy. Open the preview to check them with the team. It shows the latest approved content.</p>'+link('Preview in Beta →',betaLink(request),true)+'<p class="ct-publication-note"><strong>Student site:</strong> this approval does not publish to students. After the Beta review, an administrator uses <strong>Publish to students</strong> to release the reviewed content.</p></div>';
     if (request.status==='pending') return '<p class="ct-publication-note">Approval adds these changes to the current Beta review copy. The student site updates only after a separate <strong>Publish to students</strong> confirmation.</p>';
     if (request.status==='revision') return '<p class="ct-publication-note">Update the content in Studio and submit it again. This request has not changed Beta or the student site.</p>';
@@ -376,6 +380,10 @@
   }
   function contentReview(request,fields) {
     const snapshot=request.commonSnapshot||request.contentSnapshot;
+    if(request.approvalResult && !request.showingApplied){
+      const applied={...request,showingApplied:true,approvalResult:null,contentSnapshot:{...snapshot,baseSlots:request.approvalResult.base_slots,slots:request.approvalResult.slots}};
+      return '<h2>Approved result</h2><p>This records the reviewed result relative to Beta at approval time. The original submission is preserved below.</p>'+contentReview(applied,[])+ '<details class="ct-request-details"><summary>Original submitted request</summary>'+contentReview({...request,approvalResult:null},fields)+'</details>';
+    }
     const details=fields.map(([title,value])=>textBlock(title,value)).join('')+reference(request.targetRef);
     if (!snapshot) return details;
     const baseline=snapshot.baseSlots;

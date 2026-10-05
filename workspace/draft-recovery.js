@@ -1,4 +1,4 @@
-/* Three-way browser-draft review. No network or team-request writes. */
+/* Three-way content comparison and browser-draft recovery. Network writes belong to callers. */
 (() => {
   'use strict';
   const copy = v => v === undefined ? undefined : JSON.parse(JSON.stringify(v));
@@ -17,7 +17,8 @@
       safe(value[key], depth + 1);
     }
   }
-  const formatsAt = (slots, path) => (slots._studio?.formats || []).filter(f => f.slot === path[0] && path.slice(1).every((k, i) => f.path[i] === k)).sort((a, b) => JSON.stringify(a.path).localeCompare(JSON.stringify(b.path)));
+  const compareText = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+  const formatsAt = (slots, path) => (slots._studio?.formats || []).filter(f => f.slot === path[0] && path.slice(1).every((k, i) => f.path[i] === k)).sort((a, b) => compareText(JSON.stringify(a.path), JSON.stringify(b.path)));
   // Text and its rich runs are one value: never attach old formatting to new text.
   function plan(base, draft, latest, title = path => path.join(' · ')) {
     [base, draft, latest].forEach(safeValue => safe(safeValue));
@@ -55,9 +56,11 @@
     const result = {}, formats = [], boxes = [];
     let order = model.defaultOrder;
     for (const unit of model.units) {
-      const decision = unit.decision === 'conflict' ? choices[unit.id] : unit.decision;
-      if (!['beta', 'draft', 'same'].includes(decision)) throw Error('Choose a version for every overlapping change.');
-      const chosen = decision === 'draft' ? unit.mine : unit.beta;
+      const selection = unit.decision === 'conflict' ? choices[unit.id] : unit.decision;
+      const decision = typeof selection === 'object' ? selection.choice : selection;
+      if (!['beta', 'draft', 'same', 'edit'].includes(decision)) throw Error('Choose a version for every overlapping change.');
+      if (decision === 'edit' && (unit.kind !== 'field' || typeof unit.mine?.value !== 'string' || typeof unit.beta?.value !== 'string' || typeof selection.text !== 'string')) throw Error('This field cannot be edited here. Choose a version instead.');
+      const chosen = decision === 'edit' ? {value: selection.text, formats: []} : decision === 'draft' ? unit.mine : unit.beta;
       if (unit.kind === 'order') { order = chosen.value; continue; }
       if (chosen === undefined) continue;
       if (unit.kind === 'box') { boxes.push(copy(chosen.value)); continue; }
@@ -68,6 +71,7 @@
     }
     if (model.hasExtension || boxes.length || formats.length) {
       const ordered = [...new Set([...order, ...model.defaultOrder])].map(id => boxes.find(b => b.id === id)).filter(Boolean);
+      formats.sort((a, b) => compareText(a.slot, b.slot) || compareText(JSON.stringify(a.path), JSON.stringify(b.path)));
       result._studio = {version: 1, formats, boxes: ordered};
     }
     return result;
@@ -194,5 +198,5 @@
     draw();
     return {open() { if (!dialog.open) { dialog.showModal(); window.AIWiseMotion?.enter(dialog); q('#dr-title').focus(); } }, dispose() { dialog.close(); dialog.remove(); }};
   }
-  window.AIWiseDraftRecovery = {equal, plan, combine, storeRecovered, download, mount};
+  window.AIWiseDraftRecovery = {equal, plan, combine, storeRecovered, download, mount, valueView};
 })();

@@ -25,7 +25,8 @@
       details:r.summary,changes:r.summary,outcome:'Apply the approved chapter to Beta.',references:'',priority:'normal',
       author:{name:r.author_name,userId:r.author_id},createdAt:r.submitted_at,submittedAt:r.submitted_at,seenBy:{},
       decision:r.decided_at?{status:r.status,reason:r.decision_reason,by:r.reviewer_name,at:r.decided_at}:null,
-      events:[{action:'Submitted to team',by:r.author_name,at:r.submitted_at,reason:r.summary},...(r.decided_at?[{action:r.status==='approved'?'Approved and applied to Beta':r.status==='revision'?'Revision requested':'Rejected',by:r.reviewer_name,at:r.decided_at,reason:r.decision_reason}]:[])],
+      events:[{action:'Submitted to team',by:r.author_name,at:r.submitted_at,reason:r.summary},...(r.decided_at?[{action:r.status==='approved'?(r.approval_result?.no_op?'Approved — already in Beta':'Approved and applied to Beta'):r.status==='revision'?'Revision requested':'Rejected',by:r.reviewer_name,at:r.decided_at,reason:r.decision_reason}]:[])],
+      approvalResult:r.approval_result||null,
       contentSnapshot:{schema:1,course:r.course,chapter:r.chapter,locale:r.locale||'en',sourceRelease:r.source_release,courseName:name,savedAt:r.saved_at,slots:r.slots,baseSlots:r.base_slots}};
   }
   async function refresh() {
@@ -57,7 +58,18 @@
     await query(backend.rpc('workspace_decide_content',{p_id:id,p_revision:revision,p_status:status,p_reason:reason}));
     await refresh();
   }
-  window.AIWiseSharedStudio=Object.freeze({snapshot,refresh,submit,decide});
+  async function prepareApproval(id,revision) {
+    const backend=await client();
+    const capabilities=await query(backend.rpc('workspace_studio_capabilities'));
+    if(capabilities?.approval_merge!==1) throw Error('Item-by-item approval is not activated yet. Ask the owner to run CONTROL_TOWER_APPROVAL_SETUP.sql in Supabase, then try again. This request has not changed.');
+    return query(backend.rpc('workspace_prepare_content_approval',{p_id:id,p_revision:revision}));
+  }
+  async function applyApproval(id,revision,context,resolutions,result,reason) {
+    const backend=await client();
+    await query(backend.rpc('workspace_apply_content_approval',{p_id:id,p_revision:revision,p_expected_release:context.release,p_expected_slots:context.latest,p_resolutions:resolutions,p_result:result,p_reason:reason}));
+    await refresh();
+  }
+  window.AIWiseSharedStudio=Object.freeze({snapshot,refresh,submit,decide,prepareApproval,applyApproval});
   window.AIWiseAuth.subscribe(state=>{
     const key=state.status+':'+(state.user?.id||'')+':'+(state.role||'');
     if(key===identity)return;identity=key;generation++;rows=[];role=null;loaded=false;error='';notify();

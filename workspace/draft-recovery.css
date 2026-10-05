@@ -39,3 +39,4 @@
 .dr-dialog .aw-account-error:empty {display:none;}
 [data-cs-recover],[data-cs-backup] {margin:0 8px 12px 0;}
 @media(max-width:560px) {.dr-pair{grid-template-columns:minmax(0,1fr)}.dr-fork,.dr-version-heads{display:none}.dr-origin{margin-bottom:16px}.dr-body{padding:18px 16px}.dr-dialog .aw-account-header{padding:18px 16px}.dr-dialog .aw-account-header h2{font-size:21px}.dr-footer{padding:12px 16px}.dr-copy{padding:12px}.dr-radio{min-height:44px}}
+.dr-edit-choice{display:block;margin-top:12px}.dr-edit-choice textarea{display:block;width:100%;box-sizing:border-box;min-height:120px;margin:12px 0;padding:12px;border:1px solid var(--border,#d6d0c3);border-radius:6px;background:#fff;color:#211e2a;font:inherit;line-height:1.6}

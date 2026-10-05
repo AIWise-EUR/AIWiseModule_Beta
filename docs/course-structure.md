@@ -162,7 +162,9 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
 | 9 | Studio block editing | live; signed-in submission verified | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
 | 10 | Psychology SAT empty template | source prepared; owner SQL pending | [Setup](../supabase/PSYCHOLOGY_SAT_SETUP.md); existing requests remain unchanged |
-| 11 | Studio draft recovery | implemented; deployment verification pending | [Visual comparison and backups](studio-draft-recovery.md); no SQL or function changes |
+| 11 | Studio draft recovery | live; browser verified | [Visual comparison and backups](studio-draft-recovery.md); no SQL or function changes |
+
+| 12 | Control Tower item approval | implemented and tested; owner SQL pending | [Comparison rules and rollout](control-tower-item-approval.md) |
 
 ## How to verify
 
@@ -177,6 +179,14 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- 2026-10-05 — Added Control Tower three-way approval with field/box comparisons,
+  explicit conflict choices or custom text, exact final preview, immutable submitted
+  snapshots and separate approval audit. No-op approvals keep the current Beta release
+  and create no publishing job. SQL activation belongs to the owner; no Edge Function
+  change. Three actual stuck requests were checked read-only and remain pending.
+  See `control-tower-item-approval.md` for the ID-less list limitation and tests.
+
 
 - 2026-10-05 — Added real three-way comparison of saved browser drafts and current
   Beta in Common and Content Studio. Visual explanation, explicit overlap choices,
