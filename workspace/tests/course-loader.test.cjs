@@ -6,8 +6,9 @@ const root=path.resolve(__dirname,'../..'),read=file=>fs.readFileSync(path.join(
 const settle=()=>new Promise(resolve=>setTimeout(resolve,20));
 // Values created inside the loaded scripts belong to another realm; compare their plain data.
 const plain=value=>JSON.parse(JSON.stringify(value));
-async function page({search='',force='',stored=null,missing=false}={}){
+async function page({search='',force='',stored=null,scoped=null,missing=false}={}){
  const {document}=parseHTML(read('common/aiwise-c2-final.html')),store=new Map(stored?[['aiwise-course',stored]]:[]),scopes=[],requests=[];
+ if(scoped)store.set('aiwise-beta-course',scoped);
  if(force)document.documentElement.setAttribute('data-force-course',force);
  Object.defineProperty(document,'currentScript',{value:{src:'https://example.test/repo/pipelines/course-loader.js',hasAttribute:()=>false},configurable:true});
  Object.defineProperty(document,'readyState',{value:'complete',configurable:true});
@@ -27,15 +28,15 @@ test('a course shows its bachelor\'s examples under its own name',async()=>{
  assert.deepEqual(plain(p.window.AIWISE_COURSE.course),{id:'psychology.psychodiagnostics',short_name:'Psychodiagnostics',full_name:'Psychology – B1 – Psychodiagnostics',bachelor:'psychology'});
  assert.deepEqual(plain(p.window.AIWISE_COURSE.c2.examples),psychology.c2.examples);
  assert.deepEqual(p.scopes,[['psychology','en']],'approved examples are read for the bachelor, not the course');
- assert.equal(p.store.get('aiwise-course'),'psychology.psychodiagnostics');
+ assert.equal(p.store.get('aiwise-beta-course'),'psychology.psychodiagnostics');
  assert.ok(p.requests.includes('common/courses/registry.json'));assert.ok(p.requests.includes('course-specific/aws1/course-specific-content_aws1.json'));
 });
 test('earlier ids resolve to the course they now name and replace the remembered value',async()=>{
  const ped=await page({search:'?course=ped'});
  assert.equal(ped.window.AIWISE_COURSE_ID,'pedagogical-sciences.inleiding');assert.deepEqual(ped.scopes,[['pedagogical-sciences','en']]);
- assert.equal(ped.store.get('aiwise-course'),'pedagogical-sciences.inleiding');
+ assert.equal(ped.store.get('aiwise-beta-course'),'pedagogical-sciences.inleiding');
  const remembered=await page({stored:'other'});
- assert.equal(remembered.window.AIWISE_COURSE_ID,'psychology.aws1');assert.equal(remembered.store.get('aiwise-course'),'psychology.aws1');
+ assert.equal(remembered.window.AIWISE_COURSE_ID,'psychology.aws1');assert.equal(remembered.store.get('aiwise-beta-course'),'psychology.aws1');
 });
 test('an unknown course falls back to the default',async()=>{
  const p=await page({search:'?course=not-a-course'});
@@ -66,4 +67,13 @@ test('workspace registry names scopes, including the ids saved versions still us
  assert.equal(r.course('other').id,'psychology.aws1');assert.equal(r.course('nope'),null);
  assert.deepEqual(plain(r.coursesOf('psychology').map(c=>c.name)),['B1 – Academic Writing Skills I','B1 – Psychodiagnostics']);
  for(const broken of [{},{schema:1,bachelors:[],courses:[]},{schema:1,bachelors:[{id:'common',name:'X',content:'x.json'}],courses:[{bachelor:'common',id:'a',name:'A',short_name:'A'}]},{schema:1,bachelors:[{id:'b',name:'B',content:'x.json'}],courses:[{bachelor:'missing',id:'a',name:'A',short_name:'A'}]}])assert.throws(()=>registry().use(broken));
+});
+
+test('Beta imports legacy preferences once, preserves them, then prefers its own key',async()=>{
+ const migrated=await page({stored:'ped'});
+ assert.equal(migrated.store.get('aiwise-course'),'ped');
+ assert.equal(migrated.store.get('aiwise-beta-course'),'pedagogical-sciences.inleiding');
+ const independent=await page({stored:'ped',scoped:'psychology.psychodiagnostics'});
+ assert.equal(independent.window.AIWISE_COURSE_ID,'psychology.psychodiagnostics');
+ assert.equal(independent.store.get('aiwise-course'),'ped');
 });

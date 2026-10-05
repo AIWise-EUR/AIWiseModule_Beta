@@ -30,7 +30,9 @@
  */
 (function () {
   var ROOT_URL = new URL("../", document.currentScript.src);
-  var STORAGE_KEY = "aiwise-course";
+  var STORAGE_KEY = window.AIWisePublished ? "aiwise-published-course" : "aiwise-beta-course";
+  var LEGACY_STORAGE_KEY = "aiwise-course";
+  var needsCourseChoice = false;
   var DEFAULT_ID = document.documentElement.getAttribute("data-default-course") || "aws1";
 
   /* ── course id ─────────────────────────────────────────── */
@@ -42,11 +44,10 @@
     var fromUrl = null;
     try { fromUrl = new URLSearchParams(window.location.search).get("course"); } catch (e) {}
     if (fromUrl) {
-      try { localStorage.setItem(STORAGE_KEY, fromUrl); } catch (e) {}
       return fromUrl;
     }
     try {
-      var saved = localStorage.getItem(STORAGE_KEY);
+      var saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       if (saved) return saved;
     } catch (e) {}
     return DEFAULT_ID;
@@ -243,10 +244,29 @@
 
   /* ── load ──────────────────────────────────────────────── */
 
+  // Match exact courses only. A different course in the same bachelor is not an alias.
   function findCourse(list, id) {
     for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
     for (var j = 0; j < list.length; j++) if ((list[j].aliases || []).indexOf(id) !== -1) return list[j];
+    var legacy = {"psychology.aws1": "aws1", "pedagogical-sciences.inleiding": "ped"};
+    var oldId = Object.prototype.hasOwnProperty.call(legacy, id) ? legacy[id] : null;
+    if (oldId) for (var k = 0; k < list.length; k++) if (list[k].id === oldId) return list[k];
     return null;
+  }
+
+  function selectCourse(list, id) {
+    var entry = findCourse(list, id);
+    if (!entry && !window.AIWisePublished) entry = findCourse(list, DEFAULT_ID) || list[0];
+    if (!entry) {
+      var error = new Error("Course is not available in this published version.");
+      error.courseUnavailable = true;
+      throw error;
+    }
+    // Migrate only validated selections. Never change the shared legacy key or pinned pages.
+    if (!document.documentElement.getAttribute("data-force-course")) {
+      try { localStorage.setItem(STORAGE_KEY, entry.id); } catch (e) {}
+    }
+    return entry.id;
   }
 
   function fetchCourse(id) {
@@ -268,11 +288,7 @@
   function load(id, isFallback) {
     return Promise.resolve(window.AIWiseCommonReady).then(fetchManifest)
       .then(function (list) {
-        var entry = findCourse(list, id) || findCourse(list, DEFAULT_ID) || list[0];
-        if (!entry) throw new Error("no courses registered");
-        /* replace a remembered earlier id with the course it now names */
-        try { if (entry.id !== id && localStorage.getItem(STORAGE_KEY) === id) localStorage.setItem(STORAGE_KEY, entry.id); } catch (e) {}
-        id = entry.id;
+        id = selectCourse(list, id);
         return fetchCourse(id);
       })
       .then(function (data) {
@@ -286,11 +302,20 @@
       })
       .then(function (data) {
         document.getElementById("aiwise-beta-error")?.remove();
+        document.getElementById("aiwise-course-unavailable")?.remove();
         fillSlots(data);
         toggleRequired(data);
         announce(data, id);
       })
       .catch(function (err) {
+        if (err.courseUnavailable) {
+          needsCourseChoice = true;
+          var note = document.getElementById("aiwise-course-unavailable");
+          if (!note) { note = el("p", "aiwise-course-unavailable"); note.id = "aiwise-course-unavailable"; note.setAttribute("role", "status"); note.style.cssText = "padding:16px;background:#fff3cd;color:#663c00;margin:0"; document.body.prepend(note); }
+          note.textContent = "This course is not available in this published version. Choose an available course using the course menu.";
+          announce(null, null);
+          return;
+        }
         console.error("[course-loader] could not load course '" + id + "':", err);
         if (window.AIWiseBetaContent) {
           var warning = document.getElementById("aiwise-beta-error");
@@ -364,7 +389,7 @@
     var entry = null;
     list.forEach(function (c) { if (c.id === currentId) entry = c; });
     var currentName = entry ? entry.short_name
-      : (window.AIWISE_COURSE && window.AIWISE_COURSE.course && window.AIWISE_COURSE.course.short_name) || "AWS I";
+      : (window.AIWISE_COURSE && window.AIWISE_COURSE.course && window.AIWISE_COURSE.course.short_name) || copy("choose-course", "Choose your course");
 
     /* pill */
     var pill = document.createElement("button");
@@ -434,7 +459,7 @@
     if (document.documentElement.hasAttribute("data-no-course-ui") || document.documentElement.getAttribute("data-force-course")) return;
     fetchManifest()
       .then(function (list) {
-        var build = function () { buildUI(list, firstVisit); };
+        var build = function () { buildUI(list, firstVisit || needsCourseChoice); };
         if (window.AIWISE_COURSE_READY) build();
         else document.addEventListener("aiwise:course-loaded", build, { once: true });
       })
@@ -444,11 +469,11 @@
   }
 
   function start() {
-    /* read BEFORE resolveCourseId() stores a ?course= value */
+    /* Read before a validated selection is stored. Import old preferences once. */
     var firstVisit = false;
     try {
       var hasParam = new URLSearchParams(window.location.search).get("course");
-      if (!hasParam) firstVisit = !localStorage.getItem(STORAGE_KEY);
+      if (!hasParam) firstVisit = !(localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY));
     } catch (e) {}
     window.AIWiseCourseReady = load(resolveCourseId(), false);
     initUI(firstVisit);

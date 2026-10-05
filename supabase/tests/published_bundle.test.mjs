@@ -45,3 +45,8 @@ test('published runtime reads only its frozen file, preserves text safety and fa
  assert.deepEqual((await window.AIWisePublished.manifest()).map(c=>c.id),['psychology.aws1','psychology.psychodiagnostics','pedagogical-sciences.inleiding']);
  document.documentElement.dataset.publishedRelease='another';const other={...context,window:{}};vm.runInNewContext(out['published-content.js'],other);await assert.rejects(()=>other.window.AIWiseBetaContent.read('common'),/release is updating/);
 });
+
+test('generated Published loader migrates course aliases, isolates preferences and recovers unknown courses',async()=>{
+ const require=createRequire(import.meta.url);
+ await require('../../workspace/tests/published-compat-harness.cjs').check(build()['published-course-loader.js'],true);
+});

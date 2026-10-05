@@ -159,6 +159,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 5 | Share links page | not started | design agreed; no search box, no per-row description |
 | 6 | Activities | not started | |
 | 7 | Course overrides | not started | not needed yet |
+| 8 | Published ID compatibility | validated; deployment check pending | [Hotfix and full-transition plan](published-course-compat.md) |
 
 ## How to verify
 
@@ -173,6 +174,11 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- **2026-10-05** (Codex) Added isolated Beta/Published preferences and exact legacy
+  course aliases. Full tests pass, including generated Published loader scenarios.
+  See [Published compatibility record](published-course-compat.md) for the current
+  V5 hotfix and the later ID-transition plan. No SQL or Edge Function change.
 
 - **2026-10-04** (Claude) Recorded the decisions and the plan. No code changed.
 - **2026-10-04** (Claude) Built steps 1–3 on `claude/course-structure`. The owner chose
