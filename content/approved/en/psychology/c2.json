@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "sequence": 7,
+  "course": "psychology",
+  "chapter": "c2",
+  "locale": "en",
+  "submission_id": "29b69d9a-fab2-4557-b9d2-6286e4770939",
+  "source_release": null,
+  "approved_at": "2026-10-05T13:54:21.115412+00:00",
+  "slots": {
+    "c2.examples": [
+      {
+        "title": "Connecting studies in a literature review",
+        "typing": "\"How do I connect these two studies in my literature review?\"",
+        "thinking": "I need to find a way to connect these two studies for my literature review. One is about social media and self esteem, the other is about screen time and sleep. My professor said the transition between paragraphs matters a lot. I tried linking them through \"adolescent wellbeing\" but it felt too vague. I want something more specific but I am not sure what that would look like.",
+        "processing": "Full text of both papers is processed. Themes, findings, methodologies, theoretical frameworks all extracted. The most statistically likely \"helpful\" response pattern for \"connect these two studies\" is activated. → Generate a comprehensive answer covering multiple possible connection points: shared constructs, overlapping populations, complementary findings, theoretical alignment. Present them as options. Sound confident and thorough.",
+        "typing_note": "[uploads two PDFs]"
+      },
+      {
+        "title": "Creating practice questions",
+        "typing": "\"Make me some MCQs on chapter 4.\"",
+        "thinking": "My exam is next week and I want to test myself on chapter 4. The professor always writes tricky MCQs where two options look almost the same and you have to know the exact definition to tell them apart. I need questions that are at that level, not the easy ones where you can guess by elimination.",
+        "processing": "Full chapter text is processed. Key concepts, definitions, and relationships identified. \"MCQ\" triggers a default format: one correct answer, three distractors, medium difficulty, recall focused. → Generate questions that cover the chapter evenly, make distractors plausible but clearly distinguishable from the correct answer.",
+        "typing_note": "[pastes chapter 4 text]"
+      },
+      {
+        "title": "Summarizing a paper",
+        "typing": "\"Can you summarize this paper?\"",
+        "thinking": "I read this paper but I am not sure I understood the method section. I think they used a between subjects design but the way they describe the groups is confusing. I do not need a full summary, I just need someone to explain the design so I can figure out whether their conclusion actually follows from it.",
+        "processing": "Full paper is processed. All sections weighted. \"Summarize\" triggers a default structure: background, aim, method, key findings, conclusion. Roughly equal coverage across sections. → Produce something that reads like a complete, balanced overview. Sound clear and organized.",
+        "typing_note": "[uploads PDF]"
+      },
+      {
+        "title": "Understanding a concept",
+        "typing": "\"What is ecological validity?\"",
+        "thinking": "The professor used the term \"ecological validity\" in the lecture today and I kind of got it from context, but when I tried to explain it to my friend I couldn't. I think it has something to do with how realistic a study is, but I am not sure if it is about the setting, the task, or both. And I am confused about how it is different from external validity because they sound like they overlap.",
+        "processing": "A definition request. \"Ecological validity\" is a well represented concept in the training data. → Generate a clear, textbook style definition. Add an example. Possibly mention related terms. Present a self contained explanation, covering the concept broadly rather than targeting any specific point of confusion."
+      },
+      {
+        "title": "Asking for feedback on your writing",
+        "typing": "\"What do you think of this? Any feedback?\"",
+        "thinking": "I spent two hours on this introduction and I think the argument flows okay, but the last sentence feels weak. My tutor told me last time that I tend to state things too broadly without committing to a clear position. I want to know if I am doing that again here, specifically in the last two sentences.",
+        "processing": "A paragraph is provided. Feedback requested with no specific focus. → Scan for grammar, clarity, structure, and argument strength across the entire paragraph. Generate a balanced set of comments covering multiple aspects. Highlight positives first, then suggest improvements. Distribute attention evenly across the whole text.",
+        "typing_note": "[pastes paragraph]"
+      },
+      {
+        "title": "Writing a motivation letter",
+        "typing": "\"Help me write a motivation letter for a research internship.\"",
+        "thinking": "I am applying for this internship at a research lab and I really want it because the supervisor published a paper I referenced in my thesis. I have some relevant experience from my stats course and a small project I did with a classmate, but I am not sure if that counts. The deadline is tomorrow and I saw that they value \"independent thinkers\" but I do not want to sound arrogant.",
+        "processing": "A motivation letter for a research internship. No specific lab, no field, no applicant background, no deadline pressure, no tone preference. → Generate a polished, general purpose motivation letter template. Use broadly applicable language about \"passion for research\" and \"eagerness to learn.\" Structure it in a standard format. Sound professional and enthusiastic."
+      }
+    ],
+    "c2.sat_example": {
+      "note": "",
+      "phases": [
+        {
+          "label": "Self–AI",
+          "steps": [
+            {
+              "name": "Intent",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "Operationalize",
+              "text": "",
+              "actor": "ai"
+            },
+            {
+              "name": "Judge",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "Refine",
+              "text": "",
+              "actor": "ai"
+            }
+          ]
+        },
+        {
+          "label": "Self–Team",
+          "steps": [
+            {
+              "name": "Present",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "Feedback",
+              "text": "",
+              "actor": "team"
+            },
+            {
+              "name": "Integrate",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "Expand",
+              "text": "",
+              "actor": "team"
+            }
+          ]
+        },
+        {
+          "label": "Self–AI",
+          "steps": [
+            {
+              "name": "Intent",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "Operationalize",
+              "text": "",
+              "actor": "ai"
+            },
+            {
+              "name": "Judge",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "Refine",
+              "text": "",
+              "actor": "ai"
+            }
+          ]
+        }
+      ]
+    },
+    "c2.sat_example_title": "Psychology S.A.T example"
+  }
+}
