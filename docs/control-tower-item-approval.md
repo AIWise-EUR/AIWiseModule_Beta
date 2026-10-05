@@ -5,9 +5,9 @@
 | Part | Status |
 | --- | --- |
 | Comparison UI and guarded SQL | Implemented; local SQL and browser tests pass |
-| Frontend | Included in development / Beta; capability-gated until owner SQL |
-| Supabase activation | Owner pending: [setup](../supabase/CONTROL_TOWER_APPROVAL_SETUP.md) |
-| Live pending requests | Read-only checked; no approvals or data edits performed |
+| Frontend | Live on Beta; deployed files verified at `51f03b8` |
+| Supabase activation | Owner applied; `approval_merge: 1` and guarded RPC grants verified |
+| Live pending requests | All three real signed-in comparisons and final previews verified, then cancelled; no decisions recorded |
 
 ## Target identity and merge rule
 
@@ -74,9 +74,18 @@ changes make confirmation fail; close and reopen to see a fresh comparison.
   `6f01e530-42e7-4a4d-b2ee-47d8a12b89a1` and
   `59f31469-f327-4d7e-a710-4eec97ace5c4` were passed through both local merge engines.
   All have zero overlaps at verification time; the middle request is already reflected.
-  Actual live approval remains untested until owner activation and a deliberate review.
+  Signed-in comparison and final preview were subsequently verified after activation.
+  Actual approval writes still await a deliberate review; no test approval was performed.
 
 ## Log
 
 - 2026-10-05 — Implemented comparison-based Control Tower approval and owner setup.
   No existing pending request was changed. See the scope/list limitations above.
+
+- 2026-10-05 — Owner applied setup. Live checks: 7 passed, 0 failed; capability
+  and RPC grants verified. Signed-in administrator opened all three pending requests
+  and reached the final preview, then cancelled. C1 preview only adds Academic
+  responsibility while retaining newer copy; the output request only changes Text 2
+  while preserving both newer C2 boxes; the intersubjective request reports already
+  in Beta. No approval/revision/rejection was recorded. Temporary inputs and tab
+  were cleared after checking.

@@ -164,7 +164,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 10 | Psychology SAT empty template | source prepared; owner SQL pending | [Setup](../supabase/PSYCHOLOGY_SAT_SETUP.md); existing requests remain unchanged |
 | 11 | Studio draft recovery | live; browser verified | [Visual comparison and backups](studio-draft-recovery.md); no SQL or function changes |
 
-| 12 | Control Tower item approval | implemented and tested; owner SQL pending | [Comparison rules and rollout](control-tower-item-approval.md) |
+| 12 | Control Tower item approval | live; signed-in previews verified | [Comparison rules and rollout](control-tower-item-approval.md) |
 
 ## How to verify
 
@@ -179,6 +179,10 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- 2026-10-05 — Owner activated item approval. All seven live checks passed. Three
+  real signed-in pending requests reached comparison and final preview successfully;
+  each was cancelled without recording a decision. See `control-tower-item-approval.md`.
 
 - 2026-10-05 — Added Control Tower three-way approval with field/box comparisons,
   explicit conflict choices or custom text, exact final preview, immutable submitted
