@@ -162,8 +162,9 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
 | 9 | Studio block editing | live; signed-in submission verified | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
 | 10 | Psychology SAT empty template | source prepared; owner SQL pending | [Setup](../supabase/PSYCHOLOGY_SAT_SETUP.md); existing requests remain unchanged |
-| 11 | Studio draft recovery | implemented; deployment verification pending | [Visual comparison and backups](studio-draft-recovery.md); no SQL or function changes |
-| 12 | AI Port | in progress (Claude, branch `development-q6ets7`) | [Brief, express inlet, GitHub setup](ai-port.md); touches `workspace/ai-port.*`, one line in `content-studio.js`, the guides, `CLAUDE.md` |
+| 11 | Studio draft recovery | live; browser verified | [Visual comparison and backups](studio-draft-recovery.md); no SQL or function changes |
+| 12 | Control Tower item approval | live; signed-in previews verified | [Comparison rules and rollout](control-tower-item-approval.md) |
+| 13 | AI Port | in progress (Claude, branch `development-q6ets7`) | [Brief, express inlet, GitHub setup](ai-port.md); touches `workspace/ai-port.*`, one line in `content-studio.js`, the guides, `CLAUDE.md` |
 
 ## How to verify
 
@@ -182,6 +183,18 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 - 2026-10-05 (Claude) Started the AI Port on `development-q6ets7`: a brief for the
   member's own Claude/ChatGPT and an express inlet that applies the answer to the Studio
   draft. Record and member setup in `ai-port.md`. No SQL or Edge Function change.
+
+- 2026-10-05 — Owner activated item approval. All seven live checks passed. Three
+  real signed-in pending requests reached comparison and final preview successfully;
+  each was cancelled without recording a decision. See `control-tower-item-approval.md`.
+
+- 2026-10-05 — Added Control Tower three-way approval with field/box comparisons,
+  explicit conflict choices or custom text, exact final preview, immutable submitted
+  snapshots and separate approval audit. No-op approvals keep the current Beta release
+  and create no publishing job. SQL activation belongs to the owner; no Edge Function
+  change. Three actual stuck requests were checked read-only and remain pending.
+  See `control-tower-item-approval.md` for the ID-less list limitation and tests.
+
 
 - 2026-10-05 — Added real three-way comparison of saved browser drafts and current
   Beta in Common and Content Studio. Visual explanation, explicit overlap choices,
