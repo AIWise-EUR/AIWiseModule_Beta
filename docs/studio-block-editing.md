@@ -12,6 +12,7 @@ Working record, 2026-10-05. Source baseline: development `d4c31e7`.
 | Content examples | Implemented | Add/duplicate/reorder/remove C2 example cards; keep at least one |
 | Text formatting | Implemented | Selected words: bold, italic, palette, 14–36 px, clear; added-box alignment and size |
 | Control Tower, approved archive and frozen release | Implemented | New extension retained; readable comparison; existing approval rules |
+| Cross-chapter course boxes | Fixed; verified before deployment | C2 boxes no longer break C1/C3 or Studio preview; 2026-10-06 incident below |
 | Production backend | Owner will apply in Dashboard | See `supabase/STUDIO_BLOCKS_SETUP.md` |
 | Live signed-in submission | Not verified | Requires backend activation and the real user's session |
 
@@ -115,3 +116,35 @@ that storage key; existing Control Tower regression tests cover their old format
 - 2026-10-05: Full repository tests passed (including the new migration, archive and
   release tests). Owner explicitly chose to apply SQL and redeploy both functions in
   Dashboard. No production backend changes were made by Codex.
+
+
+## 2026-10-06: Neus draft/preview incident
+
+- All 13 submissions were approved at the read-only audit; the latest Psychology
+  C2 and Common C1/C2/C3 records were present in Supabase, GitHub and deployed Beta
+  (`381919e`). Student release V9 was consistent. This is evidence that submitted
+  edits survived, not proof about unsent local drafts on Neus's device.
+- Reproduced `The added box location is no longer available` with the actual
+  approved Psychology C2 SAT note (`80f83cd9-140e-4f15-8bcb-42ca4a14d9fc`). Course
+  data contains C2 and C3 together. The renderer tried to insert its C2 box into
+  C1/C3 documents that have no such slot, aborting course loading and Common Studio
+  preview before the saved-draft recovery dialog could open.
+- Fix: only render course boxes for chapters with slots in the current document.
+  A missing anchor within the displayed chapter still fails; content is not dropped
+  or relabelled. Same renderer is used by Studio, Beta and generated Published
+  bundles. Script cache stamps and HTML hashes are refreshed; slot schemas do not
+  change. No SQL, functions, submission rows, release content or browser drafts change.
+- Verification: all 44 repository test files passed; regression covers C1/C2/C3 with
+  boxes from both course chapters, repeat rendering, input preservation and a bad
+  anchor in the current chapter. Real approved-data browser harness opened Common
+  C1/C2/C3 and Psychology C2. Existing browser recovery test passed (backup, reload,
+  submit, changed Beta, another-tab race, malformed draft). A read-only browser
+  override of the fixed renderer on actual Beta and student V9 pages showed no
+  alerts for C1/C2/C3, with 1/3/1 added boxes retained.
+- Separate status issue: the C1 `0e31adb` and C3 `9562db8` Pages runs were cancelled
+  by subsequent deployments, although Control Tower records them as failure. Later
+  successful `381919e` includes both. This status-label issue did not cause the
+  screenshot's preview/load failure; the worker status logic is unchanged here.
+- Deploy Beta source and the same runtime-only patch to current student V9; retain
+  `published-content.json` byte-for-byte and keep the release ID. New releases inherit
+  this fix from Beta; already-prepared older bundles must be prepared afresh.

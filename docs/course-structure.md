@@ -160,7 +160,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 6 | Activities | not started | |
 | 7 | Course overrides | not started | not needed yet |
 | 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
-| 9 | Studio block editing | live; signed-in submission verified | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
+| 9 | Studio block editing | live; cross-chapter box fix verified | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
 | 10 | Psychology SAT empty template | source prepared; owner SQL pending | [Setup](../supabase/PSYCHOLOGY_SAT_SETUP.md); existing requests remain unchanged |
 | 11 | Studio draft recovery | live; browser verified | [Visual comparison and backups](studio-draft-recovery.md); no SQL or function changes |
 
@@ -179,6 +179,12 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- 2026-10-06 — Diagnosed Neus preview/load failure using actual approved data. A
+  Psychology C2 box was being rendered on C1/C3. Restricted course box rendering
+  to chapters present in the document; all 44 test files and browser draft recovery
+  passed. Existing drafts, submissions and V9 content retained. See the incident
+  entry in `studio-block-editing.md`; Control Tower cancelled-run status is separate.
 
 - 2026-10-05 — Owner activated item approval. All seven live checks passed. Three
   real signed-in pending requests reached comparison and final preview successfully;

@@ -37,3 +37,22 @@ test('real course example cards allow optional context notes when cards are adde
  const M=setup().AIWiseStudioBlocks,data=JSON.parse(fs.readFileSync(path.join(root,'course-specific/aws1/course-specific-content_aws1.json'),'utf8'));
  const base={'c2.examples':data.c2.examples},next=structuredClone(base);next['c2.examples'].push({title:'New',thinking:'',typing:'',processing:''});assert.ok(M.validCopy(next,base));
 });
+
+test('course boxes render only in their chapter, including when both chapters carry approved boxes',()=>{
+ const M=setup().AIWiseStudioBlocks;
+ const docs=Object.fromEntries(['c1','c2','c3'].map(chapter=>[chapter,parseHTML(fs.readFileSync(path.join(root,'common/aiwise-'+chapter+'-final.html'),'utf8')).document]));
+ const makeBox=(chapter,index)=>({id:'box-11111111-1111-4111-8111-11111111111'+index,slot:docs[chapter].querySelector('[data-slot]').dataset.slot,template:'text',anchor:0,fields:[[{text:chapter+' heading'}],[{text:chapter+' saved body'}]],align:'left',size:0});
+ const c2=makeBox('c2',2),c3=makeBox('c3',3),data={_studio:{c2:{version:1,formats:[],boxes:[c2]},c3:{version:1,formats:[],boxes:[c3]}}};
+ const saved=JSON.stringify(data);
+ for(const [chapter,doc] of Object.entries(docs)){
+  for(let render=0;render<2;render++){
+   assert.doesNotThrow(()=>M.course(doc,data),chapter+' must load despite boxes saved in other chapters');
+   const added=[...doc.querySelectorAll('[data-studio-course-box]')];
+   assert.equal(added.length,chapter==='c1'?0:1);
+   if(added.length)assert.equal(added[0].textContent,chapter+' heading'+chapter+' saved body');
+  }
+ }
+ assert.equal(JSON.stringify(data),saved,'rendering must not modify saved content');
+ const broken={_studio:{c2:{version:1,formats:[],boxes:[{...c2,slot:'c2.missing'}]}}};
+ assert.throws(()=>M.course(docs.c2,broken),/location is no longer available/,'missing anchors in the displayed chapter remain errors');
+});

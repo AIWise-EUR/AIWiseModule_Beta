@@ -121,7 +121,15 @@
       for(const segment of segments){const a=Math.max(start,segment.start),b=Math.min(end,segment.end);if(a>=b)continue;const n=segment.node,before=n.nodeValue.slice(0,a-segment.start),after=n.nodeValue.slice(b-segment.start);replaceText(n,[...(before?rich(before):[]),...slice(a-start,b-start),...(after?rich(after):[])],'course');}
 
     }
-    for(const chapter of ['c2','c3']){const boxes=data._studio?.[chapter]?.boxes||[];if(!boxes.length)continue;const blocks=[...new Set(boxes.map(b=>b.slot))].map(path=>{let node=doc.querySelector('[data-slot=\"'+path+'\"]');if(path==='c2.examples')node=node?.closest('.carousel-container')||node;return {path,node};}).filter(b=>b.node);common(doc,{_studio:{version:1,formats:[],boxes}},blocks);for(const b of boxes)doc.querySelector('[data-studio-box=\"'+b.id+'\"]')?.setAttribute('data-studio-course-box','');}
+    for(const chapter of ['c2','c3']){
+      // Course data carries both chapters even when this document displays only one.
+      // Keep missing-anchor checks for the displayed chapter, not unrelated chapters.
+      if(!doc.querySelector('[data-slot^="'+chapter+'."]'))continue;
+      const boxes=data._studio?.[chapter]?.boxes||[];if(!boxes.length)continue;
+      const blocks=[...new Set(boxes.map(b=>b.slot))].map(path=>{let node=doc.querySelector('[data-slot="'+path+'"]');if(path==='c2.examples')node=node?.closest('.carousel-container')||node;return {path,node};}).filter(b=>b.node);
+      common(doc,{_studio:{version:1,formats:[],boxes}},blocks);
+      for(const b of boxes)doc.querySelector('[data-studio-box="'+b.id+'"]')?.setAttribute('data-studio-course-box','');
+    }
   }
   function validCopy(value,base,field='') {
     if(typeof base==='string')return typeof value==='string'&&value.length<=100000&&(field!=='actor'||!['self','student','ai','team'].includes(base)||['self','student','ai','team'].includes(value))&&(field!=='tag'||!['adopt','modify','discard'].includes(base)||['adopt','modify','discard'].includes(value));
