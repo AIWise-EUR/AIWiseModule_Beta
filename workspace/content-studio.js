@@ -13,6 +13,15 @@
   const clone = value => JSON.parse(JSON.stringify(value));
   const sameSourceHTML=(a,b)=>typeof a==='string'&&a.replace(/(\.\.\/pipelines\/(?:beta-content|common-content|course-loader)\.js)\?[^\"\n]*/g,'$1')===b.replace(/(\.\.\/pipelines\/(?:beta-content|common-content|course-loader)\.js)\?[^\"\n]*/g,'$1');
   const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  // Preserve older Psychology drafts when its previously absent SAT slots are
+  // introduced as an empty template. Never overwrite an authored SAT value.
+  function extendEmptySAT(values, baseline, source) {
+    const keys=['c2.sat_example_title','c2.sat_example'],sat=source[keys[1]];
+    if(!values||!baseline||source[keys[0]]!=='S.A.T worked example'||sat?.note!==''||!sat?.phases?.length||
+      !sat.phases.every(p=>p.steps?.length&&p.steps.every(step=>step.text===''))||
+      keys.some(k=>Object.hasOwn(values,k)||Object.hasOwn(baseline,k)))return false;
+    keys.forEach(k=>{values[k]=clone(source[k]);baseline[k]=clone(source[k]);});return true;
+  }
   const get = (data, path) => path.split('.').reduce((value, key) => value?.[key], data);
   const put = (data, path, value) => {
     const keys = path.split('.'), last = keys.pop();
@@ -637,6 +646,7 @@
             if ((saved.slots === undefined) !== (saved.baseSlots === undefined)) throw Error('Incomplete draft');
             values = {...(saved.slots ?? extras), 'c2.examples': saved.examples};
             baseline = {...(saved.baseSlots ?? extras), 'c2.examples': saved.baseExamples};
+            if(extendEmptySAT(values,baseline,s.base))s.needsUpgrade=true;
           } else {
             if (saved.chapter !== chapter) throw Error('Wrong chapter');
             values = saved.slots; baseline = saved.baseSlots;

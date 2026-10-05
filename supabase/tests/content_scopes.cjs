@@ -42,7 +42,8 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
  const saved=JSON.stringify((await owner('select id,content from workspace_beta_versions order by number')));
  const job=JSON.stringify(await owner('select course,chapter,locale,payload from workspace_github_jobs where submission_id=$1',[approved]));
 
- await run(files.filter(f=>f>=change));
+ // Compare the rename alone, without later content additions to the source catalog.
+ await run([change]);
 
  // Scopes are public names and cannot be changed through the API.
  const scopes=await as(null,'select id,kind,name,retired from workspace_content_scopes order by id');

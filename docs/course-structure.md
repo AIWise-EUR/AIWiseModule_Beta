@@ -160,7 +160,8 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 6 | Activities | not started | |
 | 7 | Course overrides | not started | not needed yet |
 | 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
-| 9 | Studio block editing | Implemented; backend activation pending | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
+| 9 | Studio block editing | live; signed-in submission verified | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
+| 10 | Psychology SAT empty template | source prepared; owner SQL pending | [Setup](../supabase/PSYCHOLOGY_SAT_SETUP.md); existing requests remain unchanged |
 
 ## How to verify
 
@@ -175,6 +176,18 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- 2026-10-05 — Owner activated Studio block editing. Live functions matched supplied
+  source; the seven live checks passed. Real authenticated Common Studio requests
+  successfully reached Control Tower as Team/Awaiting approval (C1 responsibility,
+  C2 choice notice plus earlier intersubjective box, C3 closing dialogue box).
+  Existing requests were retained. Same-chapter requests retain the stale-approval
+  guard; the C2 combined request explicitly identifies the earlier request it includes.
+- 2026-10-05 — Added empty Psychology S.A.T source fields using PED's exact three
+  phase/twelve-step structure and existing renderer. No example prose copied. Added
+  guarded, repeatable owner SQL, old-browser-draft compatibility and tests. Only the
+  owner SQL and real blank-template submission remain pending; no Edge Function
+  change is required. See `supabase/PSYCHOLOGY_SAT_SETUP.md`.
 
 - **2026-10-05** (Codex) Added isolated Beta/Published preferences and exact legacy
   course aliases. Full tests pass, including generated Published loader scenarios.

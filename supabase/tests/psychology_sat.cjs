@@ -1,0 +1,38 @@
+const {PGlite}=require(process.env.PGLITE_MODULE||'@electric-sql/pglite');
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+(async()=>{
+ const db=new PGlite();await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;
+ create table auth.users(id uuid primary key,raw_user_meta_data jsonb default '{}',email text,email_confirmed_at timestamptz,created_at timestamptz default now(),deleted_at timestamptz,is_anonymous boolean default false);
+ create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+ grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
+ const root=path.resolve(__dirname,'../..'),name='20261005123138_psychology_sat_template.sql',dir=path.join(root,'supabase/migrations');
+ for(const f of fs.readdirSync(dir).filter(f=>f.endsWith('.sql')&&f<name).sort())await db.exec(fs.readFileSync(path.join(dir,f),'utf8'));
+ const user='11111111-1111-4111-8111-111111111111';
+ await db.query("insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values($1,'test@example.test',now(),'{\"display_name\":\"SAT test\"}')",[user]);
+ await db.query("insert into workspace_members(user_id,role,active) values($1,'admin',true)",[user]);
+ const owner=async(sql,args=[])=>{await db.exec('reset role');return(await db.query(sql,args)).rows;};
+ const as=async(sql,args=[])=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[user]);await db.exec('set role authenticated');return(await db.query(sql,args)).rows;};
+ const source=async(course,locale='en')=>(await owner("select slots from workspace_content_sources where course=$1 and chapter='c2' and locale=$2",[course,locale]))[0].slots;
+ const submit=async(course,slots,base)=>(await as("select workspace_submit_localized_content($1,$2,'c2',$3,$4,null,now(),'SAT template test','en',null) id",[crypto.randomUUID(),course,slots,base]))[0].id;
+ const common=await source('common'),edited=structuredClone(common);const key=Object.keys(edited)[0];edited[key][Object.keys(edited[key])[0]]+=' edited';
+ await submit('common',edited,common);
+ const snapshot=async()=>JSON.stringify(await owner('select to_jsonb(s) row from workspace_submissions s order by id'));
+ const before=await snapshot(),old=await source('psychology'),other=JSON.stringify(await owner("select to_jsonb(s) row from workspace_content_sources s where course<>'psychology' or chapter<>'c2' order by course,chapter,locale"));
+ const sql=fs.readFileSync(path.join(dir,name),'utf8');assert.equal(sql,fs.readFileSync(path.join(root,'supabase/PSYCHOLOGY_SAT_SETUP.sql'),'utf8'));
+ await db.exec(sql);assert.equal(await snapshot(),before,'existing pending requests stay byte-identical');
+ assert.equal(JSON.stringify(await owner("select to_jsonb(s) row from workspace_content_sources s where course<>'psychology' or chapter<>'c2' order by course,chapter,locale")),other);
+ const base=await source('psychology'),psy=JSON.parse(fs.readFileSync(path.join(root,'course-specific/aws1/course-specific-content_aws1.json'),'utf8')).c2;
+ assert.deepEqual(base['c2.examples'],old['c2.examples']);assert.deepEqual(base['c2.sat_example'],psy.sat_example);
+ assert.deepEqual((await source('psychology','nl'))['c2.sat_example'],psy.sat_example);
+ const content=structuredClone(base);content['c2.sat_example_title']='Psychology S.A.T example';content['c2.sat_example'].phases[0].steps[0].text='A psychology example entered later.';
+ const id=await submit('psychology',content,base);await as("select workspace_decide_content($1,1,'approved','Approved test')",[id]);
+ const approved=JSON.stringify(await owner("select to_jsonb(s) row from workspace_beta_content s"));
+ await db.exec(sql);assert.equal(JSON.stringify(await owner("select to_jsonb(s) row from workspace_beta_content s")),approved,'rerun does not replace approved author content');
+ // A fresh installation must stop if another editor submits Psychology first.
+ await owner("delete from workspace_beta_content where course='psychology'");
+ await owner("update workspace_content_sources set slots=slots-'c2.sat_example'-'c2.sat_example_title' where course='psychology' and chapter='c2'");
+ const fresh=await source('psychology');await submit('psychology',fresh,fresh);
+ const pendingBefore=await snapshot();await assert.rejects(()=>db.exec(sql),/pending request/);await db.exec('rollback');
+ assert.equal(await snapshot(),pendingBefore);assert.equal((await source('psychology'))['c2.sat_example'],undefined);
+ console.log('PASS psychology_sat: blank PED structure, preserved pending and examples, EN/NL shape, authenticated authoring/approval, safe repeat and concurrent-pending guard');await db.close();
+})().catch(e=>{console.error(e);process.exit(1);});

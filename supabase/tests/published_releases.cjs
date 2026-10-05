@@ -22,6 +22,12 @@ const root=path.resolve(__dirname,'../..');
  const {buildRelease,readRegistry,SOURCE_FILES}=await import('../functions/aiwise-release/index.ts');
  const sources=Object.fromEntries(SOURCE_FILES.map(f=>[f,fs.readFileSync(path.join(root,f),'utf8')]));
  for(const b of readRegistry(sources['common/courses/registry.json']).bachelors)sources[b.content]=fs.readFileSync(path.join(root,b.content),'utf8');
+ // Historical versions predate Psychology's optional SAT scaffold. Build this
+ // frozen release with the matching historical source shape, not today's slots.
+ const psychology=readRegistry(sources['common/courses/registry.json']).bachelors.find(b=>b.id==='psychology');
+ const historicalPsychology=JSON.parse(sources[psychology.content]);
+ delete historicalPsychology.c2.sat_example;delete historicalPsychology.c2.sat_example_title;
+ sources[psychology.content]=JSON.stringify(historicalPsychology);
  if(process.env.RELEASE_FIXTURE_DIR){fs.mkdirSync(process.env.RELEASE_FIXTURE_DIR,{recursive:true});fs.writeFileSync(path.join(process.env.RELEASE_FIXTURE_DIR,'version.json'),JSON.stringify(v));}
  const files=buildRelease(id,v,'a'.repeat(40),'b'.repeat(40),sources);
  const store='select workspace_store_release($1,$2,$3,$4,$5,$6)';const args=[id,version,admin,'a'.repeat(40),'b'.repeat(40),files];

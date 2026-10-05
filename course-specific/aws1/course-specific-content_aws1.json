@@ -46,7 +46,88 @@
         "typing": "\"Help me write a motivation letter for a research internship.\"",
         "processing": "A motivation letter for a research internship. No specific lab, no field, no applicant background, no deadline pressure, no tone preference. → Generate a polished, general purpose motivation letter template. Use broadly applicable language about \"passion for research\" and \"eagerness to learn.\" Structure it in a standard format. Sound professional and enthusiastic."
       }
-    ]
+    ],
+    "sat_example_title": "S.A.T worked example",
+    "sat_example": {
+      "phases": [
+        {
+          "label": "Self–AI",
+          "steps": [
+            {
+              "actor": "self",
+              "name": "Intent",
+              "text": ""
+            },
+            {
+              "actor": "ai",
+              "name": "Operationalize",
+              "text": ""
+            },
+            {
+              "actor": "self",
+              "name": "Judge",
+              "text": ""
+            },
+            {
+              "actor": "ai",
+              "name": "Refine",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "label": "Self–Team",
+          "steps": [
+            {
+              "actor": "self",
+              "name": "Present",
+              "text": ""
+            },
+            {
+              "actor": "team",
+              "name": "Feedback",
+              "text": ""
+            },
+            {
+              "actor": "self",
+              "name": "Integrate",
+              "text": ""
+            },
+            {
+              "actor": "team",
+              "name": "Expand",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "label": "Self–AI",
+          "steps": [
+            {
+              "actor": "self",
+              "name": "Intent",
+              "text": ""
+            },
+            {
+              "actor": "ai",
+              "name": "Operationalize",
+              "text": ""
+            },
+            {
+              "actor": "self",
+              "name": "Judge",
+              "text": ""
+            },
+            {
+              "actor": "ai",
+              "name": "Refine",
+              "text": ""
+            }
+          ]
+        }
+      ],
+      "note": ""
+    }
   },
   "c3": {
     "techniques": {
