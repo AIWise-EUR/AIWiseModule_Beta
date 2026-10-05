@@ -32,8 +32,9 @@ Working record, 2026-10-05. Source baseline: development `d4c31e7`.
   Other existing array shapes stay fixed. Formatting follows examples on moves and
   duplication. Added boxes have their own UUIDs; old Common block IDs are not shifted.
 - Only JavaScript cache-stamp changes are ignored when comparing a saved Common
-  draft's source HTML. Actual markup changes and changed approved baselines still
-  block stale drafts without overwriting them.
+  draft's source HTML. Actual markup changes remain protected. Changed approved
+  baselines now open [visual draft recovery](studio-draft-recovery.md), preserving
+  the original and requiring choices for overlapping changes before saving.
 - A previously pending request remains an immutable old-format request. It can still
   be approved if its original baseline is current. Once another request for that
   scope/chapter/language is approved, the normal stale-approval guard requires revision;

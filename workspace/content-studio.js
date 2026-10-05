@@ -54,6 +54,7 @@
     s.host.querySelectorAll('.cs-status').forEach(node => { node.textContent = text; node.dataset.error = String(error); });
   }
   function controls(s) {
+    s.host.querySelectorAll('[data-cs-edit]').forEach(button => button.disabled = !s.ready || s.blocked);
     s.host.querySelectorAll('[data-cs-save]').forEach(button => button.disabled = !s.ready || s.blocked || (!dirty() && s.raw !== null && !s.needsUpgrade));
     s.host.querySelectorAll('[data-cs-submit]').forEach(button => {
       button.disabled = !canSubmit(s);
@@ -91,8 +92,9 @@
       Object.keys(base).every(k => valid(value[k], base[k], k));
   }
   function record(s) {
-    if (s.isCommon) return {schema: 1, scope: 'common', chapter: s.chapter, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString(), sourceHTML: s.sourceHTML, blockTitles: Object.fromEntries(s.items.map(item => [item.path, item.title])), baseSlots: s.base, slots: s.values};
-    const shared = {schema: 1, course: s.courseId, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString()};
+    const recovery = s.backupKey ? {recoveryBackup:s.backupKey} : {};
+    if (s.isCommon) return {...recovery, schema: 1, scope: 'common', chapter: s.chapter, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString(), sourceHTML: s.sourceHTML, blockTitles: Object.fromEntries(s.items.map(item => [item.path, item.title])), baseSlots: s.base, slots: s.values};
+    const shared = {...recovery, schema: 1, course: s.courseId, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString()};
     if (s.chapter === 'c2') {
       const extras = values => Object.fromEntries(Object.entries(values).filter(([k]) => k !== 'c2.examples'));
       return {...shared, slot: 'c2.examples', baseExamples: s.base['c2.examples'], examples: s.values['c2.examples'],
@@ -119,10 +121,63 @@
         message(s, 'The saved draft could not be safely reset. Copy any text you want to keep before reloading.', true); return;
       }
       localStorage.removeItem(s.key); s.raw = null; s.blocked = false;
+      s.recoveryUI?.dispose(); s.recoveryUI = null; s.host.querySelector('[data-cs-recover]').hidden = true;
       s.values = clone(s.base); s.saved = clone(s.base);
       updatePreview(s); controls(s); message(s, 'Draft reset to current Beta content.');
       if (s.dialog.open) openEditor(s, s.index);
     } catch { message(s, 'Draft could not be reset. The saved copy has been preserved.', true); }
+  }
+  // Recovery only rebases a valid draft with a known original. Malformed records or
+  // changed Common markup remain exportable, never silently mapped onto new IDs.
+  function prepareRecovery(s, html) {
+    const recovery = window.AIWiseDraftRecovery;
+    if (!recovery || s.raw === null || !s.storageRead) return;
+    let model, saved, issue;
+    try {
+      try { saved = JSON.parse(s.raw); } catch { throw Error('The saved draft file could not be read. It may be incomplete or damaged.'); }
+      if (saved?.schema !== 1 || (saved.locale || 'en') !== s.locale || (s.isCommon ? saved.scope !== 'common' || saved.chapter !== s.chapter : saved.course !== s.courseId || (s.chapter === 'c2' ? saved.slot !== 'c2.examples' : saved.chapter !== s.chapter))) throw Error('This saved copy does not match the chapter or language you opened.');
+      if (s.isCommon && !sameSourceHTML(saved.sourceHTML, html)) throw Error('The page layout changed since this draft was saved. Its old locations cannot yet be matched safely to the new page.');
+      let base, values;
+      if (!s.isCommon && s.chapter === 'c2') {
+        if (!saved.baseSlots || !saved.slots) throw Error('This older draft is missing its complete original comparison copy.');
+        base = {...saved.baseSlots, 'c2.examples':saved.baseExamples};
+        values = {...saved.slots, 'c2.examples':saved.examples};
+        extendEmptySAT(values, base, s.base);
+      } else { base = saved.baseSlots; values = saved.slots; }
+      if (!base || !values || !valid(base, base) || !valid(values, base)) throw Error('Some saved content has an unsupported structure or text format.');
+      const title = path => {
+        const item = s.items.find(i => i.path === path[0]);
+        return [s.isCommon ? item?.title || saved.blockTitles?.[path[0]] || path[0] : label(path[0]), ...path.slice(1).map(label)].join(' · ');
+      };
+      model = recovery.plan(base, values, s.base, title);
+      // Structural incompatibilities are surfaced at apply, with the original intact.
+    } catch (error) { issue = error.message || 'This draft could not be read.'; }
+    s.recoveryUI = recovery.mount(s.host, {model, issue, scope:`${s.config.label} · ${s.chapter.toUpperCase()} · ${language().name(s.locale)}`, savedAt:saved?.savedAt, raw:s.raw,
+      apply: async values => {
+        if (session !== s || !s.ready) throw Error('Reopen this chapter before applying the draft.');
+        if (!valid(values, s.base)) throw Error('The selected combination does not fit the current page structure. Choose the latest Beta version for removed or restructured items, or download the original draft for manual recovery.');
+        const releases = await window.AIWiseBetaContent.read(s.courseId, s.locale);
+        if (session !== s) throw Error('This chapter was closed. Nothing was changed.');
+        const latest = releases.find(r => r.chapter === s.chapter);
+        if ((latest?.submission_id || null) !== s.baseRelease || latest && !recovery.equal(latest.slots, s.base)) throw Error('Beta changed again while this review was open. Reload to compare with the newest version. Your original draft is preserved.');
+        const previous = s.values, previousBackup = s.backupKey, previousReviewed = s.reviewedSource, previousStale = s.sourceStale;
+        try {
+          s.values = values;
+          if (s.locale === 'nl') { s.reviewedSource = saved.sourceRelease || null; s.sourceStale = s.reviewedSource !== s.englishRelease; }
+          // Render before storing; stale box anchors must not destroy the original.
+          updatePreview(s);
+          s.backupKey = s.key + ':recovery-backup:' + crypto.randomUUID();
+          const raw = JSON.stringify(record(s));
+          recovery.storeRecovered(localStorage, s.key, s.raw, raw, s.backupKey);
+          s.raw = raw; s.saved = clone(values); s.blocked = false; s.needsUpgrade = false;
+          s.host.querySelector('[data-cs-recover]').hidden = true;
+          s.host.querySelector('[data-cs-backup]').hidden = false;
+          s.refreshLanguageStatus(); controls(s); message(s, 'Updated draft saved in this browser. Your original is backed up. Continue editing, then send to Control Tower when ready.');
+        } catch (error) { s.values = previous; s.backupKey = previousBackup; s.reviewedSource = previousReviewed; s.sourceStale = previousStale; updatePreview(s); throw error; }
+      }
+    });
+    s.host.querySelector('[data-cs-recover]').hidden = false;
+    s.host.querySelector('[data-cs-recover]').onclick = () => s.recoveryUI.open();
   }
   // Item selection jumps the preview at once; only in-page anchor links glide. A long smooth
   // scroll is easy to miss and some browsers drop it when focus moves back to the picker.
@@ -246,6 +301,7 @@
     refreshPicker(s); s.frame.contentWindow.scrollTo(0, y);
   }
   function openEditor(s, index) {
+    if (s.blocked) { s.recoveryUI?.open(); return; }
     if(s.feedback?.canLeave&&!s.feedback.canLeave())return;
     closePicker(s); selectItem(s, index, true);
     const item = s.items[index];
@@ -480,6 +536,7 @@
       updatePreview(s); s.ready = true;
       s.host.querySelectorAll('[data-cs-ready]').forEach(node => node.disabled = false);
       controls(s); selectItem(s, s.index, true);
+      if (s.blocked) s.recoveryUI?.open();
     } catch { message(s, 'The preview could not be prepared. Reload to try again; saved drafts are unchanged.', true); }
   }
 
@@ -526,6 +583,7 @@
         </div>
         <p class="cs-language-status" data-cs-language-status></p><button type="button" class="button" data-cs-source-reviewed hidden>Mark English source reviewed</button>
         <p class="cs-status" role="status">Loading ${chapterName} preview…</p>
+        <button type="button" class="button" data-cs-recover hidden>Review saved draft</button><button type="button" class="button" data-cs-backup hidden>Download original draft backup</button>
         <div class="cs-preview">
           <iframe title="${config.label} ${chapterName} module editing preview" sandbox="allow-same-origin allow-scripts"></iframe></div>
         <dialog class="cs-editor" aria-labelledby="cs-editor-title" aria-describedby="cs-editor-help">
@@ -628,6 +686,7 @@
         host.querySelector('[data-cs-language-status]').textContent=locale==='nl'?(s.sourceStale?'English source changed. Compare and review your translation before submitting.':approved?'Nederlands · Approved Beta baseline':'Nederlands · Translation draft. English starting text is not a completed translation.'):'English · Source content';
         host.querySelector('[data-cs-source-reviewed]').hidden=!s.sourceStale;
       };
+      s.refreshLanguageStatus = languageStatus;
       host.querySelector('[data-cs-source-reviewed]').onclick=()=>{s.reviewedSource=s.englishRelease;s.sourceStale=false;languageStatus();save(s);controls(s);};
       s.values = clone(s.base);
       let status = '';
@@ -635,6 +694,7 @@
         s.raw = localStorage.getItem(s.key); s.storageRead = true;
         if (s.raw !== null) {
           const saved = JSON.parse(s.raw);
+          if (typeof saved.recoveryBackup === 'string' && saved.recoveryBackup.startsWith(s.key + ':recovery-backup:')) s.backupKey = saved.recoveryBackup;
           const upgraded=isCommon && locale==='en' ? common().upgradeDraft(saved,s.base) : null;
           if(upgraded){s.needsUpgrade=true;saved.slots=upgraded;saved.baseSlots=clone(s.base);}
           if (saved.schema !== 1 || (saved.locale || 'en') !== locale || (isCommon ? saved.scope !== 'common' || saved.chapter !== chapter || !sameSourceHTML(saved.sourceHTML,html) && !upgraded : saved.course !== courseId) || (saved.baseRelease || null) !== s.baseRelease) throw Error('Invalid draft');
@@ -659,8 +719,14 @@
         }
       } catch {
         s.blocked = true;
-        status = 'Saved draft could not be restored or its Beta source has changed. The saved copy has not been changed; the preview shows current Beta content. Reset draft will discard the saved copy.';
+        status = s.storageRead ? 'Your saved draft needs review before editing. The original is preserved; the preview shows current Beta. Select Review saved draft to compare the copies.' : 'Browser storage could not be read. Check your browser storage settings and reload. No saved drafts were changed.';
+        prepareRecovery(s, html);
       }
+      const backup = host.querySelector('[data-cs-backup]'); backup.hidden = !s.backupKey;
+      backup.onclick = () => {
+        try { const raw = localStorage.getItem(s.backupKey); if (!raw) throw Error('The original backup is not available in this browser.'); window.AIWiseDraftRecovery.download(raw, `aiwise-${s.chapter}-original-draft.json`); }
+        catch (error) { message(s, error.message, true); }
+      };
       languageStatus();
       s.saved = clone(s.values); message(s, status, s.blocked);
       window.AIWiseStudioEditing?.mount(s,{update:()=>updatePreview(s),controls:()=>controls(s),open:()=>openEditor(s,s.index),message:text=>message(s,text)});
@@ -727,6 +793,6 @@
   window.addEventListener('beforeunload', event => { if (dirty()) { event.preventDefault(); event.returnValue = ''; } });
   window.AIWiseContentStudio = {render, supports,
     canLeave: () => (!session?.feedback?.canLeave||session.feedback.canLeave()) && (!dirty() || confirm(`Leave ${session?.isCommon ? 'Common' : 'Content'} Studio without saving your edits?`)),
-    dispose: () => { const old = session; session = null; old?.feedback?.();old?.abort.abort(); old?.cancelPickerClose?.(); old?.cancelEditorClose?.(); if (old?.dialog.open) old.dialog.close(); if (old?.submitDialog.open) old.submitDialog.close(); }
+    dispose: () => { const old = session; session = null; old?.recoveryUI?.dispose();old?.feedback?.();old?.abort.abort(); old?.cancelPickerClose?.(); old?.cancelEditorClose?.(); if (old?.dialog.open) old.dialog.close(); if (old?.submitDialog.open) old.submitDialog.close(); }
   };
 })();

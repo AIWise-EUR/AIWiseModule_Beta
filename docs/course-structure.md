@@ -162,6 +162,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
 | 9 | Studio block editing | live; signed-in submission verified | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
 | 10 | Psychology SAT empty template | source prepared; owner SQL pending | [Setup](../supabase/PSYCHOLOGY_SAT_SETUP.md); existing requests remain unchanged |
+| 11 | Studio draft recovery | implemented; deployment verification pending | [Visual comparison and backups](studio-draft-recovery.md); no SQL or function changes |
 
 ## How to verify
 
@@ -176,6 +177,11 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- 2026-10-05 — Added real three-way comparison of saved browser drafts and current
+  Beta in Common and Content Studio. Visual explanation, explicit overlap choices,
+  original backups, baseline recheck and ordinary submission flow; existing pending
+  requests are untouched. See `studio-draft-recovery.md` for recovery rules and tests.
 
 - 2026-10-05 — Owner activated Studio block editing. Live functions matched supplied
   source; the seven live checks passed. Real authenticated Common Studio requests
