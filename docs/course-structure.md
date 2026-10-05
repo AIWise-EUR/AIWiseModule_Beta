@@ -159,7 +159,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 5 | Share links page | not started | design agreed; no search box, no per-row description |
 | 6 | Activities | not started | |
 | 7 | Course overrides | not started | not needed yet |
-| 8 | Published ID compatibility | validated; deployment check pending | [Hotfix and full-transition plan](published-course-compat.md) |
+| 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
 
 ## How to verify
 
@@ -194,3 +194,8 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 - **2026-10-04** (Claude) The owner ran the SQL script and redeployed both functions. `checks/live-check.ts` passes all seven checks: scopes match the registry and the approved PED chapter is served under `pedagogical-sciences`. Seen on the Beta site: `?course=ped` opens Pedagogical Sciences – Inleiding with the approved examples. Still to confirm by use: signed-in workspace screens, the next approval's automatic commit (new `GitHub-Publish` code) and the next release preparation (new `aiwise-release` code).
 - **2026-10-05** (Claude) Sidebar: the Courses section lists bachelors; choosing one opens its courses in the second column, beside the row (inline on narrow screens). Seen in a browser at desktop and phone width.
 - **2026-10-05** (Claude) Sidebar: every expandable row (Course Profiler Manager, Content Studio, Beta, each bachelor) now opens a floating list sized to its items beside that row, replacing the full-height second column.
+
+- **2026-10-05** (Codex) Published hotfix `32aad6d` and Beta compatibility source
+  `6e159dd` deployed successfully. Verified new/legacy IDs, unavailable-course chooser,
+  and Beta → Published return without preference collision. Content V5 and pending
+  approvals were not changed. Full ID transition remains a separate planned task.

@@ -5,8 +5,8 @@
 | Item | State |
 |---|---|
 | Root cause reproduced | Confirmed: legacy Published rejects a remembered `psychology.aws1` |
-| Current Published hotfix | Validated locally; deployment verification recorded below |
-| Future release source | Updated `pipelines/course-loader.js`; generated-bundle regression passes |
+| Current Published hotfix | Live; GitHub Pages deployment and browser checks passed |
+| Future release source | Live on development; generated-bundle regression passes |
 | Full ID transition | Planned, not part of this hotfix |
 
 ## Root cause and scope
@@ -90,3 +90,13 @@ bundle over the fix without checking its runtime.
 - 2026-10-05: Reproduced the shared-storage/legacy-ID failure. Prepared and tested
   the emergency V5 runtime patch and future generated-runtime fix. Pending approvals,
   existing content snapshots and the Studio sample are untouched.
+
+- 2026-10-05 deployment completed: AI-Wise `main` hotfix
+  `32aad6dc32034d4ae8b2d00128c11fcc3d2be9b8`; Beta source/test fix
+  `6e159dd319b31ff8c1e7c8636818801176ebe7bd`. Both GitHub Pages runs succeeded.
+  Live browser checks: C1 with `psychology.aws1` loads AWS I; C3 with
+  `pedagogical-sciences.inleiding` loads PED and all 15 content slots; unsupported
+  `psychology.psychodiagnostics` shows the course chooser without the generic error.
+  Published remembered PED, Beta was then visited with Psychology/AWS I, and returning
+  to the original Published C1 URL still showed PED with no error. This verifies the
+  cross-site collision is removed. Browser error log was empty at final inspection.
