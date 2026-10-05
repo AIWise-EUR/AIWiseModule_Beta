@@ -1,0 +1,440 @@
+{
+  "schema": 1,
+  "sequence": 4,
+  "course": "common",
+  "chapter": "c2",
+  "locale": "en",
+  "submission_id": "dd0cf9e8-d8aa-4b67-80f1-05552c2b4a3e",
+  "source_release": null,
+  "approved_at": "2026-10-05T12:42:24.265316+00:00",
+  "slots": {
+    "_studio": {
+      "boxes": [
+        {
+          "id": "box-bc530093-aef9-4e18-9c9d-965ca5c2512e",
+          "size": 0,
+          "slot": "c2.block-7",
+          "align": "left",
+          "anchor": 2,
+          "fields": [
+            [
+              {
+                "text": "Intersubjective meaning-making: stimulated, not lived"
+              }
+            ],
+            [
+              {
+                "text": "Human understanding does not develop only through individual cognition and experience, but also through interaction with others. People bring different lived experiences, perspectives, cultural backgrounds, values, knowledge and interests into a conversation. By questioning, challenging, and building on each other’s ideas, they may develop a richer understanding that none of them had beforehand. GenAI can simulate different perspectives, challenge assumptions, and contribute to such a dialogue. What it does not bring is its own socially situated perspective, grounded in lived experience, relationships, values, and interests. It can therefore participate in the simulation of intersubjective meaning-making, but not experience it in the way human participants do."
+              }
+            ]
+          ],
+          "template": "gradient-row"
+        },
+        {
+          "id": "box-0d8b4bd6-18e4-4538-891a-24b62a18399d",
+          "size": 0,
+          "slot": "c2.block-1",
+          "align": "left",
+          "anchor": 0,
+          "fields": [
+            [
+              {
+                "text": "Before we start"
+              }
+            ],
+            [
+              {
+                "text": "Before we start with this block, we want to address that it is by no means necessary that you use AI when studying or working on assignments. All previous generations have studied without the use of AI and have successfully graduated and contributed to societal progress.\n\nIn that sense, this module is not about convincing you to use AI. Instead, it aims to help you make informed choices about if, when, and how AI might be useful for your learning. If you choose not to use it, that is a valid approach. If you do want to use it, the goal is to do so in a way that supports, rather than replaces, your own thinking and learning. And be mindful, you will still need to put in a lot of time and effort to produce high-quality work, even, or especially, with the input of GenAI.\n\nFor a critical perspective on the use of GenAI-use in higher education, see Passeport et al. (2026)."
+              }
+            ]
+          ],
+          "template": "text"
+        }
+      ],
+      "formats": [],
+      "version": 1
+    },
+    "c2.block-0": {
+      "Heading 1": "What is AI for us?"
+    },
+    "c2.block-1": {
+      "Text 1": "\n        Knowing what GenAI is made of is a starting point. The next question is what it can and cannot do compared to you, and how to work with it effectively.\n      "
+    },
+    "c2.block-2": {
+      "Heading 1": "Is Artifical Intelligence Same as Human Intelligence?\n    "
+    },
+    "c2.block-3": {
+      "Text 1": "Before comparing what humans and GenAI can do, it is necessary to understand why they differ in the first place. The differences are not superficial. They are structural, rooted in how each system receives and processes information."
+    },
+    "c2.block-4": {
+      "Text 1": "Part A: Input channel asymmetry"
+    },
+    "c2.block-5": {
+      "Text 1": "Think about the last time you saw an elephant. Not in a photo, but in real life. You didn't just see it. You smelled it. You heard it breathe. You felt the ground vibrate slightly under its weight. All of that entered your brain at once, and all of it shaped what \"elephant\" means to you.",
+      "Text 2": "Now think about what happens when a language model encounters the word \"elephant.\" It receives a token. A numerical code that represents the word. That's it. No smell, no sound, no sense of scale. Just a number in a sequence of numbers.",
+      "Text 3": "This is the most basic difference between human cognition and GenAI: ",
+      "Emphasis 1": "the input is not the same."
+    },
+    "c2.block-6": {
+      "Text 1": "Human",
+      "Text 2": "Five senses, all at once. Smell, sound, scale, proximity, integrated into one layered experience. Your brain does not process these separately and stitch them together later. They arrive as a single, unified representation of the world.",
+      "Text 3": "GenAI",
+      "Text 4": "A token. A numerical code that stands for a word. By the time any input reaches the model, it has already been compressed and stripped down to symbolic structure. The model operates entirely at the level of abstracted language, with no connection to the sensory world the language describes."
+    },
+    "c2.block-7": {
+      "Text 1": "✓",
+      "Text 2": "Nonsensory meaning: recovered at human level",
+      "Text 3": "Abstract, relational knowledge. Things like \"elephants are mammals,\" \"they live in herds,\" \"they are associated with memory.\" These are patterns that exist fully in language itself, and LLMs pick them up about as well as humans do.",
+      "Text 4": "~",
+      "Text 5": "Sensory features: partially recovered",
+      "Text 6": "What something looks, sounds, or feels like. Multimodal models that process images alongside text do better here, especially for vision. But \"partially\" is the key word: the gap narrows for what can be photographed, not for what can only be experienced.",
+      "Text 7": "✗",
+      "Text 8": "Motor and bodily features: not recovered",
+      "Text 9": "What it feels like to stand next to something enormous. The weight of an object in your hand. The muscle memory of a familiar movement. These dimensions of meaning are grounded in having a body, and no amount of text training has bridged this gap. There is no current pathway by which it would."
+    },
+    "c2.block-8": {
+      "Text 1": "Part B: Distance from reality"
+    },
+    "c2.block-9": {
+      "Text 1": "The information GenAI learns from is not reality. It is a filtered, compressed, and unevenly sampled version of what people have written online. Think of it like a chain. At each link, something gets lost."
+    },
+    "c2.extra-0": {
+      "alt 1": "Erasmus University Rotterdam",
+      "Text 1": "AI-Wise",
+      "Text 2": "Core Blocks",
+      "Text 3": " › C2 · What is AI for us?\n  "
+    },
+    "c2.extra-1": {
+      "Text 1": "Core Blocks Navigation"
+    },
+    "c2.extra-2": {
+      "Text 1": "C2 · Core Block"
+    },
+    "c2.extra-3": {
+      "Text 1": "Section 1"
+    },
+    "c2.extra-4": {
+      "Text 1": "Section 2"
+    },
+    "c2.extra-5": {
+      "Text 1": "Section 3"
+    },
+    "c2.extra-6": {
+      "Text 1": "Core Blocks",
+      "Text 2": "← Back to Home"
+    },
+    "c2.extra-7": {
+      "Text 1": "← C1 · What is GenAI?"
+    },
+    "c2.extra-8": {
+      "Text 1": "Next"
+    },
+    "c2.extra-9": {
+      "Text 1": "C3 · How to Engage"
+    },
+    "c2.block-10": {
+      "Text 1": "Reality",
+      "Text 2": "Everything that happens in the world.",
+      "Text 3": "What gets recorded",
+      "Text 4": "Only the fraction that someone decides to write down.",
+      "Text 5": "What gets published online",
+      "Text 6": "Only the fraction of that which makes it onto the internet.",
+      "Text 7": "What gets indexed",
+      "Text 8": "Only what search engines and web crawlers can find and collect.",
+      "Text 9": "What gets selected for training data",
+      "Text 10": "Only what dataset builders choose to include.",
+      "Text 11": "What the model learns",
+      "Text 12": "The statistical average of everything above.",
+      "Text 13": "At every step, noise enters and fidelity decreases. The result is a model trained on the statistical average of online text, which is itself a narrow and unrepresentative sample of human experience.",
+      "Text 14": "To give you a sense of scale: GPT 3 was trained on hundreds of billions of words. About 82% of those words came from a single source, a massive collection of web pages scraped automatically from the internet. Research has shown that this collection systematically overrepresents certain languages, cultures, and demographics. Some researchers argue that this is not simply a technical problem with a straightforward fix, but something more deeply tied to how large language models work: they predict text based on what they have seen, so the patterns in the training data inevitably shape the patterns in the output."
+    },
+    "c2.block-11": {
+      "Text 1": "What this means for output",
+      "Text 2": "In creativity tasks, GenAI tends to raise the floor. It produces consistently competent results. But the ceiling is lower: the highest quality human outputs exceed what GenAI produces, and attempts to boost LLM creativity through prompt engineering have yielded mixed to negative results."
+    },
+    "c2.block-12": {
+      "Text 1": "Part C: Intentional information loss"
+    },
+    "c2.block-13": {
+      "Text 1": "When you ask GenAI something, you type a prompt. But think about everything that shaped your question before you started typing. Your background knowledge. Your assumptions about what matters. Your emotional investment in the topic. The context you are working in. The criteria you have in your head but never spelled out.",
+      "Text 2": "Most of that never makes it into the prompt. It can't. You would need to write pages just to capture what you already know without thinking about it.",
+      "Text 3": "GenAI has access only to what is explicitly provided. What is not typed does not exist for the model. This creates a structural gap between what you mean and what the model receives.",
+      "Text 4": "Here is what that looks like in practice."
+    },
+    "c2.block-14": {
+      "Text 1": "In every one of these examples, the model did something reasonable with what it received. The problem is not that it did a bad job. The problem is that most of what mattered to you never reached the model in the first place.",
+      "Text 2": "This gap does not disappear as you get better at prompting. You can narrow it, but you cannot close it.",
+      "Text 3": "Research supports this. Studies have found that language models generate responses with significantly less conversational grounding than humans. Rather than actively checking whether they understood you correctly, they tend to assume that common ground already exists. And here is an interesting complication: the fine tuning that makes models more helpful and polished actually makes this worse. The more \"assistant like\" the model becomes, the less likely it is to pause and verify what you actually meant.",
+      "Text 4": "Across longer conversations, this adds up. Even for the most advanced models available today, average performance on generation tasks drops by about 39% in multi turn conversations compared to fully specified single turn instructions."
+    },
+    "c2.block-15": {
+      "Text 1": "\n        Section 1 Sources\n      ",
+      "Text 2": "Xu, Q. et al. (2025). Large language models without grounding recover non sensorimotor but not sensorimotor features of human concepts. ",
+      "Text 3": "Nature Human Behaviour",
+      "Text 4": ", 9, 1871–1886.",
+      "Text 5": "Brown, T. B. et al. (2020). Language models are few shot learners. ",
+      "Text 6": "Advances in Neural Information Processing Systems",
+      "Text 7": ", 33, 1877–1901.",
+      "Text 8": "Baack, S. (2024). A critical analysis of the largest source for generative AI training data: Common Crawl. ",
+      "Text 9": "Proceedings of ACM FAccT 2024",
+      "Text 10": ", pp. 2194–2207.",
+      "Text 11": "Resnik, P. (2025). Large language models are biased because they are large language models. ",
+      "Text 12": "Computational Linguistics",
+      "Text 13": ", 51(3), 885–906. [Position paper]",
+      "Text 14": "Wang, D. et al. (2025/2026). A large scale comparison of divergent creativity in humans and large language models. ",
+      "Text 15": "Nature Human Behaviour",
+      "Text 16": ", 10, 531–540.",
+      "Text 17": "Koivisto, M. & Grassini, S. (2023). Best humans still outperform artificial intelligence in a creative divergent thinking task. ",
+      "Text 18": "Scientific Reports",
+      "Text 19": ", 13, 13601.",
+      "Text 20": "Shaikh, O. et al. (2024). Grounding gaps in language model generations. ",
+      "Text 21": "Proceedings of NAACL 2024",
+      "Text 22": ", pp. 6279–6296.",
+      "Text 23": "Laban, P. et al. (2026). LLMs get lost in multi turn conversation. ",
+      "Text 24": "Proceedings of ICLR 2026",
+      "Text 25": " (Oral). arXiv: 2505.06120."
+    },
+    "c2.block-16": {
+      "Heading 1": "Human vs GenAI: a functional comparison"
+    },
+    "c2.block-17": {
+      "Text 1": "Section 1 established why humans and GenAI differ. The input is different, the training data is distant from reality, and most of what you mean never reaches the model. But what do these structural differences actually look like when the two systems perform specific tasks?",
+      "Text 2": "This section compares ten cognitive functions, grouped into three categories based on where the advantage lies."
+    },
+    "c2.block-18": {
+      "Text 1": "H",
+      "Text 2": "\n          Human leads\n        "
+    },
+    "c2.block-19": {
+      "Text 1": "Perception",
+      "Text 2": "Humans receive the world through five senses at once, integrated into one experience. GenAI receives tokens. The gap is largest for bodily, physical experience, and partially closed for vision in multimodal models."
+    },
+    "c2.block-20": {
+      "Text 1": "Emotional processing",
+      "Text 2": "Humans experience emotion as a genuine internal state that shapes thinking, motivation, and behavior. GenAI recognizes and produces emotionally appropriate language, but has no internal feeling behind it."
+    },
+    "c2.block-21": {
+      "Text 1": "Metacognition",
+      "Text 2": "Humans know what they know and what they don't. They monitor their own confidence and adjust. GenAI produces confidence estimates through probability distributions, but has no persistent self check. This is part of why it can say something false without hesitating."
+    },
+    "c2.block-22": {
+      "Text 1": "Social cognition",
+      "Text 2": "Humans develop social understanding through real relationships, emotional resonance, and years of interaction. GenAI can pass structured social reasoning tests at high levels, but without the developmental grounding and relational stakes behind it."
+    },
+    "c2.block-23": {
+      "Text 1": "↔",
+      "Text 2": "\n          Both capable, depends on the task\n        "
+    },
+    "c2.block-24": {
+      "Text 1": "Short term storage",
+      "Text 2": "Human working memory holds roughly four to seven chunks and actively manipulates them. GenAI context windows hold thousands of tokens passively. Studies show comparable limits under active maintenance conditions, but humans manipulate held information more flexibly."
+    },
+    "c2.block-25": {
+      "Text 1": "Reasoning",
+      "Text 2": "Humans support causal, counterfactual, and analogical reasoning and adapt flexibly to new situations. GenAI outperforms humans on some structured reasoning tasks, but fails on tasks that require distinguishing observation from intervention, or deliberately exploring uncertain options."
+    },
+    "c2.block-26": {
+      "Text 1": "Language processing",
+      "Text 2": "Humans integrate grammar with pragmatics, social intent, and contextual meaning. GenAI achieves strong grammatical competence but functional competence (using language appropriately in context) is uneven. The key insight: language ability and thinking ability are separate systems, and GenAI has acquired one without fully having the other."
+    },
+    "c2.block-27": {
+      "Text 1": "Creativity",
+      "Text 2": "Humans produce highly variable creative output, with the best human work exceeding anything GenAI produces. GenAI raises the floor by producing consistently competent results, but the upper tail is smaller. Attempts to boost GenAI creativity through prompt engineering have yielded mixed to negative results."
+    },
+    "c2.block-28": {
+      "Text 1": "G",
+      "Text 2": "\n          GenAI leads on scale\n        "
+    },
+    "c2.block-29": {
+      "Text 1": "Pattern recognition",
+      "Text 2": "GenAI detects statistical regularities across billions of examples with consistency and speed beyond human capacity. On structured analogy tasks, it has matched or surpassed human performance, though results vary significantly across model versions and task types."
+    },
+    "c2.block-30": {
+      "Text 1": "Long term storage",
+      "Text 2": "GenAI encodes patterns from its entire training corpus into billions of parameters, far exceeding human memory in raw volume. But this knowledge is frozen at the training cutoff and cannot be updated through conversation. Human memory holds less, but keeps learning from lived experience."
+    },
+    "c2.block-31": {
+      "Text 1": "\n        Section 2 Sources\n      ",
+      "Text 2": "Xu, Q. et al. (2025). ",
+      "Text 3": "Nature Human Behaviour",
+      "Text 4": ", 9, 1871–1886.",
+      "Text 5": "Chemero, A. (2023). ",
+      "Text 6": "Nature Human Behaviour",
+      "Text 7": ", 7(11), 1828–1829.",
+      "Text 8": "Schlegel, K. et al. (2025). ",
+      "Text 9": "Communications Psychology",
+      "Text 10": ", 3, Article 80.",
+      "Text 11": "Cash, T. N. et al. (2025). ",
+      "Text 12": "Memory & Cognition",
+      "Text 13": ".",
+      "Text 14": "Strachan, J. W. A. et al. (2024). ",
+      "Text 15": "Nature Human Behaviour",
+      "Text 16": ", 8(7), 1285–1295.",
+      "Text 17": "Gong, D., Wan, X. & Wang, D. (2024). ",
+      "Text 18": "Proceedings of AAAI 2024",
+      "Text 19": ", 38, 10048–10056.",
+      "Text 20": "Hagendorff, T., Fabi, S. & Kosinski, M. (2023). ",
+      "Text 21": "Nature Computational Science",
+      "Text 22": ", 3(10), 833–838.",
+      "Text 23": "Binz, M. & Schulz, E. (2023). ",
+      "Text 24": "PNAS",
+      "Text 25": ", 120(6), e2218523120.",
+      "Text 26": "Mahowald, K. et al. (2024). ",
+      "Text 27": "Trends in Cognitive Sciences",
+      "Text 28": ", 28(6), 517–540.",
+      "Text 29": "Wang, D. et al. (2025/2026). ",
+      "Text 30": "Nature Human Behaviour",
+      "Text 31": ", 10, 531–540.",
+      "Text 32": "Koivisto, M. & Grassini, S. (2023). ",
+      "Text 33": "Scientific Reports",
+      "Text 34": ", 13, 13601.",
+      "Text 35": "Webb, T., Holyoak, K. J. & Lu, H. (2023). ",
+      "Text 36": "Nature Human Behaviour",
+      "Text 37": ", 7(9), 1526–1541.",
+      "Text 38": "de Varda, A. G., Saponaro, S. & Marelli, M. (2025). ",
+      "Text 39": "Nature Human Behaviour",
+      "Text 40": " [Matters Arising]."
+    },
+    "c2.block-32": {
+      "Heading 1": "A Framework for Collaboration: S.A.T Framework"
+    },
+    "c2.block-33": {
+      "Text 1": "The beginning is always yours"
+    },
+    "c2.block-34": {
+      "Text 1": "Before AI can help, something has to already exist in you. A rough sense of what you are trying to do, what you want out of it, and what direction feels right. GenAI cannot produce this, since there is no statistically probable answer for that. AI is a systematic tool, not a genie from a lamp.",
+      "Text 2": "You have to know the process of your work, and which parts AI can take over. Without that, it is hard to expect the interaction with AI to land anywhere meaningful, especially in work where the thinking has to be yours, such as writing a paper, developing a project, or forming an argument you will stand behind."
+    },
+    "c2.block-35": {
+      "Text 1": "GenAI's role: Operationalization"
+    },
+    "c2.block-36": {
+      "Text 1": "Once you have that direction, put it on paper. Sketch an idea, a rough structure, a set of notes. It does not need to be polished. It just needs to exist.",
+      "Text 2": "This is where GenAI becomes useful. When you only think in your head, everything happens at once, and it is hard to make your ideas complete or untangled. It is also hard to tell whether your idea actually makes sense, holds together logically, or is even factually correct. Once you have something on paper, GenAI can help you work through it systematically, like a thinking partner. It organizes what you have and what you don't have, gives you quick access to knowledge, and guides you toward a more structured process.",
+      "Text 3": "GenAI is not thinking instead of you. It is making your thinking visible fast enough to work with. In other words, it helps your ideas go through operationalization."
+    },
+    "c2.block-37": {
+      "Text 1": "S.A.T Framework ",
+      "Text 2": "(Self–AI–Team)",
+      "Diagram label 1": "Self",
+      "Diagram label 2": "Intent",
+      "Diagram label 3": "AI",
+      "Diagram label 4": "Operationalize",
+      "Diagram label 5": "Self",
+      "Diagram label 6": "Judge",
+      "Diagram label 7": "AI",
+      "Diagram label 8": "Refine",
+      "Diagram label 9": "Self",
+      "Diagram label 10": "Present",
+      "Diagram label 11": "Team",
+      "Diagram label 12": "Feedback",
+      "Diagram label 13": "Self",
+      "Diagram label 14": "Integrate",
+      "Diagram label 15": "Team",
+      "Diagram label 16": "Expand",
+      "Diagram label 17": "SELF–AI",
+      "Diagram label 18": "SELF–TEAM",
+      "Diagram label 19": "SELF–AI",
+      "Diagram label 20": "SELF–TEAM",
+      "Diagram label 21": "Cycle 1",
+      "Diagram label 22": "Cycle 2",
+      "Diagram label 23": "Cycle 3",
+      "Diagram label 24": "Cycle 4",
+      "Diagram label 25": "SCALE OF THE WORK",
+      "Diagram label 26": "SESSION PROGRESSION",
+      "Diagram label 27": "“At every transition, you steer.”"
+    },
+    "c2.block-38": {
+      "Text 1": "1.",
+      "Text 2": "The Self–AI loop",
+      "Text 3": "You bring an intention and a rough sketch. GenAI operationalizes it. You judge, redirect, and GenAI produces again. Each cycle sharpens the work, and the process accelerates.",
+      "Text 4": "But the loop stalls. The model returns to early assumptions, delivers \"complete\" answers without clarifying, or produces outputs that are internally consistent but feel off. The work has been operationalized, not tested against reality."
+    },
+    "c2.block-39": {
+      "Text 1": "2.",
+      "Text 2": "The Self–Team loop",
+      "Text 3": "When the Self–AI loop stalls, you bring the work to people: classmates, tutors, your project group. The team brings what GenAI structurally cannot: shared context, social judgment, real world experience, and practical matters.",
+      "Text 4": "You present the work, the team responds, and new questions emerge. The scope does not just refine. It grows."
+    },
+    "c2.block-40": {
+      "Text 1": "3.",
+      "Text 2": "Transition",
+      "Text 3": "Each transition belongs to you. With the support of AI, you bring verified and reliable work to the team. With the team's feedback, you return to AI with new material. The starting point is higher, and each cycle builds on what the last one produced."
+    },
+    "c2.block-41": {
+      "Text 1": "Worked example"
+    },
+    "c2.block-42": {
+      "Text 1": "The ending is also yours"
+    },
+    "c2.block-43": {
+      "Text 1": "Just as the beginning cannot be generated, the ending cannot be delegated. GenAI cannot be held responsible. When the output of the Self–AI loop is discussed, presented, or submitted, your name is attached, and what the work represents is what you stand behind.",
+      "Text 2": "You check the output against your original intent, line by line. Yes, this is partly about plagiarism and rules. But more importantly, it is about your own work. Small flaws that go unchecked compound over time, especially when working with AI."
+    },
+    "c2.block-44": {
+      "Text 1": "\n        Section 3 Sources\n      ",
+      "Text 2": "Laird, J. E., Lebiere, C. & Rosenbloom, P. S. (2017). AI Magazine, 38(4), 13–26.",
+      "Text 3": "Sumers, T. R. et al. (2024). Transactions on Machine Learning Research."
+    },
+    "c2.extra-10": {
+      "Text 1": "\n    Continue to C3 →\n  "
+    },
+    "c2.extra-11": {
+      "ai 1": "AI",
+      "of 1": "of",
+      "copy 1": "Copy",
+      "self 1": "Self",
+      "team 1": "Team",
+      "adopt 1": "Adopt",
+      "slide 1": "Go to slide",
+      "change 1": "Change",
+      "copied 1": "Copied",
+      "course 1": "Course",
+      "modify 1": "Modify",
+      "typing 1": "What you type",
+      "discard 1": "Discard",
+      "example 1": "Example",
+      "feedback 1": "Feedback",
+      "thinking 1": "What you are actually thinking",
+      "processing 1": "How the model actually processes this",
+      "course help 1": "AI-Wise adapts its examples, explanations, and prompt templates to your course. You can change this at any time.",
+      "subsections 1": "subsections toggle",
+      "Navigation c1 1": "C1: What is AI?",
+      "Navigation c2 1": "C2: What is AI for us?",
+      "Navigation c3 1": "C3: How do we use AI?",
+      "choose course 1": "Choose your course",
+      "send feedback 1": "Send feedback",
+      "close feedback 1": "Close feedback",
+      "feedback thanks 1": "Thank you — your feedback has been noted.",
+      "feedback question 1": "What's on your mind?",
+      "feedback placeholder 1": "Share a thought, suggestion, or issue...",
+      "Navigation c1 section 1 1": "History & Development",
+      "Navigation c1 section 2 1": "Anatomy of GenAI",
+      "Navigation c1 section 3 1": "GenAI Output Traits",
+      "Navigation c2 section 1 1": "AI vs Human Intelligence",
+      "Navigation c2 section 2 1": "Human vs GenAI",
+      "Navigation c2 section 3 1": "Collaboration Framework",
+      "Navigation c3 section 1 1": "Prompt",
+      "Navigation c3 section 2 1": "Critique",
+      "Navigation c3 section 3 1": "Integrate"
+    },
+    "c2.extra-12": {
+      "Page title 1": "AI-Wise · C2: What is AI for us?"
+    },
+    "c2.extra-13": {
+      "aria-label 1": "Previous"
+    },
+    "c2.extra-14": {
+      "aria-label 1": "Next"
+    },
+    "c2.extra-15": {
+      "aria-label 1": "SAT Framework: four alternating Self-AI and Self-Team cycles producing an accelerating growth curve, with human anchor icons at every transition"
+    },
+    "c2.extra-16": {
+      "aria-label 1": "Self-AI loop: Self Intent, AI Operationalize, Self Judge, AI Refine"
+    },
+    "c2.extra-17": {
+      "aria-label 1": "Self-Team loop: Self Present, Team Feedback, Self Integrate, Team Expand"
+    }
+  }
+}
