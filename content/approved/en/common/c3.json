@@ -1,0 +1,642 @@
+{
+  "schema": 1,
+  "sequence": 6,
+  "course": "common",
+  "chapter": "c3",
+  "locale": "en",
+  "submission_id": "cf28765b-c39f-4d1a-b338-050c17ed4b30",
+  "source_release": null,
+  "approved_at": "2026-10-05T12:52:19.206646+00:00",
+  "slots": {
+    "_studio": {
+      "boxes": [
+        {
+          "id": "box-0ae34813-b696-4e9c-9ecc-7e439a087ed2",
+          "size": 0,
+          "slot": "c3.block-44",
+          "align": "left",
+          "anchor": 0,
+          "fields": [
+            [
+              {
+                "text": "Intersubjective meaning-making"
+              }
+            ],
+            [
+              {
+                "text": "Human understanding does not develop only through individual cognition and experience, but also through interaction with others. People bring different lived experiences, perspectives, cultural backgrounds, values, knowledge and interests into a conversation. By questioning, challenging, and building on each other’s ideas, they may develop a richer understanding that none of them had beforehand. GenAI can simulate different perspectives, challenge assumptions, and contribute to such a dialogue. What it does not bring is its own socially situated perspective, grounded in lived experience, relationships, values, and interests. It can therefore participate in the simulation of intersubjective meaning-making, but not experience it in the way human participants do."
+              }
+            ]
+          ],
+          "template": "text"
+        }
+      ],
+      "formats": [],
+      "version": 1
+    },
+    "c3.block-0": {
+      "Heading 1": "How Do We Use AI?"
+    },
+    "c3.block-1": {
+      "Text 1": "\n        C1 covered what GenAI is. C2 covered what it is to us. C3 covers the operational layer: how we actually interact with it. This is not a collection of prompt tips — it is a framework built around one cycle.\n      "
+    },
+    "c3.block-2": {
+      "Text 1": " Prompt",
+      "Text 2": " Critique",
+      "Text 3": " Integrate"
+    },
+    "c3.block-3": {
+      "Heading 1": "Designing the input"
+    },
+    "c3.block-4": {
+      "Text 1": "\n        A prompt is a text input given to AI to instruct a task. Research defines prompt engineering as \"the skill of articulating a problem, its context, and the constraints of the desired solution to an AI assistant\" (Federiakin et al., 2024).\n      ",
+      "Text 2": "\n        In this module, prompting is ",
+      "Text 3": ". It is the act of defining what you want to do, what you expect, what process to follow, and under what conditions. Think of it as designing a virtual workspace where AI operates on your terms. To write a good prompt, you need to understand GenAI, but you also need to understand yourself: your task, your intention, your current stage, and your boundaries.\n      ",
+      "Emphasis 1": "calibration"
+    },
+    "c3.block-5": {
+      "Text 1": "\"Learning how to interact with AI is not unlike being someone who's really good at asking questions. Prompting AI is very similar. You can't just randomly ask a bunch of questions. Asking AI to be an assistant to you requires some expertise and artistry of how to prompt it.\"",
+      "Text 2": "— Jensen Huang, CEO of NVIDIA (Cleo Abram, \"Huge Conversations\", January 2025)"
+    },
+    "c3.block-6": {
+      "Text 1": "Six types of information AI uses to process a task"
+    },
+    "c3.block-7": {
+      "Text 1": "Research consistently shows that AI performs significantly better when certain types of information are clearly provided. The following six are the key components that support how AI processes and responds to your request."
+    },
+    "c3.block-8": {
+      "Text 1": "Clear Instruction",
+      "Text 2": "Role / Persona",
+      "Text 3": "Task Decomposition",
+      "Text 4": "Few-shot Examples",
+      "Text 5": "Chain-of-Thought",
+      "Text 6": "Output Format"
+    },
+    "c3.block-9": {
+      "Text 1": "Task Specification",
+      "Text 2": "Clear Instruction",
+      "Text 3": "Information about ",
+      "Text 4": ". The more you specify the purpose, scope, context, and conditions of a task, the narrower AI's working space becomes.",
+      "Text 5": " AI interprets the task in the most generic way possible. Whether it matches your intent is left to chance.",
+      "Text 6": "Consensus: treated as baseline across all major prompt engineering surveys",
+      "Emphasis 1": "what needs to be done",
+      "Emphasis 2": "If you don't set it:"
+    },
+    "c3.extra-0": {
+      "alt 1": "Erasmus University Rotterdam",
+      "Text 1": "AI-Wise",
+      "Text 2": "Core Blocks",
+      "Text 3": " › C3 · How Do We Use AI?\n  "
+    },
+    "c3.extra-1": {
+      "Text 1": "Core Blocks Navigation"
+    },
+    "c3.extra-2": {
+      "Text 1": "C3 · Core Block"
+    },
+    "c3.extra-3": {
+      "Text 1": "1"
+    },
+    "c3.extra-4": {
+      "Text 1": "→"
+    },
+    "c3.extra-5": {
+      "Text 1": "2"
+    },
+    "c3.extra-6": {
+      "Text 1": "→"
+    },
+    "c3.extra-7": {
+      "Text 1": "3"
+    },
+    "c3.extra-8": {
+      "Text 1": "Section 1 · Prompt"
+    },
+    "c3.extra-9": {
+      "Text 1": "1"
+    },
+    "c3.block-10": {
+      "Text 1": "Perspective Assignment",
+      "Text 2": "Role / Persona",
+      "Text 3": "Information about ",
+      "Text 4": ". Setting a role is not a technique to boost AI accuracy — it is the act of deciding what position you want AI to occupy for this task.",
+      "Text 5": " AI operates as a generic \"helpful assistant.\"",
+      "Text 6": "Evidence: no measurable accuracy improvement on benchmarks (Zheng et al., 2024 EMNLP; 162 personas, 4 LLM families). Effective as a tone and framing tool.",
+      "Emphasis 1": "what perspective AI should operate from",
+      "Emphasis 2": "If you don't set it:"
+    },
+    "c3.block-11": {
+      "Text 1": "Structure of a Task",
+      "Text 2": "Task Decomposition",
+      "Text 3": "Information about ",
+      "Text 4": ". When you throw a complex task at AI in one piece, you cannot tell which part of the output went wrong.",
+      "Text 5": " AI decomposes the task on its own, but you cannot know if its decomposition matches your intent.",
+      "Text 6": "Evidence: Least-to-Most prompting showed 83.5pp gain on compositional benchmarks (Zhou et al., 2022 ICLR)",
+      "Emphasis 1": "the structure of a task",
+      "Emphasis 2": "If you don't set it:"
+    },
+    "c3.block-12": {
+      "Text 1": "Desired Output",
+      "Text 2": "Few-shot Examples",
+      "Text 3": "Information about ",
+      "Text 4": ". The act of creating an example forces you to check: do I actually know what I want? Modern models can infer intent without examples, but that means the model interprets on its own.",
+      "Text 5": " AI responds in its most generic form. Without a standard, you cannot judge if it is right.",
+      "Text 6": "Evidence: established in Brown et al. (2020, NeurIPS) GPT-3 paper. Few-shot CoT scored highest in Schulhoff et al. benchmarks.",
+      "Emphasis 1": "what the desired output looks like",
+      "Emphasis 2": "If you don't set it:"
+    },
+    "c3.block-13": {
+      "Text 1": "Reasoning Steps",
+      "Text 2": "Chain-of-Thought",
+      "Text 3": "Information about ",
+      "Text 4": ". Asking AI to show its intermediate steps opens a window for you to check its logic.",
+      "Text 5": " You get only the conclusion, with no visibility into how it got there. If it sounds plausible, you just accept it.",
+      "Text 6": "Evidence: Wei et al. (2022, NeurIPS) GSM8K 18% → 58%. However, effects are limited outside math/symbolic reasoning (Sprague et al., 2024).",
+      "Emphasis 1": "the reasoning process",
+      "Emphasis 2": "If you don't set it:"
+    },
+    "c3.block-14": {
+      "Text 1": "Shape of the Output",
+      "Text 2": "Output Format",
+      "Text 3": "Information about ",
+      "Text 4": ". The same content delivered as a table, a list, a single sentence, or a set of questions changes how you can use it afterward. Specifying the format is not a convenience — it is designing how the output will integrate into your workflow.",
+      "Text 5": " AI defaults to its standard form (usually long paragraphs).",
+      "Text 6": "Revisited in Section 3 (Integrate) from the integration strategy perspective.",
+      "Emphasis 1": "the shape of the output",
+      "Emphasis 2": "If you don't set it:"
+    },
+    "c3.block-15": {
+      "Text 1": "Proactive GenAI Usage"
+    },
+    "c3.block-16": {
+      "Text 1": "If you think through these components before prompting, you stay in control of the task. If you skip them, AI fills them in for you, and because its output looks plausible, you may not realize decisions were made without you. Having your own ideas about these components before you let AI work is what we call proactive GenAI usage."
+    },
+    "c3.block-17": {
+      "Text 1": "Clear Instruction",
+      "Text 2": "Role",
+      "Text 3": "Task Decomposition",
+      "Text 4": "Few-shot",
+      "Text 5": "Chain-of-Thought",
+      "Text 6": "Output Format"
+    },
+    "c3.block-18": {
+      "Text 1": "Ask yourself",
+      "Text 2": "Clear Instruction",
+      "List text 1": "What exactly am I trying to do right now?",
+      "List text 2": "What is the purpose of this task?",
+      "List text 3": "What is the scope?",
+      "List text 4": "Which stage of my project does this task belong to?"
+    },
+    "c3.block-19": {
+      "Text 1": "Ask yourself",
+      "Text 2": "Role",
+      "List text 1": "What perspective should AI operate from?",
+      "List text 2": "What should AI NOT do?",
+      "List text 3": "What tone and level of response do I need?"
+    },
+    "c3.block-20": {
+      "Text 1": "Ask yourself",
+      "Text 2": "Task Decomposition",
+      "List text 1": "Can I break this task into smaller units?",
+      "List text 2": "Am I trying to ask for too much at once?",
+      "List text 3": "What order should the sub-tasks follow?"
+    },
+    "c3.block-21": {
+      "Text 1": "Ask yourself",
+      "Text 2": "Few-shot",
+      "List text 1": "Do I know what the desired output looks like?",
+      "List text 2": "Can I create one example?",
+      "List text 3": "If I can't make an example, do I actually know what I want?"
+    },
+    "c3.block-22": {
+      "Text 1": "Ask yourself",
+      "Text 2": "Chain-of-Thought",
+      "List text 1": "What reasoning process does this task require?",
+      "List text 2": "What steps should AI go through?",
+      "List text 3": "Do I need to see the intermediate process?"
+    },
+    "c3.block-23": {
+      "Text 1": "Ask yourself",
+      "Text 2": "Output Format",
+      "List text 1": "What format do I need to actually use it?",
+      "List text 2": "Table? List? Single sentence? Questions?",
+      "List text 3": "Is this format easy to integrate into my workflow?"
+    },
+    "c3.block-24": {
+      "Text 1": "Based on these components, you build your prompt."
+    },
+    "c3.block-25": {
+      "Text 1": "[Role]",
+      "Text 2": "You are a _______ who _______.",
+      "Text 3": "[Task]",
+      "Text 4": "I need you to _______.",
+      "Text 5": "[Context]",
+      "Text 6": "I am currently working on _______. This task is part of _______.",
+      "Text 7": "[Constraints]",
+      "Text 8": " Do not _______. Stay within _______.",
+      "Text 9": "[Reasoning]",
+      "Text 10": "Approach this by first _______, then _______.",
+      "Text 11": "[Examples]",
+      "Text 12": "Here is an example of what I want: _______",
+      "Text 13": "[Format]",
+      "Text 14": "Respond in the form of a _______."
+    },
+    "c3.block-26": {
+      "Heading 1": "Output is not an answer — it is a candidate"
+    },
+    "c3.block-27": {
+      "Text 1": "What AI gives you is not a final answer but a ",
+      "Text 2": ": candidate structure, candidate wording, candidate comparison, candidate interpretation. Output is material to review, not material to adopt.",
+      "Text 3": "This connects directly to what you learned in C1. GenAI output is statistically likely, not factually verified. It is conditioned on prior tokens, not on reasoning. It is bounded by training data. It reflects a distribution, not authorship. Without your domain knowledge, critique is impossible.",
+      "Emphasis 1": "candidate"
+    },
+    "c3.block-28": {
+      "Text 1": "Four steps: Read → Question → Verify → Decide"
+    },
+    "c3.block-29": {
+      "Text 1": "Read",
+      "Text 2": "Identify what came out",
+      "Text 3": "Question",
+      "Text 4": "Generate questions before judging",
+      "Text 5": "Verify",
+      "Text 6": "Judge against criteria",
+      "Text 7": "Decide",
+      "Text 8": "Select, modify, or discard"
+    },
+    "c3.block-30": {
+      "Text 1": "Read — Identify what came out",
+      "Emphasis 1": "Example",
+      "List text 1": "Is this a response to what I requested?",
+      "List text 2": "What structure did AI use? (list, paragraphs, table, etc.)",
+      "List text 3": "What overall claim or direction is it taking?"
+    },
+    "c3.block-31": {
+      "Text 1": "Question — Generate questions before judging",
+      "Emphasis 1": "Example",
+      "List text 1": "Is this content factually verifiable?",
+      "List text 2": "Is anything missing?",
+      "List text 3": "Are any parts overly general or vague?",
+      "List text 4": "Does the output include claims I can't verify?",
+      "List text 5": "Did the output stay within my requested scope?"
+    },
+    "c3.block-32": {
+      "Text 1": "Verify — Judge against criteria",
+      "Emphasis 1": "Example",
+      "List text 1": "If facts, citations, or numbers are included — can the source be verified?",
+      "List text 2": "Does the output match the scope of my request?",
+      "List text 3": "Can I explain this content myself?",
+      "List text 4": "Does this output reflect my intent and context?"
+    },
+    "c3.block-33": {
+      "Text 1": "Decide — Select, modify, or discard",
+      "Emphasis 1": "Example",
+      "List text 1": "Which parts can I use and which should I discard?",
+      "List text 2": "Which parts need modification?",
+      "List text 3": "Is a re-prompt necessary?"
+    },
+    "c3.block-34": {
+      "Heading 1": "How AI output enters your work"
+    },
+    "c3.block-35": {
+      "Text 1": "Integration does not start after you receive the output — it starts at the prompting stage. The moment you decide what format to receive the output in, you have already determined how safe and controllable the integration will be.",
+      "Text 2": "\"Compare these papers\" produces paragraphs that easily bleed into your writing. \"Make a comparison table\" keeps the output separate from your text, verifiable cell by cell. Choosing the output format is not a convenience — it is a ",
+      "Text 3": " for integration.",
+      "Emphasis 1": "safety mechanism"
+    },
+    "c3.block-36": {
+      "Text 1": "Highest risk of blending into your writing. Use with caution.",
+      "Table text 1": "Requested Format",
+      "Table text 2": "Integration Characteristics",
+      "Table text 3": "Comparison table",
+      "Table text 4": "Verifiable and extractable cell by cell. Does not blend into your prose.",
+      "Table text 5": "Question list",
+      "Table text 6": "Serves as a thinking prompt. No copy-paste risk. You have to write the answers.",
+      "Table text 7": "Single sentence summary",
+      "Table text 8": "A single claim — easy to accept or reject clearly.",
+      "Table text 9": "Keyword / term list",
+      "Table text 10": "Easy to selectively adopt. You write the sentences.",
+      "Table text 11": "Bullet point outline",
+      "Table text 12": "Use the structure as reference; fill in the content yourself.",
+      "Table text 13": "Full paragraph"
+    },
+    "c3.block-37": {
+      "Text 1": "Adopt / Modify / Discard"
+    },
+    "c3.block-38": {
+      "Text 1": "Segment",
+      "Text 2": "Break output into units",
+      "Text 3": "Tag",
+      "Text 4": "Adopt / Modify / Discard",
+      "Text 5": "Execute",
+      "Text 6": "Act on each tag",
+      "Text 7": "Review",
+      "Text 8": "Look at the whole"
+    },
+    "c3.block-39": {
+      "Text 1": "Segment — Break output into units",
+      "Text 2": "Break the output into units that can be judged independently. Rows for tables, items for lists, claims for paragraphs."
+    },
+    "c3.block-40": {
+      "Text 1": "Tag — Adopt / Modify / Discard",
+      "Text 2": "Assign a tag to each unit:",
+      "Text 3": "Adopt",
+      "Text 4": "Modify",
+      "Text 5": "Discard",
+      "List text 1": "  accurate, matches my intent, ready to use",
+      "List text 2": "  direction is right, needs adjustment",
+      "List text 3": "  inaccurate, outside scope, or I cannot verify it"
+    },
+    "c3.block-41": {
+      "Text 1": "Execute — Act on each tag",
+      "Emphasis 1": "Adopt →",
+      "Emphasis 2": "Modify →",
+      "Emphasis 3": "Discard →",
+      "List text 1": " place in your work; confirm source and context.",
+      "List text 2": " define what to change; return to original source or re-prompt.",
+      "List text 3": " delete; record why in one line."
+    },
+    "c3.block-42": {
+      "Text 1": "Review — Look at the whole",
+      "Text 2": "After integration, look at the whole:",
+      "List text 1": "Does this reflect my thinking?",
+      "List text 2": "Has AI's language remained unchanged in my text?",
+      "List text 3": "Can I explain and defend every part?"
+    },
+    "c3.block-43": {
+      "Text 1": "Human Accountability Checklist",
+      "Text 2": "Based on the Author Checklist from Cheng, Calhoun, & Reedy (2025). Advances in Simulation, 10, 22.",
+      "List text 1": "Are the core ideas and judgments in this work my own?",
+      "List text 2": "Have I verified all AI-generated content that I adopted?",
+      "List text 3": "Can I explain and defend every part of this work?",
+      "List text 4": "Can I transparently disclose how AI was used?"
+    },
+    "c3.block-44": {
+      "Text 1": "\n        Use GenAI responsibly during your study work, make sure you adhere to the ESSB principles and Guidelines.\n      ",
+      "Link text 1": "ESSB GenAI Guidelines ↗"
+    },
+    "c3.block-45": {
+      "Heading 1": "Building your prompt"
+    },
+    "c3.block-46": {
+      "Text 1": "AI processes structured input more accurately than prose paragraphs. Formatting changes alone can shift accuracy by up to 76 percentage points (Sclar et al., ICLR 2024). Two common structuring formats are Markdown and XML."
+    },
+    "c3.block-47": {
+      "Text 1": "Markdown",
+      "Text 2": "XML"
+    },
+    "c3.block-48": {
+      "Text 1": "Markdown uses ",
+      "Text 2": "#",
+      "Text 3": " for headings and ",
+      "Text 4": "-",
+      "Text 5": " for lists — intuitive and easy for humans to read. XML uses explicit opening and closing tags, which models parse more precisely. XML is the only delimiter format recommended by all three major providers (OpenAI, Anthropic, Google), making it advantageous for complex prompts."
+    },
+    "c3.block-49": {
+      "Text 1": "Prompt template (XML)"
+    },
+    "c3.block-50": {
+      "Text 1": "<role>",
+      "Text 2": "[What perspective should AI operate from?]",
+      "Text 3": "</role>",
+      "Text 4": "<task>",
+      "Text 5": "[What specifically needs to be done? Include purpose and context]",
+      "Text 6": "</task>",
+      "Text 7": "<context>",
+      "Text 8": "[The situation this task sits in. Current stage, background, materials]",
+      "Text 9": "</context>",
+      "Text 10": "<constraints>",
+      "Text 11": "[What should AI NOT do? Scope limits. Conditions to respect]",
+      "Text 12": "</constraints>",
+      "Text 13": "<steps>",
+      "Text 14": "[The reasoning or work steps AI should follow]\n1. ...\n2. ...\n3. ...",
+      "Text 15": "</steps>",
+      "Text 16": "<examples>",
+      "Text 17": "[Examples of the desired output. 1–3]",
+      "Text 18": "</examples>",
+      "Text 19": "<output_format>",
+      "Text 20": "[Shape, length, and structure of the output]",
+      "Text 21": "</output_format>"
+    },
+    "c3.block-51": {
+      "Text 1": "Prompt length guide"
+    },
+    "c3.block-52": {
+      "Table text 1": "Task Complexity",
+      "Table text 2": "Recommended Length",
+      "Table text 3": "Simple",
+      "Table text 4": "50–100 words (summary, factual question)",
+      "Table text 5": "Moderate",
+      "Table text 6": "150–300 words (analysis, comparison, structured output)",
+      "Table text 7": "Complex",
+      "Table text 8": "300–500 words (multi-step reasoning, detailed generation)",
+      "Table text 9": "Beyond 500 words",
+      "Table text 10": "Split into multiple turns"
+    },
+    "c3.block-53": {
+      "Text 1": "Writing principles"
+    },
+    "c3.block-54": {
+      "Text 1": "Use imperative verbs",
+      "Text 2": "Start instructions with action words.",
+      "Text 3": "\"Summarize\", \"Compare\", \"Identify\"",
+      "Text 4": "Skip politeness tokens",
+      "Text 5": "\"Please\", \"thank you\", and \"if you don't mind\" are unnecessary and can reduce performance (Dobariya & Kumar, 2025).",
+      "Text 6": "Use affirmative instructions",
+      "Text 7": "Affirmative instructions outperform negations.",
+      "Text 8": "\"Use plain language\" > \"Don't use jargon\"",
+      "Text 9": "Place key instructions at the edges",
+      "Text 10": "Put the most important instructions at the very beginning or very end of your prompt, countering the \"Lost in the Middle\" effect (Liu et al., 2024)."
+    },
+    "c3.block-55": {
+      "Text 1": " The activity preset prompts in this module are instances of this template with each field pre-filled for a specific learning activity.",
+      "Emphasis 1": "This template is a general-purpose framework."
+    },
+    "c3.block-56": {
+      "Text 1": "\n      Federiakin, D. et al. (2024). Prompt engineering as a new 21st century skill. ",
+      "Text 2": "Frontiers in Education",
+      "Text 3": ", 9, 1366434. ·\n      Schulhoff, S. et al. (2024). The Prompt Report. ",
+      "Text 4": "arXiv:2406.06608",
+      "Text 5": ". ·\n      Sahoo, P. et al. (2024). A Systematic Survey of Prompt Engineering in LLMs. ",
+      "Text 6": "arXiv:2402.07927",
+      "Text 7": ". ·\n      Liu, D. et al. (2026). A comprehensive taxonomy of prompt engineering techniques. ",
+      "Text 8": "Frontiers of Computer Science",
+      "Text 9": ", 20(3). ·\n      White, J. et al. (2023). A Prompt Pattern Catalog. ",
+      "Text 10": "PLoP 2023, Vanderbilt",
+      "Text 11": ". ·\n      Bozkurt, A. & Sharma, R. (2023). ",
+      "Text 12": "Open Praxis",
+      "Text 13": ". ·\n      Wei, J. et al. (2022). Chain-of-Thought Prompting. ",
+      "Text 14": "NeurIPS 2022",
+      "Text 15": ". ·\n      Brown, T. et al. (2020). Language Models are Few-Shot Learners. ",
+      "Text 16": "NeurIPS 2020",
+      "Text 17": ". ·\n      Yusuf, A. et al. (2024). ",
+      "Text 18": "Thinking Skills and Creativity",
+      "Text 19": ", 54, 101619. ·\n      Wang, Z. & Wang, C. (2025). APSE Model. ",
+      "Text 20": "Journal of Second Language Writing",
+      "Text 21": ", 67, 101187. ·\n      Zhu, J. & Duan, C. (2025). Pan-indexicality and prompt. ",
+      "Text 22": "Language and Semiotic Studies",
+      "Text 23": ". ·\n      Cheng, A., Calhoun, A. & Reedy, G. (2025). ",
+      "Text 24": "Advances in Simulation",
+      "Text 25": ", 10, 22. ·\n      Sclar, M. et al. (2024). Sensitivity to Spurious Features. ",
+      "Text 26": "ICLR 2024",
+      "Text 27": ". ·\n      Bsharat, S. et al. (2023). 26 Principled Instructions. ·\n      Liu, N. et al. (2024). Lost in the Middle. ",
+      "Text 28": "TACL",
+      "Text 29": ". ·\n      Levy, M., Jacoby, A. & Goldberg, Y. (2024). Same Task, More Tokens. ",
+      "Text 30": "ACL 2024",
+      "Text 31": ". ·\n      Shanahan, M. (2024). ",
+      "Text 32": "Communications of the ACM",
+      "Text 33": ", 67(2). ·\n      Huang, L. et al. (2025). ",
+      "Text 34": "ACM Transactions on Information Systems",
+      "Text 35": ". ·\n      Naveed, H. et al. (2025). ",
+      "Text 36": "ACM TIST",
+      "Text 37": ". ·\n      Yenduri, G. et al. (2024). ",
+      "Text 38": "IEEE Access",
+      "Text 39": ", 12, 54608–54649.\n    ",
+      "Emphasis 1": "Sources:"
+    },
+    "c3.extra-10": {
+      "Text 1": "2"
+    },
+    "c3.extra-11": {
+      "Text 1": "3"
+    },
+    "c3.extra-12": {
+      "Text 1": "4"
+    },
+    "c3.extra-13": {
+      "Text 1": "5"
+    },
+    "c3.extra-14": {
+      "Text 1": "6"
+    },
+    "c3.extra-15": {
+      "Text 1": "1"
+    },
+    "c3.extra-16": {
+      "Text 1": "2"
+    },
+    "c3.extra-17": {
+      "Text 1": "3"
+    },
+    "c3.extra-18": {
+      "Text 1": "4"
+    },
+    "c3.extra-19": {
+      "Text 1": "5"
+    },
+    "c3.extra-20": {
+      "Text 1": "6"
+    },
+    "c3.extra-21": {
+      "Text 1": "Section 2 · Critique"
+    },
+    "c3.extra-22": {
+      "Text 1": "1"
+    },
+    "c3.extra-23": {
+      "Text 1": "2"
+    },
+    "c3.extra-24": {
+      "Text 1": "3"
+    },
+    "c3.extra-25": {
+      "Text 1": "4"
+    },
+    "c3.extra-26": {
+      "Text 1": "← Prev"
+    },
+    "c3.extra-27": {
+      "Text 1": "Next →"
+    },
+    "c3.extra-28": {
+      "Text 1": "Section 3 · Integrate"
+    },
+    "c3.extra-29": {
+      "Text 1": "1"
+    },
+    "c3.extra-30": {
+      "Text 1": "2"
+    },
+    "c3.extra-31": {
+      "Text 1": "3"
+    },
+    "c3.extra-32": {
+      "Text 1": "4"
+    },
+    "c3.extra-33": {
+      "Text 1": "← Prev"
+    },
+    "c3.extra-34": {
+      "Text 1": "Next →"
+    },
+    "c3.extra-35": {
+      "Text 1": "double click to stop the alert"
+    },
+    "c3.extra-36": {
+      "Text 1": "Closing · Template"
+    },
+    "c3.extra-37": {
+      "Text 1": "Copy"
+    },
+    "c3.extra-38": {
+      "Text 1": "Core Blocks",
+      "Text 2": "← Back to Home"
+    },
+    "c3.extra-39": {
+      "Text 1": "← C2 · What is AI for us?"
+    },
+    "c3.extra-40": {
+      "Text 1": "Next"
+    },
+    "c3.extra-41": {
+      "Text 1": "GenAI in AWS I"
+    },
+    "c3.extra-42": {
+      "Text 1": "Continue →"
+    },
+    "c3.extra-43": {
+      "ai 1": "AI",
+      "of 1": "of",
+      "copy 1": "Copy",
+      "self 1": "Self",
+      "team 1": "Team",
+      "adopt 1": "Adopt",
+      "slide 1": "Go to slide",
+      "change 1": "Change",
+      "copied 1": "Copied",
+      "course 1": "Course",
+      "modify 1": "Modify",
+      "typing 1": "What you type",
+      "discard 1": "Discard",
+      "example 1": "Example",
+      "feedback 1": "Feedback",
+      "thinking 1": "What you are actually thinking",
+      "processing 1": "How the model actually processes this",
+      "course help 1": "AI-Wise adapts its examples, explanations, and prompt templates to your course. You can change this at any time.",
+      "subsections 1": "subsections toggle",
+      "Navigation c1 1": "C1: What is AI?",
+      "Navigation c2 1": "C2: What is AI for us?",
+      "Navigation c3 1": "C3: How do we use AI?",
+      "choose course 1": "Choose your course",
+      "send feedback 1": "Send feedback",
+      "close feedback 1": "Close feedback",
+      "feedback thanks 1": "Thank you — your feedback has been noted.",
+      "feedback question 1": "What's on your mind?",
+      "feedback placeholder 1": "Share a thought, suggestion, or issue...",
+      "Navigation c1 section 1 1": "History & Development",
+      "Navigation c1 section 2 1": "Anatomy of GenAI",
+      "Navigation c1 section 3 1": "GenAI Output Traits",
+      "Navigation c2 section 1 1": "AI vs Human Intelligence",
+      "Navigation c2 section 2 1": "Human vs GenAI",
+      "Navigation c2 section 3 1": "Collaboration Framework",
+      "Navigation c3 section 1 1": "Prompt",
+      "Navigation c3 section 2 1": "Critique",
+      "Navigation c3 section 3 1": "Integrate"
+    },
+    "c3.extra-44": {
+      "Page title 1": "AI-Wise · C3: How Do We Use AI?"
+    },
+    "c3.extra-45": {
+      "aria-label 1": "Copy prompt template"
+    }
+  }
+}
