@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 4,
+  "sequence": 9,
   "course": "common",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "dd0cf9e8-d8aa-4b67-80f1-05552c2b4a3e",
+  "submission_id": "f49dc055-81c9-49e2-8158-263841b48991",
   "source_release": null,
-  "approved_at": "2026-10-05T12:42:24.265316+00:00",
+  "approved_at": "2026-10-05T16:20:59.5576+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -150,7 +150,7 @@
     },
     "c2.block-11": {
       "Text 1": "What this means for output",
-      "Text 2": "In creativity tasks, GenAI tends to raise the floor. It produces consistently competent results. But the ceiling is lower: the highest quality human outputs exceed what GenAI produces, and attempts to boost LLM creativity through prompt engineering have yielded mixed to negative results."
+      "Text 2": "LLM's output tends to get drifted from reality and eventually leads to a more biased result. Therefore, it is hard to say that the output of the LLM reflects the reality."
     },
     "c2.block-12": {
       "Text 1": "Part C: Intentional information loss"
