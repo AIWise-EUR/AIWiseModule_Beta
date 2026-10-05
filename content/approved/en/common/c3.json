@@ -1,17 +1,17 @@
 {
   "schema": 1,
-  "sequence": 6,
+  "sequence": 11,
   "course": "common",
   "chapter": "c3",
   "locale": "en",
-  "submission_id": "cf28765b-c39f-4d1a-b338-050c17ed4b30",
+  "submission_id": "40b214a8-9f92-42b6-a365-6a1d79b61c13",
   "source_release": null,
-  "approved_at": "2026-10-05T12:52:19.206646+00:00",
+  "approved_at": "2026-10-05T16:44:30.419408+00:00",
   "slots": {
     "_studio": {
       "boxes": [
         {
-          "id": "box-0ae34813-b696-4e9c-9ecc-7e439a087ed2",
+          "id": "box-85727b86-30f9-437c-a3ee-9b1a0a49d3dc",
           "size": 0,
           "slot": "c3.block-44",
           "align": "left",
@@ -19,12 +19,58 @@
           "fields": [
             [
               {
-                "text": "Intersubjective meaning-making"
+                "size": 18,
+                "text": "Five principles of "
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "academic integrity"
               }
             ],
             [
               {
-                "text": "Human understanding does not develop only through individual cognition and experience, but also through interaction with others. People bring different lived experiences, perspectives, cultural backgrounds, values, knowledge and interests into a conversation. By questioning, challenging, and building on each other’s ideas, they may develop a richer understanding that none of them had beforehand. GenAI can simulate different perspectives, challenge assumptions, and contribute to such a dialogue. What it does not bring is its own socially situated perspective, grounded in lived experience, relationships, values, and interests. It can therefore participate in the simulation of intersubjective meaning-making, but not experience it in the way human participants do."
+                "text": "As we have already mentioned throughout the module, using GenAI in academic work does not change who is responsible for the work produced. You are responsible for the whole process: from how you decide to use GenAI for, to what you submit. \n\nAlways keep in mind these five principles of academic integrity: \n\n"
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "1. Honesty "
+              },
+              {
+                "text": "\n\nBe honest about how you use GenAI. Which platforms did you use? For what specific exercises? How did you evaluate the output? What, if anything, did you incorporate into your own work? \n\n"
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "2. Rigour "
+              },
+              {
+                "text": "\n\nCheck AI-generated information, conclusions, reasoning, and references. Do not accept it just because it sounds plausible or because it confirms what you expected. \n\n"
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "3. Transparency "
+              },
+              {
+                "text": "\n\nKeep track of how you use AI for your academic work, even if it’s not explicitly required in a course.  \n\n"
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "4. Independence \n"
+              },
+              {
+                "text": "\nTasks and assignments are designed to make you think and develop your own learning. Do not delegate that to AI. Remember: the beginning is always yours, and the ending is always yours. Start with your own thinking and critically evaluate what GenAI contributes before deciding what to incorporate into your work. Ask yourself: 1) Are the core ideas and judgments in this assignment mine? and 2) Would I be able to do this without the help of GenAI? \n\n"
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "5. Responsibility "
+              },
+              {
+                "text": "\n\nYou remain fully responsible for the work you submit. You must ensure that your work is your own, verify the accuracy of information and references, and be able to explain and defend your arguments and conclusions. "
               }
             ]
           ],
