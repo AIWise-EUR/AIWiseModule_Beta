@@ -160,6 +160,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 6 | Activities | not started | |
 | 7 | Course overrides | not started | not needed yet |
 | 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
+| 9 | Studio block editing | Implemented; backend activation pending | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
 
 ## How to verify
 
@@ -199,3 +200,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   `6e159dd` deployed successfully. Verified new/legacy IDs, unavailable-course chooser,
   and Beta → Published return without preference collision. Content V5 and pending
   approvals were not changed. Full ID transition remains a separate planned task.
+
+- **2026-10-05** (Codex) Integrated English box/card additions and text formatting into
+  Studio using an optional extension. No source label rewrite or pending-row migration.
+  See [Studio editing record](studio-block-editing.md) for tests and owner activation.

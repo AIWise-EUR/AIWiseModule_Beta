@@ -59,6 +59,7 @@
       Object.keys(s.slots).length > 0 && Object.keys(s.slots).every(path => path.startsWith(s.chapter + '.') && Object.hasOwn(s.baseSlots, path));
   }
   function validCommonSnapshot(s) {
+    if(s?.slots?._studio&&window.AIWiseStudioBlocks){if(!window.AIWiseStudioBlocks.valid(s.slots._studio,s.slots))return false;return validCommonSnapshot({...s,slots:window.AIWiseStudioBlocks.clean(s.slots),baseSlots:window.AIWiseStudioBlocks.clean(s.baseSlots)});}
     return s && s.schema === 1 && s.scope === 'common' && ['c1','c2','c3','map'].includes(s.chapter) &&
       Number.isFinite(Date.parse(s.savedAt)) && s.slots && s.baseSlots &&
       !Array.isArray(s.slots) && !Array.isArray(s.baseSlots) &&
@@ -356,16 +357,34 @@
     if (typeof value==='object') return Object.keys(value).length?'<dl>'+Object.entries(value).map(([key,v])=>'<dt>'+esc(contentLabel(key))+'</dt><dd>'+comparisonValue(v)+'</dd>').join('')+'</dl>':'<p class="ct-change-empty">Empty</p>';
     return '<p class="ct-preserve">'+esc(value)+'</p>';
   }
+  function studioComparison(before,after,snapshot) {
+    const empty={version:1,boxes:[],formats:[]};before=before||empty;after=after||empty;
+    const rich=runs=>Array.isArray(runs)?runs.map(run=>{
+      const style=[run.bold?'font-weight:700':'',run.italic?'font-style:italic':'',/^#[0-9a-f]{6}$/i.test(run.color||'')?'color:'+run.color:'',[14,16,18,22,28,36].includes(run.size)?'font-size:'+run.size+'px':''].filter(Boolean).join(';');
+      return '<span style="'+style+'">'+esc(run.text||'')+'</span>';
+    }).join(''):'';
+    const box=b=>b?'<div style="text-align:'+(['left','center','right'].includes(b.align)?b.align:'left')+'">'+(b.fields||[]).map((r,i)=>'<'+(i?'p':'h4')+' class="ct-preserve">'+rich(r)+'</'+(i?'p':'h4')+'>').join('')+'</div><p class="ct-caption">After existing box '+(Number(b.anchor)+1)+' · '+esc(b.align)+(b.size?' · '+esc(b.size)+' px':' · Original size')+'</p>':'<p class="ct-change-empty">Not present</p>';
+    const pair=(title,a,b)=>'<section class="ct-change-item"><h3>'+esc(title)+'</h3><div class="ct-change-pair"><section class="ct-change-before" aria-label="Before"><h5>Before</h5>'+a+'</section><section class="ct-change-after" aria-label="After"><h5>After</h5>'+b+'</section></div></section>';
+    const result=[];
+    for(const id of new Set([...before.boxes,...after.boxes].map(b=>b.id))){const a=before.boxes.find(b=>b.id===id),b=after.boxes.find(b=>b.id===id);if(!sameContent(a,b)||before.boxes.indexOf(a)!==after.boxes.indexOf(b))result.push(pair(!a?'Added box':!b?'Removed box':'Updated box',box(a),box(b)));}
+    const identity=f=>JSON.stringify([f.slot,f.path]);
+    for(const id of new Set([...before.formats,...after.formats].map(identity))){const a=before.formats.find(f=>identity(f)===id),b=after.formats.find(f=>identity(f)===id);if(sameContent(a,b))continue;const f=b||a;
+      const text=slots=>f.path.reduce((v,k)=>v?.[k],slots?.[f.slot]);
+      result.push(pair('Text formatting · '+(f.path.at(-1)||contentLabel(f.slot)), '<p class="ct-preserve">'+rich(a?.runs||[{text:text(snapshot.baseSlots)||''}])+'</p>','<p class="ct-preserve">'+rich(b?.runs||[{text:text(snapshot.slots)||''}])+'</p>'));
+    }
+    return result;
+  }
   function contentReview(request,fields) {
     const snapshot=request.commonSnapshot||request.contentSnapshot;
     const details=fields.map(([title,value])=>textBlock(title,value)).join('')+reference(request.targetRef);
     if (!snapshot) return details;
     const baseline=snapshot.baseSlots;
     const changes=baseline?[...new Set([...Object.keys(baseline),...Object.keys(snapshot.slots)])].flatMap(key=>{
+      if(key==='_studio')return studioComparison(baseline[key],snapshot.slots[key],snapshot);
       const rows=changedFields(baseline[key],snapshot.slots[key]);
       if (!rows.length) return [];
       const common=snapshot.scope==='common'||snapshot.course==='common';
-      const title=common?snapshot.blockTitles?.[key]||String(Object.values(baseline[key]||snapshot.slots[key]||{})[0]||'Shared content').trim().slice(0,90):contentLabel(key);
+      const title=key==='_studio'?'Added boxes & text formatting':common?snapshot.blockTitles?.[key]||String(Object.values(baseline[key]||snapshot.slots[key]||{})[0]||'Shared content').trim().slice(0,90):contentLabel(key);
       return [`<section class="ct-change-item"><h3>${esc(title)}</h3>${rows.map(row=>`${row.path.length?'<h4>'+esc(row.path.join(' · '))+'</h4>':''}<div class="ct-change-pair"><section class="ct-change-before" aria-label="Before"><h5>Before</h5>${comparisonValue(row.before)}</section><section class="ct-change-after" aria-label="After"><h5>After</h5>${comparisonValue(row.after)}</section></div>`).join('')}</section>`];
     }):[];
     return '<section class="ct-content-changes"><h2>Changes</h2>'+ (changes.length?changes.join(''):'<p>'+ (baseline?'No content changes in this request.':'The earlier content is unavailable for comparison.')+'</p>')+'</section><details class="ct-request-details"><summary>Request details</summary>'+details+submittedContent(snapshot)+'</details>';
@@ -379,7 +398,7 @@
       return '<dl class="ct-snapshot-fields">' + Object.entries(value).map(([key, value]) => `<dt>${esc(title(key))}</dt><dd>${valueMarkup(value)}</dd>`).join('') + '</dl>';
     }
     return `<section class="ct-detail-section ct-submitted-content"><h2>Submitted content</h2><p>Saved ${esc(date(snapshot.savedAt))}. This copy stays with this request when the ${(snapshot.scope === 'common' || snapshot.course === 'common') ? 'Common' : 'Content'} Studio draft changes.</p>` +
-      Object.entries(snapshot.slots).map(([path, value]) => `<details class="ct-snapshot-item"><summary>${esc((snapshot.scope === 'common' || snapshot.course === 'common') ? snapshot.blockTitles?.[path] || String(Object.values(snapshot.baseSlots?.[path] || {})[0] || 'Shared content').trim().slice(0,90) : title(path))} ${JSON.stringify(value) !== JSON.stringify(snapshot.baseSlots?.[path]) ? badge('Changed') : ''}</summary>${valueMarkup(value)}</details>`).join('') + '</section>';
+      Object.entries(snapshot.slots).filter(([path])=>path!=='_studio').map(([path, value]) => `<details class="ct-snapshot-item"><summary>${esc((snapshot.scope === 'common' || snapshot.course === 'common') ? snapshot.blockTitles?.[path] || String(Object.values(snapshot.baseSlots?.[path] || {})[0] || 'Shared content').trim().slice(0,90) : title(path))} ${JSON.stringify(value) !== JSON.stringify(snapshot.baseSlots?.[path]) ? badge('Changed') : ''}</summary>${valueMarkup(value)}</details>`).join('') + '</section>';
   }
   function dispose() { renderVersion++; cleanup.forEach(fn=>fn());cleanup=[];dirty=false; }
   async function render(part, shellFunction) {

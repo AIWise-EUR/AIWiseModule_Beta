@@ -1,0 +1,8 @@
+.cs-formatbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0}
+.cs-formatbar .button,.cs-format-menu summary{font:inherit;font-size:12px;padding:7px 10px;border:1px solid var(--line,#d4dede);border-radius:8px;background:var(--surface,#fff);color:var(--ink,#173e43);cursor:pointer}
+.cs-format-menu{position:relative}.cs-format-menu summary{list-style:none}.cs-format-menu summary::after{content:' ▾'}
+.cs-format-menu[open]{z-index:4}.cs-format-options{position:absolute;top:100%;left:0;min-width:150px;max-width:320px;max-height:260px;overflow:auto;padding:6px;background:white;border:1px solid #d4dede;border-radius:10px;box-shadow:0 12px 28px #173e431a;animation:cs-picker-in var(--cs-motion-menu,160ms) ease}
+.cs-format-options .button{display:block;text-align:left;width:100%;border:0}.cs-format-options .button:hover{background:#edf3f3}
+.cs-formatted-copy{padding:10px 12px;border-left:3px solid #b6cbcb;white-space:pre-wrap;overflow-wrap:anywhere;font-weight:400;max-height:180px;overflow:auto}
+.cs-block-actions{border-top:1px solid #d4dede;padding-top:18px;margin-top:20px}.cs-block-actions fieldset{margin:16px 0}.cs-block-actions label{display:block;margin:12px 0}
+@media(prefers-reduced-motion:reduce){.cs-format-options{animation:none}}

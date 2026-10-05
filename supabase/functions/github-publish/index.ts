@@ -13,6 +13,30 @@ class PublishError extends Error {
   code: string; status: number;
   constructor(code: string, status = 502) { super(code); this.code=code; this.status=status; }
 }
+// Kept in each deployable entry point so dashboard deployment needs only this file.
+// Browser/worker parity and malicious-payload rejection are covered by tests.
+export function validStudioExtension(ext:any,slots:any) {
+ const key='_studio',sizes=[14,16,18,22,28,36],templates=['gradient-row','fn-card','dual-card','sl-card','text'];
+ const object=(v:any)=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ const only=(v:any,keys:string[])=>object(v)&&Object.keys(v).every(k=>keys.includes(k));
+ const plain=(runs:any[])=>runs.map(r=>r.text).join('');
+  function validRuns(runs:any) {
+    return Array.isArray(runs) && runs.length>0 && runs.length<=2000 && runs.every((r:any)=>only(r,['text','bold','italic','color','size']) && typeof r.text==='string' && r.text.length<=100000 && (r.bold===undefined||typeof r.bold==='boolean') && (r.italic===undefined||typeof r.italic==='boolean') && (r.color===undefined||/^#[0-9a-f]{6}$/i.test(r.color)) && (r.size===undefined||sizes.includes(r.size)));
+  }
+
+    if(ext===undefined)return true;
+    if(!only(ext,['version','formats','boxes'])||ext.version!==1||!Array.isArray(ext.formats)||ext.formats.length>2000||!Array.isArray(ext.boxes)||ext.boxes.length>50)return false;
+    const ids=new Set(), paths=new Set();
+    return ext.formats.every((f:any)=>{
+      if(!only(f,['slot','path','runs'])||(!Object.hasOwn(slots,f.slot)||f.slot===key)||!Array.isArray(f.path)||f.path.length>10||f.path.some((k:any)=>typeof k!=='string'||['__proto__','constructor','prototype'].includes(k))||!validRuns(f.runs))return false;
+      let text=slots[f.slot];for(const k of f.path)text=object(text)||Array.isArray(text)?text[k]:undefined;
+      const id=JSON.stringify([f.slot,f.path]);if(paths.has(id)||typeof text!=='string'||plain(f.runs)!==text)return false;paths.add(id);return true;
+    }) && ext.boxes.every((b:any)=>{
+      if(!only(b,['id','slot','template','anchor','fields','align','size'])||!/^box-[a-f0-9-]{36}$/.test(b.id||'')||ids.has(b.id)||(!Object.hasOwn(slots,b.slot)||b.slot===key)||!templates.includes(b.template)||!Number.isInteger(b.anchor)||b.anchor<0||b.anchor>200||!['left','center','right'].includes(b.align)||!(b.size===0||sizes.includes(b.size))||!Array.isArray(b.fields)||!b.fields.length||b.fields.length>100||!b.fields.every(validRuns))return false;
+      ids.add(b.id);return b.template!=='text'||b.fields.length===2;
+    });
+}
+
 function canonical(value: any): string {
   if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
   if (value && typeof value === 'object') return '{' + Object.keys(value).sort().map(k => JSON.stringify(k) + ':' + canonical(value[k])).join(',') + '}';
@@ -26,7 +50,9 @@ export function artifact(job: Job) {
   if (p?.schema !== 1 || p.course !== job.course || p.chapter !== job.chapter || p.locale !== job.locale || p.submission_id !== job.submission_id ||
       !p.slots || Array.isArray(p.slots) || typeof p.slots !== 'object' || !Number.isFinite(Date.parse(p.approved_at)) ||
       (p.source_release !== null && !UUID.test(p.source_release))) throw new PublishError('invalid_content');
+  if(p.slots._studio&&!validStudioExtension(p.slots._studio,p.slots))throw new PublishError('invalid_content');
   for (const key of Object.keys(p.slots)) {
+    if(key==='_studio')continue;
     if (!key.startsWith(job.chapter + '.') || key.split('.').some(k => !/^[a-z][a-z0-9_-]*$/i.test(k) || ['__proto__','constructor','prototype'].includes(k))) throw new PublishError('invalid_slot');
   }
   // Only public approved content is serialized; reviewer names, reasons, drafts and memos are omitted.

@@ -11,6 +11,7 @@
   const targetNode = (s, index) => s.isCommon ? common().target(s, index) : s.frame.contentDocument.getElementById('cs-item-' + index);
   const supports = id => !!bachelor(id);
   const clone = value => JSON.parse(JSON.stringify(value));
+  const sameSourceHTML=(a,b)=>typeof a==='string'&&a.replace(/(\.\.\/pipelines\/(?:beta-content|common-content|course-loader)\.js)\?[^\"\n]*/g,'$1')===b.replace(/(\.\.\/pipelines\/(?:beta-content|common-content|course-loader)\.js)\?[^\"\n]*/g,'$1');
   const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const get = (data, path) => path.split('.').reduce((value, key) => value?.[key], data);
   const put = (data, path, value) => {
@@ -68,6 +69,7 @@
   }
   // Fixed source structure prevents malformed local records reaching the renderers.
   function valid(value, base, key = '') {
+    if(window.AIWiseStudioBlocks)return window.AIWiseStudioBlocks.validCopy(value,base,key);
     if (typeof base === 'string') {
       if (typeof value !== 'string') return false;
       if (key === 'actor') return ['self', 'ai', 'team'].includes(value);
@@ -95,10 +97,11 @@
       if (localStorage.getItem(s.key) !== s.raw) {
         message(s, 'Another tab changed this draft. Your edits have not been saved. Copy any text you want to keep before reloading.', true); return;
       }
+      if(!valid(s.values,s.base))throw Error('The draft contains an unsupported block or text format.');
       const raw = JSON.stringify(record(s)); localStorage.setItem(s.key, raw);
       s.raw = raw; s.needsUpgrade=false; s.saved = clone(s.values); controls(s);
       message(s, 'Draft saved in this browser · ' + new Date().toLocaleTimeString() + '. Beta is unchanged.');
-    } catch { message(s, 'Draft could not be saved. Keep this page open and try again.', true); }
+    } catch(error) { message(s, error.message || 'Draft could not be saved. Keep this page open and try again.', true); }
   }
   function reset(s) {
     if (!confirm(`Discard this browser’s ${s.chapter.toUpperCase()} draft and current edits? The preview will return to current Beta content.`)) return;
@@ -211,7 +214,10 @@
   function updatePreview(s) {
     if (s.isCommon) { common().apply(s, openEditor); refreshPicker(s); return; }
     const doc = s.frame.contentDocument, data = clone(s.source), y = s.frame.contentWindow.scrollY;
-    Object.entries(s.values).forEach(([path, value]) => put(data, path, value));
+    Object.entries(s.values).filter(([path])=>path!=='_studio').forEach(([path, value]) => put(data, path, value));
+    data._studio={...(data._studio||{}),[s.chapter]:s.values._studio};
+    s.items=catalogItems(Object.keys(s.values).filter(k=>k!=='_studio'),data);s.catalog[s.chapter]=s.items;
+    s.index=Math.min(s.index,s.items.length-1);
     window.AIWiseCourseRenderer.fillSlots(data, doc);
     window.AIWiseCourseRenderer.toggleRequired(data, doc);
     s.items.forEach((item, i) => {
@@ -227,6 +233,7 @@
         target.onkeydown = event => { if (event.target===target&&(event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openEditor(s, i); } };
       });
     });
+    if(s.chapter==='c2'){const dots=doc.getElementById('carouselDots');if(dots){dots.replaceChildren();s.values['c2.examples'].forEach((_,i)=>{const dot=doc.createElement('button');dot.className='carousel-dot';dot.type='button';dot.setAttribute('aria-label','Show example '+(i+1));dot.onclick=()=>selectItem(s,i);dots.append(dot);});}}
     refreshPicker(s); s.frame.contentWindow.scrollTo(0, y);
   }
   function openEditor(s, index) {
@@ -242,9 +249,11 @@
         const options = name === 'actor' ? ['self','ai','team'] : name === 'tag' && ['adopt','modify','discard'].includes(value) ? ['adopt','modify','discard'] : null;
         const input = document.createElement(options ? 'select' : (['title','typing_note','heading','tag','name','label'].includes(name) || s.isCommon && name.startsWith('Heading')) ? 'input' : 'textarea');
         if (options) options.forEach(text => { const option = document.createElement('option'); option.value = text; option.textContent = label(text); input.appendChild(option); });
-        input.name = path.join('.') || 'value'; input.value = value;
+        input.setAttribute('aria-label',label(name)); input.name = path.join('.') || 'value'; input.value = value;
         if (input.tagName === 'TEXTAREA') input.rows = 5;
         input.addEventListener('input', () => {
+          window.AIWiseStudioEditing?.remember(s);
+          window.AIWiseStudioEditing?.textChanged(s,valuePath,item.example!==undefined&&valuePath===item.path?[String(item.example),...path]:path,input.value);
           if (!path.length) s.values[valuePath] = input.value;
           else {
             const target = valuePath === item.path ? currentValue(s, item) : s.values[valuePath], keys = [...path], last = keys.pop();
@@ -256,6 +265,7 @@
           message(s, s.blocked ? 'Preview edits only. Saving is unavailable until the saved draft is reset.' : dirty() ? 'Unsaved edits · Preview only.' : '', s.blocked);
         });
         wrap.appendChild(input);
+        if(!options)window.AIWiseStudioEditing?.field(s,wrap,input,valuePath,item.example!==undefined&&valuePath===item.path?[String(item.example),...path]:path);
         if(s.locale==='nl') {
           let original=s.englishBase[valuePath];
           if(item.example!==undefined && valuePath===item.path)original=original?.[item.example];
@@ -275,7 +285,8 @@
     else if (item.example !== undefined) {
       ['title','thinking','typing_note','typing','processing'].forEach(key => container.appendChild(field(value[key] || '', [key], key)));
     } else container.appendChild(field(value, [], label(item.path)));
-    s.dialog.showModal(); container.querySelector('input,textarea,select')?.focus({preventScroll: true});
+    window.AIWiseStudioEditing?.panel(s,container,item);
+    if(!s.dialog.open)s.dialog.showModal(); container.querySelector('input,textarea,select')?.focus({preventScroll: true});
   }
   function closeEditor(s) {
     if (!s.dialog.open || s.cancelEditorClose) return;
@@ -431,6 +442,7 @@
         doc.getElementById('carouselPrev').onclick = () => go(index - 1); doc.getElementById('carouselNext').onclick = () => go(index + 1); go(0);
       }
       doc.querySelectorAll('.fn-card-title, .sl-item-title, .sources-toggle').forEach(node => {
+        if(node.closest('[data-studio-box]'))return;
         node.tabIndex = 0; if (node.tagName !== 'BUTTON') node.setAttribute('role', 'button');
         node.setAttribute('aria-expanded', 'false');
         const toggle = () => { const target = node.matches('.fn-card-title, .sl-item-title') ? node.parentElement : node;
@@ -600,6 +612,7 @@
         // Retain catalog order after JSONB reorders object keys.
         s.base=isCommon?Object.fromEntries(Object.entries(sourceBase).map(([path,fields])=>[path,Object.fromEntries(Object.keys(fields).map(key=>[key,baseline.slots[path][key]]))])):clone(baseline.slots);
       } else if(locale==='nl')throw Error('Translation setup is not ready.');
+      if(baseline?.slots._studio)s.base._studio=clone(baseline.slots._studio);
       s.reviewedSource=locale==='nl'?(approved?(approved.source_release||null):s.englishRelease):null;
       s.sourceStale=locale==='nl' && s.reviewedSource!==s.englishRelease;
       const languageStatus=()=>{
@@ -615,7 +628,7 @@
           const saved = JSON.parse(s.raw);
           const upgraded=isCommon && locale==='en' ? common().upgradeDraft(saved,s.base) : null;
           if(upgraded){s.needsUpgrade=true;saved.slots=upgraded;saved.baseSlots=clone(s.base);}
-          if (saved.schema !== 1 || (saved.locale || 'en') !== locale || (isCommon ? saved.scope !== 'common' || saved.chapter !== chapter || saved.sourceHTML !== html && !upgraded : saved.course !== courseId) || (saved.baseRelease || null) !== s.baseRelease) throw Error('Invalid draft');
+          if (saved.schema !== 1 || (saved.locale || 'en') !== locale || (isCommon ? saved.scope !== 'common' || saved.chapter !== chapter || !sameSourceHTML(saved.sourceHTML,html) && !upgraded : saved.course !== courseId) || (saved.baseRelease || null) !== s.baseRelease) throw Error('Invalid draft');
           let values, baseline;
           if (!isCommon && chapter === 'c2') {
             if (saved.slot !== 'c2.examples' || !equal(saved.baseExamples, s.base['c2.examples'])) throw Error('Invalid examples');
@@ -630,7 +643,7 @@
           }
           // Compare keys without relying on serialized property order.
           if (!baseline || Object.keys(baseline).length !== Object.keys(s.base).length || Object.keys(s.base).some(k => !equal(baseline[k], s.base[k])) || !valid(values, s.base)) throw Error('Changed source or invalid draft');
-          s.values = Object.fromEntries(Object.keys(s.base).map(k => [k, clone(values[k])]));
+          s.values = clone(values);
           if(locale==='nl'){s.reviewedSource=saved.sourceRelease||null;s.sourceStale=s.reviewedSource!==s.englishRelease;}
           status = s.needsUpgrade?'Saved draft restored. Save once to include the newly editable items.':'Saved browser draft restored. Beta is unchanged.';
         }
@@ -640,6 +653,7 @@
       }
       languageStatus();
       s.saved = clone(s.values); message(s, status, s.blocked);
+      window.AIWiseStudioEditing?.mount(s,{update:()=>updatePreview(s),controls:()=>controls(s),open:()=>openEditor(s,s.index),message:text=>message(s,text)});
       host.querySelectorAll('[data-cs-save]').forEach(button => button.addEventListener('click', () => save(s)));
       host.querySelector('[data-cs-reset]').addEventListener('click', () => reset(s));
       host.querySelectorAll('[data-cs-submit]').forEach(button => button.addEventListener('click', () => openSubmission(s)));

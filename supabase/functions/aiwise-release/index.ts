@@ -39,11 +39,35 @@ export function readRegistry(text:string) {
  return {bachelors:bachelors.map((b:any)=>({id:b.id,name:b.name,content:b.content})),courses:list};
 }
 export const DEST_FILES = ['aiwise-c1-final.html','aiwise-c2-final.html','aiwise-c3-final.html','aiwise-c1-anatomy-2d.html','published-content.json','published-content.js','published-common-content.js','published-course-loader.js','published-content-language.js','published-ui-effects.js','published-feedback-widget.js'];
+// Kept in each deployable entry point so dashboard deployment needs only this file.
+// Browser/worker parity and malicious-payload rejection are covered by tests.
+export function validStudioExtension(ext:any,slots:any) {
+ const key='_studio',sizes=[14,16,18,22,28,36],templates=['gradient-row','fn-card','dual-card','sl-card','text'];
+ const object=(v:any)=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ const only=(v:any,keys:string[])=>object(v)&&Object.keys(v).every(k=>keys.includes(k));
+ const plain=(runs:any[])=>runs.map(r=>r.text).join('');
+  function validRuns(runs:any) {
+    return Array.isArray(runs) && runs.length>0 && runs.length<=2000 && runs.every((r:any)=>only(r,['text','bold','italic','color','size']) && typeof r.text==='string' && r.text.length<=100000 && (r.bold===undefined||typeof r.bold==='boolean') && (r.italic===undefined||typeof r.italic==='boolean') && (r.color===undefined||/^#[0-9a-f]{6}$/i.test(r.color)) && (r.size===undefined||sizes.includes(r.size)));
+  }
+
+    if(ext===undefined)return true;
+    if(!only(ext,['version','formats','boxes'])||ext.version!==1||!Array.isArray(ext.formats)||ext.formats.length>2000||!Array.isArray(ext.boxes)||ext.boxes.length>50)return false;
+    const ids=new Set(), paths=new Set();
+    return ext.formats.every((f:any)=>{
+      if(!only(f,['slot','path','runs'])||(!Object.hasOwn(slots,f.slot)||f.slot===key)||!Array.isArray(f.path)||f.path.length>10||f.path.some((k:any)=>typeof k!=='string'||['__proto__','constructor','prototype'].includes(k))||!validRuns(f.runs))return false;
+      let text=slots[f.slot];for(const k of f.path)text=object(text)||Array.isArray(text)?text[k]:undefined;
+      const id=JSON.stringify([f.slot,f.path]);if(paths.has(id)||typeof text!=='string'||plain(f.runs)!==text)return false;paths.add(id);return true;
+    }) && ext.boxes.every((b:any)=>{
+      if(!only(b,['id','slot','template','anchor','fields','align','size'])||!/^box-[a-f0-9-]{36}$/.test(b.id||'')||ids.has(b.id)||(!Object.hasOwn(slots,b.slot)||b.slot===key)||!templates.includes(b.template)||!Number.isInteger(b.anchor)||b.anchor<0||b.anchor>200||!['left','center','right'].includes(b.align)||!(b.size===0||sizes.includes(b.size))||!Array.isArray(b.fields)||!b.fields.length||b.fields.length>100||!b.fields.every(validRuns))return false;
+      ids.add(b.id);return b.template!=='text'||b.fields.length===2;
+    });
+}
+
 function canonical(v:any):string {return Array.isArray(v)?'['+v.map(canonical).join(',')+']':v&&typeof v==='object'?'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canonical(v[k])).join(',')+'}':JSON.stringify(v);}
 const object=(v:any)=>v!==null&&typeof v==='object'&&!Array.isArray(v);
-function shape(value:any,base:any):boolean {
+function shape(value:any,base:any,field=''):boolean {
  if(typeof base==='string')return typeof value==='string'&&value.length<=100000;
- if(Array.isArray(base))return Array.isArray(value)&&base.length===value.length&&base.every((b,i)=>shape(value[i],b));
+ if(Array.isArray(base))return Array.isArray(value)&&(field==='c2.examples'?value.length>0&&value.length<=50:base.length===value.length)&&value.every((v,i)=>shape(v,field==='c2.examples'?base[0]:base[i]));
  if(!object(base)||!object(value))return false;
  const keys=Object.keys(value),expected=Object.keys(base);
  return keys.every(k=>!['__proto__','constructor','prototype'].includes(k)&&(Object.hasOwn(base,k)?shape(value[k],base[k]):k==='typing_note'&&typeof value[k]==='string'))&&expected.every(k=>Object.hasOwn(value,k)||(k==='typing_note'));
@@ -74,7 +98,8 @@ export function buildRelease(id:string,version:any,sourceSha:string,targetSha:st
    const paths=[...html.matchAll(/data-slot="([^"]+)"/g)].map(m=>m[1]).filter(p=>p.startsWith(chapter+'.'));
    expected=Object.fromEntries([...new Set(paths)].map(p=>[p,p.split('.').reduce((v:any,k)=>v?.[k],scopes[course])]).filter(([,value])=>value!==undefined));
   }
-  if(!object(expected)||Object.keys(slots).sort().join('|')!==Object.keys(expected).sort().join('|')||!Object.keys(expected).every(k=>shape(slots[k],expected[k])))throw new PublishError('version_structure_changed',409);
+  if(!object(expected)||Object.keys(slots).filter(k=>k!=='_studio').sort().join('|')!==Object.keys(expected).sort().join('|')||!Object.keys(expected).every(k=>shape(slots[k],expected[k],k)))throw new PublishError('version_structure_changed',409);
+  if(slots._studio&&!validStudioExtension(slots._studio,slots))throw new PublishError('version_structure_changed',409);
   return {course,chapter,locale,slots,submission_id:row.submission_id||null};
  });
  for(const key of required)if(!seen.has(key+'/en'))throw new PublishError('incomplete_version',409);

@@ -5,6 +5,7 @@
   const {chapters, names, catalog} = window.AIWiseCommonContent;
   function apply(s, openEditor) {
     const doc = s.frame.contentDocument;
+    window.AIWiseStudioBlocks?.restore(doc);
     if (!s.commonBlocks) {
       if(s.chapter==='map'){const style=doc.createElement('style');style.textContent='[data-cs-common-item]{cursor:pointer;outline:1px dashed #35617f;outline-offset:2px}[data-cs-common-item]:focus-visible{outline:3px solid #35617f}';doc.head.appendChild(style);}
       // Include current course examples for context, without adding them to the editable catalog.
@@ -34,6 +35,7 @@
     s.commonBlocks.forEach(block => {
       Object.keys(block.fields).forEach((key, i) => { block.nodes[i].nodeValue = s.values[block.path][key]; });
     });
+    window.AIWiseStudioBlocks?.common(doc,s.values,s.commonBlocks);
     window.AIWiseCommonContent.sync(doc);
     doc.documentElement.lang = s.locale || 'en';
   }

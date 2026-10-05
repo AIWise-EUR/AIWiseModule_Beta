@@ -65,6 +65,7 @@
   function apply(data, rows) {
     const next = JSON.parse(JSON.stringify(data));
     for (const row of rows) for (const [path,value] of Object.entries(row.slots)) {
+      if(path==='_studio'){if(!window.AIWiseStudioBlocks?.valid(value,row.slots))throw Error('Invalid Studio content.');next._studio=next._studio||{};next._studio[row.chapter]=JSON.parse(JSON.stringify(value));continue;}
       const keys = path.split('.');
       if (keys[0] !== row.chapter || keys.some(k => !/^[a-z][a-z0-9_]*$/i.test(k) || ['__proto__','prototype','constructor'].includes(k))) throw Error('Invalid Beta content slot.');
       let target = next;

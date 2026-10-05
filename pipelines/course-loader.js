@@ -224,6 +224,7 @@
         console.warn("[course-loader] slot has no renderer for its value:", path);
       }
     });
+    window.AIWiseStudioBlocks?.course(renderDoc,data);
   }
 
   /* elements with data-requires-slot="<path>" are shown only when the

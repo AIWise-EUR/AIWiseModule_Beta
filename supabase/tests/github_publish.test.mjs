@@ -72,3 +72,8 @@ test('same sequence with changed content stops instead of overwriting a manual e
 test('invalid content paths are rejected before GitHub credentials are used',async()=>{const f=fixture();f.setJob({...copy,course:'../../AI-Wise'});await f.run();assert.equal(f.finished[0].p_error,'invalid_job');assert.equal(f.calls.some(c=>c.url.hostname==='api.github.com'),false);});
 test('Pages success and failure are recorded independently of a successful commit',async()=>{for(const deploy of ['success','failure']){const f=fixture({deploy});await f.run();assert.equal(f.finished[0].p_error,null);assert.equal(f.updates[0].deployment_status,deploy);assert.equal(f.updates[0].deployment_run_id,99);}});
 test('Common map and course EN/NL slots produce separate artifacts',()=>{for(const course of ['common','aws1','ped','other'])for(const locale of ['en','nl']){const chapter=course==='common'?'map':'c3';const job={...copy,course,chapter,locale,payload:{...copy.payload,course,chapter,locale,slots:{[chapter+'.label']:'Text'}}};assert.equal(artifact(job).path,`content/approved/${locale}/${course}/${chapter}.json`);}});
+test('approved archive preserves new boxes and formatting while rejecting malformed extension data',()=>{
+ const job=structuredClone(copy);job.payload.slots._studio={version:1,formats:[],boxes:[{id:'box-'+uuid,slot:'c1.block-0',template:'text',anchor:0,fields:[[{text:'Title'}],[{text:'Body',bold:true}]],align:'left',size:0}]};
+ assert.deepEqual(artifact(job).value.slots._studio,job.payload.slots._studio);
+ job.payload.slots._studio.boxes[0].fields[0][0].onerror='evil';assert.throws(()=>artifact(job),/invalid_content/);
+});

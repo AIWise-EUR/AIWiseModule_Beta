@@ -50,3 +50,13 @@ test('generated Published loader migrates course aliases, isolates preferences a
  const require=createRequire(import.meta.url);
  await require('../../workspace/tests/published-compat-harness.cjs').check(build()['published-course-loader.js'],true);
 });
+
+test('new boxes and variable example lists survive a frozen release without changing old versions',()=>{
+ const v=structuredClone(version),common=v.content.find(r=>r.course==='common'&&r.chapter==='c2');
+ const slot='c2.block-7';assert.ok(common.slots[slot]); // fixed existing gradient-rows catalog ID
+ common.slots._studio={version:1,formats:[],boxes:[{id:'box-'+id,slot,template:'gradient-row',anchor:2,fields:[[{text:'New title',italic:true}],[{text:'New body'}]],align:'left',size:0}]};
+ const course=v.content.find(r=>r.course==='psychology'&&r.chapter==='c2');course.slots['c2.examples'].push({title:'More',thinking:'Think',typing:'Ask',processing:'Process'});
+ const out=build(v),saved=JSON.parse(out['published-content.json']);assert.deepEqual(saved.content.find(r=>r.course==='common'&&r.chapter==='c2').slots._studio,common.slots._studio);
+ assert.equal(JSON.stringify(version).includes('New title'),false);
+ const broken=structuredClone(v);broken.content.find(r=>r.course==='common'&&r.chapter==='c2').slots._studio.boxes[0].fields[0][0].color='url(bad)';assert.throws(()=>build(broken),/version_structure_changed/);
+});
