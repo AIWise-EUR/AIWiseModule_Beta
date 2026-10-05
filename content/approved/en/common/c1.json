@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 2,
+  "sequence": 5,
   "course": "common",
   "chapter": "c1",
   "locale": "en",
-  "submission_id": "c370cf55-a7fa-46e4-a47b-206308201b96",
+  "submission_id": "b9ec80b7-1c0a-4c24-b295-0a46dd1e1d02",
   "source_release": null,
-  "approved_at": "2026-10-01T08:27:47.923752+00:00",
+  "approved_at": "2026-10-05T12:51:10.199524+00:00",
   "slots": {
     "c1.block-0": {
       "Heading 1": "What is Generative AI?"
@@ -65,13 +65,13 @@
       "Text 1": "\n        When a response sounds fluent or well targeted, it is easy to start anthropomorphizing the system, that is, treating it as if it were a mind or an entity that understands in the human sense. This reaction is natural, but this diagram is meant to interrupt that intuition. Its purpose is not to make you memorize every component one by one. Rather, it is to help you see GenAI more clearly as a system made up of physical and informational parts that work together to produce each response. Clearing away that fog is an important first step toward understanding GenAI and using it more appropriately.\n      "
     },
     "c1.block-7": {
-      "Heading 1": "What GenAI is good at — and where it structurally falls short"
+      "Heading 1": "What GenAI can help with — and where it structurally falls short"
     },
     "c1.block-8": {
-      "Text 1": "\n        Knowing how GenAI works makes its strengths and limitations predictable rather than surprising. Each limitation below is not a design flaw — it follows directly from the mechanism described in Section 2.\n      "
+      "Text 1": "\n        Knowing how GenAI works makes it easy to identify activities where it could be helpful, and what the limitations are. Each limitation below is not a design flaw — it follows directly from the mechanism described in Section 2.\n      "
     },
     "c1.block-9": {
-      "Text 1": "\n          Strengths\n        "
+      "Text 1": "\n          Helpful uses\n        "
     },
     "c1.extra-0": {
       "alt 1": "Erasmus University Rotterdam",
@@ -109,19 +109,19 @@
     },
     "c1.block-10": {
       "Text 1": "Brainstorming and idea generation",
-      "Text 2": "GenAI samples broadly across its training distribution, which makes it effective at producing a wide range of starting points quickly. When you are unsure where to begin a research question or essay argument, it can surface angles you had not considered. Use it to generate options, not to select among them."
+      "Text 2": "GenAI can quickly generate a wide range of ideas by drawing on patterns and associations learned during training. However, the first step in idea generation should be your own. Before asking AI to generate ideas, activate what you already know: think about the topic, formulate your own questions, make connections, or discuss the topic with your peers. This helps you develop your own perspective before being exposed to AI-generated ideas. You can then use AI to explore new perspectives and discover ideas you had not yet considered. Critically evaluate its suggestions and decide which you find worth pursuing."
     },
     "c1.block-11": {
       "Text 1": "Structuring and outlining",
-      "Text 2": "Because GenAI has processed enormous quantities of academic writing, it has strong pattern-matching over conventional structures — argument flow, section sequencing, paragraph organisation. It can draft a plausible skeleton for a literature review or discussion section. Treat the output as a scaffold to critique and rebuild, not a final form."
+      "Text 2": "Because GenAI has processed enormous quantities of academic writing, it has strong pattern-matching over conventional structures – argument flow, section sequencing, paragraph organisation. When you already understand the task and have developed your own ideas, GenAI can draft a plausible skeleton for a literature review or discussion section. Always treat the output as a scaffold to critique and rebuild, not a final form. You remain responsible for deciding what belongs in your work and why. "
     },
     "c1.block-12": {
       "Text 1": "Paraphrasing and reformulating",
-      "Text 2": "Restating a concept in different words or at a different level of complexity is a core strength. If you understand something but cannot articulate it clearly, GenAI can help you find the phrasing. This is most useful after you have already worked through the source material yourself."
+      "Text 2": "GenAI can help you express an idea in different words or at a different level of complexity. This is most useful if you have worked through the material yourself and understand what you are trying to say, but cannot articulate it clearly. Be careful, though: as you go back and forth with AI, it may gradually introduce new ideas or interpretations alongside your own. Over time, the resulting text may start to feel entirely yours, even when parts of it no longer reflect your original thinking. Make sure you remain aware of what comes from you and what AI has contributed. "
     },
     "c1.block-13": {
       "Text 1": "Summarising large volumes of text",
-      "Text 2": "GenAI can compress a long document into key points quickly. For an initial orientation to an unfamiliar topic or body of literature, this can save time. The risk is that compression always involves selection — you cannot verify what was left out without reading the original."
+      "Text 2": "GenAI can compress a long document into key points quickly. This can save time for an initial orientation to an unfamiliar topic or body of literature. However, there’s a risk: a summary is a selection made by GenAI, and you cannot verify what was left out or distorted without reading the original. "
     },
     "c1.block-14": {
       "Text 1": "\n          Limitations\n        "
@@ -133,7 +133,7 @@
     },
     "c1.block-16": {
       "Text 1": "Critical analysis and original argumentation",
-      "Text 2": "GenAI has no genuine position on anything. What appears to be an argument is a statistically likely sequence of tokens associated with argument-shaped text. For tasks requiring you to evaluate evidence, take a stance, or construct an original claim, GenAI output is a starting point for thinking — not a substitute for it.",
+      "Text 2": "GenAI has no genuine position on anything. What appears to be an argument is a statistically likely sequence of tokens associated with argument-shaped text. For tasks requiring you to evaluate evidence, take a stance, or construct an original claim, you need to start the thinking process on your own. You could then use AI to explore counterarguments and challenge your reasoning, rather than letting it determine your position. ",
       "Text 3": "Why: output is sampled from a distribution over training text — there is no reasoning agent holding a view (Shanahan, 2024)"
     },
     "c1.block-17": {
