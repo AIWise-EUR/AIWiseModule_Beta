@@ -55,7 +55,8 @@ p { line-height: 1.62; }
 .tower { left: 35%; top: calc(50% - 140px); width: 15%; }
 .tower svg { height: 189px; }
 .beta { left: 57%; top: calc(50% - 100px); width: 18%; }
-.published { left: 80%; top: calc(50% - 100px); width: 18%; }
+.published-group { position: absolute; left: 79%; top: calc(50% - 100px); width: 20%; z-index: 2; }
+.published-group .published { position: relative; width: 100%; }
 .approval-gate { position: absolute; left: 75%; top: calc(50% - 55px); width: 5%; text-decoration: none; z-index: 3; text-align: center; border-radius: 5px; }
 .approval-gate span { display: block; font: 11px/1.4 var(--font-mono); margin-bottom: 3px; background: #F5EDD8; color: #5C5334; border: 1px solid #E3D3A6; padding: 5px 0; border-radius: 3px; }
 .approval-gate svg { width: 100%; height: 50px; fill: #F5EDD8; stroke: #806226; stroke-width: 2; }
@@ -176,3 +177,16 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 22px; border: 1px
 .workspace-tips { margin: 0 0 24px; padding-left: 24px; font-size: 14px; line-height: 1.6; }
 .workspace-tips li { padding: 9px 4px; border-bottom: 1px solid var(--line); }
 .workspace-tips li::marker { color: var(--ink-3); font: 11px var(--font-mono); }
+
+/* Fixed student links sit immediately below Published in both home views. */
+.share-links { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); box-shadow: var(--sh); }
+.share-links h2 { margin: 0 0 4px; font: 600 12px/1.5 var(--font-heading); color: var(--ink); }
+.share-link-row { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-top: 1px solid var(--line-2); }
+.share-link-row a { flex: 1; min-width: 0; color: var(--signal); text-decoration: none; font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.share-link-row a:hover { text-decoration: underline; }
+.share-link-row small { display: block; color: var(--ink-3); font-size: 10px; font-weight: 400; }
+.share-link-row .button { flex-shrink: 0; min-width: 54px; min-height: 36px; padding: 5px 8px; font-size: 11px; }
+.share-link-status { margin: 0; color: var(--ink-3); font-size: 11px; }
+.share-link-status:empty { display: none; }
+.share-link-manual { width: 100%; margin-top: 6px; padding: 6px; font: 11px/1.5 var(--font-mono); border: 1px solid var(--line); border-radius: 3px; }
+.published-list-group { min-width: 0; }

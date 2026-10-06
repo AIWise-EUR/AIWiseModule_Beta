@@ -35,8 +35,11 @@ Agreed with the project owner (Seyoon) between 2 and 4 October 2026.
 6. **Separation, not access control.** A course URL pins its course and carries only
    that course's content, so students do not wander into another course. Someone who
    knows another URL can still open it; there is no login.
-7. **Share links page.** The workspace gets a read-only list, grouped by bachelor, with
-   one row per course: name, status (live / not published yet), URL, copy, open.
+7. **Share links.** Updated by the owner on 7 October: show the current fixed student
+   links directly below Published on the first Workspace map, with a Copy button per
+   course. List/mobile view provides the same links. Course names open the student
+   home in a new tab; the bachelor appears below each name. A separate page and
+   publication-status tracking for future courses are deferred.
 8. **Claude implements; Codex continues from this record.** Do not work on the same
    step from two agents at once.
 
@@ -156,7 +159,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 2 | Content scopes | live | SQL applied by the owner on 2026-10-04 |
 | 3 | Workspace, loaders, functions | live | signed-in screens and the two redeployed functions still need a first real use; see Log |
 | 4 | Per-course publishing | fixed share links implemented; folder bundles pending | `?course=<bachelor.course>&fixed=1`; no SQL/function changes for this stage |
-| 5 | Share links page | not started | design agreed; no search box, no per-row description |
+| 5 | Share links | implemented on Workspace home | Below Published in map and list views; fixed student home links with Copy; no separate page |
 | 6 | Activities | not started | |
 | 7 | Course overrides | not started | not needed yet |
 | 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
@@ -254,3 +257,8 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 - **2026-10-05** (Codex) Integrated English box/card additions and text formatting into
   Studio using an optional extension. No source label rewrite or pending-row migration.
   See [Studio editing record](studio-block-editing.md) for tests and owner activation.
+
+- **2026-10-07** (Codex) Added Share link under Published on the Workspace home map
+  and list views. Uses registry course names and fixed student lobby URLs, with
+  per-course Copy feedback and a manual-copy fallback. No content, drafts, pending
+  requests, database or publishing workflow changes. See `fixed-course-links.md`.

@@ -36,7 +36,7 @@
   let currentPrompt = '';
   let renderedHash = location.hash;
 
-  document.getElementById('area-list').innerHTML = Object.entries(areas).map(([id,a]) => `<a class="card link" href="${id==='published'?publishedUrl:'#'+id}"><svg viewBox="0 0 ${id==='tower'?'180 240':id==='beta'||id==='published'?'270 200':'240 180'}" aria-hidden="true"><use href="#${a.icon}"/></svg><h2>${a.name}</h2><p>${a.note}</p><span class="arrow">${a.action} ${id==='published'?'↗':'→'}</span></a>`).join('');
+  document.getElementById('area-list').innerHTML = Object.entries(areas).map(([id,a]) => `${id === 'published' ? '<div class="published-list-group">' : ''}<a class="card link" href="${id==='published'?publishedUrl:'#'+id}"><svg viewBox="0 0 ${id==='tower'?'180 240':id==='beta'||id==='published'?'270 200':'240 180'}" aria-hidden="true"><use href="#${a.icon}"/></svg><h2>${a.name}</h2><p>${a.note}</p><span class="arrow">${a.action} ${id==='published'?'↗':'→'}</span></a>${id === 'published' ? '<section class="share-links" aria-label="Published course share links"></section></div>' : ''}`).join('');
   function setView(view) {
     document.getElementById('map-container').hidden = view !== 'map';
     document.getElementById('area-list').hidden = view !== 'list';

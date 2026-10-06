@@ -3,8 +3,9 @@
 ## Status
 
 Implemented and tested for Beta and the current student V9 runtime. Separate
-`<bachelor>/<course>/` bundles and a Workspace share-links screen remain future
-steps in `course-structure.md`. This change does not generate those folders.
+`<bachelor>/<course>/` bundles remain a future step in `course-structure.md`.
+The Workspace home now lists Share link directly below Published in map and list
+views. This change does not generate course folders.
 
 ## Share links
 
@@ -26,6 +27,15 @@ context through their links and questionnaire's programmatic navigation. Externa
 links, files, other repositories and the Workspace are not rewritten. Fixed URLs
 are navigation context, not authentication: editing the URL or opening a different
 public link is still possible. Examples remain shared by bachelor.
+
+## Workspace shortcuts
+
+`workspace/share-links.js` reads the existing course registry and builds fixed
+`lobby.html` URLs on the student domain. Both home views show the course and bachelor,
+a new-tab link, and a Copy button. Copy success is announced; if clipboard access is
+unavailable, a selected read-only URL allows manual copying. The controls write no
+browser storage, content or requests. Future courses must be published before their
+registry-backed share links are distributed; automatic live-status tracking is deferred.
 
 ## Implementation and rollout
 
@@ -59,8 +69,17 @@ questionnaire parameters, and helper inclusion in every AWS activity page. The
 Published bundle test runs fixed selection checks against the generated loader.
 Local browser checks cover the actual student V9 content and full navigation.
 
+Workspace shortcut verification (7 October): all 45 test files passed; a local
+read-only UI fixture verified the actual map/list markup, all three copied URLs,
+and the 390px mobile list without horizontal overflow. The fixture was removed
+before committing. Live Workspace verification follows the Pages deployment.
+
 ## Log
 
 - 2026-10-06 — Implemented fixed share links as requested, without changing the
   existing approval/publishing workflow or claiming that folder-based course bundles
   have been completed. Preserved V9 content and documented the remaining separation.
+
+- 2026-10-07 — Added the requested Share link rows beneath Published on the home map
+  and in list view, using the existing visual styles and the three fixed student
+  home links. No separate Share links screen or data migration.
