@@ -36,10 +36,16 @@
   var DEFAULT_ID = document.documentElement.getAttribute("data-default-course") || "aws1";
 
   /* ── course id ─────────────────────────────────────────── */
+  function pinnedCourse() {
+    var forced = document.documentElement.getAttribute("data-force-course");
+    if (forced) return forced;
+    var params = new URLSearchParams(window.location.search);
+    return params.get("fixed") === "1" ? params.get("course") || "__missing_course__" : "";
+  }
   function resolveCourseId() {
     /* data-force-course on <html> pins the course for single-course
        deployments; URL and remembered choices are ignored */
-    var forced = document.documentElement.getAttribute("data-force-course");
+    var forced = pinnedCourse();
     if (forced) return forced;
     var fromUrl = null;
     try { fromUrl = new URLSearchParams(window.location.search).get("course"); } catch (e) {}
@@ -257,14 +263,14 @@
 
   function selectCourse(list, id) {
     var entry = findCourse(list, id);
-    if (!entry && !window.AIWisePublished) entry = findCourse(list, DEFAULT_ID) || list[0];
+    if (!entry && !window.AIWisePublished && !pinnedCourse()) entry = findCourse(list, DEFAULT_ID) || list[0];
     if (!entry) {
       var error = new Error("Course is not available in this published version.");
       error.courseUnavailable = true;
       throw error;
     }
     // Migrate only validated selections. Never change the shared legacy key or pinned pages.
-    if (!document.documentElement.getAttribute("data-force-course")) {
+    if (!pinnedCourse()) {
       try { localStorage.setItem(STORAGE_KEY, entry.id); } catch (e) {}
     }
     return entry.id;
@@ -313,16 +319,16 @@
           needsCourseChoice = true;
           var note = document.getElementById("aiwise-course-unavailable");
           if (!note) { note = el("p", "aiwise-course-unavailable"); note.id = "aiwise-course-unavailable"; note.setAttribute("role", "status"); note.style.cssText = "padding:16px;background:#fff3cd;color:#663c00;margin:0"; document.body.prepend(note); }
-          note.textContent = "This course is not available in this published version. Choose an available course using the course menu.";
+          note.textContent = pinnedCourse() ? "This course link is not available in this version. Please ask your instructor for the correct link." : "This course is not available in this published version. Choose an available course using the course menu.";
           announce(null, null);
           return;
         }
         console.error("[course-loader] could not load course '" + id + "':", err);
-        if (window.AIWiseBetaContent) {
+        if (window.AIWiseBetaContent || pinnedCourse()) {
           var warning = document.getElementById("aiwise-beta-error");
           if (!warning) { warning=document.createElement("p"); warning.id="aiwise-beta-error"; warning.setAttribute("role","alert"); warning.style.cssText="position:fixed;top:0;left:0;right:0;z-index:9999;background:#fff3cd;color:#663c00;padding:16px;margin:0"; document.body.prepend(warning); }
           warning.textContent="Approved Beta content could not be loaded. Course examples may be unavailable. Reload to retry.";
-        } else if (!isFallback && id !== DEFAULT_ID) return load(DEFAULT_ID, true);
+        } else if (!isFallback && id !== DEFAULT_ID && !pinnedCourse()) return load(DEFAULT_ID, true);
         /* nothing loaded: still announce so pages do not hang */
         announce(null, null);
       });
@@ -380,7 +386,7 @@
     ".aiwise-course-modal .acm-option.active::after{content:'✓';margin-left:auto;color:#2b5d63;font-weight:700;}";
 
   function buildUI(list, firstVisit) {
-    if (document.getElementById("aiwiseCourseSwitch")) return;
+    if (document.getElementById("aiwiseCourseSwitch") || document.getElementById("aiwiseCourseLabel")) return;
 
     var style = document.createElement("style");
     style.textContent = UI_CSS;
@@ -391,6 +397,17 @@
     list.forEach(function (c) { if (c.id === currentId) entry = c; });
     var currentName = entry ? entry.short_name
       : (window.AIWISE_COURSE && window.AIWISE_COURSE.course && window.AIWISE_COURSE.course.short_name) || copy("choose-course", "Choose your course");
+
+    if (pinnedCourse()) {
+      if (!entry) return;
+      var badge = el("div", "aiwise-course-switch");
+      badge.id = "aiwiseCourseLabel";
+      badge.style.cssText = "cursor:default;transform:none";
+      badge.appendChild(el("span", "acs-label", copy("course", "Course")));
+      badge.appendChild(el("span", "acs-name", currentName));
+      document.body.appendChild(badge);
+      return;
+    }
 
     /* pill */
     var pill = document.createElement("button");
@@ -457,7 +474,7 @@
   }
 
   function initUI(firstVisit) {
-    if (document.documentElement.hasAttribute("data-no-course-ui") || document.documentElement.getAttribute("data-force-course")) return;
+    if (document.documentElement.hasAttribute("data-no-course-ui")) return;
     fetchManifest()
       .then(function (list) {
         var build = function () { buildUI(list, firstVisit || needsCourseChoice); };

@@ -61,6 +61,7 @@
   }
 
   function runLeaveThenNavigate(url) {
+    url = window.AIWiseCourseLink?.pin(url) || url;
     if (reduceMotion) {
       window.location.href = url;
       return;

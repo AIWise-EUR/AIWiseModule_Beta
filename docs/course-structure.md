@@ -155,7 +155,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 1 | Registry | on `development` | |
 | 2 | Content scopes | live | SQL applied by the owner on 2026-10-04 |
 | 3 | Workspace, loaders, functions | live | signed-in screens and the two redeployed functions still need a first real use; see Log |
-| 4 | Per-course publishing | not started | |
+| 4 | Per-course publishing | fixed share links implemented; folder bundles pending | `?course=<bachelor.course>&fixed=1`; no SQL/function changes for this stage |
 | 5 | Share links page | not started | design agreed; no search box, no per-row description |
 | 6 | Activities | not started | |
 | 7 | Course overrides | not started | not needed yet |
@@ -179,6 +179,17 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- 2026-10-06 — Added fixed-course share links for the three registered courses.
+  `fixed=1` pins the explicit course without writing browser preferences; the
+  existing course pill becomes a read-only name and no chooser is created.
+  Fixed context follows chapters, home, system-map iframe, late-added links and
+  programmatic questionnaire navigation. Non-AWS fixed courses hide AWS activities;
+  ordinary unfixed links retain the chooser. All 45 test files passed; local browser
+  checks covered Psychodiagnostics C1 → C2 → C3 → home → reload and AWS activity
+  navigation. This is URL-scoped navigation, not per-course content bundles or an
+  access-control boundary. Student V9 content and existing drafts/submissions stay
+  unchanged; no owner Dashboard step is required. See `fixed-course-links.md`.
 
 - 2026-10-06 — Diagnosed Neus preview/load failure using actual approved data. A
   Psychology C2 box was being rendered on C1/C3. Restricted course box rendering

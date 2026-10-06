@@ -47,6 +47,15 @@ async function check(loader,modern=false) {
  const pinned=await page(loader,{modern,force:'ped',scoped:'aws1'});
  assert.equal(pinned.window.AIWISE_COURSE_ID,ped);assert.equal(pinned.store.get('aiwise-published-course'),'aws1');
  assert.equal(pinned.document.getElementById('aiwiseCourseSwitch'),null);
+ if(modern){
+  for(const id of ['psychology.aws1','psychology.psychodiagnostics','pedagogical-sciences.inleiding']){
+   const fixed=await page(loader,{modern,search:'?course='+id+'&fixed=1',scoped:'ped',stored:'aws1'});
+   assert.equal(fixed.window.AIWISE_COURSE_ID,id);assert.equal(fixed.store.get('aiwise-published-course'),'ped');
+   assert.equal(fixed.document.querySelector('.aiwise-course-modal'),null);assert.ok(fixed.document.getElementById('aiwiseCourseLabel'));
+  }
+  const invalid=await page(loader,{modern,search:'?course=missing&fixed=1',scoped:'ped'});
+  assert.equal(invalid.window.AIWISE_COURSE,null);assert.equal(invalid.document.querySelector('.aiwise-course-modal'),null);assert.match(invalid.document.querySelector('#aiwise-course-unavailable').textContent,/instructor/);
+ }
  const unavailable=await page(loader,{modern,search:'?course=psychology.aws1',storageFails:true});
  assert.equal(unavailable.window.AIWISE_COURSE_ID,aws,'disabled storage cannot block loading');
  const network=await page(loader,{modern,networkFails:true});assert.ok(network.document.getElementById('aiwise-beta-error'),'real load failures remain visible');

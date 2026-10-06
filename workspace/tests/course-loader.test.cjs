@@ -22,6 +22,16 @@ async function page({search='',force='',stored=null,scoped=null,missing=false}={
  return {window,document,store,scopes,requests};
 }
 const psychology=JSON.parse(read('course-specific/aws1/course-specific-content_aws1.json'));
+test('fixed share links override preferences without changing them and never offer another course',async()=>{
+ for(const id of ['psychology.aws1','psychology.psychodiagnostics','pedagogical-sciences.inleiding']){
+  const p=await page({search:'?course='+id+'&fixed=1',scoped:'ped',stored:'aws1'});
+  assert.equal(p.window.AIWISE_COURSE_ID,id);assert.equal(p.store.get('aiwise-beta-course'),'ped');assert.equal(p.store.get('aiwise-course'),'aws1');
+  assert.equal(p.document.querySelector('.aiwise-course-modal'),null);assert.equal(p.document.getElementById('aiwiseCourseSwitch'),null);assert.ok(p.document.getElementById('aiwiseCourseLabel'));
+ }
+ for(const search of ['?fixed=1','?course=missing&fixed=1']){
+  const p=await page({search,scoped:'ped'});assert.equal(p.window.AIWISE_COURSE,null);assert.deepEqual(p.scopes,[]);assert.equal(p.document.querySelector('.aiwise-course-modal'),null);assert.match(p.document.querySelector('#aiwise-course-unavailable').textContent,/instructor/);
+ }
+});
 test('a course shows its bachelor\'s examples under its own name',async()=>{
  const p=await page({search:'?course=psychology.psychodiagnostics'});
  assert.equal(p.window.AIWISE_COURSE_ID,'psychology.psychodiagnostics');
