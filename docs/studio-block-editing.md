@@ -9,7 +9,7 @@ Working record, 2026-10-05. Source baseline: development `d4c31e7`.
 | Preserve old submissions and source IDs | Tested locally | Migration changes validators only; no data updates |
 | English Studio integration | Implemented | Existing panel, picker, preview, save and submit path |
 | Common boxes | Implemented | Gradient rows, function cards, dual cards, SL cards; additional text boxes |
-| S.A.T cycles | Implemented; owner activation pending | Per-cycle add/delete and empty-cycle hiding; [record](sat-phase-editing.md) |
+| S.A.T cycles | Live; activation verified | Per-cycle add/delete and empty-cycle hiding; [record](sat-phase-editing.md) |
 | Content examples | Implemented | Add/duplicate/reorder/remove C2 example cards; keep at least one |
 | Text formatting | Implemented | Selected words: bold, italic, palette, 14–36 px, clear; added-box alignment and size |
 | Control Tower, approved archive and frozen release | Implemented | New extension retained; readable comparison; existing approval rules |

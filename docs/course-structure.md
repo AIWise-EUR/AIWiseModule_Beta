@@ -167,6 +167,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 10 | Psychology SAT empty template | source prepared; owner SQL pending | [Setup](../supabase/PSYCHOLOGY_SAT_SETUP.md); existing requests remain unchanged |
 | 11 | Studio draft recovery | live; browser verified | [Visual comparison and backups](studio-draft-recovery.md); no SQL or function changes |
 | 12 | Control Tower item approval | live; signed-in previews verified | [Comparison rules and rollout](control-tower-item-approval.md) |
+| 14 | S.A.T per-cycle editing | live; activation verified | Empty cycles hidden; per-box Add/Delete; [record](sat-phase-editing.md) |
 
 ## How to verify
 
@@ -267,3 +268,8 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Variable cycle counts preserve old snapshots and format paths. Validation-only SQL
   and one `aiwise-release` Dashboard deployment enable structural authoring; no data
   migration or change to Control Tower item identity. See `sat-phase-editing.md`.
+
+- **2026-10-07** (Codex) Owner activated S.A.T Add/Delete. Capability, deployed
+  function, phase-count validation, all seven live checks and enabled signed-in
+  editor controls verified. See `sat-phase-editing.md`; existing browser draft
+  review remains a separate step and no saved draft was changed.

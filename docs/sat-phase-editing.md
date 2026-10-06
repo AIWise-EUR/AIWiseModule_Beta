@@ -2,9 +2,9 @@
 
 ## Status
 
-Implemented and tested; SQL and `aiwise-release` activation remain owner-applied
-in Dashboard. Frontend structural controls are capability-gated. Empty-cycle
-hiding is independent and can ship immediately to Beta and current Published.
+Live. The owner applied SQL and deployed `aiwise-release` in Dashboard on
+7 October. The capability gate, installed function and signed-in editing controls
+were verified. Empty-cycle hiding is deployed to Beta and current Published.
 
 ## Behavior and compatibility
 
@@ -60,3 +60,13 @@ hiding is independent and can ship immediately to Beta and current Published.
 - 2026-10-07 — Implemented the owner's request to hide the blank Psychology final
   cycle and edit S.A.T boxes individually. Owner Dashboard activation is documented
   in [setup](../supabase/SAT_PHASE_EDITING_SETUP.md); no live backend/data mutation.
+
+- 2026-10-07 — Owner confirmed activation. Read-only live checks: capability returns
+  `blocks:1,sat_phases:1`; installed `aiwise-release` v10 matches the supplied source
+  (normalized 64-bit fingerprint); database accepts 0/2/4 phases and rejects 51.
+  All seven live checks pass at Beta `5d96ae9` and student V9. Signed-in PED C2
+  S.A.T editor shows enabled Add Self–AI, Add Self–Team and Delete controls.
+  The current browser's Psychology C2 draft (saved 5 October 21:44) needs baseline
+  review independently of activation: three changed items, zero overlaps. Review
+  preserves its title change plus the newer Beta phases/note; no recovery choices,
+  saves, live content edits or test submissions were made during this verification.
