@@ -62,7 +62,10 @@ test('all course slots render for every bachelor, including translated runtime l
   vm.runInNewContext(read('pipelines/course-loader.js'),c);
     for(const n of document.querySelectorAll('[data-slot]'))if(n.dataset.slot.split('.').reduce((v,k)=>v?.[k],data)===undefined)assert.ok(n.closest('[data-requires-slot][hidden]'),`${course} ${n.dataset.slot} missing visible content`);
   c.window.AIWiseCourseRenderer.fillSlots(data,document);c.window.AIWiseCourseRenderer.toggleRequired(data,document);
-  for(const n of document.querySelectorAll('[data-slot]'))if(!n.closest('[data-requires-slot][hidden]'))assert.ok(n.textContent.trim(),`${course} ${n.dataset.slot} rendered`);
+  for(const n of document.querySelectorAll('[data-slot]'))if(!n.closest('[data-requires-slot][hidden]')){
+   if(n.dataset.slot==='c2.sat_example'&&!data.c2.sat_example.note&&!data.c2.sat_example.phases.some(p=>p.steps.some(s=>s.text.trim())))assert.equal(n.querySelectorAll('.sat-phase').length,0,'empty template cycles are intentionally hidden');
+   else assert.ok(n.textContent.trim(),`${course} ${n.dataset.slot} rendered`);
+  }
   if(chapter==='c2'){
    document.querySelector('[data-copy=thinking]').textContent='Wat je denkt';api.sync(document);
    assert.equal(document.querySelector('.layer-thinking .carousel-layer-label').textContent,'Wat je denkt');

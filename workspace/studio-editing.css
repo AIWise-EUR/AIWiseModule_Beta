@@ -6,3 +6,6 @@
 .cs-formatted-copy{padding:10px 12px;border-left:3px solid #b6cbcb;white-space:pre-wrap;overflow-wrap:anywhere;font-weight:400;max-height:180px;overflow:auto}
 .cs-block-actions{border-top:1px solid #d4dede;padding-top:18px;margin-top:20px}.cs-block-actions fieldset{margin:16px 0}.cs-block-actions label{display:block;margin:12px 0}
 @media(prefers-reduced-motion:reduce){.cs-format-options{animation:none}}
+
+.cs-sat-fields[open] { display:grid; gap:16px; }
+.cs-sat-box > .cs-language-status { margin:0; }

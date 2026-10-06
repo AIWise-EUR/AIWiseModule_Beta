@@ -96,16 +96,64 @@
     }
     actions.append(button('Undo',()=>travel(s,'undo','redo')),button('Redo',()=>travel(s,'redo','undo')));container.append(section);
   }
+  function satPanel(s,container,item,field){
+    const sat=s.values[item.path], enabled=s.blocksEnabled&&s.satPhasesEnabled&&!s.blocked;
+    const note=document.createElement('p');note.className='cs-language-status';
+    note.textContent=enabled?'Each box is one Self–AI or Self–Team cycle. Empty boxes are hidden in the module. Delete can be undone before saving.':'Edit the text in each box below. Add and Delete become available after the S.A.T backend update.';
+    container.append(note);
+    const change=(index,kind)=>{
+      if(!s.blocksEnabled||!s.satPhasesEnabled||s.blocked)return;
+      if(kind!=='delete'&&sat.phases.length>=50)return;
+      mutate(s,()=>{
+        const before=sat.phases.slice();
+        if(kind==='delete'){sat.phases.splice(index,1);s.satEditingIndex=undefined;}
+        else {
+          const team=kind==='team', names=team?['Present','Feedback','Integrate','Expand']:['Intent','Operationalize','Judge','Refine'];
+          s.satEditingIndex=index;
+          sat.phases.splice(index,0,{label:team?'Self–Team':'Self–AI',steps:names.map((name,i)=>({actor:i%2?(team?'team':'ai'):'self',name,text:''}))});
+        }
+        // Formatting follows the surviving box, not its previous numeric position.
+        if(s.values._studio)s.values._studio.formats=s.values._studio.formats.flatMap(f=>{
+          if(f.slot!==item.path||f.path[0]!=='phases')return [f];
+          const next=sat.phases.indexOf(before[Number(f.path[1])]);
+          return next<0?[]:[{...f,path:['phases',String(next),...f.path.slice(2)]}];
+        });
+      },true);
+    };
+    function addControls(index){
+      const bar=document.createElement('div');bar.className='cs-formatbar';
+      for(const [name,kind] of [['Add Self–AI box','ai'],['Add Self–Team box','team']]){
+        const b=button(name,()=>change(index,kind));b.disabled=!enabled||sat.phases.length>=50;bar.append(b);
+      }
+      return bar;
+    }
+    container.append(addControls(sat.phases.length));
+    sat.phases.forEach((phase,i)=>{
+      const card=document.createElement('fieldset');card.className='cs-sat-box';
+      const legend=document.createElement('legend');legend.textContent=`Box ${i+1} · ${phase.label}`;card.append(legend);
+      const status=document.createElement('p');status.className='cs-language-status';
+      status.textContent=phase.steps.some(step=>step.text.trim())?'Shown in the module':'Empty · hidden in the module';card.append(status);
+      const detail=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Edit this box';detail.append(summary);detail.className='cs-sat-fields';detail.open=s.satEditingIndex===i;
+      detail.addEventListener('toggle',()=>{if(detail.open)s.satEditingIndex=i;});
+      detail.append(field(phase.label,['phases',String(i),'label'],'label'));
+      phase.steps.forEach((step,j)=>detail.append(field(step,['phases',String(i),'steps',String(j)],`Step ${j+1} · ${step.name}`)));card.append(detail);
+      const actions=addControls(i+1),remove=button('Delete box',()=>change(i,'delete'));remove.disabled=!enabled;
+      remove.setAttribute('aria-label',`Delete box ${i+1} · ${phase.label}`);actions.append(remove);card.append(actions);container.append(card);
+      // Keep the visibility explanation in sync while typing, without reopening the panel.
+      card.addEventListener('input',()=>{status.textContent=phase.steps.some(step=>step.text.trim())?'Shown in the module':'Empty · hidden in the module';});
+    });
+    container.append(field(sat.note,['note'],'Note'));
+  }
   function move(s,box,delta){mutate(s,()=>{const all=ext(s).boxes,group=all.filter(b=>b.slot===box.slot&&b.template===box.template&&b.anchor===box.anchor),i=group.indexOf(box),other=group[i+delta];if(other){const a=all.indexOf(box),b=all.indexOf(other);[all[a],all[b]]=[all[b],all[a]];}},true);}
   function travel(s,from,to){if(!s[from].length)return;s[to].push(clone(s.values));s.values=s[from].pop();changed(s);s.blockEditing.open();}
   function mount(s,api){
     s.blockEditing=api;s.undo=[];s.redo=[];
     // A staged front end must never offer submissions the installed backend cannot accept.
     window.AIWiseBackend.getClient().then(client=>client.rpc('workspace_studio_capabilities')).then(({data,error})=>{
-      if(s.abort.signal.aborted)return;s.blocksEnabled=!error&&data?.blocks===1;
+      if(s.abort.signal.aborted)return;s.blocksEnabled=!error&&data?.blocks===1;s.satPhasesEnabled=!error&&data?.sat_phases===1;
       const note=document.createElement('p');note.className='cs-language-status';note.textContent=s.blocksEnabled?'English editing · Add boxes, duplicate cards and format selected words.':'Text editing is available. Box and formatting tools will appear after the Studio backend update.';
       s.host.querySelector('.cs-toolbar').after(note);
     }).catch(()=>{});
   }
-  window.AIWiseStudioEditing={mount,field,panel,remember,textChanged};
+  window.AIWiseStudioEditing={mount,field,panel,satPanel,remember,textChanged};
 })();

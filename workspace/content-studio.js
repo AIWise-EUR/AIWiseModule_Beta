@@ -349,6 +349,8 @@
     else if (s.isCommon) { Object.entries(value).forEach(([name, text]) => container.appendChild(field(text, [name], name))); }
     else if (item.example !== undefined) {
       ['title','thinking','typing_note','typing','processing'].forEach(key => container.appendChild(field(value[key] || '', [key], key)));
+    } else if(item.path==='c2.sat_example'&&s.locale==='en'&&window.AIWiseStudioEditing?.satPanel) {
+      window.AIWiseStudioEditing.satPanel(s,container,item,field);
     } else container.appendChild(field(value, [], label(item.path)));
     window.AIWiseStudioEditing?.panel(s,container,item);
     if(!s.dialog.open)s.dialog.showModal(); container.querySelector('input,textarea,select')?.focus({preventScroll: true});

@@ -9,6 +9,7 @@ Working record, 2026-10-05. Source baseline: development `d4c31e7`.
 | Preserve old submissions and source IDs | Tested locally | Migration changes validators only; no data updates |
 | English Studio integration | Implemented | Existing panel, picker, preview, save and submit path |
 | Common boxes | Implemented | Gradient rows, function cards, dual cards, SL cards; additional text boxes |
+| S.A.T cycles | Implemented; owner activation pending | Per-cycle add/delete and empty-cycle hiding; [record](sat-phase-editing.md) |
 | Content examples | Implemented | Add/duplicate/reorder/remove C2 example cards; keep at least one |
 | Text formatting | Implemented | Selected words: bold, italic, palette, 14–36 px, clear; added-box alignment and size |
 | Control Tower, approved archive and frozen release | Implemented | New extension retained; readable comparison; existing approval rules |
@@ -30,7 +31,7 @@ Working record, 2026-10-05. Source baseline: development `d4c31e7`.
   an anchor index within that unchanged source block. Their order is the saved array
   order within that placement. No raw selector, HTML, style string or script is saved.
 - C2 course examples may contain 1–50 cards; optional context notes remain optional.
-  Other existing array shapes stay fixed. Formatting follows examples on moves and
+  S.A.T phases may also contain 0–50 cycles after the dedicated activation; each retains four steps. Other existing array shapes stay fixed. Formatting follows examples on moves and
   duplication. Added boxes have their own UUIDs; old Common block IDs are not shifted.
 - Only JavaScript cache-stamp changes are ignored when comparing a saved Common
   draft's source HTML. Actual markup changes remain protected. Changed approved
@@ -148,3 +149,6 @@ that storage key; existing Control Tower regression tests cover their old format
 - Deploy Beta source and the same runtime-only patch to current student V9; retain
   `published-content.json` byte-for-byte and keep the release ID. New releases inherit
   this fix from Beta; already-prepared older bundles must be prepared afresh.
+
+- 2026-10-07: Added per-cycle S.A.T controls and non-destructive empty-cycle hiding.
+  Details, compatibility and owner activation are in `sat-phase-editing.md`.

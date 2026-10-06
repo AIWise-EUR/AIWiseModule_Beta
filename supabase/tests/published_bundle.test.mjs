@@ -60,3 +60,14 @@ test('new boxes and variable example lists survive a frozen release without chan
  assert.equal(JSON.stringify(version).includes('New title'),false);
  const broken=structuredClone(v);broken.content.find(r=>r.course==='common'&&r.chapter==='c2').slots._studio.boxes[0].fields[0][0].color='url(bad)';assert.throws(()=>build(broken),/version_structure_changed/);
 });
+
+test('variable SAT phases survive publication; malformed phases are refused',()=>{
+ for(const count of [0,2,4]){
+  const v=structuredClone(version),row=v.content.find(r=>r.course==='psychology'&&r.chapter==='c2'),sat=row.slots['c2.sat_example'];
+  sat.phases=Array.from({length:count},()=>structuredClone(sat.phases[0]));
+  const published=JSON.parse(build(v)['published-content.json']);
+  assert.equal(published.content.find(r=>r.course==='psychology'&&r.chapter==='c2').slots['c2.sat_example'].phases.length,count);
+ }
+ const bad=structuredClone(version);bad.content.find(r=>r.course==='psychology'&&r.chapter==='c2').slots['c2.sat_example'].phases[0].steps.pop();
+ assert.throws(()=>build(bad),/version_structure_changed/);
+});

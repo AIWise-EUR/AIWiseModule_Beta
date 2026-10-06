@@ -113,6 +113,17 @@
     for(const chapter of ['c2','c3'])for(const f of data._studio?.[chapter]?.formats||[]){
       let root=doc.querySelector('[data-slot="'+f.slot+'"]');if(!root)continue;
       if(f.slot==='c2.examples'){root=root.querySelectorAll('.carousel-card')[Number(f.path[0])];const field=f.path[1];if(root&&['thinking','typing','typing_note','processing'].includes(field))root=root.querySelector('.layer-'+(field==='typing_note'?'typing':field));else if(root&&field==='title')root=root.querySelector('.carousel-card-header');}if(!root)continue;
+      if(f.slot==='c2.sat_example'){
+        if(f.path[0]==='phases'){
+          root=root.querySelector('[data-sat-phase="'+Number(f.path[1])+'"]');
+          if(f.path[2]==='label')root=root?.querySelector('.sat-phase-label');
+          else if(f.path[2]==='steps'){
+            root=root?.querySelector('[data-sat-step="'+Number(f.path[3])+'"]');
+            root=root?.querySelector(f.path[4]==='name'?'.sat-step-name':f.path[4]==='text'?'.sat-step-text':'.sat-step-badge');
+          }
+        }else if(f.path[0]==='note')root=root.querySelector('.sat-example-note');
+        if(!root)continue;
+      }
       const text=plain(f.runs);if(!text)continue;
       const segments=[],walk=doc.createTreeWalker(root,5);let content='';
       while(walk.nextNode()){const n=walk.currentNode;if(n.nodeType===1&&n.tagName==='BR'){content+='\n';continue;}if(n.nodeType!==3||n.parentElement.closest('[data-copy-use],[data-example-index],button,script,style'))continue;segments.push({node:n,start:content.length,end:content.length+n.nodeValue.length});content+=n.nodeValue;}
@@ -131,14 +142,22 @@
       for(const b of boxes)doc.querySelector('[data-studio-box="'+b.id+'"]')?.setAttribute('data-studio-course-box','');
     }
   }
+  function validSAT(value) {
+    const text=v=>typeof v==='string'&&v.length<=100000;
+    const keys=(v,names)=>object(v)&&Object.keys(v).length===names.length&&names.every(k=>Object.hasOwn(v,k));
+    return keys(value,['phases','note'])&&text(value.note)&&Array.isArray(value.phases)&&value.phases.length<=50&&value.phases.every(p=>
+      keys(p,['label','steps'])&&text(p.label)&&Array.isArray(p.steps)&&p.steps.length===4&&p.steps.every(s=>
+        keys(s,['actor','name','text'])&&['self','ai','team'].includes(s.actor)&&text(s.name)&&text(s.text)));
+  }
   function validCopy(value,base,field='') {
+    if(field==='c2.sat_example')return validSAT(value)&&validSAT(base);
     if(typeof base==='string')return typeof value==='string'&&value.length<=100000&&(field!=='actor'||!['self','student','ai','team'].includes(base)||['self','student','ai','team'].includes(value))&&(field!=='tag'||!['adopt','modify','discard'].includes(base)||['adopt','modify','discard'].includes(value));
     if(Array.isArray(base))return Array.isArray(value)&&(field==='c2.examples'?value.length>0&&value.length<=50:value.length===base.length)&&value.every((v,i)=>validCopy(v,field==='c2.examples'?base[0]:base[i]));
     if(!object(base)||!object(value))return false;
     if(!field&&(!valid(value[key],value)||!valid(base[key],base)))return false;
     return Object.keys(base).filter(k=>field||k!==key).every(k=>k==='typing_note'&&!Object.hasOwn(value,k)&&Object.hasOwn(base,'typing')||validCopy(value[k],base[k],k))&&Object.keys(value).every(k=>!field&&k===key||Object.hasOwn(base,k)||k==='typing_note'&&Object.hasOwn(base,'typing')&&typeof value[k]==='string');
   }
-  window.AIWiseStudioBlocks={key,sizes,templates,clone,plain,rich,format,valid,validRuns,validCopy,clean,extension,renderRuns,replaceText,restore,nodes,candidates,common,course};
+  window.AIWiseStudioBlocks={key,sizes,templates,clone,plain,rich,format,valid,validRuns,validSAT,validCopy,clean,extension,renderRuns,replaceText,restore,nodes,candidates,common,course};
 })();
 
 /* Shared text catalog and safe approved-content renderer. Course slots are excluded. */

@@ -65,7 +65,15 @@ export function validStudioExtension(ext:any,slots:any) {
 
 function canonical(v:any):string {return Array.isArray(v)?'['+v.map(canonical).join(',')+']':v&&typeof v==='object'?'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canonical(v[k])).join(',')+'}':JSON.stringify(v);}
 const object=(v:any)=>v!==null&&typeof v==='object'&&!Array.isArray(v);
+function validSAT(value:any) {
+    const text=(v:any)=>typeof v==='string'&&v.length<=100000;
+    const keys=(v:any,names:string[])=>object(v)&&Object.keys(v).length===names.length&&names.every(k=>Object.hasOwn(v,k));
+    return keys(value,['phases','note'])&&text(value.note)&&Array.isArray(value.phases)&&value.phases.length<=50&&value.phases.every((p:any)=>
+      keys(p,['label','steps'])&&text(p.label)&&Array.isArray(p.steps)&&p.steps.length===4&&p.steps.every((s:any)=>
+        keys(s,['actor','name','text'])&&['self','ai','team'].includes(s.actor)&&text(s.name)&&text(s.text)));
+  }
 function shape(value:any,base:any,field=''):boolean {
+ if(field==='c2.sat_example')return validSAT(value)&&validSAT(base);
  if(typeof base==='string')return typeof value==='string'&&value.length<=100000;
  if(Array.isArray(base))return Array.isArray(value)&&(field==='c2.examples'?value.length>0&&value.length<=50:base.length===value.length)&&value.every((v,i)=>shape(v,field==='c2.examples'?base[0]:base[i]));
  if(!object(base)||!object(value))return false;

@@ -166,12 +166,11 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 9 | Studio block editing | live; cross-chapter box fix verified | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
 | 10 | Psychology SAT empty template | source prepared; owner SQL pending | [Setup](../supabase/PSYCHOLOGY_SAT_SETUP.md); existing requests remain unchanged |
 | 11 | Studio draft recovery | live; browser verified | [Visual comparison and backups](studio-draft-recovery.md); no SQL or function changes |
-
 | 12 | Control Tower item approval | live; signed-in previews verified | [Comparison rules and rollout](control-tower-item-approval.md) |
 
 ## How to verify
 
-- `sh checks/run-tests.sh` runs the tests under Deno (38 files, under 30 seconds).
+- `sh checks/run-tests.sh` runs the tests under Deno (47 files).
   Run it before every push.
 - `deno run --allow-read=. --allow-net=cvcvdiohckwgpgoxibia.supabase.co,api.github.com,aiwise-eur.github.io,raw.githubusercontent.com checks/live-check.ts`
   checks the live setup without credentials or writes. Run it after the owner applies
@@ -262,3 +261,9 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   and list views. Uses registry course names and fixed student lobby URLs, with
   per-course Copy feedback and a manual-copy fallback. No content, drafts, pending
   requests, database or publishing workflow changes. See `fixed-course-links.md`.
+
+- **2026-10-07** (Codex) S.A.T cycles now hide when all four step bodies are empty.
+  English Content Studio has collapsible per-cycle editors and Add/Delete with Undo.
+  Variable cycle counts preserve old snapshots and format paths. Validation-only SQL
+  and one `aiwise-release` Dashboard deployment enable structural authoring; no data
+  migration or change to Control Tower item identity. See `sat-phase-editing.md`.
