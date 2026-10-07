@@ -168,7 +168,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 11 | Studio draft recovery | live; browser verified | [Visual comparison and backups](studio-draft-recovery.md); no SQL or function changes |
 | 12 | Control Tower item approval | live; signed-in previews verified | [Comparison rules and rollout](control-tower-item-approval.md) |
 | 14 | S.A.T per-cycle editing | live; activation verified | Empty cycles hidden; per-box Add/Delete; [record](sat-phase-editing.md) |
-| 15 | C2 reading link | implemented; deployment verification pending | Passeport citation links to the verified preprint; [record](studio-block-editing.md#2026-10-07-passeport-reading-link) |
+| 15 | C2 reading link | live; browser verified | Passeport citation links to the verified preprint; [record](studio-block-editing.md#2026-10-07-passeport-reading-link) |
 
 ## How to verify
 
@@ -279,3 +279,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Studio rich-text renderer for the C2 choice notice. Preserves authored text and
   formatting, drafts, pending requests and Published snapshot; no SQL/function
   deployment. Future releases retain the link. See `studio-block-editing.md`.
+
+- **2026-10-07** (Codex) Passeport link deployment verified: Beta `c016928`,
+  Published `5f82117`; both Pages runs succeeded and the live student link opened
+  the correct Zenodo preprint in a new tab. All 47 test files passed.

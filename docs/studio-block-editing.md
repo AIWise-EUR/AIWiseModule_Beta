@@ -12,7 +12,7 @@ Working record, 2026-10-05. Source baseline: development `d4c31e7`.
 | S.A.T cycles | Live; activation verified | Per-cycle add/delete and empty-cycle hiding; [record](sat-phase-editing.md) |
 | Content examples | Implemented | Add/duplicate/reorder/remove C2 example cards; keep at least one |
 | Text formatting | Implemented | Selected words: bold, italic, palette, 14–36 px, clear; added-box alignment and size |
-| Passeport reading reference | Implemented; deployment verification pending | Exact citation opens the verified DOI in a new tab; saved content unchanged |
+| Passeport reading reference | Live; browser verified | Exact citation opens the verified DOI in a new tab; saved content unchanged |
 | Control Tower, approved archive and frozen release | Implemented | New extension retained; readable comparison; existing approval rules |
 | Cross-chapter course boxes | Fixed; verified before deployment | C2 boxes no longer break C1/C3 or Studio preview; 2026-10-06 incident below |
 | Production backend | Owner will apply in Dashboard | See `supabase/STUDIO_BLOCKS_SETUP.md` |
@@ -175,3 +175,8 @@ that storage key; existing Control Tower regression tests cover their old format
 - Deploy the same renderer to current Published and bump C2's script URL, preserving
   `published-content.json` exactly. Regression coverage checks formatted citations,
   repeated preview/catalog stability, text safety, and freshly built release output.
+
+- Deployment verified on 2026-10-07: Beta `c016928` and student `5f82117`
+  Pages runs both succeeded. Live C2 displays one underlined citation in the existing
+  notice; clicking it opens Zenodo record 21893023 in a new tab. Verified the Beta
+  link too. All 47 test files passed; actual Published V9 snapshot was byte-identical.
