@@ -12,6 +12,7 @@ Working record, 2026-10-05. Source baseline: development `d4c31e7`.
 | S.A.T cycles | Live; activation verified | Per-cycle add/delete and empty-cycle hiding; [record](sat-phase-editing.md) |
 | Content examples | Implemented | Add/duplicate/reorder/remove C2 example cards; keep at least one |
 | Text formatting | Implemented | Selected words: bold, italic, palette, 14–36 px, clear; added-box alignment and size |
+| Passeport reading reference | Implemented; deployment verification pending | Exact citation opens the verified DOI in a new tab; saved content unchanged |
 | Control Tower, approved archive and frozen release | Implemented | New extension retained; readable comparison; existing approval rules |
 | Cross-chapter course boxes | Fixed; verified before deployment | C2 boxes no longer break C1/C3 or Studio preview; 2026-10-06 incident below |
 | Production backend | Owner will apply in Dashboard | See `supabase/STUDIO_BLOCKS_SETUP.md` |
@@ -152,3 +153,25 @@ that storage key; existing Control Tower regression tests cover their old format
 
 - 2026-10-07: Added per-cycle S.A.T controls and non-destructive empty-cycle hiding.
   Details, compatibility and owner activation are in `sat-phase-editing.md`.
+
+## 2026-10-07: Passeport reading link
+
+- Owner requested a hyperlink on the existing C2 choice notice's `Passeport et al.
+  (2026)` citation. Verified the supplied PDF against the public Zenodo record:
+  *Decolonising GenAI in Higher Education: Be(com)ing response-able with(out) GenAI*,
+  Passeport, Enazi and Monett, preprint, 11 August 2026;
+  https://doi.org/10.5281/zenodo.21893023.
+- The shared rich-text renderer has a small allowlist of verified reading references.
+  It links this exact citation wherever rendered as Studio runs, including splits
+  across bold/italic/color/size runs. It uses the existing accent color, an underline,
+  and a new tab with `noopener noreferrer`. Existing anchors are not nested.
+- This is a specific reference rendering rule, not a general Link toolbar or a new
+  saved `href` property. Other URLs/citations remain plain text; changing/removing
+  the citation removes the automatic link. To add a different reference, extend the
+  reviewed allowlist or separately implement general link authoring end to end.
+- No draft, submission, approval, release content, source IDs or database validators
+  change. No Dashboard step is needed. Future freshly prepared releases include this
+  renderer; previously prepared bundles must be prepared again to include it.
+- Deploy the same renderer to current Published and bump C2's script URL, preserving
+  `published-content.json` exactly. Regression coverage checks formatted citations,
+  repeated preview/catalog stability, text safety, and freshly built release output.

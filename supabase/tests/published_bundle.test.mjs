@@ -71,3 +71,15 @@ test('variable SAT phases survive publication; malformed phases are refused',()=
  const bad=structuredClone(version);bad.content.find(r=>r.course==='psychology'&&r.chapter==='c2').slots['c2.sat_example'].phases[0].steps.pop();
  assert.throws(()=>build(bad),/version_structure_changed/);
 });
+
+test('fresh releases retain the verified Passeport citation link and unchanged authored runs',()=>{
+ const v=structuredClone(version),row=v.content.find(r=>r.course==='common'&&r.chapter==='c2');
+ row.slots._studio={version:1,formats:[],boxes:[{id:'box-'+id,slot:'c2.block-0',template:'text',anchor:0,fields:[[{text:'Reading'}],[{text:'See Passeport et al. (2026).'}]],align:'left',size:0}]};
+ const before=JSON.stringify(v),out=build(v),require=createRequire(import.meta.url),{parseHTML}=require(process.env.LINKEDOM_MODULE||'linkedom');
+ const {document}=parseHTML(out['aiwise-c2-final.html']),window={};
+ vm.runInNewContext(out['published-common-content.js'],{window,document:{currentScript:{hasAttribute:()=>true}},NodeFilter:{SHOW_TEXT:4}});
+ const saved=JSON.parse(out['published-content.json']).content.find(r=>r.course==='common'&&r.chapter==='c2');
+ window.AIWiseCommonContent.apply(document,'c2',saved.slots);
+ const link=document.querySelector('[data-studio-box] a');assert.ok(link);assert.equal(link.textContent,'Passeport et al. (2026)');assert.equal(link.href,'https://doi.org/10.5281/zenodo.21893023');
+ assert.equal(JSON.stringify(v),before);assert.deepEqual(saved.slots._studio,row.slots._studio);
+});

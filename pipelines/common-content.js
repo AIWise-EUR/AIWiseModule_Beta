@@ -60,12 +60,40 @@
     return normalize(out);
   }
 
-  function renderRuns(doc,runs,defaultSize=0) {
-    const fragment=doc.createDocumentFragment();
-    for(const run of runs){const span=doc.createElement('span');span.textContent=run.text;
+  // Verified reading references are presentation metadata, not authored HTML.
+  // Keep saved runs and their offsets unchanged, including citations split by formatting.
+  const references = [{text:'Passeport et al. (2026)',href:'https://doi.org/10.5281/zenodo.21893023'}];
+  function renderRuns(doc,runs,defaultSize=0,linkReferences=true) {
+    const fragment=doc.createDocumentFragment(),text=plain(runs),matches=[];
+    if(linkReferences)for(const reference of references){
+      let start=text.indexOf(reference.text);
+      while(start>=0){
+        if(!/[\p{L}\p{N}_]/u.test(text[start-1]||''))matches.push({...reference,start,end:start+reference.text.length});
+        start=text.indexOf(reference.text,start+reference.text.length);
+      }
+    }
+    matches.sort((a,b)=>a.start-b.start);
+    let offset=0,index=0,anchor=null;
+    const append=(parent,run,value)=>{const span=doc.createElement('span');span.textContent=value;
       if(run.bold)span.style.fontWeight='700';if(run.italic)span.style.fontStyle='italic';
       if(run.color)span.style.color=run.color;if(run.size||defaultSize)span.style.fontSize=(run.size||defaultSize)+'px';
-      span.style.whiteSpace='pre-wrap';fragment.append(span);
+      span.style.whiteSpace='pre-wrap';parent.append(span);
+    };
+    for(const run of runs){
+      const end=offset+run.text.length;let position=offset;
+      while(position<end){
+        while(matches[index]&&matches[index].end<=position){index++;anchor=null;}
+        const match=matches[index],linked=match&&position>=match.start;
+        const stop=Math.min(end,match?(linked?match.end:match.start):end);
+        if(linked&&!anchor){
+          anchor=doc.createElement('a');anchor.href=match.href;anchor.target='_blank';anchor.rel='noopener noreferrer';
+          anchor.className='studio-reference-link';anchor.title='Read the preprint (opens in a new tab)';
+          anchor.style.color='var(--accent, #2b5d63)';anchor.style.textDecoration='underline';anchor.style.textUnderlineOffset='0.15em';
+          fragment.append(anchor);
+        }
+        append(linked?anchor:fragment,run,run.text.slice(position-offset,stop-offset));position=stop;
+      }
+      offset=end;
     }return fragment;
   }
   // Retain original Text nodes so repeated preview renders cannot change positional labels.
@@ -77,7 +105,7 @@
   }
   function replaceText(node,runs,group='common') {
     if(!node?.parentNode||node.nodeType!==3)return;
-    const doc=node.ownerDocument, wrapper=doc.createElement('span');wrapper.dataset.studioRich='';wrapper.append(renderRuns(doc,runs));
+    const doc=node.ownerDocument, wrapper=doc.createElement('span');wrapper.dataset.studioRich='';wrapper.append(renderRuns(doc,runs,0,!node.parentElement.closest('a')));
     const list=replaced.get(doc)||[];list.push({node,wrapper,group});replaced.set(doc,list);node.replaceWith(wrapper);
   }
   function nodes(root) {
@@ -100,7 +128,7 @@
       else {node=source.cloneNode(true);node.querySelectorAll('.cs-edit-label,[data-studio-box]').forEach(n=>n.remove());
         // Cloning an already formatted source must not alter its editable field count.
         node.querySelectorAll('[data-studio-rich]').forEach(n=>n.replaceWith(doc.createTextNode(n.textContent)));
-        const fields=nodes(node);if(fields.length!==box.fields.length)throw Error('The added box template changed.');fields.forEach((n,i)=>{const span=doc.createElement('span');span.append(renderRuns(doc,box.fields[i],box.size));n.replaceWith(span);});
+        const fields=nodes(node);if(fields.length!==box.fields.length)throw Error('The added box template changed.');fields.forEach((n,i)=>{const span=doc.createElement('span');span.append(renderRuns(doc,box.fields[i],box.size,!n.parentElement.closest('a')));n.replaceWith(span);});
       }
       [node,...node.querySelectorAll('*')].forEach(n=>{n.removeAttribute('id');n.removeAttribute('tabindex');n.classList.remove('cs-editable');for(const a of [...n.attributes])if(/^on|^data-cs-|^data-review-/.test(a.name))n.removeAttribute(a.name);});
       node.dataset.studioBox=box.id;node.dataset.reviewCommonKey=box.slot;node.style.textAlign=box.align;if(box.size)node.style.fontSize=box.size+'px';

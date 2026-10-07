@@ -20,6 +20,24 @@ test('partial formatting is safe text, survives repeated edits, and cannot injec
  const evil=structuredClone(slots._studio);evil.formats[0].runs[0].color='url(javascript:x)';assert.equal(M.valid(evil,slots),false);
  const wrong=structuredClone(slots._studio);wrong.formats[0].runs[0].text='different';assert.equal(M.valid(wrong,slots),false);
 });
+test('verified citation links span formatting runs without changing saved text, IDs or repeated previews',()=>{
+ const {w,doc,blocks,slots}=seed(),M=w.AIWiseStudioBlocks;
+ const runs=[{text:'See Passe',bold:true},{text:'port et al. ',italic:true},{text:'(2026)',color:'#123456',size:22},{text:'. <img src=x> https://untrusted.test'}];
+ slots._studio={version:1,formats:[],boxes:[{id:'box-11111111-1111-4111-8111-111111111111',slot:blocks[0].path,template:'text',anchor:0,fields:[[{text:'Reading'}],runs],align:'left',size:0}]};
+ const saved=JSON.stringify(slots),catalog=JSON.stringify(w.AIWiseCommonContent.catalog(doc,'c2').map(b=>[b.path,Object.keys(b.fields)]));
+ for(let i=0;i<2;i++){
+  w.AIWiseCommonContent.apply(doc,'c2',slots,blocks);
+  const box=doc.querySelector('[data-studio-box]'),links=box.querySelectorAll('a');assert.equal(links.length,1);
+  const a=links[0];assert.equal(a.textContent,'Passeport et al. (2026)');assert.equal(a.getAttribute('href'),'https://doi.org/10.5281/zenodo.21893023');assert.equal(a.target,'_blank');assert.equal(a.rel,'noopener noreferrer');
+  assert.equal(a.children[0].style.fontWeight,'700');assert.equal(a.children[1].style.fontStyle,'italic');assert.equal(a.children[2].style.fontSize,'22px');
+  assert.equal(box.children[1].textContent,M.plain(runs));assert.equal(box.querySelector('img'),null);
+ }
+ assert.equal(JSON.stringify(slots),saved);assert.ok(M.valid(slots._studio,slots));
+ assert.equal(JSON.stringify(w.AIWiseCommonContent.catalog(doc,'c2').map(b=>[b.path,Object.keys(b.fields)])),catalog);
+ const host=doc.createElement('div');host.append(M.renderRuns(doc,[{text:'Passeport et al. (2026); Passeport et al. (2026).'}]));assert.equal(host.querySelectorAll('a').length,2);
+ host.replaceChildren(M.renderRuns(doc,[{text:'Passeport et al. (2025); OtherPasseport et al. (2026).'}]));assert.equal(host.querySelectorAll('a').length,0);
+ const existing=doc.createElement('a');existing.href='https://example.test';existing.textContent='Passeport et al. (2026)';host.replaceChildren(existing);M.replaceText(existing.firstChild,M.rich(existing.textContent));assert.equal(existing.querySelector('a'),null);
+});
 test('legacy copy stays valid; only the supported C2 list can grow; unknown extensions are rejected',()=>{
  const M=setup().AIWiseStudioBlocks,base={'c2.examples':[{title:'One',thinking:'a',typing:'b',processing:'c'}],'c2.other':['fixed']};
  assert.ok(M.validCopy(base,base));assert.ok(M.validCopy({...base,'c2.examples':[...base['c2.examples'],{...base['c2.examples'][0],title:'Two'}]},base));
