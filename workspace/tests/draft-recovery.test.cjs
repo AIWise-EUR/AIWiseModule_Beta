@@ -63,3 +63,44 @@ test('popup renders real values safely and uses approved explanation; cancel nev
  assert.match(dialog.textContent,/Changed in Beta/);assert.match(dialog.textContent,/Changed in your draft/);assert.equal(dialog.querySelector('img'),null);next.click();assert.match(dialog.textContent,/Both versions changed this paragraph. Choose which wording to keep./);assert.equal(next.disabled,true);
  const radio=dialog.querySelector('input[value="draft"]');radio.dispatchEvent(new window.Event('change'));assert.equal(next.disabled,false);next.click();assert.match(dialog.textContent,/<img src=x/);assert.equal(dialog.querySelector('img'),null);dialog.querySelector('[data-dr-close]').click();assert.equal(applied,0);next.click();await Promise.resolve();assert.equal(applied,1);
 });
+test('cache versions ignore the real language-loader change but preserve functional URL and markup changes',()=>{
+ const {R}=setup();const html=v=>`<html><script src="../pipelines/content-language.js?v=${v}"></script><p>Body</p></html>`;
+ assert.ok(R.sameSource(html('orientation-languages-v1'),html('fixed-course-v1')));
+ assert.equal(R.sameSource(html('a'),html('a').replace('Body','New body')),false);
+ assert.equal(R.sameSource(html('a'),html('a').replace('?v=a','?v=a&mode=other')),false);
+ assert.equal(R.sameSource(html('a').replace('content-language','unknown'),html('b').replace('content-language','unknown')),false);
+ assert.equal(R.sameSource(undefined,html('a')),false);
+});
+test('structural diagnostics name real changed locations; numbered fields cannot automatically reuse old text',()=>{
+ const {R,window}=setup();const source=fs.readFileSync(path.join(root,'common/aiwise-c1-final.html'),'utf8');
+ const doc=new window.DOMParser().parseFromString(source,'text/html');const blocks=window.AIWiseCommonContent.catalog(doc,'c1');
+ const target=blocks.find(b=>Object.keys(b.fields).some(k=>k.startsWith('Text'))),text=target.nodes.find(n=>n.nodeType===3&&n.nodeValue.trim());
+ text.nodeValue='Changed structural fixture text';
+ const report=R.sourceReport(source,doc.toString(),'c1');assert.ok(report.affected.includes(target.path));
+ assert.ok(report.details.some(d=>d.location===target.path&&d.after.includes('Changed structural fixture text')));
+ const original=base(),mine=base(),beta=base();mine['c1.block-1']['Text 1']='Old-position text';
+ const model=R.restrictLocations(R.plan(original,mine,beta),{affected:['c1.block-1'],details:[]});
+ assert.equal(model.conflicts.length,1);const choices=Object.fromEntries(model.conflicts.map(u=>[u.id,'beta']));
+ assert.throws(()=>R.combine(model,{...choices,[model.conflicts[0].id]:'draft'}),/cannot be reused/);
+ const result=R.combine(model,{...choices,[model.conflicts[0].id]:{choice:'edit',text:'Explicit current-position text'}});
+ assert.equal(result['c1.block-1']['Text 1'],'Explicit current-position text');
+});
+test('popup offers replacement wording, exact preview, and post-save editor or submission choices',async()=>{
+ const {R,window,document}=setup(),mine=base(),beta=base();mine['c1.block-1']['Text 1']='Mine';beta['c1.block-1']['Text 1']='Beta';
+ let saved,submitted=0,edited=0;
+ R.mount(document.querySelector('main'),{model:R.plan(base(),mine,beta),scope:'Common C1',raw:'original',apply:async v=>{saved=v;},returnToEditor:()=>edited++,sendForReview:()=>submitted++});
+ const dialog=document.querySelector('dialog');dialog.close=()=>{};const next=dialog.querySelector('[data-dr-next]');next.click();
+ const input=dialog.querySelector('textarea');input.value='<script>not executable</script>';input.dispatchEvent(new window.Event('input'));assert.equal(next.disabled,false);
+ next.click();assert.match(dialog.textContent,/Your replacement text/);assert.match(dialog.textContent,/<script>not executable/);assert.equal(dialog.querySelector('script'),null);
+ next.click();await new Promise(resolve=>setTimeout(resolve,0));assert.equal(saved['c1.block-1']['Text 1'],'<script>not executable</script>');
+ assert.match(dialog.textContent,/original draft is backed up/);assert.equal(submitted,0);assert.equal(edited,0);assert.equal(next.disabled,true);
+ dialog.querySelector('input[value="submit"]').dispatchEvent(new window.Event('change'));next.click();assert.equal(submitted,1);assert.equal(edited,0);
+});
+test('unreadable draft requires explicit restart, preview, and callback; pause never writes',async()=>{
+ const {R,window,document}=setup();let applied=0;
+ R.mount(document.querySelector('main'),{issue:'Draft file: unreadable JSON',latest:base(),scope:'Common C1',raw:'{bad',apply:async(v,options)=>{assert.ok(options.restart);assert.deepEqual(plain(v),base());applied++;}});
+ const dialog=document.querySelector('dialog');dialog.close=()=>{};const next=dialog.querySelector('[data-dr-next]');assert.equal(next.disabled,true);
+ dialog.querySelector('input[value="pause"]').dispatchEvent(new window.Event('change'));next.click();assert.equal(applied,0);
+ dialog.querySelector('input[value="latest"]').dispatchEvent(new window.Event('change'));next.click();assert.match(dialog.textContent,/Original intro/);assert.equal(applied,0);
+ next.click();await new Promise(resolve=>setTimeout(resolve,0));assert.equal(applied,1);
+});

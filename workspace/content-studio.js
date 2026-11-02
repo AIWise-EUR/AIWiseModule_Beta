@@ -11,7 +11,7 @@
   const targetNode = (s, index) => s.isCommon ? common().target(s, index) : s.frame.contentDocument.getElementById('cs-item-' + index);
   const supports = id => !!bachelor(id);
   const clone = value => JSON.parse(JSON.stringify(value));
-  const sameSourceHTML=(a,b)=>typeof a==='string'&&a.replace(/(\.\.\/pipelines\/(?:beta-content|common-content|course-loader)\.js)\?[^\"\n]*/g,'$1')===b.replace(/(\.\.\/pipelines\/(?:beta-content|common-content|course-loader)\.js)\?[^\"\n]*/g,'$1');
+  const sameSourceHTML = (a, b) => window.AIWiseDraftRecovery.sameSource(a, b);
   const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   // Preserve older Psychology drafts when its previously absent SAT slots are
   // introduced as an empty template. Never overwrite an authored SAT value.
@@ -132,11 +132,11 @@
   function prepareRecovery(s, html) {
     const recovery = window.AIWiseDraftRecovery;
     if (!recovery || s.raw === null || !s.storageRead) return;
-    let model, saved, issue;
+    let model, saved, issue, report;
     try {
-      try { saved = JSON.parse(s.raw); } catch { throw Error('The saved draft file could not be read. It may be incomplete or damaged.'); }
-      if (saved?.schema !== 1 || (saved.locale || 'en') !== s.locale || (s.isCommon ? saved.scope !== 'common' || saved.chapter !== s.chapter : saved.course !== s.courseId || (s.chapter === 'c2' ? saved.slot !== 'c2.examples' : saved.chapter !== s.chapter))) throw Error('This saved copy does not match the chapter or language you opened.');
-      if (s.isCommon && !sameSourceHTML(saved.sourceHTML, html)) throw Error('The page layout changed since this draft was saved. Its old locations cannot yet be matched safely to the new page.');
+      try { saved = JSON.parse(s.raw); } catch { throw Error('Draft file: the saved JSON could not be read. No item locations can be identified from this file.'); }
+      if (saved?.schema !== 1 || (saved.locale || 'en') !== s.locale || (s.isCommon ? saved.scope !== 'common' || saved.chapter !== s.chapter : saved.course !== s.courseId || (s.chapter === 'c2' ? saved.slot !== 'c2.examples' : saved.chapter !== s.chapter))) throw Error(`Draft identity: saved ${saved?.scope || saved?.course || 'unknown scope'} / ${saved?.chapter || saved?.slot || 'unknown chapter'} / ${saved?.locale || 'en'} (format ${saved?.schema ?? 'missing'}); opened ${s.courseId} / ${s.chapter} / ${s.locale} (format 1). These identities must match.`);
+      if (s.isCommon) report = recovery.sourceReport(saved.sourceHTML, html, s.chapter);
       let base, values;
       if (!s.isCommon && s.chapter === 'c2') {
         if (!saved.baseSlots || !saved.slots) throw Error('This older draft is missing its complete original comparison copy.');
@@ -144,26 +144,38 @@
         values = {...saved.slots, 'c2.examples':saved.examples};
         extendEmptySAT(values, base, s.base);
       } else { base = saved.baseSlots; values = saved.slots; }
-      if (!base || !values || !valid(base, base) || !valid(values, base)) throw Error('Some saved content has an unsupported structure or text format.');
+      if (!base || !values) throw Error('Draft comparison data: baseSlots or slots is missing. The original and edited copies are both required.');
+      if (!valid(base, base) || !valid(values, base)) {
+        const paths = [...new Set([...Object.keys(base), ...Object.keys(values)])].filter(path => path === '_studio' ? !window.AIWiseStudioBlocks.valid(values._studio, values) : !Object.hasOwn(base, path) || !valid(values[path], base[path], path));
+        throw Error('Unsupported saved content at: ' + (paths.join(' · ') || 'original baseline or formatting metadata') + '. This data cannot be applied to the current editor safely.');
+      }
       const title = path => {
         const item = s.items.find(i => i.path === path[0]);
         return [s.isCommon ? item?.title || saved.blockTitles?.[path[0]] || path[0] : label(path[0]), ...path.slice(1).map(label)].join(' · ');
       };
       model = recovery.plan(base, values, s.base, title);
+      if (report) recovery.restrictLocations(model, report);
       // Structural incompatibilities are surfaced at apply, with the original intact.
     } catch (error) { issue = error.message || 'This draft could not be read.'; }
-    s.recoveryUI = recovery.mount(s.host, {model, issue, scope:`${s.config.label} · ${s.chapter.toUpperCase()} · ${language().name(s.locale)}`, savedAt:saved?.savedAt, raw:s.raw,
-      apply: async values => {
+    if (!model && report) model = {details:report.details};
+    s.recoveryUI = recovery.mount(s.host, {model, issue, latest:clone(s.base), scope:`${s.config.label} · ${s.chapter.toUpperCase()} · ${language().name(s.locale)}`, savedAt:saved?.savedAt, raw:s.raw,
+      returnToEditor: () => { if (session === s) openEditor(s, s.index); },
+      sendForReview: () => { if (session === s) openSubmission(s); },
+      apply: async (values, {restart = false} = {}) => {
         if (session !== s || !s.ready) throw Error('Reopen this chapter before applying the draft.');
         if (!valid(values, s.base)) throw Error('The selected combination does not fit the current page structure. Choose the latest Beta version for removed or restructured items, or download the original draft for manual recovery.');
         const releases = await window.AIWiseBetaContent.read(s.courseId, s.locale);
         if (session !== s) throw Error('This chapter was closed. Nothing was changed.');
         const latest = releases.find(r => r.chapter === s.chapter);
         if ((latest?.submission_id || null) !== s.baseRelease || latest && !recovery.equal(latest.slots, s.base)) throw Error('Beta changed again while this review was open. Reload to compare with the newest version. Your original draft is preserved.');
+        if (s.isCommon) {
+          const currentHTML = await fetch(new URL(chapterURL(s.chapter), location.href), {signal:s.abort.signal,cache:'no-cache'}).then(r => { if (!r.ok) throw Error('Could not recheck the page layout. Nothing was saved.'); return r.text(); });
+          if (session !== s || !sameSourceHTML(html, currentHTML)) throw Error('The page layout changed during this review. Reload to review the new locations. Your original draft is preserved.');
+        }
         const previous = s.values, previousBackup = s.backupKey, previousReviewed = s.reviewedSource, previousStale = s.sourceStale;
         try {
           s.values = values;
-          if (s.locale === 'nl') { s.reviewedSource = saved.sourceRelease || null; s.sourceStale = s.reviewedSource !== s.englishRelease; }
+          if (s.locale === 'nl' && !restart) { s.reviewedSource = saved.sourceRelease || null; s.sourceStale = s.reviewedSource !== s.englishRelease; }
           // Render before storing; stale box anchors must not destroy the original.
           updatePreview(s);
           s.backupKey = s.key + ':recovery-backup:' + crypto.randomUUID();
