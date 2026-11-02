@@ -50,6 +50,17 @@ for (const file of ['supabase/ENABLE_GITHUB_PUBLISHING.sql', 'supabase/ENABLE_PU
   });
 }
 
+await check('Shared course registration endpoint is deployed and rejects unsigned calls', async () => {
+  const response = await fetch(`${supabaseUrl}/functions/v1/workspace-courses`, {
+    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({action: 'load'}),
+    signal: AbortSignal.timeout(20000),
+  });
+  await response.body?.cancel();
+  must(response.status !== 404, 'workspace-courses is not deployed; apply supabase/WORKSPACE_COURSES_SETUP.md.');
+  must(response.status === 401, `Expected 401, received ${response.status}.`);
+  return 'Unsigned request rejected. An authenticated administrator must still verify load/registration.';
+});
+
 // 2. Approved Beta content is publicly readable and well-formed.
 type BetaRow = { course: string; chapter: string; locale: string; submission_id: string | null; approved_at: string };
 let beta: BetaRow[] = [];

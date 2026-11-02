@@ -169,6 +169,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 12 | Control Tower item approval | live; signed-in previews verified | [Comparison rules and rollout](control-tower-item-approval.md) |
 | 14 | S.A.T per-cycle editing | live; activation verified | Empty cycles hidden; per-box Add/Delete; [record](sat-phase-editing.md) |
 | 15 | C2 reading link | live; browser verified | Passeport citation links to the verified preprint; [record](studio-block-editing.md#2026-10-07-passeport-reading-link) |
+| 16 | Shared course registration | implemented; owner function deployment pending | Bachelor selection, shared registry writes, Studio course links, preserved browser entries; [setup](../supabase/WORKSPACE_COURSES_SETUP.md) |
 
 ## How to verify
 
@@ -183,6 +184,21 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- **2026-11-02** (Codex) Replaced browser-only Add course with administrator-checked
+  shared registry registration, using the new `workspace-courses` function. The
+  canonical registry remains the only course list; no parallel database registry or
+  SQL migration. Courses and Content Studio load the current shared list; Studio
+  shows course links under their existing bachelor. ID and bachelor are immutable;
+  names remain editable. Local entries are preserved and can be registered from
+  their original browser. Stale writes, lost responses and account changes fail
+  safely. Course registration does not create course overrides or publish to
+  students. DPAS's actual bachelor is not assumed or registered. Owner deployment
+  is still required; see `supabase/WORKSPACE_COURSES_SETUP.md`.
+  All 49 test files passed, including 11 focused server/bridge cases. The real
+  Workspace browser fixture passed with two isolated administrator sessions,
+  covering validation, conflicts, local preservation, Studio discovery, name
+  editing and absent deployment. No live test courses were created.
 
 - **2026-11-02** (Codex) Extended draft recovery with known cache-version handling,
   changed-location diagnostics, popup choices and replacement text, exact preview,

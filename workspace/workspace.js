@@ -130,7 +130,9 @@
     if (part) { renderNotFound(); return; }
     // One editor per bachelor: its examples are shown in every course of that bachelor.
     const registry = window.AIWiseCourseRegistry;
-    shell('studio','Content Studio',hint(areas.studio.note,'Editing scope: Course Specific sections within AI Orientation. Examples are edited per bachelor and shown in every course of that bachelor. AI-Wise Common is outside this area.'),'<div class="cards">'+registry.bachelors().map(b=>card(b.name,'Shown in '+registry.coursesOf(b.id).map(c=>c.name).join(', ')+'.','#studio/'+b.id,'Open editor','Available')).join('')+'</div>');
+    const studioCards = () => registry.bachelors().map(b => '<section class="card"><h2>'+escape(b.name)+'</h2><p>These courses share the bachelor’s examples. Editing one updates them all.</p><div class="toolbar">'+registry.coursesOf(b.id).map(c=>'<a class="button" href="#studio/'+b.id+'">'+escape(c.name)+'</a>').join('')+'</div></section>').join('');
+    shell('studio','Content Studio',hint(areas.studio.note,'Edit C2 and C3 examples shared by courses in the same bachelor.'),window.AIWiseCourses.refreshToolbar()+'<div id="studio-courses" class="cards">'+studioCards()+'</div>'+window.AIWiseCourses.addCard());
+    window.AIWiseCourses.mountRefresh(()=>{document.getElementById('studio-courses').innerHTML=studioCards();});
   }
 
   function renderCommon(part) {

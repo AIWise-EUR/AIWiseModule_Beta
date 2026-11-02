@@ -6,3 +6,7 @@ verify_jwt = false
 [functions.aiwise-release]
 # Validates the current administrator or the separate Vault-held release worker secret.
 verify_jwt = false
+
+[functions.workspace-courses]
+# User JWT only; the handler additionally verifies Auth and the current admin role.
+verify_jwt = true
