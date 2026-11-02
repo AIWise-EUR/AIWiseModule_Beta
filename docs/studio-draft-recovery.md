@@ -4,8 +4,9 @@
 
 Implemented 2026-10-05; extended 2026-11-02 with source diagnostics and decisions
 inside the recovery popup. Front-end only; no owner SQL, Edge Function deployment,
-ID rewrite or content migration is required. November update: implementation and
-local browser verification complete; deployment verification pending.
+ID rewrite or content migration is required. November update is live: PR #30,
+Beta `a843f88`, successful Pages run `41443414176`. The four deployed Workspace
+runtime files match the locally tested source byte-for-byte.
 
 ## Problem and user flow
 

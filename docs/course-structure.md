@@ -165,7 +165,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
 | 9 | Studio block editing | live; cross-chapter box fix verified | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
 | 10 | Psychology SAT empty template | source prepared; owner SQL pending | [Setup](../supabase/PSYCHOLOGY_SAT_SETUP.md); existing requests remain unchanged |
-| 11 | Studio draft recovery | November popup decisions locally verified; deployment pending | [Visual comparison, location diagnostics and backups](studio-draft-recovery.md); no SQL or function changes |
+| 11 | Studio draft recovery | November popup decisions live; deployment verified | [Visual comparison, location diagnostics and backups](studio-draft-recovery.md); no SQL or function changes |
 | 12 | Control Tower item approval | live; signed-in previews verified | [Comparison rules and rollout](control-tower-item-approval.md) |
 | 14 | S.A.T per-cycle editing | live; activation verified | Empty cycles hidden; per-box Add/Delete; [record](sat-phase-editing.md) |
 | 15 | C2 reading link | live; browser verified | Passeport citation links to the verified preprint; [record](studio-block-editing.md#2026-10-07-passeport-reading-link) |
@@ -189,6 +189,8 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   original backups and final editor/Control Tower options. No live drafts, pending
   requests, SQL, functions or student content were modified. See
   `studio-draft-recovery.md` for compatibility boundaries and verification.
+  PR #30 merged at `a843f88`; Pages run `41443414176` succeeded. All four live
+  Workspace runtime files match the tested source byte-for-byte.
 
 - 2026-10-06 — Added fixed-course share links for the three registered courses.
   `fixed=1` pins the explicit course without writing browser preferences; the
