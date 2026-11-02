@@ -131,7 +131,8 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 22px; border: 1px
 .course-plus { font: 26px/1 var(--font-heading); color: var(--signal); }
 .course-form { max-width: 700px; margin-top: 22px; }
 .course-form label { display: block; font-weight: 600; font-size: 13px; margin: 18px 0 7px; }
-.course-form input { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 5px; padding: 10px 12px; color: var(--ink); background: var(--card); font: inherit; }
+.course-form input, .course-form select { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 5px; padding: 10px 12px; color: var(--ink); background: var(--card); font: inherit; }
+.course-form [aria-invalid="true"] { border-color: #91452e; outline: 2px solid #91452e; outline-offset: 2px; }
 .course-form input[readonly] { background: var(--paper-2); }
 .course-form p { margin: 8px 0; overflow-wrap: anywhere; }
 .course-form #course-message { color: #91452e; }

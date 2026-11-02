@@ -9,7 +9,7 @@
     for (const mount of mounts) {
       const status = mount.querySelector('[role="status"]');
       if (registry.error()) { status.textContent = registry.error(); continue; }
-      status.textContent = '';
+      status.textContent = 'New courses must be published before sharing their student links.';
       for (const course of registry.courses()) {
         const url = new URL('https://aiwise-eur.github.io/AI-Wise/lobby.html');
         url.searchParams.set('course', course.id);
