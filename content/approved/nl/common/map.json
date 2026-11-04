@@ -1,173 +1,173 @@
 {
   "schema": 1,
-  "sequence": 13,
+  "sequence": 14,
   "course": "common",
   "chapter": "map",
   "locale": "nl",
-  "submission_id": "690d9e72-3ec7-4033-a35e-0114eb25027f",
+  "submission_id": "125998fc-c4e1-4dff-8f35-2b7953242cae",
   "source_release": null,
-  "approved_at": "2026-11-04T06:52:02.277538+00:00",
+  "approved_at": "2026-11-04T07:12:00.226969+00:00",
   "slots": {
     "map.extra-0": {
-      "Text 1": "Systeemkaart van GenAI"
+      "Text 1": "GenAI System Map"
     },
     "map.extra-1": {
-      "Text 1": "Volledig systeem"
+      "Text 1": "Full System"
     },
     "map.extra-2": {
-      "Text 1": "Trainingscyclus"
+      "Text 1": "Training Cycle"
     },
     "map.extra-3": {
-      "Text 1": "Inferentiecyclus"
+      "Text 1": "Inference Cycle"
     },
     "map.extra-4": {
-      "Text 1": "Herstellen"
+      "Text 1": "Reset"
     },
     "map.extra-5": {
-      "Text 1": "Knijp of gebruik ⌘ / Ctrl + scrollen om te zoomen · Sleep om te verschuiven · Beweeg de muis over een onderdeel voor uitleg"
+      "Text 1": "Pinch or ⌘ / Ctrl + scroll to zoom · Drag to pan · Hover to inspect"
     },
     "map.extra-6": {
-      "Text 1": "Knooppunten"
+      "Text 1": "Nodes"
     },
     "map.extra-7": {
-      "Text 1": "Fysiek (kubus)"
+      "Text 1": "\n    Physical (cube)\n  "
     },
     "map.extra-8": {
-      "Text 1": "AI-bedrijf"
+      "Text 1": "\n    AI Company\n  "
     },
     "map.extra-9": {
-      "Text 1": "Trainingsonderdeel"
+      "Text 1": "\n    Training component\n  "
     },
     "map.extra-10": {
-      "Text 1": "Inferentieonderdeel"
+      "Text 1": "\n    Inference component\n  "
     },
     "map.extra-11": {
-      "Text 1": "Subtype trainingsgegevens"
+      "Text 1": "\n    Training data subtype\n  "
     },
     "map.extra-12": {
-      "Text 1": "Algoritme (verbinding)"
+      "Text 1": "\n    Algorithm (bridge)\n  "
     },
     "map.extra-13": {
-      "Text 1": "Verbindingen"
+      "Text 1": "Connections"
     },
     "map.extra-14": {
-      "Text 1": "Fysieke stroom / gegevensstroom"
+      "Text 1": "\n    Physical / data flow\n  "
     },
     "map.extra-15": {
-      "Text 1": "Terugkoppelingslus"
+      "Text 1": "\n    Feedback loop\n  "
     },
     "map.extra-16": {
-      "Text 1": "Besturing"
+      "Text 1": "\n    Governance\n  "
     },
     "map.extra-17": {
-      "Label 1": "Gebruiker",
-      "Category 1": "Fysiek",
-      "Description 1": "De persoon die prompts invoert en antwoorden ontvangt. Het begin- en eindpunt van elke inferentiecyclus."
+      "Label 1": "User",
+      "Category 1": "Physical",
+      "Description 1": "The human who types prompts and receives responses. The starting and ending point of every inference cycle."
     },
     "map.extra-18": {
-      "Label 1": "Lokaal apparaat",
-      "Category 1": "Fysiek",
-      "Description 1": "Je laptop of telefoon. Alleen de interface: verstuurt prompts en toont antwoorden. Hier vindt geen berekening plaats."
+      "Label 1": "Local Device",
+      "Category 1": "Physical",
+      "Description 1": "Your laptop or phone. Only the interface — sends prompts and displays responses. No computation happens here."
     },
     "map.extra-19": {
-      "Label 1": "Cloudserver / datacentrum",
-      "Category 1": "Fysiek",
-      "Description 1": "GPU-clusters op afstand in fysieke gebouwen. Hier worden alle berekeningen daadwerkelijk uitgevoerd, met een omvangrijke elektrische infrastructuur."
+      "Label 1": "Cloud Server\nData Centre",
+      "Category 1": "Physical",
+      "Description 1": "Remote GPU clusters in physical buildings. This is where all computation actually runs — vast electrical infrastructure."
     },
     "map.extra-20": {
-      "Label 1": "AI-bedrijf",
-      "Category 1": "AI-bedrijf",
-      "Description 1": "Bijvoorbeeld OpenAI, Anthropic en Google DeepMind. Bepaalt de selectie van trainingsgegevens, de modelarchitectuur en beslissingen over afstemming."
+      "Label 1": "AI Company",
+      "Category 1": "AI Company",
+      "Description 1": "e.g. OpenAI, Anthropic, Google DeepMind. Controls training data selection, model architecture, and alignment decisions."
     },
     "map.extra-21": {
-      "Label 1": "Trainingsgegevens",
+      "Label 1": "Training Data",
       "Category 1": "Training",
-      "Description 1": "Miljarden tokens uit uiteenlopende bronnen, verzameld en zorgvuldig geselecteerd voordat de training begint."
+      "Description 1": "Billions of tokens from diverse sources, collected and curated before training begins."
     },
     "map.extra-22": {
-      "Label 1": "Tokenisatie",
+      "Label 1": "Tokenisation",
       "Category 1": "Training",
-      "Description 1": "Tekst wordt opgesplitst in deelwoordeenheden en omgezet in getallen. Taal wordt een reeks getallen."
+      "Description 1": "Text split into subword units and converted to numbers. Language becomes a numerical sequence."
     },
     "map.extra-23": {
-      "Label 1": "Positiecodering",
+      "Label 1": "Positional\nEncoding",
       "Category 1": "Training",
-      "Description 1": "Transformers verwerken tokens parallel en hebben geen inherent besef van volgorde. Positiecoderingen voegen aan elk token informatie over zijn plaats in de reeks toe."
+      "Description 1": "Transformers process tokens in parallel and have no inherent sense of order. Positional encodings inject sequence position into each token."
     },
     "map.extra-24": {
-      "Label 1": "Algoritme + gewichten",
-      "Category 1": "Verbinding",
-      "Description 1": "De transformerarchitectuur. Tijdens de training worden de gewichten voortdurend aangepast. Tijdens inferentie staan de gewichten vast. Dezelfde architectuur, een andere modus."
+      "Label 1": "Algorithm\n+ Weights",
+      "Category 1": "Bridge",
+      "Description 1": "The transformer architecture. During training, weights adjust continuously. During inference, weights are frozen. Same architecture — different mode."
     },
     "map.extra-25": {
-      "Label 1": "Verlies + backpropagatie",
+      "Label 1": "Loss +\nBackprop",
       "Category 1": "Training",
-      "Description 1": "De voorspellingsfout wordt berekend en teruggevoerd door het netwerk. De gewichten worden aangepast. Deze lus wordt miljarden keren herhaald."
+      "Description 1": "Prediction error is calculated and propagated back through the network. Weights are adjusted. This loop repeats billions of times."
     },
     "map.extra-26": {
-      "Label 1": "Fine-tuning / RLHF",
+      "Label 1": "Fine-tuning\n/ RLHF",
       "Category 1": "Training",
-      "Description 1": "Menselijke beoordelaars beoordelen de output. Het model wordt getraind op behulpzaamheid en nauwkeurigheid. Gebruikersinvoer waarvoor toestemming is gegeven, wordt hier gebruikt en beïnvloedt de afstemming."
+      "Description 1": "Human evaluators rate outputs. The model is trained toward helpfulness and accuracy. Consented user input feeds here, shaping alignment."
     },
     "map.extra-27": {
-      "Label 1": "Webcrawling",
-      "Category 1": "Trainingsgegevens",
-      "Description 1": "Openbaar geïndexeerde webpagina’s. Common Crawl is de belangrijkste bron en vormt, gemeten in tokens, het grootste deel van het trainingsvolume."
+      "Label 1": "Web Crawl",
+      "Category 1": "Training Data",
+      "Description 1": "Publicly indexed web pages. Common Crawl is the primary source — the majority of training volume by token count."
     },
     "map.extra-28": {
-      "Label 1": "Boeken",
-      "Category 1": "Trainingsgegevens",
-      "Description 1": "Gedigitaliseerde boeken en lange teksten, zoals BooksCorpus en Project Gutenberg. Geeft het model samenhangende structuur over langere tekstgedeelten."
+      "Label 1": "Books",
+      "Category 1": "Training Data",
+      "Description 1": "Digitised books and long-form text. BooksCorpus, Project Gutenberg. Gives the model coherent long-range structure."
     },
     "map.extra-29": {
-      "Label 1": "Wetenschappelijke artikelen",
-      "Category 1": "Trainingsgegevens",
-      "Description 1": "arXiv, PubMed en wetenschappelijke databanken. Domeinspecifieke kennis en wetenschappelijk redeneren."
+      "Label 1": "Academic\nPapers",
+      "Category 1": "Training Data",
+      "Description 1": "arXiv, PubMed, academic databases. Domain-specific knowledge and scientific reasoning."
     },
     "map.extra-30": {
-      "Label 1": "Coderepositories",
-      "Category 1": "Trainingsgegevens",
-      "Description 1": "GitHub en vergelijkbare bronnen. Verzamelingen programmeercode die het model gestructureerd logisch redeneervermogen geven."
+      "Label 1": "Code\nRepositories",
+      "Category 1": "Training Data",
+      "Description 1": "GitHub and similar. Programming corpora giving the model structured logical reasoning ability."
     },
     "map.extra-31": {
-      "Label 1": "Geselecteerde encyclopedische bronnen",
-      "Category 1": "Trainingsgegevens",
-      "Description 1": "Wikipedia, nieuwsarchieven en gestructureerd referentiemateriaal. Betrouwbare basiskennis van hoge kwaliteit."
+      "Label 1": "Encyclopaedic\nCurated",
+      "Category 1": "Training Data",
+      "Description 1": "Wikipedia, news archives, structured reference material. High quality, reliable baseline knowledge."
     },
     "map.extra-32": {
-      "Label 1": "Gegevens onder licentie",
-      "Category 1": "Trainingsgegevens",
-      "Description 1": "Gegevens die worden gekocht of onder licentie verkregen van externe uitgevers, nieuwsorganisaties en gegevensleveranciers."
+      "Label 1": "Licensed\nData",
+      "Category 1": "Training Data",
+      "Description 1": "Data purchased or licensed from third-party publishers, news organisations, and data providers."
     },
     "map.extra-33": {
-      "Label 1": "Gebruikersprompt",
-      "Category 1": "Inferentie",
-      "Description 1": "Je typt een bericht. Natuurlijke taal komt het systeem binnen. Je apparaat verstuurt het via het internet naar de server."
+      "Label 1": "User Prompt",
+      "Category 1": "Inference",
+      "Description 1": "You type a message. Natural language enters the system. Your device sends it to the server via the internet."
     },
     "map.extra-34": {
-      "Label 1": "Tokenisatie",
-      "Category 1": "Inferentie",
-      "Description 1": "Je prompt wordt opgesplitst volgens hetzelfde tokenformaat als bij de training. Vanaf dit punt is je bericht een reeks getallen."
+      "Label 1": "Tokenisation",
+      "Category 1": "Inference",
+      "Description 1": "Your prompt is split using the same token format as training. From this point, your message is a sequence of numbers."
     },
     "map.extra-35": {
-      "Label 1": "Positiecodering",
-      "Category 1": "Inferentie",
-      "Description 1": "De volgorde van tokens wordt gecodeerd voordat ze de transformer ingaan. Dezelfde stap als bij de training."
+      "Label 1": "Positional\nEncoding",
+      "Category 1": "Inference",
+      "Description 1": "Token order is encoded before entering the transformer. Same step as training."
     },
     "map.extra-36": {
-      "Label 1": "Logits / softmax",
-      "Category 1": "Inferentie",
-      "Description 1": "De laatste laag geeft elk token in de woordenschat een score. Softmax zet de scores om in een kansverdeling: waarschijnlijkheden, geen antwoorden."
+      "Label 1": "Logits /\nSoftmax",
+      "Category 1": "Inference",
+      "Description 1": "The final layer scores every token in the vocabulary. Softmax converts scores into a probability distribution — likelihoods, not answers."
     },
     "map.extra-37": {
-      "Label 1": "Outputsampling",
-      "Category 1": "Inferentie",
-      "Description 1": "Een token wordt geselecteerd op basis van waarschijnlijkheden. Dezelfde prompt kan verschillende antwoorden opleveren: generatie is standaard niet deterministisch."
+      "Label 1": "Output\nSampling",
+      "Category 1": "Inference",
+      "Description 1": "A token is selected probabilistically. Same prompt can produce different responses — generation is not deterministic by default."
     },
     "map.extra-38": {
-      "Label 1": "Antwoord / interface",
-      "Category 1": "Inferentie",
-      "Description 1": "Tokens worden terugvertaald naar taal. Dit is het eerste moment waarop er weer taal is; alles hiervoor bestond uit getallen."
+      "Label 1": "Response /\nInterface",
+      "Category 1": "Inference",
+      "Description 1": "Tokens decoded back into language. This is the first moment language exists again — everything before this was numbers."
     },
     "map.extra-39": {
       "internet 1": "Internet",
