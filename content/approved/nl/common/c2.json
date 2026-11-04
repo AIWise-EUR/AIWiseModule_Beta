@@ -1,13 +1,116 @@
 {
   "schema": 1,
-  "sequence": 16,
+  "sequence": 19,
   "course": "common",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "9e0e8e10-28c9-4771-bf7d-3ac79bfd05e7",
+  "submission_id": "a86f80d9-73f4-41f8-80d9-ac97bcc30dd2",
   "source_release": "724af4d1-48f3-40c0-8e39-736e12d6c66c",
-  "approved_at": "2026-11-04T11:08:05.184345+00:00",
+  "approved_at": "2026-11-04T13:56:49.187573+00:00",
   "slots": {
+    "_studio": {
+      "boxes": [
+        {
+          "id": "box-bc530093-aef9-4e18-9c9d-965ca5c2512e",
+          "size": 0,
+          "slot": "c2.block-7",
+          "align": "left",
+          "anchor": 2,
+          "fields": [
+            [
+              {
+                "text": "Intersubjecti"
+              },
+              {
+                "text": "eve betekenisgeving: nagebootst, niet doorleefd"
+              }
+            ],
+            [
+              {
+                "text": "Menselijk begrip ontwikkelt zich niet alleen via individuele cognitie en ervaring, maar ook via interactie met anderen. Mensen brengen verschillende ervaringen, perspectieven, culturele achtergronden, waarden, kennis en interesses mee in een gesprek. Door elkaars ideeën te bevragen, uit te dagen en erop voort te bouwen, kunnen ze samen tot een rijker begrip komen dan ieder van hen vooraf had. GenAI kan verschillende perspectieven simuleren, aannames uitdagen en bijdragen aan zo’n dialoog. Wat het niet meebrengt, is een eigen perspectief, dat voortkomt uit een sociale context en eigen ervaring, relaties, waarden en interesses. Het kan daarom intersubjectieve betekenisvorming nabootsen, maar deze niet ervaren zoals mensen dat doen. "
+              }
+            ]
+          ],
+          "template": "gradient-row"
+        },
+        {
+          "id": "box-0d8b4bd6-18e4-4538-891a-24b62a18399d",
+          "size": 0,
+          "slot": "c2.block-1",
+          "align": "left",
+          "anchor": 0,
+          "fields": [
+            [
+              {
+                "text": "V"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "w"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "b"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              }
+            ],
+            [
+              {
+                "text": "Voordat we met dit blok beginnen, willen we benadrukken dat het niet noodzakelijk is om AI te gebruiken tijdens het studeren of bij het werken aan opdrachten. Generaties studenten vóór jou hebben zonder AI gestudeerd, zijn succesvol afgestudeerd en hebben bijgedragen aan maatschappelijke vooruitgang. \n\nDeze module is dan ook niet bedoeld om je te overtuigen AI te gebruiken. Het doel is om je te helpen weloverwogen keuzes te maken over of, wanneer en hoe AI van waarde kan zijn voor jouw leerproces. Als je ervoor kiest geen AI te gebruiken, is dat een prima keuze. Als je AI wel wilt gebruiken, is het belangrijk dat je dit doet op een manier die je eigen denken en leren ondersteunt, in plaats van vervangt. Houd er bovendien rekening mee dat je nog steeds veel tijd en moeite zult moeten investeren om werk van hoge kwaliteit te leveren, ook, en soms juist, wanneer je GenAI gebruikt. \n\nVoor een kritisch perspectief op het gebruik van GenAI in het hoger onderwijs, zie Passeport et al. (2026). "
+              }
+            ]
+          ],
+          "template": "text"
+        }
+      ],
+      "formats": [],
+      "version": 1
+    },
     "c2.block-0": {
       "Heading 1": "Wat betekent AI voor ons?"
     },
@@ -271,32 +374,32 @@
       "Text 1": "S.A.T Framework ",
       "Text 2": "(Self–AI–Team)",
       "Diagram label 1": "Self",
-      "Diagram label 2": "Intent",
+      "Diagram label 2": "Intentie",
       "Diagram label 3": "AI",
-      "Diagram label 4": "Operationalize",
+      "Diagram label 4": "Operationaliseren",
       "Diagram label 5": "Self",
-      "Diagram label 6": "Judge",
+      "Diagram label 6": "Beoordelen",
       "Diagram label 7": "AI",
-      "Diagram label 8": "Refine",
+      "Diagram label 8": "Verfijnen",
       "Diagram label 9": "Self",
-      "Diagram label 10": "Present",
+      "Diagram label 10": "Presenteren",
       "Diagram label 11": "Team",
       "Diagram label 12": "Feedback",
       "Diagram label 13": "Self",
-      "Diagram label 14": "Integrate",
+      "Diagram label 14": "Integreren",
       "Diagram label 15": "Team",
-      "Diagram label 16": "Expand",
+      "Diagram label 16": "Uitbreden",
       "Diagram label 17": "SELF–AI",
       "Diagram label 18": "SELF–TEAM",
       "Diagram label 19": "SELF–AI",
       "Diagram label 20": "SELF–TEAM",
-      "Diagram label 21": "Cycle 1",
-      "Diagram label 22": "Cycle 2",
-      "Diagram label 23": "Cycle 3",
-      "Diagram label 24": "Cycle 4",
-      "Diagram label 25": "SCALE OF THE WORK",
-      "Diagram label 26": "SESSION PROGRESSION",
-      "Diagram label 27": "“At every transition, you steer.”"
+      "Diagram label 21": "Cyclus 1",
+      "Diagram label 22": "Cyclus 2",
+      "Diagram label 23": "Cyclus 3",
+      "Diagram label 24": "Cyclus 4",
+      "Diagram label 25": "OMVANG VAN HET WERK",
+      "Diagram label 26": "VERLOOP VAN DE SESSIE",
+      "Diagram label 27": "“Bij elke overgang, stuur je bij.”"
     },
     "c2.block-38": {
       "Text 1": "1.",
