@@ -4,9 +4,10 @@
   const M=()=>window.AIWiseStudioBlocks, clone=v=>JSON.parse(JSON.stringify(v));
   const valueAt=(s,slot,path)=>path.reduce((v,k)=>v?.[k],s.values[slot]);
   function ext(s){return s.values._studio ||= {version:1,formats:[],boxes:[]};}
-  function remember(s){if(!s.blockEditing)return;s.undo.push(clone(s.values));if(s.undo.length>60)s.undo.shift();s.redo=[];}
-  function changed(s){s.blockEditing.update();s.blockEditing.controls();s.blockEditing.message('Unsaved edits · Preview only.');}
-  function mutate(s,fn,reopen=false){remember(s);fn();changed(s);if(reopen)s.blockEditing.open();}
+  function historyCopy(s){const copy=clone(s.values);if(s.layoutPlan){s.layoutHistory ||= new WeakMap();s.layoutHistory.set(copy,clone(s.layoutPlan.maps));}return copy;}
+  function remember(s){if(!s.blockEditing)return;s.undo.push(historyCopy(s));if(s.undo.length>60)s.undo.shift();s.redo=[];}
+  function changed(s){if(s.layoutEnabled&&s.layoutPlan&&window.AIWiseLayoutSync.changed(s.base,s.values,s.layoutPlan.maps))s.needsUpgrade=true;s.blockEditing.update();s.blockEditing.controls();s.blockEditing.message('Unsaved edits · Preview only.');}
+  function mutate(s,fn,reopen=false){if(s.layoutEnabled&&s.layoutProblem){s.blockEditing.message(s.layoutProblem);return;}remember(s);fn();changed(s);if(reopen)s.blockEditing.open();}
   function formatRecord(s,slot,path){return s.values._studio?.formats.find(f=>f.slot===slot&&JSON.stringify(f.path)===JSON.stringify(path));}
   function textChanged(s,slot,path,text){const f=formatRecord(s,slot,path);if(f)editRuns(f,text);}
   function editRuns(f,text){
@@ -39,7 +40,7 @@
     bar.addEventListener('click',draw);input.addEventListener('input',draw);wrap.append(bar,preview);
   }
   function field(s,wrap,input,slot,path){
-    if(!s.blocksEnabled||s.locale!=='en')return;
+    if(!s.blocksEnabled||(s.locale!=='en'&&!s.layoutEnabled))return;
     // Attributes and diagram labels stay plain; their DOM does not accept inline spans.
     if(s.isCommon){const block=s.commonBlocks?.find(b=>b.path===slot),i=block&&Object.keys(block.fields).indexOf(path[0]);if(i===undefined||i<0||block.nodes[i].nodeType!==3||block.nodes[i].parentElement.closest('svg,title'))return;}
     toolbar(s,wrap,input,()=>formatRecord(s,slot,path)?.runs||M().rich(input.value),runs=>{
@@ -51,7 +52,7 @@
     return boxes.filter(b=>{const family=M().boxFamily(b);if(own.has(family)||seen.has(family))return false;seen.add(family);return true;});
   }
   function addExampleBox(s,source,index){
-    if(s.blocked||s.abort?.signal.aborted||!s.exampleBoxesEnabled||s.locale!=='en'||ext(s).boxes.length>=50||!s.values['c2.examples']?.[index]||!exampleReminders(s,index).includes(source))return;
+    if(s.blocked||s.abort?.signal.aborted||!s.exampleBoxesEnabled||(s.locale!=='en'&&!s.layoutEnabled)||ext(s).boxes.length>=50||!s.values['c2.examples']?.[index]||!exampleReminders(s,index).includes(source))return;
     mutate(s,()=>{ext(s).boxes.push({...clone(source),id:'box-'+crypto.randomUUID(),example:index,family:M().boxFamily(source),anchor:0});},true);
   }
   function reminder(s,source,index,doc=document){
@@ -61,7 +62,7 @@
     const origin=doc.createElement('p');origin.textContent='Added in Example '+(M().exampleIndex(source)+1);origin.style.cssText='font-size:12px;margin:0 0 8px';
     const hint=doc.createElement('p');hint.textContent='No box has been added to this version yet.';hint.style.cssText='margin:0 0 12px';
     const add=doc.createElement('button');add.type='button';add.textContent='Add this box to this version';add.className='button';add.style.cssText='padding:10px 14px;border:1px solid #2b5d63;border-radius:8px;background:#fff;color:#173e43;font:inherit;cursor:pointer';
-    add.disabled=!!s.blocked||!s.exampleBoxesEnabled||s.locale!=='en'||(s.values._studio?.boxes.length||0)>=50;
+    add.disabled=!!s.blocked||!s.exampleBoxesEnabled||(s.locale!=='en'&&!s.layoutEnabled)||(s.values._studio?.boxes.length||0)>=50;
     add.onclick=e=>{e.stopPropagation();addExampleBox(s,source,index);};
     const note=doc.createElement('small');note.textContent='Editor only';note.style.cssText='display:block;margin-top:10px';
     node.append(title,origin,hint,add,note);return node;
@@ -72,8 +73,8 @@
     doc.querySelectorAll('.carousel-card').forEach((card,index)=>{for(const source of exampleReminders(s,index))card.append(reminder(s,source,index,doc));});
   }
   function panel(s,container,item){
-    if(s.isCommon&&s.locale==='nl'){translationPanel(s,container,item);return;}
-    if(!s.blocksEnabled||s.locale!=='en')return;
+    if(s.isCommon&&s.locale==='nl'&&!s.layoutEnabled){translationPanel(s,container,item);return;}
+    if(!s.blocksEnabled||(s.locale!=='en'&&!s.layoutEnabled))return;
     const section=document.createElement('section');section.className='cs-block-actions';
     const heading=document.createElement('h3');heading.textContent='Boxes & layout';section.append(heading);
     const actions=document.createElement('div');actions.className='cs-formatbar';section.append(actions);
@@ -118,6 +119,7 @@
         if(op==='up'&&i>0)[a[i-1],a[i]]=[a[i],a[i-1]];
         if(op==='down'&&i<a.length-1)[a[i+1],a[i]]=[a[i],a[i+1]];
         if(op==='remove'&&a.length>1)a.splice(i,1);
+        window.AIWiseLayoutSync?.remap(s,'c2.examples',old,a,duplicate,i);
         if(s.values._studio)s.values._studio.formats=formats.flatMap(f=>{
           if(f.slot!=='c2.examples')return [f];const previous=Number(f.path[0]),next=a.indexOf(old[previous]),result=[];
           if(next>=0)result.push({...f,path:[String(next),...f.path.slice(1)]});
@@ -166,6 +168,7 @@
           s.satEditingIndex=index;
           sat.phases.splice(index,0,{label:team?'Self–Team':'Self–AI',steps:names.map((name,i)=>({actor:i%2?(team?'team':'ai'):'self',name,text:''}))});
         }
+        window.AIWiseLayoutSync?.remap(s,'c2.sat_example',before,sat.phases);
         // Formatting follows the surviving box, not its previous numeric position.
         if(s.values._studio)s.values._studio.formats=s.values._studio.formats.flatMap(f=>{
           if(f.slot!==item.path||f.path[0]!=='phases')return [f];
@@ -199,14 +202,15 @@
     container.append(field(sat.note,['note'],'Note'));
   }
   function move(s,box,delta){mutate(s,()=>{const all=ext(s).boxes,group=all.filter(b=>b.slot===box.slot&&b.template===box.template&&b.anchor===box.anchor&&(!M().exampleBox(box)||M().exampleIndex(b)===M().exampleIndex(box))),i=group.indexOf(box),other=group[i+delta];if(other){const a=all.indexOf(box),b=all.indexOf(other);[all[a],all[b]]=[all[b],all[a]];}},true);}
-  function travel(s,from,to){if(!s[from].length)return;s[to].push(clone(s.values));s.values=s[from].pop();changed(s);s.blockEditing.open();}
+  function travel(s,from,to){if(!s[from].length)return;s[to].push(historyCopy(s));s.values=s[from].pop();if(s.layoutPlan&&s.layoutHistory?.has(s.values))s.layoutPlan.maps=clone(s.layoutHistory.get(s.values));changed(s);s.blockEditing.open();}
   function mount(s,api){
     s.blockEditing=api;s.undo=[];s.redo=[];
     // A staged front end must never offer submissions the installed backend cannot accept.
     window.AIWiseBackend.getClient().then(client=>client.rpc('workspace_studio_capabilities')).then(({data,error})=>{
-      if(s.abort.signal.aborted)return;s.blocksEnabled=!error&&data?.blocks===1;s.satPhasesEnabled=!error&&data?.sat_phases===1;s.exampleBoxesEnabled=!error&&data?.example_boxes===1;
-      const note=document.createElement('p');note.className='cs-language-status';note.textContent=s.locale==='nl'&&s.isCommon?'Dutch translation · Layout follows approved English; existing translations are preserved.':s.blocksEnabled?'English editing · Add boxes, duplicate cards and format selected words.':'Text editing is available. Box and formatting tools will appear after the Studio backend update.';
+      if(s.abort.signal.aborted)return;s.blocksEnabled=!error&&data?.blocks===1;s.satPhasesEnabled=!error&&data?.sat_phases===1;s.exampleBoxesEnabled=!error&&data?.example_boxes===1;s.layoutEnabled=!error&&data?.bidirectional_layout===1;
+      const note=document.createElement('p');note.className='cs-language-status';note.textContent=s.layoutEnabled?(s.layoutProblem||'Shared layout · Changes to boxes and item order apply to both languages after review. Each language keeps its own text.') :s.locale==='nl'&&s.isCommon?'Dutch translation · Layout follows approved English; existing translations are preserved.':s.blocksEnabled?'English editing · Add boxes, duplicate cards and format selected words.':'Text editing is available. Box and formatting tools will appear after the Studio backend update.';
       s.host.querySelector('.cs-toolbar').after(note);
+      window.AIWiseLayoutSync?.reviewControl(s);
       examplePreview(s);
     }).catch(()=>{});
   }

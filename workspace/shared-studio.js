@@ -53,7 +53,8 @@
     const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');
     const clientId=hash.slice(0,8)+'-'+hash.slice(8,12)+'-4'+hash.slice(13,16)+'-8'+hash.slice(17,20)+'-'+hash.slice(20,32);
     assertOwner();
-    const id=await query(backend.rpc('workspace_submit_localized_content',{p_client_id:clientId,p_locale:locale,p_source_release:sourceRelease,p_course:course,p_chapter:chapter,p_slots:slots,p_base_slots:baseSlots,p_base_release:baseRelease||null,p_saved_at:saved.savedAt,p_summary:summary}));
+    const layout=saved.layoutPlan&&window.AIWiseLayoutSync?.changed(baseSlots,slots,saved.layoutPlan.maps)?saved.layoutPlan:null;
+    const id=await query(backend.rpc(layout?'workspace_submit_layout_content':'workspace_submit_localized_content',{p_client_id:clientId,p_locale:locale,p_source_release:sourceRelease,p_course:course,p_chapter:chapter,p_slots:slots,p_base_slots:baseSlots,p_base_release:baseRelease||null,p_saved_at:saved.savedAt,p_summary:summary,...(layout?{p_layout:layout}:{})}));
     assertOwner();await refresh();return {id};
   }
   async function decide(id,revision,status,reason) {
@@ -77,7 +78,7 @@
   }
   async function applyApproval(id,revision,context,resolutions,result,reason) {
     const backend=await client();
-    await query(backend.rpc('workspace_apply_content_approval',{p_id:id,p_revision:revision,p_expected_release:context.release,p_expected_slots:context.latest,p_resolutions:resolutions,p_result:result,p_reason:reason}));
+    await query(backend.rpc(context.layout?'workspace_apply_layout_approval':'workspace_apply_content_approval',{p_id:id,p_revision:revision,p_expected_release:context.release,p_expected_slots:context.latest,p_resolutions:resolutions,p_result:result,p_reason:reason,...(context.layout?{p_peer_result:window.AIWiseLayoutSync.project(context.base,result,context.layout.peer_base,context.layout.maps)}:{})}));
     await refresh();
   }
   window.AIWiseSharedStudio=Object.freeze({snapshot,refresh,submit,decide,prepareApproval,applyApproval});

@@ -74,10 +74,18 @@
         next.textContent = 'Preview approval →'; next.disabled = model.conflicts.some(u => !choices[u.id]);
       } else {
         const result = engine().combine(model, choices), final = engine().plan(context.latest, result, context.latest, title);
-        const noOp = !final.changes.length;
+        const peer=context.layout?window.AIWiseLayoutSync.project(context.base,result,context.layout.peer_base,context.layout.maps):null;
+        const peerChanges=peer?engine().plan(context.layout.peer_base,peer,context.layout.peer_base,title).changes:[];
+        const noOp = !final.changes.length&&!peerChanges.length&&!context.language_review_required;
         q('#approval-review-title').textContent = noOp ? 'This result is already in Beta' : 'Apply these changes to Beta?';
         q('[data-intro]').textContent = noOp ? 'Approval will record your review. Beta will stay as it is and no new deployment will be created.' : 'These are the exact changes from current Beta. Other content stays as shown in the comparison.';
         final.changes.forEach(u => content.append(row(u, false)));
+        if(context.layout){
+          content.append(el('h3', 'Shared layout · '+(context.layout.locale==='nl'?'Nederlands':'English')));
+          content.append(el('p','This approval also applies the structure below to the other language. Its existing wording and formatting stay attached to their items; new fields start empty. Removed wording remains in the approval history.','dr-notice'));
+          peerChanges.forEach(u=>content.append(row(u,false)));
+        }
+        if(context.language_review_required)content.append(el('p','This approval confirms the wording in this language after a shared layout change.','dr-notice'));
         content.append(el('p', 'The submitted request and its author are preserved. Your choices and the approved result are recorded separately. Publishing to students remains a separate action.', 'dr-notice'));
         next.textContent = noOp ? 'Approve — already reflected' : 'Approve & apply to Beta';
       }

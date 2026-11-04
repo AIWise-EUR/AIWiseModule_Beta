@@ -86,7 +86,7 @@
     return {...JSON.parse(JSON.stringify(base)),...saved.slots};
   }
   function syncTranslation(s) {
-    if(!s.isCommon || s.locale!=='nl' || !s.englishApproved || s.blocked)return;
+    if(s.layoutEnabled || !s.isCommon || s.locale!=='nl' || !s.englishApproved || s.blocked)return;
     const before=JSON.stringify(s.values);
     const result=window.AIWiseCommonContent.translation(s.englishApproved,s.values,s.translationSync,s.reviewedSource===s.englishRelease && !(s.translationNew&&!s.raw));
     if(s.translationNew&&!s.raw&&!s.translationSync)result.state.pending.forEach(item=>item.kind='translate');

@@ -62,7 +62,9 @@ export function artifact(job: Job) {
   }
   // Only public approved content is serialized; reviewer names, reasons, drafts and memos are omitted.
   const value = {schema:1, sequence:job.sequence, course:job.course, chapter:job.chapter, locale:job.locale,
-    submission_id:job.submission_id, source_release:p.source_release, approved_at:p.approved_at, slots:p.slots};
+    submission_id:job.submission_id, source_release:p.source_release, approved_at:p.approved_at, slots:p.slots,
+    ...(p.structure_only === true ? {structure_only:true} : {}),
+    ...(p.layout_review_required === true ? {layout_review_required:true} : {})};
   const content = JSON.stringify(value, null, 2) + '\n';
   if (Buffer.byteLength(content) > 4000000) throw new PublishError('content_too_large');
   return {path:`content/approved/${job.locale}/${job.course}/${job.chapter}.json`, value, content};

@@ -1,0 +1,90 @@
+const {PGlite}=require(process.env.PGLITE_MODULE||'@electric-sql/pglite');
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+(async()=>{
+ const db=new PGlite();await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;
+ create table auth.users(id uuid primary key,raw_user_meta_data jsonb default '{}',email text,email_confirmed_at timestamptz,created_at timestamptz default now(),deleted_at timestamptz,is_anonymous boolean default false);
+ create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+ grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
+ const root=path.resolve(__dirname,'../..'),name='20261104145740_bidirectional_layout.sql',dir=path.join(root,'supabase/migrations');
+ for(const f of fs.readdirSync(dir).filter(f=>f.endsWith('.sql')&&f<name).sort())await db.exec(fs.readFileSync(path.join(dir,f),'utf8'));
+ const user='11111111-1111-4111-8111-111111111111';
+ await db.query("insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values($1,'test@example.test',now(),'{\"display_name\":\"Example boxes test\"}')",[user]);
+ await db.query("insert into workspace_members(user_id,role,active) values($1,'admin',true)",[user]);
+ const owner=async(sql,args=[])=>{await db.exec('reset role');return(await db.query(sql,args)).rows;};
+ const as=async(sql,args=[])=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[user]);await db.exec('set role authenticated');return(await db.query(sql,args)).rows;};
+
+ const vm=require('node:vm'),ctx={window:{}};vm.runInNewContext(fs.readFileSync(path.join(root,'workspace/layout-sync.js'),'utf8'),ctx);const sync=ctx.window.AIWiseLayoutSync;
+ const source=async(locale,chapter='c2',course='dpas')=>(await owner('select slots from workspace_content_sources where course=$1 and chapter=$2 and locale=$3',[course,chapter,locale]))[0].slots;
+ const row=async(locale,chapter='c2',course='dpas')=>(await owner('select * from workspace_beta_content where course=$1 and chapter=$2 and locale=$3',[course,chapter,locale]))[0];
+ const baseline=async(locale,chapter='c2',course='dpas')=>(await row(locale,chapter,course))?.slots||await source(locale,chapter,course);
+ const before=JSON.stringify(await owner('select to_jsonb(s) row from workspace_content_sources s order by course,chapter,locale'));
+ const sql=fs.readFileSync(path.join(dir,name),'utf8');assert.equal(sql,fs.readFileSync(path.join(root,'supabase/BIDIRECTIONAL_LAYOUT_SETUP.sql'),'utf8'));await db.exec(sql);
+ assert.equal(JSON.stringify(await owner('select to_jsonb(s) row from workspace_content_sources s order by course,chapter,locale')),before);
+ const submit=async(locale,next,maps,chapter='c2',course='dpas')=>{
+  const own=await row(locale,chapter,course),peer=await row(locale==='en'?'nl':'en',chapter,course),base=await baseline(locale,chapter,course);
+  const layout={version:1,peer_base:await baseline(locale==='en'?'nl':'en',chapter,course),peer_release:peer?.submission_id||null,maps};
+  const args=[crypto.randomUUID(),course,chapter,next,base,own?.submission_id||null,'Layout test',locale,locale==='nl'?(await row('en',chapter,course))?.submission_id||null:null,layout];
+  const query='select workspace_submit_layout_content($1,$2,$3,$4,$5,$6,now(),$7,$8,$9,$10) id';
+  const id=(await as(query,args))[0].id;assert.equal((await as(query,args))[0].id,id);return {id,next,layout,base};
+ };
+ const prepare=async id=>(await as('select workspace_prepare_content_approval($1,1) context',[id]))[0].context;
+ const approve=async request=>{
+  const c=await prepare(request.id),projected=JSON.parse(JSON.stringify(sync.project(c.base,c.draft,c.layout.peer_base,c.layout.maps)));
+  assert.deepEqual((await owner('select aiwise_private.layout_project($1,$2,$3,$4) result',[c.base,c.draft,c.layout.peer_base,c.layout.maps]))[0].result,projected);
+  await as('select workspace_apply_layout_approval($1,1,$2,$3,$4,$5,$6,$7)',[request.id,c.release,c.latest,[],c.draft,'Reviewed both languages',projected]);return projected;
+ };
+ const nl=structuredClone(await source('nl'));
+ nl['c2.examples'][0].title='Nederlandse casus';nl['c2.examples'][0].thinking='Bewaar deze vertaling';
+ nl['c2.examples'].push({title:'Tweede voorbeeld',thinking:'Nieuwe tekst',typing_note:'',typing:'',processing:''});
+ nl['c2.sat_example'].phases.push({label:'Self–AI',steps:['Intent','Operationalize','Judge','Refine'].map((name,i)=>({actor:i%2?'ai':'self',name,text:i===0?'Eigen doel':''}))});
+ const boxId='box-'+crypto.randomUUID();nl._studio={version:1,formats:[],boxes:[{id:boxId,slot:'c2.examples',template:'text',anchor:0,example:0,family:boxId,fields:[[{text:'Titel'}],[{text:'Bestaande Nederlandse tekst',bold:true}]],align:'left',size:0}]};
+ const first=await submit('nl',nl,{'c2.examples':[0,null],'c2.sat_example':[null]});
+ await assert.rejects(as("select workspace_decide_content($1,1,'approved','Must preview both')",[first.id]),/both languages/);
+ const c=await prepare(first.id);await assert.rejects(as('select workspace_apply_content_approval($1,1,$2,$3,$4,$5,$6)',[first.id,c.release,c.latest,[],c.draft,'Must preview both']),/both languages/);
+ const enProjected=await approve(first);assert.equal(enProjected['c2.examples'][0].thinking,'');assert.equal((await row('en')).structure_only,true);assert.equal((await row('nl')).slots['c2.examples'][0].thinking,'Bewaar deze vertaling');
+ assert.equal((await owner("select payload->'structure_only' flag from workspace_github_jobs where submission_id=$1",[(await row('en')).submission_id]))[0].flag,true);
+ const en=structuredClone((await row('en')).slots);en['c2.examples'].reverse();en['c2.examples'][0].thinking='English only';en._studio.boxes[0].example=1;
+ const second=await submit('en',en,{'c2.examples':[1,0],'c2.sat_example':[0]});const nlProjected=await approve(second);
+ assert.equal(nlProjected['c2.examples'][1].thinking,'Bewaar deze vertaling');assert.equal(nlProjected['c2.examples'][0].thinking,'Nieuwe tekst');assert.equal(nlProjected._studio.boxes[0].fields[1][0].text,'Bestaande Nederlandse tekst');assert.equal(nlProjected._studio.boxes[0].example,1);
+ assert.equal((await row('en')).structure_only,false);
+ const retired=structuredClone((await row('nl')).slots);retired._studio.boxes=[];retired['c2.examples'].splice(0,1);
+ const third=await submit('nl',retired,{'c2.examples':[1],'c2.sat_example':[0]});const cc=await prepare(third.id);
+ await assert.rejects(as('select workspace_apply_layout_approval($1,1,$2,$3,$4,$5,$6,$7)',[third.id,cc.release,cc.latest,[],cc.draft,'Tampered preview',{}]),/preview changed/);
+ assert.equal((await row('en')).slots._studio.boxes.length,1);
+ await approve(third);
+ const audit=(await owner('select approval_result from workspace_submissions where id=$1',[third.id]))[0].approval_result;
+ assert.equal(audit.layout_before._studio.boxes.length,1);assert.equal((await row('en')).slots._studio.boxes.length,0);
+ // An absent Dutch translation gets structure but is not published as translated text.
+ const c3=structuredClone(await source('en','c3'));c3._studio={version:1,formats:[],boxes:[{id:'box-'+crypto.randomUUID(),slot:'c3.techniques.role',template:'text',anchor:0,fields:[[{text:'New box'}],[{text:'English content'}]],align:'left',size:0}]};
+ const fourth=await submit('en',c3,{},'c3');await approve(fourth);
+ assert.equal((await row('nl','c3')).structure_only,true);
+ const frozen=(await owner('select aiwise_private.approved_beta_copy() content'))[0].content;
+ assert.equal(frozen.some(r=>r.course==='dpas'&&r.chapter==='c3'&&r.locale==='nl'),false);
+ // Peer changes after submission cannot be overwritten.
+ const next=structuredClone((await row('en','c3')).slots);next._studio.boxes[0].align='right';const stale=await submit('en',next,{},'c3');
+ await owner("update workspace_beta_content set slots=jsonb_set(slots,'{c3.critique.read}',to_jsonb('Latest Dutch wording'::text)) where course='dpas' and chapter='c3' and locale='nl'");
+ await assert.rejects(prepare(stale.id),/One language changed/);
+ assert.equal((await row('nl','c3')).slots['c3.critique.read'],'Latest Dutch wording');
+ await assert.rejects(as('select aiwise_private.apply_content_approval_single($1,1,null,$2,$3,$2,$4)',[stale.id,next,[],'Bypass']),/permission denied/);
+ // Explicit human review of an unchanged provisional copy promotes that language.
+ const provisional=await row('nl','c3'),enRow=await row('en','c3');
+ const reviewedId=(await as('select workspace_submit_localized_content($1,$2,$3,$4,$5,$6,now(),$7,$8,$9) id',[crypto.randomUUID(),'dpas','c3',provisional.slots,provisional.slots,provisional.submission_id,'Dutch reviewed','nl',enRow.submission_id]))[0].id;
+ const reviewed=await prepare(reviewedId);
+ await as('select workspace_apply_content_approval($1,1,$2,$3,$4,$5,$6)',[reviewedId,reviewed.release,reviewed.latest,[],reviewed.draft,'Reviewed Dutch wording']);
+ assert.equal((await row('nl','c3')).structure_only,false);assert.equal((await row('nl','c3')).layout_review_required,false);
+ assert.equal((await row('nl','c3')).submission_id,reviewedId);
+ // Common uses the same two-language projection and preserves each field.
+ const common=structuredClone(await source('nl','c2','common')),slot=Object.keys(common)[0],field=Object.keys(common[slot])[0];
+ common[slot][field]='Bestaande algemene vertaling';
+ common._studio={version:1,formats:[],boxes:[{id:'box-'+crypto.randomUUID(),slot,template:'text',anchor:0,fields:[[{text:'Nieuw'}],[{text:'Nederlandse inhoud'}]],align:'left',size:0}]};
+ const commonRequest=await submit('nl',common,{},'c2','common');await approve(commonRequest);
+ const commonEn=structuredClone((await row('en','c2','common')).slots);commonEn._studio.boxes[0].align='center';
+ await approve(await submit('en',commonEn,{},'c2','common'));
+ assert.equal((await row('nl','c2','common')).slots[slot][field],'Bestaande algemene vertaling');
+ assert.equal((await row('nl','c2','common')).slots._studio.boxes[0].fields[1][0].text,'Nederlandse inhoud');
+ await owner('update workspace_members set role=$1 where user_id=$2',['member',user]);
+ await assert.rejects(as('select workspace_apply_layout_approval($1,1,null,$2,$3,$2,$4,$2)',[stale.id,next,[],'Unauthorized']),/Administrator/);
+ await owner('update workspace_members set role=$1 where user_id=$2',['admin',user]);
+ const allBefore=JSON.stringify(await owner('select to_jsonb(s) row from workspace_submissions s order by id'));await owner('select 1');await db.exec(sql);assert.equal(JSON.stringify(await owner('select to_jsonb(s) row from workspace_submissions s order by id')),allBefore);
+ console.log('PASS bidirectional_layout: both directions, independent translations, stable remapping, safe deletion history, stale/tampered refusal, provisional translation exclusion, idempotent deployment');await db.close();
+})().catch(e=>{console.error(e);process.exit(1);});

@@ -169,7 +169,7 @@
         if (!(phase.steps || []).some(function (step) { return String(step.text || "").trim(); })) return;
         var group = el("div", "sat-phase");
         group.dataset.satPhase = String(phaseIndex);
-        var kind = /team/i.test(phase.label) ? "selfteam" : "selfai";
+        var kind = (phase.steps || []).some(function (step) { return step.actor === "team"; }) || /team/i.test(phase.label) ? "selfteam" : "selfai";
         group.appendChild(el("span", "sat-phase-label sat-phase-" + kind, phase.label));
         (phase.steps || []).forEach(function (step, stepIndex) {
           var row = el("div", "sat-step");

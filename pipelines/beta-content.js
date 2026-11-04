@@ -28,7 +28,7 @@
       return found;
     }finally{clearTimeout(timer);}
   }
-  async function read(course, locale = 'en', sources = false) {
+  async function read(course, locale = 'en', sources = false, editing = false) {
     if (!['en','nl'].includes(locale)) throw Error('Unsupported content language.');
     if (!/^[a-z][a-z0-9-]{0,39}$/.test(course)) return [];
     // Saved review copies are read only through the signed-in parent Workspace.
@@ -47,7 +47,7 @@
     const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 12000);
     try {
       const url = new URL('/rest/v1/'+(sources?'workspace_content_sources':'workspace_beta_content'), config.url);
-      url.search = new URLSearchParams({select:sources?'course,chapter,locale,slots':'course,chapter,locale,submission_id,source_release,slots,approved_at',course:'eq.'+course,locale:'eq.'+locale});
+      url.search = new URLSearchParams({select:sources?'course,chapter,locale,slots':'*',course:'eq.'+course,locale:'eq.'+locale});
       let response;
       try {
         response = await fetch(url, {headers:{apikey:config.publishableKey},cache:'no-store',credentials:'omit',signal:controller.signal});
@@ -55,11 +55,11 @@
       }catch(error){
         // Source baselines remain database-only. Saved versions returned above never fall back to a live/deployed copy.
         if(sources)throw error;
-        try{return await deployedCopy(course,locale);}catch{throw error;}
+        try{const copy=await deployedCopy(course,locale);return editing?copy:copy.filter(r=>locale!=='nl'||!r.structure_only);}catch{throw error;}
       }
       const rows = await response.json();
       if (!Array.isArray(rows) || rows.some(row => row.course !== course || row.locale !== locale || !(course === 'common' ? ['c1','c2','c3','map'] : ['c2','c3']).includes(row.chapter) || !row.slots || typeof row.slots !== 'object')) throw Error('Invalid approved content response.');
-      return rows;
+      return editing?rows:rows.filter(r=>sources||locale!=='nl'||!r.structure_only);
     } finally { clearTimeout(timer); }
   }
   function apply(data, rows) {
@@ -75,5 +75,5 @@
     }
     return next;
   }
-  window.AIWiseBetaContent = Object.freeze({read,apply,sources:(course,locale)=>read(course,locale,true)});
+  window.AIWiseBetaContent = Object.freeze({read,apply,editing:(course,locale)=>read(course,locale,false,true),sources:(course,locale)=>read(course,locale,true)});
 })();

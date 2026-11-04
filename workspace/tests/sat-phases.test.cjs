@@ -28,6 +28,13 @@ test('only SAT phases can vary, including delete all and add back; malformed ste
   const bad=structuredClone(base);mutate(bad);assert.equal(M.validCopy(bad,base),false);
  }
 });
+test('translated or blank SAT labels retain the team layout from semantic actors',()=>{
+ const {window:w,document:doc}=setup(),sat=seed();
+ sat.phases=sat.phases.filter(p=>p.steps.some(s=>s.actor==='team')).slice(0,1);
+ assert.equal(sat.phases.length,1);sat.phases[0].label='Samenwerking';
+ w.AIWiseCourseRenderer.fillSlots({c2:{sat_example:sat}},doc);
+ assert.ok(doc.querySelector('.sat-phase-selfteam'));
+});
 test('per-box add/delete preserves formats on surviving cycles and Undo/Redo restores both data and formatting',()=>{
  const {window:w,document:doc}=setup(),item={path:'c2.sat_example'},host=doc.createElement('div'),field=()=>doc.createElement('label');doc.body.append(host);
  const s={locale:'en',blocksEnabled:true,satPhasesEnabled:true,values:{[item.path]:seed(),_studio:{version:1,boxes:[],formats:[{slot:item.path,path:['phases','2','steps','0','text'],runs:[{text:seed().phases[2].steps[0].text,bold:true}]}]}},undo:[],redo:[],frame:{contentDocument:doc}};

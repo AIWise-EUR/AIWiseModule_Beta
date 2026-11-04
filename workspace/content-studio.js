@@ -61,7 +61,7 @@
       button.title = window.AIWiseAuth?.snapshot().role !== 'admin' ? 'Administrator access is required to submit content.' : button.disabled ? 'Save this chapter’s draft before sending it for review.' : 'Send the saved chapter to the review queue.';
     });
   }
-  const canSubmit = s => s.ready && !s.blocked && !s.sourceStale && !s.translationSync?.pending.length && !s.needsUpgrade && !!s.raw && !dirty() && window.AIWiseAuth?.snapshot().status === 'member' && window.AIWiseAuth?.snapshot().role === 'admin';
+  const canSubmit = s => s.ready && !s.blocked && !s.sourceStale && !s.layoutPeerChanged && !s.translationSync?.pending.length && !s.needsUpgrade && !!s.raw && !dirty() && window.AIWiseAuth?.snapshot().status === 'member' && window.AIWiseAuth?.snapshot().role === 'admin';
   function openSubmission(s) {
     if (!canSubmit(s)) return;
     try {
@@ -93,8 +93,8 @@
   }
   function record(s) {
     const recovery = {...(s.backupKey ? {recoveryBackup:s.backupKey} : {}), ...(s.translationSync ? {translationSync:s.translationSync} : {})};
-    if (s.isCommon) return {...recovery, schema: 1, scope: 'common', chapter: s.chapter, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString(), sourceHTML: s.sourceHTML, blockTitles: Object.fromEntries(s.items.map(item => [item.path, item.title])), baseSlots: s.base, slots: s.values};
-    const shared = {...recovery, schema: 1, course: s.courseId, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString()};
+    if (s.isCommon) return {...recovery, layoutPlan:s.layoutPlan, schema: 1, scope: 'common', chapter: s.chapter, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString(), sourceHTML: s.sourceHTML, blockTitles: Object.fromEntries(s.items.map(item => [item.path, item.title])), baseSlots: s.base, slots: s.values};
+    const shared = {...recovery, layoutPlan:s.layoutPlan, schema: 1, course: s.courseId, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString()};
     if (s.chapter === 'c2') {
       const extras = values => Object.fromEntries(Object.entries(values).filter(([k]) => k !== 'c2.examples'));
       return {...shared, slot: 'c2.examples', baseExamples: s.base['c2.examples'], examples: s.values['c2.examples'],
@@ -108,15 +108,16 @@
       if (localStorage.getItem(s.key) !== s.raw) {
         message(s, 'Another tab changed this draft. Your edits have not been saved. Copy any text you want to keep before reloading.', true); return;
       }
+      if(s.layoutEnabled)window.AIWiseLayoutSync?.payload(s);
       if(!valid(s.values,s.base))throw Error('The draft contains an unsupported block or text format.');
       // Preserve the exact original before writing a synchronized local copy.
-      if(s.translationSync && s.translationBackupNeeded && (s.raw!==null || s.translationSync.retired.length)){
+      if((s.layoutBackupNeeded&&s.raw!==null)||(s.translationSync && s.translationBackupNeeded && (s.raw!==null || s.translationSync.retired.length))){
         const original=s.raw ?? JSON.stringify({...record(s),slots:s.base,translationSync:undefined});
         const key=s.key+':recovery-backup:'+crypto.randomUUID();localStorage.setItem(key,original);s.backupKey=key;
         s.host.querySelector('[data-cs-backup]').hidden=false;
       }
       const raw = JSON.stringify(record(s)); localStorage.setItem(s.key, raw);
-      s.raw = raw; s.translationBackupNeeded=false; s.needsUpgrade=false; s.saved = clone(s.values); controls(s);
+      s.raw = raw; s.layoutBackupNeeded=false; s.translationBackupNeeded=false; s.needsUpgrade=false; s.saved = clone(s.values); controls(s);
       message(s, 'Draft saved in this browser · ' + new Date().toLocaleTimeString() + '. Beta is unchanged.');
     } catch(error) { message(s, error.message || 'Draft could not be saved. Keep this page open and try again.', true); }
   }
@@ -128,7 +129,7 @@
       }
       localStorage.removeItem(s.key); s.raw = null; s.blocked = false;
       s.recoveryUI?.dispose(); s.recoveryUI = null; s.host.querySelector('[data-cs-recover]').hidden = true;
-      s.values = clone(s.base);s.translationSync=null;s.translationBackupNeeded=false;common()?.syncTranslation(s);s.refreshLanguageStatus(); s.saved = clone(s.base);
+      s.values = clone(s.base);if(s.layoutEnabled)window.AIWiseLayoutSync?.initialize(s,null);s.translationSync=null;s.translationBackupNeeded=false;common()?.syncTranslation(s);s.refreshLanguageStatus(); s.saved = clone(s.base);
       updatePreview(s); controls(s); message(s, 'Draft reset to current Beta content.');
       if (s.dialog.open) openEditor(s, s.index);
     } catch { message(s, 'Draft could not be reset. The saved copy has been preserved.', true); }
@@ -170,7 +171,7 @@
       apply: async (values, {restart = false} = {}) => {
         if (session !== s || !s.ready) throw Error('Reopen this chapter before applying the draft.');
         if (!valid(values, s.base)) throw Error('The selected combination does not fit the current page structure. Choose the latest Beta version for removed or restructured items, or download the original draft for manual recovery.');
-        const releases = await window.AIWiseBetaContent.read(s.courseId, s.locale);
+        const releases = await (window.AIWiseBetaContent.editing||window.AIWiseBetaContent.read)(s.courseId, s.locale);
         if (session !== s) throw Error('This chapter was closed. Nothing was changed.');
         const latest = releases.find(r => r.chapter === s.chapter);
         if ((latest?.submission_id || null) !== s.baseRelease || latest && !recovery.equal(latest.slots, s.base)) throw Error('Beta changed again while this review was open. Reload to compare with the newest version. Your original draft is preserved.');
@@ -179,8 +180,13 @@
           if (session !== s || !sameSourceHTML(html, currentHTML)) throw Error('The page layout changed during this review. Reload to review the new locations. Your original draft is preserved.');
         }
         const previous = s.values, previousBackup = s.backupKey, previousReviewed = s.reviewedSource, previousStale = s.sourceStale, previousSync=s.translationSync, previousUpgrade=s.needsUpgrade, previousBackupNeeded=s.translationBackupNeeded;
+        const previousLayout={layoutPlan:s.layoutPlan,layoutProblem:s.layoutProblem,layoutPeerChanged:s.layoutPeerChanged,layoutBackupNeeded:s.layoutBackupNeeded};
         try {
           s.values = values;
+          if(s.layoutEnabled){
+            window.AIWiseLayoutSync.initialize(s,restart?null:window.AIWiseLayoutSync.recoveredPlan(s,saved,values));
+            if(s.layoutProblem)throw Error(s.layoutProblem);
+          }
           if (s.locale === 'nl' && !restart) { s.reviewedSource = saved.sourceRelease || null; s.sourceStale = s.reviewedSource !== s.englishRelease; }
           if(s.isCommon&&s.locale==='nl')s.translationSync=restart?null:saved.translationSync;
           const wasBlocked=s.blocked;s.blocked=false;try{common()?.syncTranslation(s);}finally{s.blocked=wasBlocked;}
@@ -189,11 +195,11 @@
           s.backupKey = s.key + ':recovery-backup:' + crypto.randomUUID();
           const raw = JSON.stringify(record(s));
           recovery.storeRecovered(localStorage, s.key, s.raw, raw, s.backupKey);
-          s.raw = raw; s.translationBackupNeeded=false;s.saved = clone(s.values); s.blocked = false; s.needsUpgrade = false;
+          s.raw = raw; s.layoutBackupNeeded=false; s.translationBackupNeeded=false;s.saved = clone(s.values); s.blocked = false; s.needsUpgrade = false;
           s.host.querySelector('[data-cs-recover]').hidden = true;
           s.host.querySelector('[data-cs-backup]').hidden = false;
           s.refreshLanguageStatus(); controls(s); message(s, 'Updated draft saved in this browser. Your original is backed up. Continue editing, then send to Control Tower when ready.');
-        } catch (error) { s.values = previous; s.backupKey = previousBackup; s.reviewedSource = previousReviewed; s.sourceStale = previousStale;s.translationSync=previousSync;s.needsUpgrade=previousUpgrade;s.translationBackupNeeded=previousBackupNeeded; updatePreview(s); throw error; }
+        } catch (error) { Object.assign(s,previousLayout);s.values = previous; s.backupKey = previousBackup; s.reviewedSource = previousReviewed; s.sourceStale = previousStale;s.translationSync=previousSync;s.needsUpgrade=previousUpgrade;s.translationBackupNeeded=previousBackupNeeded; updatePreview(s); throw error; }
       }
     });
     s.host.querySelector('[data-cs-recover]').hidden = false;
@@ -337,9 +343,9 @@
     function field(value, path, name, valuePath = item.path) {
       if (typeof value === 'string') {
         const wrap = document.createElement('label'); wrap.textContent = label(name);
-        const options = name === 'actor' ? ['self','ai','team'] : name === 'tag' && ['adopt','modify','discard'].includes(value) ? ['adopt','modify','discard'] : null;
+        const options = name === 'actor' ? ['self','ai','team'] : name === 'tag' && (valuePath==='c3.amd_example'||['adopt','modify','discard'].includes(value)) ? ['adopt','modify','discard'] : null;
         const input = document.createElement(options ? 'select' : (['title','typing_note','heading','tag','name','label'].includes(name) || s.isCommon && name.startsWith('Heading')) ? 'input' : 'textarea');
-        if (options) options.forEach(text => { const option = document.createElement('option'); option.value = text; option.textContent = label(text); input.appendChild(option); });
+        if (options) (value===''?['',...options]:options).forEach(text => { const option = document.createElement('option'); option.value = text; option.textContent = text?label(text):'Choose an action…'; input.appendChild(option); });
         input.setAttribute('aria-label',label(name)); input.name = path.join('.') || 'value'; input.value = value;
         if (input.tagName === 'TEXTAREA') input.rows = 5;
         input.addEventListener('input', () => {
@@ -355,6 +361,7 @@
           updatePreview(s); controls(s);
           message(s, s.blocked ? 'Preview edits only. Saving is unavailable until the saved draft is reset.' : dirty() ? 'Unsaved edits · Preview only.' : '', s.blocked);
         });
+        if(!value.trim()){input.placeholder='Enter '+label(name).toLowerCase();const hint=document.createElement('small');hint.textContent='Empty field · add text in this language.';wrap.append(hint);}
         wrap.appendChild(input);
         if(!options)window.AIWiseStudioEditing?.field(s,wrap,input,valuePath,item.example!==undefined&&valuePath===item.path?[String(item.example),...path]:path);
         if(s.isCommon && s.translationSync)common().translationField(s,wrap,JSON.stringify(['field',valuePath,path[0]]));
@@ -376,7 +383,7 @@
     else if (s.isCommon) { Object.entries(value).forEach(([name, text]) => container.appendChild(field(text, [name], name))); }
     else if (item.example !== undefined) {
       ['title','thinking','typing_note','typing','processing'].forEach(key => container.appendChild(field(value[key] || '', [key], key)));
-    } else if(item.path==='c2.sat_example'&&s.locale==='en'&&window.AIWiseStudioEditing?.satPanel) {
+    } else if(item.path==='c2.sat_example'&&(s.locale==='en'||s.layoutEnabled)&&window.AIWiseStudioEditing?.satPanel) {
       window.AIWiseStudioEditing.satPanel(s,container,item,field);
     } else container.appendChild(field(value, [], label(item.path)));
     window.AIWiseStudioEditing?.panel(s,container,item);
@@ -465,7 +472,9 @@
     const style = doc.createElement('style');
     style.textContent = `
       #carousel { scroll-margin-top:84px; }
-      .cs-editable { position:relative; cursor:pointer; outline:2px dashed #35617f; outline-offset:-3px; }
+      .cs-editable { position:relative; min-height:32px; cursor:pointer; outline:2px dashed #35617f; outline-offset:-3px; }
+      .cs-editable:empty { display:block; padding:12px; }
+      .cs-editable:empty::before { content:'Empty example · select Edit item to add text'; color:#607375; font:13px/1.5 sans-serif; }
       .cs-editable:hover,.cs-editable:focus-visible { outline:3px solid #35617f; }
       .cs-edit-label { display:block; position:relative; z-index:2; width:max-content; margin:0 0 8px auto; padding:5px 12px; border:1px solid #c6d4de; border-radius:6px; color:#294c63; background:#edf3f7; cursor:pointer; font:600 12px/1.5 sans-serif; }
       .cs-edit-label:hover,.cs-edit-label:focus-visible { background:#dee8ef; outline:2px solid #35617f; }
@@ -648,15 +657,18 @@
     try {
       const url = new URL(chapterURL(chapter), location.href);
       const otherChapter = chapter === 'c2' ? 'c3' : 'c2';
-      const [html, sourceData, otherHTML, releases, contextReleases, englishReleases, seeds, commonEnglish] = await Promise.all([
+      const [html, sourceData, otherHTML, releases, contextReleases, englishReleases, seeds, commonEnglish, peerRows, peerSeeds, layoutCapability] = await Promise.all([
         fetch(url, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Preview unavailable'); return r.text(); }),
         fetch(config.source, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); }).then(data=>({...data,course:{id:preview.id,short_name:preview.short_name,full_name:preview.full_name,bachelor:preview.bachelor}})),
         fetch(new URL(`../common/aiwise-${otherChapter}-final.html`, location.href), {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Item list unavailable'); return r.text(); }),
-        window.AIWiseBetaContent.read(courseId,locale),
+        (window.AIWiseBetaContent.editing||window.AIWiseBetaContent.read)(courseId,locale),
         window.AIWiseBetaContent.read(isCommon ? context : 'common',locale),
         window.AIWiseBetaContent.read(courseId,'en'),
         locale==='nl'?window.AIWiseBetaContent.sources(courseId,'nl'):Promise.resolve([]),
-        !isCommon&&locale==='nl'?window.AIWiseBetaContent.read('common','en'):Promise.resolve([])
+        !isCommon&&locale==='nl'?window.AIWiseBetaContent.read('common','en'):Promise.resolve([]),
+        (window.AIWiseBetaContent.editing||window.AIWiseBetaContent.read)(courseId,locale==='en'?'nl':'en'),
+        window.AIWiseBetaContent.sources(courseId,locale==='en'?'nl':'en'),
+        window.AIWiseBackend.getClient().then(c=>c.rpc('workspace_studio_capabilities')).then(r=>!r.error&&r.data?.bidirectional_layout===1).catch(()=>false)
       ]);
       if (session !== s) return;
       // Course Studio uses the same Common layout as the standalone Dutch module.
@@ -666,6 +678,8 @@
         else contextReleases.push({...english,fallback_locale:'en'});
       }
       const data = window.AIWiseBetaContent.apply(sourceData, isCommon ? contextReleases : releases);
+      s.layoutEnabled=layoutCapability;s.layoutPeer=peerRows.find(r=>r.chapter===chapter)||peerSeeds.find(r=>r.chapter===chapter);
+      s.layoutReviewRequired=!!releases.find(r=>r.chapter===chapter)?.layout_review_required;
       s.baseRelease = releases.find(r => r.chapter === chapter)?.submission_id || null;
       if (!isCommon && data.course?.bachelor !== s.courseId) throw Error('Wrong course');
       s.source = data;
@@ -771,6 +785,7 @@
         try { const raw = localStorage.getItem(s.backupKey); if (!raw) throw Error('The original backup is not available in this browser.'); window.AIWiseDraftRecovery.download(raw, `aiwise-${s.chapter}-original-draft.json`); }
         catch (error) { message(s, error.message, true); }
       };
+      if(s.layoutEnabled&&!s.blocked)window.AIWiseLayoutSync?.initialize(s,s.raw?JSON.parse(s.raw):null);
       common()?.syncTranslation(s);
       languageStatus();
       s.saved = clone(s.values); message(s, status, s.blocked);

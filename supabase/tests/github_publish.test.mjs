@@ -77,3 +77,10 @@ test('approved archive preserves new boxes and formatting while rejecting malfor
  assert.deepEqual(artifact(job).value.slots._studio,job.payload.slots._studio);
  job.payload.slots._studio.boxes[0].fields[0][0].onerror='evil';assert.throws(()=>artifact(job),/invalid_content/);
 });
+test('approved archive retains structure-only flags without changing legacy artifacts',()=>{
+ const job=structuredClone(copy);
+ assert.equal(Object.hasOwn(artifact(job).value,'structure_only'),false);
+ job.payload.structure_only=true;job.payload.layout_review_required=true;
+ assert.equal(artifact(job).value.structure_only,true);
+ assert.equal(artifact(job).value.layout_review_required,true);
+});

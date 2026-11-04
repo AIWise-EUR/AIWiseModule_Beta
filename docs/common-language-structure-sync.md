@@ -13,6 +13,7 @@ share the page layout, while existing Dutch translations and drafts remain intac
 | Production deployment | Owner action; not deployed by Codex |
 | New SQL or Edge Function deployment for this change | None |
 | Editing access only follow-up | Beta deployed; navigation, SAT and box actions verified; template links use stable slot identity |
+| Bidirectional follow-up (2026-11-05) | Implemented; activation pending; [record](bidirectional-layout.md) |
 
 ## Confirmed behavior
 
@@ -130,3 +131,5 @@ No live drafts, pending requests, approvals, releases or database rows were chan
   check revealed catalog order changes, so Markdown/XML links now address stable
   slot IDs, resolved after rendering, rather than positional indexes. Route tests
   cover both templates and reject the wrong chapter. No translation was saved.
+
+- **2026-11-05** (Codex) Prepared bidirectional structure approvals with separate language wording and DPAS C2/C3 editing fixes. See [bidirectional-layout.md](bidirectional-layout.md); backend activation follows the owner setup procedure.
