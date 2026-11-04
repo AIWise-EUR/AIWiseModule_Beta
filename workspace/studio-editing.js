@@ -47,6 +47,7 @@
     });
   }
   function panel(s,container,item){
+    if(s.isCommon&&s.locale==='nl'){translationPanel(s,container,item);return;}
     if(!s.blocksEnabled||s.locale!=='en')return;
     const section=document.createElement('section');section.className='cs-block-actions';
     const heading=document.createElement('h3');heading.textContent='Boxes & layout';section.append(heading);
@@ -95,6 +96,21 @@
 
     }
     actions.append(button('Undo',()=>travel(s,'undo','redo')),button('Redo',()=>travel(s,'redo','undo')));container.append(section);
+  }
+  function translationPanel(s,container,item){
+    if(!s.translationSync)return;
+    const section=document.createElement('section');section.className='cs-block-actions';
+    const note=document.createElement('p');note.textContent='Box positions and order follow approved English. Edit the Dutch text here.';section.append(note);
+    for(const box of s.values._studio?.boxes.filter(box=>box.slot===item.path)||[]){
+      const card=document.createElement('fieldset'),legend=document.createElement('legend');legend.textContent='Shared box · '+(M().plain(box.fields[0]).trim()||'Untitled');card.append(legend);
+      const en=s.englishApproved._studio.boxes.find(en=>en.id===box.id);
+      box.fields.forEach((runs,index)=>{const wrap=document.createElement('div'),label=document.createElement('label'),input=document.createElement('textarea');
+        label.textContent=index===0?'Title':'Text '+index;input.setAttribute('aria-label',label.textContent);input.rows=index===0?2:5;input.value=M().plain(runs);
+        input.oninput=()=>{const f={runs:box.fields[index]};editRuns(f,input.value);box.fields[index]=f.runs;changed(s);};label.append(input);wrap.append(label);
+        window.AIWiseCommonStudio.translationField(s,wrap,JSON.stringify(['box',box.id,index]),M().plain(en.fields[index]));card.append(wrap);
+      });section.append(card);
+    }
+    container.append(section);
   }
   function satPanel(s,container,item,field){
     const sat=s.values[item.path], enabled=s.blocksEnabled&&s.satPhasesEnabled&&!s.blocked;
@@ -151,7 +167,7 @@
     // A staged front end must never offer submissions the installed backend cannot accept.
     window.AIWiseBackend.getClient().then(client=>client.rpc('workspace_studio_capabilities')).then(({data,error})=>{
       if(s.abort.signal.aborted)return;s.blocksEnabled=!error&&data?.blocks===1;s.satPhasesEnabled=!error&&data?.sat_phases===1;
-      const note=document.createElement('p');note.className='cs-language-status';note.textContent=s.blocksEnabled?'English editing · Add boxes, duplicate cards and format selected words.':'Text editing is available. Box and formatting tools will appear after the Studio backend update.';
+      const note=document.createElement('p');note.className='cs-language-status';note.textContent=s.locale==='nl'&&s.isCommon?'Dutch translation · Layout follows approved English; existing translations are preserved.':s.blocksEnabled?'English editing · Add boxes, duplicate cards and format selected words.':'Text editing is available. Box and formatting tools will appear after the Studio backend update.';
       s.host.querySelector('.cs-toolbar').after(note);
     }).catch(()=>{});
   }

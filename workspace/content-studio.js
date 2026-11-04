@@ -47,7 +47,7 @@
     });
   }
   let session = null;
-  const dirty = () => !!session?.values && !equal(session.values, session.saved);
+  const dirty = () => !!session?.values && (!!session.needsUpgrade || !equal(session.values, session.saved));
   const reduceMotion = () => window.AIWiseMotion.reduced();
   const finishAfterMotion = (node, token, complete) => window.AIWiseMotion.after(node, complete, token);
   function message(s, text, error = false) {
@@ -61,7 +61,7 @@
       button.title = window.AIWiseAuth?.snapshot().role !== 'admin' ? 'Administrator access is required to submit content.' : button.disabled ? 'Save this chapter’s draft before sending it for review.' : 'Send the saved chapter to the review queue.';
     });
   }
-  const canSubmit = s => s.ready && !s.blocked && !s.sourceStale && !s.needsUpgrade && !!s.raw && !dirty() && window.AIWiseAuth?.snapshot().status === 'member' && window.AIWiseAuth?.snapshot().role === 'admin';
+  const canSubmit = s => s.ready && !s.blocked && !s.sourceStale && !s.translationSync?.pending.length && !s.needsUpgrade && !!s.raw && !dirty() && window.AIWiseAuth?.snapshot().status === 'member' && window.AIWiseAuth?.snapshot().role === 'admin';
   function openSubmission(s) {
     if (!canSubmit(s)) return;
     try {
@@ -92,7 +92,7 @@
       Object.keys(base).every(k => valid(value[k], base[k], k));
   }
   function record(s) {
-    const recovery = s.backupKey ? {recoveryBackup:s.backupKey} : {};
+    const recovery = {...(s.backupKey ? {recoveryBackup:s.backupKey} : {}), ...(s.translationSync ? {translationSync:s.translationSync} : {})};
     if (s.isCommon) return {...recovery, schema: 1, scope: 'common', chapter: s.chapter, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString(), sourceHTML: s.sourceHTML, blockTitles: Object.fromEntries(s.items.map(item => [item.path, item.title])), baseSlots: s.base, slots: s.values};
     const shared = {...recovery, schema: 1, course: s.courseId, locale:s.locale, sourceRelease:s.reviewedSource, baseRelease:s.baseRelease, savedAt: new Date().toISOString()};
     if (s.chapter === 'c2') {
@@ -109,8 +109,14 @@
         message(s, 'Another tab changed this draft. Your edits have not been saved. Copy any text you want to keep before reloading.', true); return;
       }
       if(!valid(s.values,s.base))throw Error('The draft contains an unsupported block or text format.');
+      // Preserve the exact original before writing a synchronized local copy.
+      if(s.translationSync && s.translationBackupNeeded && (s.raw!==null || s.translationSync.retired.length)){
+        const original=s.raw ?? JSON.stringify({...record(s),slots:s.base,translationSync:undefined});
+        const key=s.key+':recovery-backup:'+crypto.randomUUID();localStorage.setItem(key,original);s.backupKey=key;
+        s.host.querySelector('[data-cs-backup]').hidden=false;
+      }
       const raw = JSON.stringify(record(s)); localStorage.setItem(s.key, raw);
-      s.raw = raw; s.needsUpgrade=false; s.saved = clone(s.values); controls(s);
+      s.raw = raw; s.translationBackupNeeded=false; s.needsUpgrade=false; s.saved = clone(s.values); controls(s);
       message(s, 'Draft saved in this browser · ' + new Date().toLocaleTimeString() + '. Beta is unchanged.');
     } catch(error) { message(s, error.message || 'Draft could not be saved. Keep this page open and try again.', true); }
   }
@@ -122,7 +128,7 @@
       }
       localStorage.removeItem(s.key); s.raw = null; s.blocked = false;
       s.recoveryUI?.dispose(); s.recoveryUI = null; s.host.querySelector('[data-cs-recover]').hidden = true;
-      s.values = clone(s.base); s.saved = clone(s.base);
+      s.values = clone(s.base);s.translationSync=null;s.translationBackupNeeded=false;common()?.syncTranslation(s);s.refreshLanguageStatus(); s.saved = clone(s.base);
       updatePreview(s); controls(s); message(s, 'Draft reset to current Beta content.');
       if (s.dialog.open) openEditor(s, s.index);
     } catch { message(s, 'Draft could not be reset. The saved copy has been preserved.', true); }
@@ -172,20 +178,22 @@
           const currentHTML = await fetch(new URL(chapterURL(s.chapter), location.href), {signal:s.abort.signal,cache:'no-cache'}).then(r => { if (!r.ok) throw Error('Could not recheck the page layout. Nothing was saved.'); return r.text(); });
           if (session !== s || !sameSourceHTML(html, currentHTML)) throw Error('The page layout changed during this review. Reload to review the new locations. Your original draft is preserved.');
         }
-        const previous = s.values, previousBackup = s.backupKey, previousReviewed = s.reviewedSource, previousStale = s.sourceStale;
+        const previous = s.values, previousBackup = s.backupKey, previousReviewed = s.reviewedSource, previousStale = s.sourceStale, previousSync=s.translationSync, previousUpgrade=s.needsUpgrade, previousBackupNeeded=s.translationBackupNeeded;
         try {
           s.values = values;
           if (s.locale === 'nl' && !restart) { s.reviewedSource = saved.sourceRelease || null; s.sourceStale = s.reviewedSource !== s.englishRelease; }
+          if(s.isCommon&&s.locale==='nl')s.translationSync=restart?null:saved.translationSync;
+          const wasBlocked=s.blocked;s.blocked=false;try{common()?.syncTranslation(s);}finally{s.blocked=wasBlocked;}
           // Render before storing; stale box anchors must not destroy the original.
           updatePreview(s);
           s.backupKey = s.key + ':recovery-backup:' + crypto.randomUUID();
           const raw = JSON.stringify(record(s));
           recovery.storeRecovered(localStorage, s.key, s.raw, raw, s.backupKey);
-          s.raw = raw; s.saved = clone(values); s.blocked = false; s.needsUpgrade = false;
+          s.raw = raw; s.translationBackupNeeded=false;s.saved = clone(s.values); s.blocked = false; s.needsUpgrade = false;
           s.host.querySelector('[data-cs-recover]').hidden = true;
           s.host.querySelector('[data-cs-backup]').hidden = false;
           s.refreshLanguageStatus(); controls(s); message(s, 'Updated draft saved in this browser. Your original is backed up. Continue editing, then send to Control Tower when ready.');
-        } catch (error) { s.values = previous; s.backupKey = previousBackup; s.reviewedSource = previousReviewed; s.sourceStale = previousStale; updatePreview(s); throw error; }
+        } catch (error) { s.values = previous; s.backupKey = previousBackup; s.reviewedSource = previousReviewed; s.sourceStale = previousStale;s.translationSync=previousSync;s.needsUpgrade=previousUpgrade;s.translationBackupNeeded=previousBackupNeeded; updatePreview(s); throw error; }
       }
     });
     s.host.querySelector('[data-cs-recover]').hidden = false;
@@ -343,6 +351,7 @@
         });
         wrap.appendChild(input);
         if(!options)window.AIWiseStudioEditing?.field(s,wrap,input,valuePath,item.example!==undefined&&valuePath===item.path?[String(item.example),...path]:path);
+        if(s.isCommon && s.translationSync)common().translationField(s,wrap,JSON.stringify(['field',valuePath,path[0]]));
         if(s.locale==='nl') {
           let original=s.englishBase[valuePath];
           if(item.example!==undefined && valuePath===item.path)original=original?.[item.example];
@@ -630,16 +639,23 @@
     try {
       const url = new URL(chapterURL(chapter), location.href);
       const otherChapter = chapter === 'c2' ? 'c3' : 'c2';
-      const [html, sourceData, otherHTML, releases, contextReleases, englishReleases, seeds] = await Promise.all([
+      const [html, sourceData, otherHTML, releases, contextReleases, englishReleases, seeds, commonEnglish] = await Promise.all([
         fetch(url, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Preview unavailable'); return r.text(); }),
         fetch(config.source, {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Data unavailable'); return r.json(); }).then(data=>({...data,course:{id:preview.id,short_name:preview.short_name,full_name:preview.full_name,bachelor:preview.bachelor}})),
         fetch(new URL(`../common/aiwise-${otherChapter}-final.html`, location.href), {signal: s.abort.signal, cache: 'no-cache'}).then(r => { if (!r.ok) throw Error('Item list unavailable'); return r.text(); }),
         window.AIWiseBetaContent.read(courseId,locale),
         window.AIWiseBetaContent.read(isCommon ? context : 'common',locale),
         window.AIWiseBetaContent.read(courseId,'en'),
-        locale==='nl'?window.AIWiseBetaContent.sources(courseId,'nl'):Promise.resolve([])
+        locale==='nl'?window.AIWiseBetaContent.sources(courseId,'nl'):Promise.resolve([]),
+        !isCommon&&locale==='nl'?window.AIWiseBetaContent.read('common','en'):Promise.resolve([])
       ]);
       if (session !== s) return;
+      // Course Studio uses the same Common layout as the standalone Dutch module.
+      if(!isCommon&&locale==='nl')for(const english of commonEnglish){
+        const index=contextReleases.findIndex(row=>row.chapter===english.chapter),row=contextReleases[index];
+        if(row)contextReleases[index]={...row,slots:window.AIWiseCommonContent.translation(english.slots,row.slots,null,row.source_release===english.submission_id).slots};
+        else contextReleases.push({...english,fallback_locale:'en'});
+      }
       const data = window.AIWiseBetaContent.apply(sourceData, isCommon ? contextReleases : releases);
       s.baseRelease = releases.find(r => r.chapter === chapter)?.submission_id || null;
       if (!isCommon && data.course?.bachelor !== s.courseId) throw Error('Wrong course');
@@ -686,7 +702,9 @@
       const sourceBase=clone(s.base);
       s.englishBase=isCommon?Object.fromEntries(Object.entries(sourceBase).map(([path,fields])=>[path,Object.fromEntries(Object.keys(fields).map(key=>[key,englishReleases.find(r=>r.chapter===chapter)?.slots?.[path]?.[key] ?? fields[key]]))])):
         Object.fromEntries(Object.keys(sourceBase).map(path=>[path,clone(get(englishData,path))]));
+      s.englishApproved=isCommon&&locale==='nl'?englishReleases.find(r=>r.chapter===chapter)?.slots:null;
       const approved=releases.find(r=>r.chapter===chapter);
+      s.translationNew=isCommon&&locale==='nl'&&!approved;
       const baseline=approved || (locale==='nl'?seeds.find(r=>r.chapter===chapter):null);
       if(baseline){
         if(!valid(baseline.slots,sourceBase))throw Error('Content no longer matches its source.');
@@ -698,10 +716,13 @@
       s.sourceStale=locale==='nl' && s.reviewedSource!==s.englishRelease;
       const languageStatus=()=>{
         host.querySelector('[data-cs-language-status]').textContent=locale==='nl'?(s.sourceStale?'English source changed. Compare and review your translation before submitting.':approved?'Nederlands · Approved Beta baseline':'Nederlands · Translation draft. English starting text is not a completed translation.'):'English · Source content';
-        host.querySelector('[data-cs-source-reviewed]').hidden=!s.sourceStale;
+        if(s.translationSync){const pending=s.translationSync.pending;host.querySelector('[data-cs-language-status]').textContent=`Nederlands · Shared English layout · ${pending.filter(i=>i.kind==='translate').length} fields need translation · ${pending.filter(i=>i.kind==='review').length} fields need review`+(s.translationSync.retired.length?` · ${s.translationSync.retired.length} removed box copies retained in the draft backup`:'');}
+        const reviewButton=host.querySelector('[data-cs-source-reviewed]');
+        reviewButton.textContent=s.translationSync?'Mark chapter translation reviewed':'Mark English source reviewed';
+        reviewButton.hidden=!s.sourceStale&&!s.translationSync?.pending.length;reviewButton.disabled=!!s.blocked;
       };
       s.refreshLanguageStatus = languageStatus;
-      host.querySelector('[data-cs-source-reviewed]').onclick=()=>{s.reviewedSource=s.englishRelease;s.sourceStale=false;languageStatus();save(s);controls(s);};
+      host.querySelector('[data-cs-source-reviewed]').onclick=()=>{if(s.blocked)return;if(s.translationSync){s.translationSync.pending=[];s.needsUpgrade=true;}s.reviewedSource=s.englishRelease;s.sourceStale=false;languageStatus();save(s);controls(s);};
       s.values = clone(s.base);
       let status = '';
       try {
@@ -728,7 +749,7 @@
           // Compare keys without relying on serialized property order.
           if (!baseline || Object.keys(baseline).length !== Object.keys(s.base).length || Object.keys(s.base).some(k => !equal(baseline[k], s.base[k])) || !valid(values, s.base)) throw Error('Changed source or invalid draft');
           s.values = clone(values);
-          if(locale==='nl'){s.reviewedSource=saved.sourceRelease||null;s.sourceStale=s.reviewedSource!==s.englishRelease;}
+          if(locale==='nl'){s.reviewedSource=saved.sourceRelease||null;s.sourceStale=s.reviewedSource!==s.englishRelease;if(isCommon && saved.translationSync?.version===1)s.translationSync=saved.translationSync;}
           status = s.needsUpgrade?'Saved draft restored. Save once to include the newly editable items.':'Saved browser draft restored. Beta is unchanged.';
         }
       } catch {
@@ -741,6 +762,7 @@
         try { const raw = localStorage.getItem(s.backupKey); if (!raw) throw Error('The original backup is not available in this browser.'); window.AIWiseDraftRecovery.download(raw, `aiwise-${s.chapter}-original-draft.json`); }
         catch (error) { message(s, error.message, true); }
       };
+      common()?.syncTranslation(s);
       languageStatus();
       s.saved = clone(s.values); message(s, status, s.blocked);
       window.AIWiseStudioEditing?.mount(s,{update:()=>updatePreview(s),controls:()=>controls(s),open:()=>openEditor(s,s.index),message:text=>message(s,text)});
