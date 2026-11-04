@@ -27,8 +27,9 @@
     let response = data;
     if (error?.context?.json) try { response = await error.context.json(); } catch { /* Non-JSON gateway error. */ }
     if (error || response?.ok !== true) {
-      const code = error?.context?.status === 404 ? 'setup_required' : response?.code;
-      throw Object.assign(Error(messages[code] || 'The shared list could not be reached. Keep your details and retry; no local-only success was recorded.'), {field: response?.field || ''});
+      const status=error?.context?.status;
+      const code = status === 404 ? 'setup_required' : status === 401 ? 'sign_in_required' : status === 403 ? 'administrator_required' : response?.code;
+      throw Object.assign(Error(messages[code] || 'The course registration service could not be reached. It may be undeployed, or its connection may be blocked. Ask the administrator to check workspace-courses in Supabase. The last loaded course list is still available and your entered details are preserved.'), {field: response?.field || ''});
     }
     if (response.capability !== 'workspace-courses-v1' || (!/^[a-f0-9]{40}$/.test(response.sha) || (response.commit !== null && !/^[a-f0-9]{40}$/.test(response.commit)))) throw Error('The shared course service needs an update. Your details are preserved.');
     window.AIWiseCourseRegistry.use(response.registry);

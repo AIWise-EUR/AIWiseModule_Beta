@@ -6,7 +6,7 @@
 | --- | --- |
 | Comparison UI and guarded SQL | Implemented; local SQL and browser tests pass |
 | Frontend | Live on Beta; deployed files verified at `51f03b8` |
-| Supabase activation | Owner applied; `approval_merge: 1` and guarded RPC grants verified |
+| Supabase activation | RPCs remain installed; 2026-11-04 found SAT installer had removed approval capability flag. Frontend hotfix uses guarded prepare RPC directly; centralized SQL repair pending |
 | Live pending requests | All three real signed-in comparisons and final previews verified, then cancelled; no decisions recorded |
 
 ## Target identity and merge rule
@@ -89,3 +89,11 @@ changes make confirmation fail; close and reopen to see a fresh comparison.
   while preserving both newer C2 boxes; the intersubjective request reports already
   in Beta. No approval/revision/rejection was recorded. Temporary inputs and tab
   were cleared after checking.
+
+- 2026-11-04 — Confirmed the later SAT setup replaced the capability report with
+  blocks/sat_phases only. Preparation/application RPCs and authenticated grants
+  remain present; three pending Dutch Common requests match their English source
+  releases. Removed the misleading frontend capability gate, kept guarded RPCs and
+  response/account validation, and verified all three read-only snapshots with both
+  merge engines. No live approval was performed. See the Workspace readiness
+  incident record for the coordinated server/DPAS package and deployment boundary.

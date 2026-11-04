@@ -45,6 +45,9 @@
     const backend=await client(), user=window.AIWiseAuth.snapshot().user;
     const saved=JSON.parse(raw), owner=user.id;
     const assertOwner=()=>{const now=window.AIWiseAuth.snapshot();if(now.status!=='member'||now.role!=='admin'||now.user?.id!==owner)throw Error('Your account changed. Reopen the submission form.');};
+    const sources=await query(backend.from('workspace_content_sources').select('course,chapter,locale').eq('course',course).eq('chapter',chapter).eq('locale',locale));
+    assertOwner();
+    if(!Array.isArray(sources)||sources.length!==1)throw Error('The server content catalog for '+window.AIWiseCourseRegistry.scopeName(course)+' / '+chapter.toUpperCase()+' / '+locale+' is not ready. Your draft is preserved. Ask the administrator to finish this content area’s setup before submitting.');
     // Stable per-account content ID makes a lost response safe to retry, including across tabs.
     const bytes=new TextEncoder().encode(user.id+'\n'+course+'\n'+chapter+'\n'+locale+'\n'+raw);
     const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -60,9 +63,17 @@
   }
   async function prepareApproval(id,revision) {
     const backend=await client();
-    const capabilities=await query(backend.rpc('workspace_studio_capabilities'));
-    if(capabilities?.approval_merge!==1) throw Error('Item-by-item approval is not activated yet. Ask the owner to run CONTROL_TOWER_APPROVAL_SETUP.sql in Supabase, then try again. This request has not changed.');
-    return query(backend.rpc('workspace_prepare_content_approval',{p_id:id,p_revision:revision}));
+    // This read-only RPC is the authoritative readiness check. Older setup scripts
+    // overwrote the advisory capability flags while leaving approval fully installed.
+    // Never fall back to the legacy whole-chapter approval operation.
+    const owner=window.AIWiseAuth.snapshot().user?.id;
+    const context=await query(backend.rpc('workspace_prepare_content_approval',{p_id:id,p_revision:revision}));
+    const now=window.AIWiseAuth.snapshot();
+    if(now.status!=='member'||now.role!=='admin'||now.user?.id!==owner)throw Error('Your account changed. Reopen this request.');
+    const object=value=>value&&typeof value==='object'&&!Array.isArray(value);
+    if(!object(context)||!['base','draft','latest'].every(key=>object(context[key]))||!Object.hasOwn(context,'release'))
+      throw Error('The review service returned an incompatible comparison. Your request has not changed. Ask the administrator to check the approval service.');
+    return context;
   }
   async function applyApproval(id,revision,context,resolutions,result,reason) {
     const backend=await client();
