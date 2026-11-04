@@ -96,3 +96,13 @@ test('Shared Studio refuses a normal member before querying submissions',async()
  const result=await window.AIWiseSharedStudio.refresh();assert.equal(called,false);assert.equal(result.loaded,false);assert.match(result.error,/Administrator/);
  await assert.rejects(()=>window.AIWiseSharedStudio.decide('id',1,'approved','Test'),/Administrator/);assert.equal(called,false);
 });
+
+test('template deep links preserve the slot identity instead of depending on item order',async()=>{
+ const f=fixture('admin','#home');await tick();
+ const opened=[];f.window.AIWiseContentStudio.render=(...args)=>opened.push(args.slice(1));
+ await f.route('#studio/psychology/c3/c3.template_compare.md');
+ await f.route('#studio/psychology/c3/c3.template_compare.xml');
+ assert.deepEqual(opened,[['psychology','c3','c3.template_compare.md'],['psychology','c3','c3.template_compare.xml']]);
+ await f.route('#studio/psychology/c2/c3.template_compare.md');
+ assert.equal(opened.length,2);
+});

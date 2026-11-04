@@ -12,7 +12,7 @@ share the page layout, while existing Dutch translations and drafts remain intac
 | Unit, real Studio browser and existing PostgreSQL approval contracts | Verified locally; full repository gate recorded below |
 | Production deployment | Owner action; not deployed by Codex |
 | New SQL or Edge Function deployment for this change | None |
-| Editing access only follow-up | Implemented; no translation text or saved-field identity changes |
+| Editing access only follow-up | Beta deployed; navigation, SAT and box actions verified; template links use stable slot identity |
 
 ## Confirmed behavior
 
@@ -123,3 +123,10 @@ No live drafts, pending requests, approvals, releases or database rows were chan
   language sync unit file contains 9 passing scenarios. The real Studio browser
   check passed, including Course Studio context and avoiding duplicate full-draft
   backups on ordinary saves. No live-service write or deployment was performed.
+
+- **2026-11-04 live verification** Editing actions deployed through GitHub after
+  the CLI lacked push credentials. SAT small-diagram buttons opened the shared
+  label editor; added-box and navigation actions were visible. The live template
+  check revealed catalog order changes, so Markdown/XML links now address stable
+  slot IDs, resolved after rendering, rather than positional indexes. Route tests
+  cover both templates and reject the wrong chapter. No translation was saved.

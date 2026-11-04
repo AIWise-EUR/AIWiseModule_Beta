@@ -301,6 +301,11 @@
     Object.entries(s.values).filter(([path])=>path!=='_studio').forEach(([path, value]) => put(data, path, value));
     data._studio={...(data._studio||{}),[s.chapter]:s.values._studio};
     s.items=catalogItems(Object.keys(s.values).filter(k=>k!=='_studio'),data);s.catalog[s.chapter]=s.items;
+    if (s.requestedPath) {
+      const index = s.items.findIndex(item => item.path === s.requestedPath);
+      if (index >= 0) s.index = index;
+      s.requestedPath = null;
+    }
     s.index=Math.min(s.index,s.items.length-1);
     window.AIWiseCourseRenderer.fillSlots(data, doc);
     window.AIWiseCourseRenderer.toggleRequired(data, doc);
@@ -630,11 +635,9 @@
       </div>`, false);
     const host = document.getElementById('cs-studio');
     const s = session = {host, courseId, chapter, isCommon, locale, config, key: language().draftKey(courseId,chapter,locale), frame: host.querySelector('iframe'), dialog: host.querySelector('.cs-editor'), submitDialog: host.querySelector('.cs-submit-dialog'),
-      abort: new AbortController(), index: itemIndex, slideIndex: 0, raw: null, blocked: false, storageRead: false, ready: false};
+      abort: new AbortController(), index: typeof itemIndex === 'string' ? 0 : itemIndex, requestedPath: typeof itemIndex === 'string' ? itemIndex : null, slideIndex: 0, raw: null, blocked: false, storageRead: false, ready: false};
     s.openCourseSlot = path => {
-      const paths = [...s.frame.contentDocument.querySelectorAll('[data-slot]')].map(node => node.dataset.slot);
-      const index = catalogItems(paths, s.source).findIndex(item => item.path === path);
-      if (index >= 0 && window.AIWiseContentStudio.canLeave()) location.hash = `#studio/${context}/${chapter}/${index}`;
+      if (['c3.template_compare.md','c3.template_compare.xml'].includes(path)) location.hash = `#studio/${context}/${chapter}/${path}`;
     };
     host.querySelector('[data-cs-language]').value=locale;
     host.querySelector('[data-cs-language]').onchange=event=>{

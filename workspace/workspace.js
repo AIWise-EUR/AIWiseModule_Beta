@@ -126,6 +126,7 @@
   }
   function renderStudio(part) {
     const [courseId, chapter = 'c2', itemIndex = '0', extra] = part.split('/');
+    if (window.AIWiseContentStudio.supports(courseId) && chapter === 'c3' && ['c3.template_compare.md','c3.template_compare.xml'].includes(itemIndex) && !extra) { window.AIWiseContentStudio.render(shell, courseId, chapter, itemIndex); return; }
     if (window.AIWiseContentStudio.supports(courseId) && ['c2','c3'].includes(chapter) && /^\d+$/.test(itemIndex) && Number.isSafeInteger(Number(itemIndex)) && !extra) { window.AIWiseContentStudio.render(shell, courseId, chapter, Number(itemIndex)); return; }
     if (part) { renderNotFound(); return; }
     // One editor per bachelor: its examples are shown in every course of that bachelor.
