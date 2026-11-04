@@ -46,6 +46,31 @@
       const records=ext(s).formats,f=formatRecord(s,slot,path);if(f)f.runs=runs;else records.push({slot,path,runs});
     });
   }
+  function exampleReminders(s,index){
+    const boxes=(s.values._studio?.boxes||[]).filter(M().exampleBox),own=new Set(boxes.filter(b=>M().exampleIndex(b)===index).map(M().boxFamily)),seen=new Set();
+    return boxes.filter(b=>{const family=M().boxFamily(b);if(own.has(family)||seen.has(family))return false;seen.add(family);return true;});
+  }
+  function addExampleBox(s,source,index){
+    if(s.blocked||s.abort?.signal.aborted||!s.exampleBoxesEnabled||s.locale!=='en'||ext(s).boxes.length>=50||!s.values['c2.examples']?.[index]||!exampleReminders(s,index).includes(source))return;
+    mutate(s,()=>{ext(s).boxes.push({...clone(source),id:'box-'+crypto.randomUUID(),example:index,family:M().boxFamily(source),anchor:0});},true);
+  }
+  function reminder(s,source,index,doc=document){
+    const node=doc.createElement('div');node.className='cs-example-reminder';node.dataset.studioReminder=source.id;
+    node.style.cssText='padding:24px;margin:16px 0;border:1px dashed #aebdbc;border-radius:16px;background:#fafbfb;color:#667471';
+    const title=doc.createElement('h4');title.textContent=M().plain(source.fields[0])||'Untitled box';title.style.cssText='margin:0 0 10px;font-weight:600;color:#687572';
+    const origin=doc.createElement('p');origin.textContent='Added in Example '+(M().exampleIndex(source)+1);origin.style.cssText='font-size:12px;margin:0 0 8px';
+    const hint=doc.createElement('p');hint.textContent='No box has been added to this version yet.';hint.style.cssText='margin:0 0 12px';
+    const add=doc.createElement('button');add.type='button';add.textContent='Add this box to this version';add.className='button';add.style.cssText='padding:10px 14px;border:1px solid #2b5d63;border-radius:8px;background:#fff;color:#173e43;font:inherit;cursor:pointer';
+    add.disabled=!!s.blocked||!s.exampleBoxesEnabled||s.locale!=='en'||(s.values._studio?.boxes.length||0)>=50;
+    add.onclick=e=>{e.stopPropagation();addExampleBox(s,source,index);};
+    const note=doc.createElement('small');note.textContent='Editor only';note.style.cssText='display:block;margin-top:10px';
+    node.append(title,origin,hint,add,note);return node;
+  }
+  function examplePreview(s){
+    if(s.isCommon||s.chapter!=='c2')return;
+    const doc=s.frame.contentDocument;doc.querySelectorAll('[data-studio-reminder]').forEach(n=>n.remove());
+    doc.querySelectorAll('.carousel-card').forEach((card,index)=>{for(const source of exampleReminders(s,index))card.append(reminder(s,source,index,doc));});
+  }
   function panel(s,container,item){
     if(s.isCommon&&s.locale==='nl'){translationPanel(s,container,item);return;}
     if(!s.blocksEnabled||s.locale!=='en')return;
@@ -61,17 +86,21 @@
           if(ext(s).boxes.length>=50)return;
           let fields=type==='text'?[M().rich('New text box'),M().rich('')]:(()=>{const copy=node.cloneNode(true);copy.querySelectorAll('[data-studio-rich]').forEach(n=>n.replaceWith(copy.ownerDocument.createTextNode(n.textContent)));return M().nodes(copy).map(n=>M().rich(duplicate?n.nodeValue:''));})();
           if(type!=='text'&&!duplicate){fields[0]=M().rich('New box');}
-          ext(s).boxes.push({id:'box-'+crypto.randomUUID(),slot:item.path,template:type,anchor:i,fields,align:'left',size:0});
+          const id='box-'+crypto.randomUUID(),placement=item.example===undefined?{}:{example:item.example,family:id};
+          if(item.example!==undefined&&!s.exampleBoxesEnabled)return;
+          ext(s).boxes.push({id,slot:item.path,template:type,anchor:i,fields,align:'left',size:0,...placement});
         },true);
         if(choices.length){actions.append(menu('Add same box after…',choices,c=>add(c.type,c.i,c.node,false)),menu('Duplicate box…',choices,c=>add(c.type,c.i,c.node,true)));}
-        actions.append(button('Add text box',()=>add('text',0,block.node,false)));
+        const addText=button('Add text box',()=>add('text',0,block.node,false));addText.disabled=item.example!==undefined&&!s.exampleBoxesEnabled;actions.append(addText);
       }
-      for(const box of s.values._studio?.boxes.filter(b=>b.slot===item.path)||[]){
+      if(item.example!==undefined&&!s.exampleBoxesEnabled){const note=document.createElement('p');note.textContent='Example-specific box controls become available after the workspace update.';section.append(note);}
+      for(const box of s.values._studio?.boxes.filter(b=>b.slot===item.path&&(item.example===undefined||M().exampleIndex(b)===item.example))||[]){
         const card=document.createElement('fieldset'),legend=document.createElement('legend');legend.textContent='Added box · '+(M().plain(box.fields[0]).trim()||'Untitled');card.append(legend);
         box.fields.forEach((runs,i)=>{const wrap=document.createElement('label');wrap.textContent=i===0?'Title':'Text '+i;const input=document.createElement('textarea');input.setAttribute('aria-label',i===0?'Title':'Text '+i);input.rows=i===0?2:5;input.value=M().plain(runs);
           input.oninput=()=>{remember(s);const f={runs:box.fields[i]};editRuns(f,input.value);box.fields[i]=f.runs;changed(s);};wrap.append(input);toolbar(s,wrap,input,()=>box.fields[i],runs=>box.fields[i]=runs);card.append(wrap);});
         const group=document.createElement('div');group.className='cs-formatbar';
-        group.append(button('Duplicate',()=>mutate(s,()=>{if(ext(s).boxes.length<50){const a=ext(s).boxes;a.splice(a.indexOf(box)+1,0,{...clone(box),id:'box-'+crypto.randomUUID()});}},true)),
+        const duplicateBox=button('Duplicate',()=>mutate(s,()=>{if(ext(s).boxes.length<50){const a=ext(s).boxes,id='box-'+crypto.randomUUID();a.splice(a.indexOf(box)+1,0,{...clone(box),id,...(M().exampleBox(box)?{example:M().exampleIndex(box),family:id}:{})});}},true));duplicateBox.disabled=item.example!==undefined&&!s.exampleBoxesEnabled;
+        group.append(duplicateBox,
           button('Move up',()=>move(s,box,-1)),button('Move down',()=>move(s,box,1)),button('Remove box',()=>mutate(s,()=>{ext(s).boxes=ext(s).boxes.filter(b=>b.id!==box.id);},true)),
           menu('Alignment',[['Left','left'],['Center','center'],['Right','right']],v=>mutate(s,()=>{box.align=v;})),menu('Box text size',[['Original size',0],...M().sizes.map(v=>[v+' px',v])],v=>mutate(s,()=>{box.size=v;})));
         card.append(group);section.append(card);
@@ -81,6 +110,9 @@
       const examples=s.values['c2.examples'];
       const change=op=>mutate(s,()=>{
         const a=s.values['c2.examples'],i=item.example,old=a.slice(),formats=s.values._studio?.formats||[];let duplicate=-1;
+        const boxes=s.values._studio?.boxes||[],scoped=boxes.filter(M().exampleBox);
+        if(scoped.length&&!s.exampleBoxesEnabled)return;
+        if(op==='duplicate'&&boxes.length+scoped.filter(b=>M().exampleIndex(b)===i).length>50)return;
         if(op==='add'&&a.length<50)a.splice(i+1,0,{title:'New example',thinking:'',typing:'',processing:''});
         if(op==='duplicate'&&a.length<50){a.splice(i+1,0,clone(a[i]));duplicate=i+1;}
         if(op==='up'&&i>0)[a[i-1],a[i]]=[a[i],a[i-1]];
@@ -91,8 +123,14 @@
           if(next>=0)result.push({...f,path:[String(next),...f.path.slice(1)]});
           if(duplicate>=0&&previous===i)result.push({...clone(f),path:[String(duplicate),...f.path.slice(1)]});return result;
         });
+        if(s.values._studio)s.values._studio.boxes=boxes.flatMap(b=>{
+          if(!M().exampleBox(b))return [b];const previous=M().exampleIndex(b),next=a.indexOf(old[previous]),family=M().boxFamily(b),result=[];
+          if(next>=0)result.push({...b,example:next,family});
+          if(duplicate>=0&&previous===i)result.push({...clone(b),id:'box-'+crypto.randomUUID(),example:duplicate,family});return result;
+        });
       },true);
-      actions.append(button('Add same card',()=>change('add')),button('Duplicate card',()=>change('duplicate')),button('Move up',()=>change('up')),button('Move down',()=>change('down')),button('Remove card',()=>change('remove')));
+      for(const [label,op] of [['Add same card','add'],['Duplicate card','duplicate'],['Move up','up'],['Move down','down'],['Remove card','remove']]){const control=button(label,()=>change(op));control.disabled=!!s.values._studio?.boxes.some(M().exampleBox)&&!s.exampleBoxesEnabled||op==='duplicate'&&(s.values._studio?.boxes.length||0)+(s.values._studio?.boxes.filter(b=>M().exampleBox(b)&&M().exampleIndex(b)===item.example).length||0)>50;actions.append(control);}
+      for(const source of exampleReminders(s,item.example))section.append(reminder(s,source,item.example));
 
     }
     actions.append(button('Undo',()=>travel(s,'undo','redo')),button('Redo',()=>travel(s,'redo','undo')));container.append(section);
@@ -160,16 +198,17 @@
     });
     container.append(field(sat.note,['note'],'Note'));
   }
-  function move(s,box,delta){mutate(s,()=>{const all=ext(s).boxes,group=all.filter(b=>b.slot===box.slot&&b.template===box.template&&b.anchor===box.anchor),i=group.indexOf(box),other=group[i+delta];if(other){const a=all.indexOf(box),b=all.indexOf(other);[all[a],all[b]]=[all[b],all[a]];}},true);}
+  function move(s,box,delta){mutate(s,()=>{const all=ext(s).boxes,group=all.filter(b=>b.slot===box.slot&&b.template===box.template&&b.anchor===box.anchor&&(!M().exampleBox(box)||M().exampleIndex(b)===M().exampleIndex(box))),i=group.indexOf(box),other=group[i+delta];if(other){const a=all.indexOf(box),b=all.indexOf(other);[all[a],all[b]]=[all[b],all[a]];}},true);}
   function travel(s,from,to){if(!s[from].length)return;s[to].push(clone(s.values));s.values=s[from].pop();changed(s);s.blockEditing.open();}
   function mount(s,api){
     s.blockEditing=api;s.undo=[];s.redo=[];
     // A staged front end must never offer submissions the installed backend cannot accept.
     window.AIWiseBackend.getClient().then(client=>client.rpc('workspace_studio_capabilities')).then(({data,error})=>{
-      if(s.abort.signal.aborted)return;s.blocksEnabled=!error&&data?.blocks===1;s.satPhasesEnabled=!error&&data?.sat_phases===1;
+      if(s.abort.signal.aborted)return;s.blocksEnabled=!error&&data?.blocks===1;s.satPhasesEnabled=!error&&data?.sat_phases===1;s.exampleBoxesEnabled=!error&&data?.example_boxes===1;
       const note=document.createElement('p');note.className='cs-language-status';note.textContent=s.locale==='nl'&&s.isCommon?'Dutch translation · Layout follows approved English; existing translations are preserved.':s.blocksEnabled?'English editing · Add boxes, duplicate cards and format selected words.':'Text editing is available. Box and formatting tools will appear after the Studio backend update.';
       s.host.querySelector('.cs-toolbar').after(note);
+      examplePreview(s);
     }).catch(()=>{});
   }
-  window.AIWiseStudioEditing={mount,field,panel,satPanel,remember,textChanged};
+  window.AIWiseStudioEditing={mount,field,panel,satPanel,remember,textChanged,examplePreview,exampleReminders,addExampleBox};
 })();

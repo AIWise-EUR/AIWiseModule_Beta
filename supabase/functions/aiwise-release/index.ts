@@ -52,13 +52,18 @@ export function validStudioExtension(ext:any,slots:any) {
 
     if(ext===undefined)return true;
     if(!only(ext,['version','formats','boxes'])||ext.version!==1||!Array.isArray(ext.formats)||ext.formats.length>2000||!Array.isArray(ext.boxes)||ext.boxes.length>50)return false;
-    const ids=new Set(), paths=new Set();
+    const ids=new Set(), paths=new Set(), placements=new Set();
     return ext.formats.every((f:any)=>{
       if(!only(f,['slot','path','runs'])||(!Object.hasOwn(slots,f.slot)||f.slot===key)||!Array.isArray(f.path)||f.path.length>10||f.path.some((k:any)=>typeof k!=='string'||['__proto__','constructor','prototype'].includes(k))||!validRuns(f.runs))return false;
       let text=slots[f.slot];for(const k of f.path)text=object(text)||Array.isArray(text)?text[k]:undefined;
       const id=JSON.stringify([f.slot,f.path]);if(paths.has(id)||typeof text!=='string'||plain(f.runs)!==text)return false;paths.add(id);return true;
     }) && ext.boxes.every((b:any)=>{
-      if(!only(b,['id','slot','template','anchor','fields','align','size'])||!/^box-[a-f0-9-]{36}$/.test(b.id||'')||ids.has(b.id)||(!Object.hasOwn(slots,b.slot)||b.slot===key)||!templates.includes(b.template)||!Number.isInteger(b.anchor)||b.anchor<0||b.anchor>200||!['left','center','right'].includes(b.align)||!(b.size===0||sizes.includes(b.size))||!Array.isArray(b.fields)||!b.fields.length||b.fields.length>100||!b.fields.every(validRuns))return false;
+      if(!only(b,['id','slot','template','anchor','fields','align','size','example','family'])||!/^box-[a-f0-9-]{36}$/.test(b.id||'')||ids.has(b.id)||(!Object.hasOwn(slots,b.slot)||b.slot===key)||!templates.includes(b.template)||!Number.isInteger(b.anchor)||b.anchor<0||b.anchor>200||!['left','center','right'].includes(b.align)||!(b.size===0||sizes.includes(b.size))||!Array.isArray(b.fields)||!b.fields.length||b.fields.length>100||!b.fields.every(validRuns))return false;
+      const inExample=b.slot==='c2.examples'&&b.template==='text';
+      if(Object.hasOwn(b,'example')||Object.hasOwn(b,'family')){
+        if(!inExample||!Array.isArray(slots[b.slot])||!Number.isInteger(b.example)||b.example<0||b.example>=slots[b.slot].length||b.anchor!==0||!/^box-[a-f0-9-]{36}$/.test(b.family||''))return false;
+      }
+      if(inExample){const placement=JSON.stringify([b.family||b.id,b.example??0]);if(placements.has(placement))return false;placements.add(placement);}
       ids.add(b.id);return b.template!=='text'||b.fields.length===2;
     });
 }

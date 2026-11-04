@@ -59,6 +59,7 @@ test('real course example cards allow optional context notes when cards are adde
 test('course boxes render only in their chapter, including when both chapters carry approved boxes',()=>{
  const M=setup().AIWiseStudioBlocks;
  const docs=Object.fromEntries(['c1','c2','c3'].map(chapter=>[chapter,parseHTML(fs.readFileSync(path.join(root,'common/aiwise-'+chapter+'-final.html'),'utf8')).document]));
+ docs.c2.querySelector('[data-slot="c2.examples"]').innerHTML='<div class="carousel-slide"><div class="carousel-card"></div></div>';
  const makeBox=(chapter,index)=>({id:'box-11111111-1111-4111-8111-11111111111'+index,slot:docs[chapter].querySelector('[data-slot]').dataset.slot,template:'text',anchor:0,fields:[[{text:chapter+' heading'}],[{text:chapter+' saved body'}]],align:'left',size:0});
  const c2=makeBox('c2',2),c3=makeBox('c3',3),data={_studio:{c2:{version:1,formats:[],boxes:[c2]},c3:{version:1,formats:[],boxes:[c3]}}};
  const saved=JSON.stringify(data);

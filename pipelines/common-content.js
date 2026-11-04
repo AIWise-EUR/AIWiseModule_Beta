@@ -10,19 +10,26 @@
   const templates = ['gradient-row','fn-card','dual-card','sl-card','text'];
   const clean = slots => Object.fromEntries(Object.entries(slots).filter(([k])=>k!==key));
   const extension = slots => slots[key] || {version:1,formats:[],boxes:[]};
+  const exampleBox = b => b.slot==='c2.examples' && b.template==='text';
+  const exampleIndex = b => b.example ?? 0;
+  const boxFamily = b => b.family || b.id;
   function validRuns(runs) {
     return Array.isArray(runs) && runs.length>0 && runs.length<=2000 && runs.every(r=>only(r,['text','bold','italic','color','size']) && typeof r.text==='string' && r.text.length<=100000 && (r.bold===undefined||typeof r.bold==='boolean') && (r.italic===undefined||typeof r.italic==='boolean') && (r.color===undefined||/^#[0-9a-f]{6}$/i.test(r.color)) && (r.size===undefined||sizes.includes(r.size)));
   }
   function valid(ext,slots) {
     if(ext===undefined)return true;
     if(!only(ext,['version','formats','boxes'])||ext.version!==1||!Array.isArray(ext.formats)||ext.formats.length>2000||!Array.isArray(ext.boxes)||ext.boxes.length>50)return false;
-    const ids=new Set(), paths=new Set();
+    const ids=new Set(), paths=new Set(), placements=new Set();
     return ext.formats.every(f=>{
       if(!only(f,['slot','path','runs'])||(!Object.hasOwn(slots,f.slot)||f.slot===key)||!Array.isArray(f.path)||f.path.length>10||f.path.some(k=>typeof k!=='string'||['__proto__','constructor','prototype'].includes(k))||!validRuns(f.runs))return false;
       let text=slots[f.slot];for(const k of f.path)text=object(text)||Array.isArray(text)?text[k]:undefined;
       const id=JSON.stringify([f.slot,f.path]);if(paths.has(id)||typeof text!=='string'||plain(f.runs)!==text)return false;paths.add(id);return true;
     }) && ext.boxes.every(b=>{
-      if(!only(b,['id','slot','template','anchor','fields','align','size'])||!/^box-[a-f0-9-]{36}$/.test(b.id||'')||ids.has(b.id)||(!Object.hasOwn(slots,b.slot)||b.slot===key)||!templates.includes(b.template)||!Number.isInteger(b.anchor)||b.anchor<0||b.anchor>200||!['left','center','right'].includes(b.align)||!(b.size===0||sizes.includes(b.size))||!Array.isArray(b.fields)||!b.fields.length||b.fields.length>100||!b.fields.every(validRuns))return false;
+      if(!only(b,['id','slot','template','anchor','fields','align','size','example','family'])||!/^box-[a-f0-9-]{36}$/.test(b.id||'')||ids.has(b.id)||(!Object.hasOwn(slots,b.slot)||b.slot===key)||!templates.includes(b.template)||!Number.isInteger(b.anchor)||b.anchor<0||b.anchor>200||!['left','center','right'].includes(b.align)||!(b.size===0||sizes.includes(b.size))||!Array.isArray(b.fields)||!b.fields.length||b.fields.length>100||!b.fields.every(validRuns))return false;
+      if(Object.hasOwn(b,'example')||Object.hasOwn(b,'family')){
+        if(!exampleBox(b)||!Array.isArray(slots[b.slot])||!Number.isInteger(b.example)||b.example<0||b.example>=slots[b.slot].length||b.anchor!==0||!/^box-[a-f0-9-]{36}$/.test(b.family||''))return false;
+      }
+      if(exampleBox(b)){const placement=JSON.stringify([boxFamily(b),exampleIndex(b)]);if(placements.has(placement))return false;placements.add(placement);}
       ids.add(b.id);return b.template!=='text'||b.fields.length===2;
     });
   }
@@ -116,12 +123,14 @@
     if(type==='text')return [root];
     return [...(root.matches('.'+type)?[root]:[]),...root.querySelectorAll('.'+type)].filter(n=>!n.closest('[data-studio-box]'));
   }
-  function common(doc,slots,blocks) {
+  function common(doc,slots,blocks,courseBoxes=false) {
     const ext=extension(slots),tails=new Map();
     for(const f of ext.formats){const block=blocks.find(b=>b.path===f.slot),i=block&&Object.keys(block.fields).indexOf(f.path[0]);
       if(f.path.length===1&&i>=0&&block.nodes[i].nodeType===3)replaceText(block.nodes[i],f.runs);
     }
-    for(const box of ext.boxes){const root=blocks.find(b=>b.path===box.slot)?.node;if(!root)throw Error('The added box location is no longer available.');
+    for(const box of ext.boxes){let root=blocks.find(b=>b.path===box.slot)?.node;if(!root)throw Error('The added box location is no longer available.');
+      const inExample=courseBoxes&&exampleBox(box);
+      if(inExample){root=root.querySelectorAll('.carousel-card')[exampleIndex(box)];if(!root)throw Error('The added box example is no longer available.');}
       const source=candidates(root,box.template)[box.anchor];if(!source)throw Error('The added box template is no longer available.');
       let node;
       if(box.template==='text'){node=doc.createElement('div');node.className='studio-text-box';node.style.cssText='padding:24px;margin:16px 0;border:1px solid #d7e0e0;border-radius:16px;background:#f5f7f7';node.innerHTML='<h4 style="margin:0 0 12px;font-weight:600"></h4><div style="line-height:1.7"></div>';[...node.children].forEach((n,i)=>n.append(renderRuns(doc,box.fields[i],box.size)));}
@@ -133,7 +142,9 @@
       [node,...node.querySelectorAll('*')].forEach(n=>{n.removeAttribute('id');n.removeAttribute('tabindex');n.classList.remove('cs-editable');for(const a of [...n.attributes])if(/^on|^data-cs-|^data-review-/.test(a.name))n.removeAttribute(a.name);});
       node.dataset.studioBox=box.id;node.dataset.reviewCommonKey=box.slot;node.style.textAlign=box.align;if(box.size)node.style.fontSize=box.size+'px';
       const title=node.querySelector('.fn-card-title'),body=node.querySelector('.fn-card-body');if(title&&body){title.tabIndex=0;title.setAttribute('role','button');const refresh=()=>{title.setAttribute('aria-expanded',String(node.classList.contains('open')));body.style.maxHeight=node.classList.contains('open')?'none':'0';};const toggle=()=>{node.classList.toggle('open');refresh();};title.onclick=toggle;title.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}};refresh();}
-      const tailKey=box.slot+':'+box.template+':'+box.anchor,tail=tails.get(tailKey)||source;tail.after(node);tails.set(tailKey,node);
+      const tailKey=box.slot+':'+box.template+':'+box.anchor+(inExample?':'+exampleIndex(box):'');
+      if(inExample){root.append(node);node.dataset.studioExample=String(exampleIndex(box));}
+      else {const tail=tails.get(tailKey)||source;tail.after(node);tails.set(tailKey,node);}
     }
   }
   function course(doc,data) {
@@ -166,7 +177,7 @@
       if(!doc.querySelector('[data-slot^="'+chapter+'."]'))continue;
       const boxes=data._studio?.[chapter]?.boxes||[];if(!boxes.length)continue;
       const blocks=[...new Set(boxes.map(b=>b.slot))].map(path=>{let node=doc.querySelector('[data-slot="'+path+'"]');if(path==='c2.examples')node=node?.closest('.carousel-container')||node;return {path,node};}).filter(b=>b.node);
-      common(doc,{_studio:{version:1,formats:[],boxes}},blocks);
+      common(doc,{_studio:{version:1,formats:[],boxes}},blocks,true);
       for(const b of boxes)doc.querySelector('[data-studio-box="'+b.id+'"]')?.setAttribute('data-studio-course-box','');
     }
   }
@@ -185,7 +196,7 @@
     if(!field&&(!valid(value[key],value)||!valid(base[key],base)))return false;
     return Object.keys(base).filter(k=>field||k!==key).every(k=>k==='typing_note'&&!Object.hasOwn(value,k)&&Object.hasOwn(base,'typing')||validCopy(value[k],base[k],k))&&Object.keys(value).every(k=>!field&&k===key||Object.hasOwn(base,k)||k==='typing_note'&&Object.hasOwn(base,'typing')&&typeof value[k]==='string');
   }
-  window.AIWiseStudioBlocks={key,sizes,templates,clone,plain,rich,format,valid,validRuns,validSAT,validCopy,clean,extension,renderRuns,replaceText,restore,nodes,candidates,common,course};
+  window.AIWiseStudioBlocks={key,sizes,templates,clone,plain,rich,format,valid,validRuns,validSAT,validCopy,clean,extension,renderRuns,replaceText,restore,nodes,candidates,common,course,exampleBox,exampleIndex,boxFamily};
 })();
 
 /* Shared text catalog and safe approved-content renderer. Course slots are excluded. */

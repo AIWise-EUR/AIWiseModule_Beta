@@ -323,6 +323,7 @@
       });
     });
     if(s.chapter==='c2'){const dots=doc.getElementById('carouselDots');if(dots){dots.replaceChildren();s.values['c2.examples'].forEach((_,i)=>{const dot=doc.createElement('button');dot.className='carousel-dot';dot.type='button';dot.setAttribute('aria-label','Show example '+(i+1));dot.onclick=()=>selectItem(s,i);dots.append(dot);});}}
+    window.AIWiseStudioEditing?.examplePreview(s);
     refreshPicker(s); s.frame.contentWindow.scrollTo(0, y);
   }
   function openEditor(s, index) {

@@ -61,6 +61,16 @@ test('new boxes and variable example lists survive a frozen release without chan
  const broken=structuredClone(v);broken.content.find(r=>r.course==='common'&&r.chapter==='c2').slots._studio.boxes[0].fields[0][0].color='url(bad)';assert.throws(()=>build(broken),/version_structure_changed/);
 });
 
+test('example-specific boxes retain independent content and ownership in the frozen student release',()=>{
+ const v=structuredClone(version),row=v.content.find(r=>r.course==='psychology'&&r.chapter==='c2');
+ const family='box-'+id,first={id:family,slot:'c2.examples',template:'text',anchor:0,example:0,family,fields:[[{text:'Unknown context'}],[{text:'Only first example'}]],align:'left',size:0};
+ row.slots._studio={version:1,formats:[],boxes:[first,{...structuredClone(first),id:'box-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',example:1,fields:[[{text:'Unknown context'}],[{text:'Only second example'}]]}]};
+ const frozen=JSON.parse(build(v)['published-content.json']).content.find(r=>r.course==='psychology'&&r.chapter==='c2');
+ assert.deepEqual(frozen.slots._studio,row.slots._studio);
+ assert.equal(JSON.stringify(frozen).includes('Add this box to this version'),false);
+ assert.equal(JSON.stringify(version).includes('Only first example'),false);
+});
+
 test('variable SAT phases survive publication; malformed phases are refused',()=>{
  for(const count of [0,2,4]){
   const v=structuredClone(version),row=v.content.find(r=>r.course==='psychology'&&r.chapter==='c2'),sat=row.slots['c2.sat_example'];

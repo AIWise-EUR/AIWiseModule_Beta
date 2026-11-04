@@ -41,9 +41,9 @@ await check('All installed Studio capabilities remain enabled together', async (
   const response = await get(`${supabaseUrl}/rest/v1/rpc/workspace_studio_capabilities`, {apikey: publicKey});
   must(response.ok, `Capability lookup failed: HTTP ${response.status}.`);
   const capabilities = await response.json();
-  const missing = ['blocks', 'sat_phases', 'approval_merge'].filter(key => capabilities[key] !== 1);
-  must(!missing.length, `Missing flags: ${missing.join(', ')}. A later installer may have overwritten the capability function; apply WORKSPACE_READINESS_SETUP.sql.`);
-  return 'blocks=1, sat_phases=1, approval_merge=1';
+  const missing = ['blocks', 'sat_phases', 'approval_merge', 'example_boxes'].filter(key => capabilities[key] !== 1);
+  must(!missing.length, `Missing flags: ${missing.join(', ')}. Complete EXAMPLE_BOXES_SETUP.md after the earlier Workspace setup; its activation preserves all four capabilities.`);
+  return 'blocks=1, sat_phases=1, approval_merge=1, example_boxes=1';
 });
 
 await check('Every registered content area has English and Dutch server catalogs', async () => {

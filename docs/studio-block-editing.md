@@ -11,6 +11,7 @@ Working record, 2026-10-05. Source baseline: development `d4c31e7`.
 | Common boxes | Implemented | Gradient rows, function cards, dual cards, SL cards; additional text boxes |
 | S.A.T cycles | Live; activation verified | Per-cycle add/delete and empty-cycle hiding; [record](sat-phase-editing.md) |
 | Content examples | Implemented | Add/duplicate/reorder/remove C2 example cards; keep at least one |
+| Example-specific C2 boxes | Implemented; backend activated | Independent contents, editor-only reminders; [activation](../supabase/EXAMPLE_BOXES_SETUP.md) |
 | Text formatting | Implemented | Selected words: bold, italic, palette, 14–36 px, clear; added-box alignment and size |
 | Passeport reading reference | Live; browser verified | Exact citation opens the verified DOI in a new tab; saved content unchanged |
 | Control Tower, approved archive and frozen release | Implemented | New extension retained; readable comparison; existing approval rules |
@@ -57,7 +58,16 @@ Original Common containers cannot be deleted or rearranged in this first version
 that would change existing source IDs and review anchors.
 
 Content Studio supports additional C2 example cards and text boxes after a content
-slot. Existing cards use the actual module carousel renderer, including counts/dots.
+slot. C2 example text boxes live inside their owning card. Other cards display an
+editor-only reminder with **Add this box to this version**. Importing copies the
+content and formatting into an independently editable box, retaining a family ID
+only to identify corresponding boxes. Existing slot-wide boxes belong to Example 1
+because the previous format did not record which example created them. Their text
+and IDs are preserved. Reorder, duplication and deletion maintain box ownership.
+The optional `example` and `family` fields are accepted only on `c2.examples` text
+boxes, with one member of a family per valid example index. New controls require the
+`example_boxes` capability; existing shared Common boxes are unchanged.
+Existing cards use the actual module carousel renderer, including counts/dots.
 Rich text controls appear below editable text fields. Select words in the input;
 formatting is shown both below it and in the real module preview. Plain text inputs
 prevent pasted HTML. Undo/redo history is in-session; Save draft persists the result.
@@ -109,6 +119,19 @@ Browser-only pending requests live in the user's browser: this update does not a
 that storage key; existing Control Tower regression tests cover their old format.
 
 ## Log
+
+- 2026-11-04: Added example-specific C2 boxes and editor-only reminders using the
+  agreed “Add this box to this version” label. Legacy text is retained on Example 1.
+  Added UI, archive/release, frozen student bundle and disposable database coverage
+  for independence, ownership, save/restore, reorder/duplicate/delete and activation.
+  Browser verification used the production renderer/editor with isolated fixture
+  data; `example-boxes-preview.png` is a local preview, not a live deployment claim.
+  All 57 test files passed. Owner explicitly authorized Codex to apply the backend
+  for this change: `GitHub-Publish` v9 and `aiwise-release` v11 deployed, then the
+  validator migration applied. Live capability reports `example_boxes: 1`; direct
+  read-only validation accepts a scoped box and rejects invalid example indexes and
+  duplicate family placements. All 21 submissions, 9 Beta rows and 24 source rows
+  retained their complete-row fingerprints. Security advisory findings are unchanged.
 
 - 2026-10-05: Implemented optional Studio extension and real editor integration.
   Preserved labels, pending copies and approval checks; added deployment gate and
