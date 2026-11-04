@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "sequence": 13,
+  "course": "common",
+  "chapter": "map",
+  "locale": "nl",
+  "submission_id": "690d9e72-3ec7-4033-a35e-0114eb25027f",
+  "source_release": null,
+  "approved_at": "2026-11-04T06:52:02.277538+00:00",
+  "slots": {
+    "map.extra-0": {
+      "Text 1": "Systeemkaart van GenAI"
+    },
+    "map.extra-1": {
+      "Text 1": "Volledig systeem"
+    },
+    "map.extra-2": {
+      "Text 1": "Trainingscyclus"
+    },
+    "map.extra-3": {
+      "Text 1": "Inferentiecyclus"
+    },
+    "map.extra-4": {
+      "Text 1": "Herstellen"
+    },
+    "map.extra-5": {
+      "Text 1": "Knijp of gebruik ⌘ / Ctrl + scrollen om te zoomen · Sleep om te verschuiven · Beweeg de muis over een onderdeel voor uitleg"
+    },
+    "map.extra-6": {
+      "Text 1": "Knooppunten"
+    },
+    "map.extra-7": {
+      "Text 1": "Fysiek (kubus)"
+    },
+    "map.extra-8": {
+      "Text 1": "AI-bedrijf"
+    },
+    "map.extra-9": {
+      "Text 1": "Trainingsonderdeel"
+    },
+    "map.extra-10": {
+      "Text 1": "Inferentieonderdeel"
+    },
+    "map.extra-11": {
+      "Text 1": "Subtype trainingsgegevens"
+    },
+    "map.extra-12": {
+      "Text 1": "Algoritme (verbinding)"
+    },
+    "map.extra-13": {
+      "Text 1": "Verbindingen"
+    },
+    "map.extra-14": {
+      "Text 1": "Fysieke stroom / gegevensstroom"
+    },
+    "map.extra-15": {
+      "Text 1": "Terugkoppelingslus"
+    },
+    "map.extra-16": {
+      "Text 1": "Besturing"
+    },
+    "map.extra-17": {
+      "Label 1": "Gebruiker",
+      "Category 1": "Fysiek",
+      "Description 1": "De persoon die prompts invoert en antwoorden ontvangt. Het begin- en eindpunt van elke inferentiecyclus."
+    },
+    "map.extra-18": {
+      "Label 1": "Lokaal apparaat",
+      "Category 1": "Fysiek",
+      "Description 1": "Je laptop of telefoon. Alleen de interface: verstuurt prompts en toont antwoorden. Hier vindt geen berekening plaats."
+    },
+    "map.extra-19": {
+      "Label 1": "Cloudserver / datacentrum",
+      "Category 1": "Fysiek",
+      "Description 1": "GPU-clusters op afstand in fysieke gebouwen. Hier worden alle berekeningen daadwerkelijk uitgevoerd, met een omvangrijke elektrische infrastructuur."
+    },
+    "map.extra-20": {
+      "Label 1": "AI-bedrijf",
+      "Category 1": "AI-bedrijf",
+      "Description 1": "Bijvoorbeeld OpenAI, Anthropic en Google DeepMind. Bepaalt de selectie van trainingsgegevens, de modelarchitectuur en beslissingen over afstemming."
+    },
+    "map.extra-21": {
+      "Label 1": "Trainingsgegevens",
+      "Category 1": "Training",
+      "Description 1": "Miljarden tokens uit uiteenlopende bronnen, verzameld en zorgvuldig geselecteerd voordat de training begint."
+    },
+    "map.extra-22": {
+      "Label 1": "Tokenisatie",
+      "Category 1": "Training",
+      "Description 1": "Tekst wordt opgesplitst in deelwoordeenheden en omgezet in getallen. Taal wordt een reeks getallen."
+    },
+    "map.extra-23": {
+      "Label 1": "Positiecodering",
+      "Category 1": "Training",
+      "Description 1": "Transformers verwerken tokens parallel en hebben geen inherent besef van volgorde. Positiecoderingen voegen aan elk token informatie over zijn plaats in de reeks toe."
+    },
+    "map.extra-24": {
+      "Label 1": "Algoritme + gewichten",
+      "Category 1": "Verbinding",
+      "Description 1": "De transformerarchitectuur. Tijdens de training worden de gewichten voortdurend aangepast. Tijdens inferentie staan de gewichten vast. Dezelfde architectuur, een andere modus."
+    },
+    "map.extra-25": {
+      "Label 1": "Verlies + backpropagatie",
+      "Category 1": "Training",
+      "Description 1": "De voorspellingsfout wordt berekend en teruggevoerd door het netwerk. De gewichten worden aangepast. Deze lus wordt miljarden keren herhaald."
+    },
+    "map.extra-26": {
+      "Label 1": "Fine-tuning / RLHF",
+      "Category 1": "Training",
+      "Description 1": "Menselijke beoordelaars beoordelen de output. Het model wordt getraind op behulpzaamheid en nauwkeurigheid. Gebruikersinvoer waarvoor toestemming is gegeven, wordt hier gebruikt en beïnvloedt de afstemming."
+    },
+    "map.extra-27": {
+      "Label 1": "Webcrawling",
+      "Category 1": "Trainingsgegevens",
+      "Description 1": "Openbaar geïndexeerde webpagina’s. Common Crawl is de belangrijkste bron en vormt, gemeten in tokens, het grootste deel van het trainingsvolume."
+    },
+    "map.extra-28": {
+      "Label 1": "Boeken",
+      "Category 1": "Trainingsgegevens",
+      "Description 1": "Gedigitaliseerde boeken en lange teksten, zoals BooksCorpus en Project Gutenberg. Geeft het model samenhangende structuur over langere tekstgedeelten."
+    },
+    "map.extra-29": {
+      "Label 1": "Wetenschappelijke artikelen",
+      "Category 1": "Trainingsgegevens",
+      "Description 1": "arXiv, PubMed en wetenschappelijke databanken. Domeinspecifieke kennis en wetenschappelijk redeneren."
+    },
+    "map.extra-30": {
+      "Label 1": "Coderepositories",
+      "Category 1": "Trainingsgegevens",
+      "Description 1": "GitHub en vergelijkbare bronnen. Verzamelingen programmeercode die het model gestructureerd logisch redeneervermogen geven."
+    },
+    "map.extra-31": {
+      "Label 1": "Geselecteerde encyclopedische bronnen",
+      "Category 1": "Trainingsgegevens",
+      "Description 1": "Wikipedia, nieuwsarchieven en gestructureerd referentiemateriaal. Betrouwbare basiskennis van hoge kwaliteit."
+    },
+    "map.extra-32": {
+      "Label 1": "Gegevens onder licentie",
+      "Category 1": "Trainingsgegevens",
+      "Description 1": "Gegevens die worden gekocht of onder licentie verkregen van externe uitgevers, nieuwsorganisaties en gegevensleveranciers."
+    },
+    "map.extra-33": {
+      "Label 1": "Gebruikersprompt",
+      "Category 1": "Inferentie",
+      "Description 1": "Je typt een bericht. Natuurlijke taal komt het systeem binnen. Je apparaat verstuurt het via het internet naar de server."
+    },
+    "map.extra-34": {
+      "Label 1": "Tokenisatie",
+      "Category 1": "Inferentie",
+      "Description 1": "Je prompt wordt opgesplitst volgens hetzelfde tokenformaat als bij de training. Vanaf dit punt is je bericht een reeks getallen."
+    },
+    "map.extra-35": {
+      "Label 1": "Positiecodering",
+      "Category 1": "Inferentie",
+      "Description 1": "De volgorde van tokens wordt gecodeerd voordat ze de transformer ingaan. Dezelfde stap als bij de training."
+    },
+    "map.extra-36": {
+      "Label 1": "Logits / softmax",
+      "Category 1": "Inferentie",
+      "Description 1": "De laatste laag geeft elk token in de woordenschat een score. Softmax zet de scores om in een kansverdeling: waarschijnlijkheden, geen antwoorden."
+    },
+    "map.extra-37": {
+      "Label 1": "Outputsampling",
+      "Category 1": "Inferentie",
+      "Description 1": "Een token wordt geselecteerd op basis van waarschijnlijkheden. Dezelfde prompt kan verschillende antwoorden opleveren: generatie is standaard niet deterministisch."
+    },
+    "map.extra-38": {
+      "Label 1": "Antwoord / interface",
+      "Category 1": "Inferentie",
+      "Description 1": "Tokens worden terugvertaald naar taal. Dit is het eerste moment waarop er weer taal is; alles hiervoor bestond uit getallen."
+    },
+    "map.extra-39": {
+      "internet 1": "Internet",
+      "different mode 1": "different mode",
+      "training cycle 1": "TRAINING CYCLE",
+      "inference cycle 1": "INFERENCE CYCLE",
+      "same architecture 1": "same architecture"
+    },
+    "map.extra-40": {
+      "Page title 1": "AI-Wise · GenAI System Map"
+    }
+  }
+}
