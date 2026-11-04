@@ -1,13 +1,156 @@
 {
   "schema": 1,
-  "sequence": 15,
+  "sequence": 18,
   "course": "common",
   "chapter": "c1",
   "locale": "nl",
-  "submission_id": "53b18ede-b1e9-4615-afbe-dad244d237a2",
+  "submission_id": "fedb94e2-9d11-4027-ad30-0c5315715ccb",
   "source_release": "59f31469-f327-4d7e-a710-4eec97ace5c4",
-  "approved_at": "2026-11-04T11:07:30.312678+00:00",
+  "approved_at": "2026-11-04T13:56:28.423204+00:00",
   "slots": {
+    "_studio": {
+      "boxes": [
+        {
+          "id": "box-bf539733-c472-4141-b573-31429ee36767",
+          "size": 0,
+          "slot": "c1.block-8",
+          "align": "left",
+          "anchor": 0,
+          "fields": [
+            [
+              {
+                "text": "Academi"
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": "c"
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "v"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "w"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "j"
+              },
+              {
+                "text": "k"
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "d"
+              }
+            ],
+            [
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "f"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "GenAI je bij bepaalde activiteiten kan helpen, neemt je eigen verantwoordelijkheid als student niet weg. GenAI op de juiste manier gebruiken betekent dat je actief betrokken blijft bij het denk- en schrijfproces. Volg altijd de ESSB-principes en richtlijnen voor het gebruik van GenAI"
+              },
+              {
+                "text": "."
+              }
+            ]
+          ],
+          "template": "text"
+        }
+      ],
+      "formats": [],
+      "version": 1
+    },
     "c1.block-0": {
       "Heading 1": "Wat is Generatieve AI?"
     },
@@ -191,24 +334,24 @@
       "processing 1": "How the model actually processes this",
       "course help 1": "AI-Wise adapts its examples, explanations, and prompt templates to your course. You can change this at any time.",
       "subsections 1": "subsections toggle",
-      "Navigation c1 1": "C1: What is AI?",
-      "Navigation c2 1": "C2: What is AI for us?",
-      "Navigation c3 1": "C3: How do we use AI?",
+      "Navigation c1 1": "C1: Wat is Generatieve AI?",
+      "Navigation c2 1": "C2: Wat betekent AI voor ons?",
+      "Navigation c3 1": "C3: Hoe gebruiken we AI?",
       "choose course 1": "Choose your course",
       "send feedback 1": "Send feedback",
       "close feedback 1": "Close feedback",
       "feedback thanks 1": "Thank you — your feedback has been noted.",
       "feedback question 1": "What's on your mind?",
       "feedback placeholder 1": "Share a thought, suggestion, or issue...",
-      "Navigation c1 section 1 1": "History & Development",
-      "Navigation c1 section 2 1": "Anatomy of GenAI",
-      "Navigation c1 section 3 1": "GenAI Output Traits",
-      "Navigation c2 section 1 1": "AI vs Human Intelligence",
-      "Navigation c2 section 2 1": "Human vs GenAI",
-      "Navigation c2 section 3 1": "Collaboration Framework",
-      "Navigation c3 section 1 1": "Prompt",
-      "Navigation c3 section 2 1": "Critique",
-      "Navigation c3 section 3 1": "Integrate"
+      "Navigation c1 section 1 1": "Wat is AI? Wat is GenAI?",
+      "Navigation c1 section 2 1": "Waar bestaat GenAI uit? ",
+      "Navigation c1 section 3 1": "Waarmee GenAI kan helpen – en waar het structureel tekortschiet ",
+      "Navigation c2 section 1 1": "Is kunstmatige intelligentie hetzelfde als menselijke intelligentie? ",
+      "Navigation c2 section 2 1": "Mens vs. GenAI: een functionele vergelijking ",
+      "Navigation c2 section 3 1": "Een Kader voor Samenwerking: S.A.T - Framework ",
+      "Navigation c3 section 1 1": "Prompten",
+      "Navigation c3 section 2 1": "Bekritiseren",
+      "Navigation c3 section 3 1": "Integreren"
     },
     "c1.extra-14": {
       "Page title 1": "AI-Wise · C1: What is GenAI?"
