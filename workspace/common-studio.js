@@ -31,11 +31,46 @@
         });
         node.addEventListener('keydown', event => { if (event.target===node&&(event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openEditor(s,index); } });
       });
+      // SVG <use> copies share text with their symbol. Open that existing owner,
+      // keeping saved field identities and every rendered copy in sync.
+      doc.querySelectorAll('.framework-card svg use').forEach(use => {
+        const id = use.getAttribute('href') || use.getAttribute('xlink:href');
+        const symbol = id?.startsWith('#') && doc.getElementById(id.slice(1));
+        const index = symbol ? s.commonBlocks.findIndex(block => block.node.contains(symbol)) : -1;
+        if (index < 0) return;
+        const button = doc.createElement('button'); button.type = 'button'; button.className = 'cs-edit-label';
+        button.textContent = 'Edit shared diagram labels';
+        button.addEventListener('click', event => { event.stopPropagation(); openEditor(s, index); });
+        use.closest('svg').before(button);
+      });
+      // Navigation copy is stored in a hidden source block, but its editor must
+      // remain reachable from the visible navigation itself.
+      const navigation = s.commonBlocks.findIndex(block => block.node.hasAttribute('data-common-copy'));
+      if (navigation >= 0) {
+        const target = doc.querySelector('#coreNavDesktop') || doc.body;
+        const button = doc.createElement('button'); button.type = 'button'; button.className = 'cs-edit-label';
+        button.textContent = s.chapter === 'map' ? 'Edit diagram annotations' : 'Edit navigation labels';
+        button.addEventListener('click', () => openEditor(s, navigation)); target.prepend(button);
+      }
+      if (s.openCourseSlot) doc.querySelectorAll('[data-slot^="c3.template_compare."]').forEach(node => {
+        const button = doc.createElement('button'); button.type = 'button'; button.className = 'cs-edit-label';
+        button.textContent = 'Edit course ' + (node.dataset.slot.endsWith('.md') ? 'Markdown' : 'XML') + ' example';
+        button.addEventListener('click', event => { event.stopPropagation(); s.openCourseSlot(node.dataset.slot); });
+        node.before(button);
+      });
     }
     s.commonBlocks.forEach(block => {
       Object.keys(block.fields).forEach((key, i) => { block.nodes[i].nodeValue = s.values[block.path][key]; });
     });
     window.AIWiseStudioBlocks?.common(doc,s.values,s.commonBlocks);
+    doc.querySelectorAll('[data-studio-box][data-review-common-key]').forEach(node => {
+      const index = s.commonBlocks.findIndex(block => block.path === node.dataset.reviewCommonKey);
+      if (index < 0) return;
+      const button = doc.createElement('button'); button.type = 'button'; button.className = 'cs-edit-label';
+      button.textContent = 'Edit added box';
+      button.addEventListener('click', event => { event.stopPropagation(); openEditor(s, index); });
+      node.prepend(button);
+    });
     window.AIWiseCommonContent.sync(doc);
     doc.documentElement.lang = s.locale || 'en';
   }

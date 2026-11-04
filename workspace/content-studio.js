@@ -631,6 +631,11 @@
     const host = document.getElementById('cs-studio');
     const s = session = {host, courseId, chapter, isCommon, locale, config, key: language().draftKey(courseId,chapter,locale), frame: host.querySelector('iframe'), dialog: host.querySelector('.cs-editor'), submitDialog: host.querySelector('.cs-submit-dialog'),
       abort: new AbortController(), index: itemIndex, slideIndex: 0, raw: null, blocked: false, storageRead: false, ready: false};
+    s.openCourseSlot = path => {
+      const paths = [...s.frame.contentDocument.querySelectorAll('[data-slot]')].map(node => node.dataset.slot);
+      const index = catalogItems(paths, s.source).findIndex(item => item.path === path);
+      if (index >= 0 && window.AIWiseContentStudio.canLeave()) location.hash = `#studio/${context}/${chapter}/${index}`;
+    };
     host.querySelector('[data-cs-language]').value=locale;
     host.querySelector('[data-cs-language]').onchange=event=>{
       if(!window.AIWiseContentStudio.canLeave()){event.target.value=locale;return;}

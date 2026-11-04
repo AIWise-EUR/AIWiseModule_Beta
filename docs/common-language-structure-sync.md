@@ -12,6 +12,7 @@ share the page layout, while existing Dutch translations and drafts remain intac
 | Unit, real Studio browser and existing PostgreSQL approval contracts | Verified locally; full repository gate recorded below |
 | Production deployment | Owner action; not deployed by Codex |
 | New SQL or Edge Function deployment for this change | None |
+| Editing access only follow-up | Implemented; no translation text or saved-field identity changes |
 
 ## Confirmed behavior
 
@@ -103,6 +104,16 @@ These are local integration checks, not proof of a signed-in production approval
 No live drafts, pending requests, approvals, releases or database rows were changed.
 
 ## Log
+
+- **2026-11-04 editing access only** Per Seyoon's revised scope, added direct
+  editing actions for navigation labels, shared SAT diagram labels, inherited
+  boxes and Course Studio Markdown/XML examples. Existing catalog paths remain
+  unchanged. Assistant C1–C3 browser translation drafts were reset. MAP translations
+  from request `690d9e72-3ec7-4033-a35e-0114eb25027f` were reverted through
+  Control Tower request `125998fc-c4e1-4dff-8f35-2b7953242cae` (Applied to Beta).
+  Neus's pending requests and student Published content were not modified.
+  Regression coverage verifies shared-symbol routing and course-slot preservation.
+  All 53 repository test files passed, including 9 Common Studio scenarios.
 
 - **2026-11-04** Implemented approved-English box projection, Dutch box text editing,
   field review, non-destructive draft backups/retired translations, public/frozen

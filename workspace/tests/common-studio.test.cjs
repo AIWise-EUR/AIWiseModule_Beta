@@ -65,3 +65,35 @@ test('backend bridge preserves common scope and rejects stale or unsaved submiss
   await assert.rejects(()=>window.AIWiseControlTower.submitCommonDraft(input),/another tab/);
   assert.equal(calls.length,1);
 });
+
+test('small SAT diagrams open their shared symbol owner without changing saved fields',()=>{
+  const document=source('c2'), blocks=api.catalog(document,'c2');
+  const values=Object.fromEntries(blocks.map(b=>[b.path,{...b.fields}]));
+  const original=JSON.stringify(values), opened=[];
+  const window={AIWiseCommonContent:api,AIWiseCourseRenderer:{fillSlots(){},toggleRequired(){}}};
+  vm.runInNewContext(fs.readFileSync(path.join(root,'workspace/common-studio.js'),'utf8'),{window});
+  const session={frame:{contentDocument:document},items:blocks,chapter:'c2',source:{},values};
+  window.AIWiseCommonStudio.apply(session,(_,index)=>opened.push(index));
+  const cards=[...document.querySelectorAll('.framework-card')].filter(card=>card.querySelector('svg use'));
+  assert.ok(cards.length>=2);
+  for(const card of cards){
+    const button=[...card.querySelectorAll('button')].find(b=>b.textContent==='Edit shared diagram labels');
+    assert.ok(button); button.click();
+    const id=card.querySelector('use').getAttribute('href').slice(1);
+    assert.ok(session.commonBlocks[opened.at(-1)].node.contains(document.getElementById(id)));
+  }
+  assert.equal(JSON.stringify(values),original);
+});
+
+test('Common template examples link to course editing and preserve slot content',()=>{
+  const document=source('c3'), blocks=api.catalog(document,'c3'), opened=[];
+  const values=Object.fromEntries(blocks.map(b=>[b.path,{...b.fields}]));
+  const before=[...document.querySelectorAll('[data-slot]')].map(n=>n.outerHTML);
+  const window={AIWiseCommonContent:api,AIWiseCourseRenderer:{fillSlots(){},toggleRequired(){}}};
+  vm.runInNewContext(fs.readFileSync(path.join(root,'workspace/common-studio.js'),'utf8'),{window});
+  const session={frame:{contentDocument:document},items:blocks,chapter:'c3',source:{},values,openCourseSlot:path=>opened.push(path)};
+  window.AIWiseCommonStudio.apply(session,()=>{});
+  for(const node of document.querySelectorAll('[data-slot^="c3.template_compare."]')) node.previousElementSibling.click();
+  assert.deepEqual(opened,['c3.template_compare.md','c3.template_compare.xml']);
+  assert.deepEqual([...document.querySelectorAll('[data-slot]')].map(n=>n.outerHTML),before);
+});
