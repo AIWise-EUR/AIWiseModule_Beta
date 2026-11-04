@@ -1,0 +1,394 @@
+{
+  "schema": 1,
+  "sequence": 16,
+  "course": "common",
+  "chapter": "c2",
+  "locale": "nl",
+  "submission_id": "9e0e8e10-28c9-4771-bf7d-3ac79bfd05e7",
+  "source_release": "724af4d1-48f3-40c0-8e39-736e12d6c66c",
+  "approved_at": "2026-11-04T11:08:05.184345+00:00",
+  "slots": {
+    "c2.block-0": {
+      "Heading 1": "Wat betekent AI voor ons?"
+    },
+    "c2.block-1": {
+      "Text 1": "Weten waaruit GenAI is opgebouwd, is een eerste stap. De volgende vraag is wat het wel niet kan, wat jij zelf kunt, en hoe je GenAI effectief en verantwoord kan gebruiken."
+    },
+    "c2.block-2": {
+      "Heading 1": "Is kunstmatige intelligentie hetzelfde als menselijke intelligentie?"
+    },
+    "c2.block-3": {
+      "Text 1": "Voordat je vergelijkt wat mensen en GenAI kunnen, is het belangrijk om te begrijpen waarom ze van elkaar verschillen. De verschillen zijn niet oppervlakkig. Ze zijn structureel en hangen samen met de manier waarop mensen en GenAI informatie ontvangen en verwerken. "
+    },
+    "c2.block-4": {
+      "Text 1": "Deel A: Verschillen in input"
+    },
+    "c2.block-5": {
+      "Text 1": "Denk aan de laatste keer dat je een olifant zag. Niet op een foto, maar in het echt. Je zag hem niet alleen. Je rook hem. Je hoorde hem ademen. Je voelde de grond licht trillen onder zijn gewicht. Dat alles kwam tegelijk je brein binnen, en droeg bij aan wat “olifant” voor jou betekent. Daarnaast kun je, afhankelijk van je culturele achtergrond, ervaringen en overtuigingen, een olifant zien als een symbool van natuurbescherming, als een spiritueel dier, als een symbool van geluk, om zelfs als een dierentuindier. En door erover te praten met iemand anders kun je je eigen perspectief en betekenisgeving verrijken.",
+      "Text 2": "Denk nu aan wat er gebeurt wanneer een taalmodel het woord “olifant” tegenkomt. Het ontvangt een token. Een numerieke representatie van een stukje tekst. Dat is alles. Geen geur, geen geluid, geen gevoel van schaal. Alleen numerieke informatie die verder wordt verwerkt. ",
+      "Text 3": "Dit is een fundamenteel verschil tussen menselijke cognitie en GenAI:",
+      "Emphasis 1": " de input is niet hetzelfde."
+    },
+    "c2.block-6": {
+      "Text 1": "Mens",
+      "Text 2": "Vijf zintuigen, allemaal tegelijk. Geur, geluid, schaal en nabijheid worden geïntegreerd tot één gelaagde ervaring. Je brein verwerkt dit niet afzonderlijk om het later samen te voegen. De informatie komt samen binnen en vormt een samenhangende ervaring van de wereld.",
+      "Text 3": "GenAI",
+      "Text 4": "Tokens: numerieke representaties van stukjes tekst. Tegen de tijd dat de invoer het model bereikt, is deze al omgezet in een numerieke representatie. Het model opereert daarmee volledig op het niveau van taal en patronen in taal, zonder directe zintuigelijke ervaring van de wereld die door die taal wordt beschreven."
+    },
+    "c2.block-7": {
+      "Text 1": "✓",
+      "Text 2": "Abstracte en relationele betekenis: vergelijkbaar met mensen",
+      "Text 3": "Abstracte en relationele kennis. Denk aan uitspraken als “olifanten zijn zoogdieren”, “ze leven in kuddes”, “ze worden geassocieerd met een goed geheugen”. Dit zijn verbanden die in taal kunnen worden uitgedrukt en die een LLM uit grote hoeveelheden tekst kan leren. ",
+      "Text 4": "~",
+      "Text 5": "Zintuiglijke betekenis: gedeeltelijk vergelijkbaar met mensen",
+      "Text 6": "Hoe iets eruitziet, klinkt of aanvoelt. Multimodale modellen die naast tekst ook afbeeldingen verwerken, presteren hier beter, vooral bij het verwerken van visuele informatie. Maar “gedeeltelijk” is hier het sleutelwoord: de kloof wordt kleiner voor wat visueel kan worden vastgelegd, niet voor wat alleen ervaren kan worden. ",
+      "Text 7": "✗",
+      "Text 8": "Motorische en lichamelijke betekenis: ontbreekt",
+      "Text 9": "Hoe het voelt om naast iets enorms te staan. Het gewicht van een object in je hand. Het spiergeheugen van een vertrouwde beweging. Deze dimensies van betekenis zijn verbonden met het hebben van een lichaam, en geen enkele hoeveelheid training op tekst heeft deze kloof overbrugd. Op dit moment is er ook geen manier waarop een taalmodel dit soort lichamelijke ervaringen zelf kan opdoen. "
+    },
+    "c2.block-8": {
+      "Text 1": "Deel B: Afstand tot de werkelijkheid"
+    },
+    "c2.block-9": {
+      "Text 1": "De informatie waarvan GenAI leert, is niet de werkelijkheid. Het is een gefilterde, gecomprimeerde en niet-representatieve weergave van wat mensen hebben vastgelegd en online hebben gepubliceerd. Zie het als een keten. Bij elke schakel gaat er iets verloren. "
+    },
+    "c2.extra-0": {
+      "alt 1": "Erasmus University Rotterdam",
+      "Text 1": "AI-Wijs",
+      "Text 2": "Kernblokken",
+      "Text 3": " › C2 · Wat betekent AI voor ons?\n  "
+    },
+    "c2.extra-1": {
+      "Text 1": "Navigatie door de kernblokken"
+    },
+    "c2.extra-2": {
+      "Text 1": "C2 · Kernblok"
+    },
+    "c2.extra-3": {
+      "Text 1": "Sectie 1"
+    },
+    "c2.extra-4": {
+      "Text 1": "Sectie 2"
+    },
+    "c2.extra-5": {
+      "Text 1": "Sectie 3"
+    },
+    "c2.extra-6": {
+      "Text 1": "Kernblokken",
+      "Text 2": "← Terug naar Home"
+    },
+    "c2.extra-7": {
+      "Text 1": "← C1 · Wat is GenAI?"
+    },
+    "c2.extra-8": {
+      "Text 1": "Volgende"
+    },
+    "c2.extra-9": {
+      "Text 1": "C3 · Hoe gebruiken we AI?"
+    },
+    "c2.block-10": {
+      "Text 1": "Werkelijkheid",
+      "Text 2": "Alles wat er in de wereld gebeurt.",
+      "Text 3": "Wat wordt vastgelegd",
+      "Text 4": "Alleen het deel dat iemand besluit vast te leggen. ",
+      "Text 5": "Wat online wordt gepubliceerd",
+      "Text 6": "Alleen het deel daarvan dat op het internet terechtkomt.",
+      "Text 7": "Wat wordt geïndexeerd",
+      "Text 8": "Alleen wat zoekmachines en webcrawlers kunnen vinden en verzamelen.",
+      "Text 9": "Wat wordt geselecteerd als trainingsdata",
+      "Text 10": " Alleen wat in de trainingsdata wordt opgenomen.",
+      "Text 11": "Wat het model leert",
+      "Text 12": "Statistische patronen en verbanden in de informatie die na al deze selectiestappen in de trainingsdata terechtkomt.",
+      "Text 13": "Bij elke stap gaat informatie verloren en kunnen vertekeningen ontstaan. Het resultaat is een model dat getraind is op een beperkte en niet-representatieve selectie van wat mensen hebben vastgelegd en online hebben gepubliceerd.",
+      "Text 14": "Om een idee te geven van de schaal: GPT-3 is getraind op honderden miljarden woorden. Ongeveer 82% van die woorden kwam uit één bron, een enorme verzameling webpagina’s die automatisch van het internet is verzameld. Onderzoek heeft aangetoond dat deze verzameling bepaalde talen, culturen en demografische groepen systematisch oververtegenwoordigt. Sommige onderzoekers stellen dat dit niet simpelweg een technisch probleem is met een eenvoudige oplossing, maar iets dat dieper samenhangt met hoe large language models werken: ze voorspellen tekst op basis van patronen die ze tijdens de training hebben geleerd, waardoor vertekeningen in de trainingsdata ook kunnen doorwerken in de output. "
+    },
+    "c2.block-11": {
+      "Text 1": "Wat dit betekent voor de output",
+      "Text 2": "De output van LLM's geen directe weerspiegeling van de werkelijkheid. Het model genereert output op basis van patronen in informatie die al verschillende selectie- en verwerkingsstappen heeft doorlopen. Vertekeningen die daarbij zijn ontstaan, kunnen daardoor ook terugkomen in de output."
+    },
+    "c2.block-12": {
+      "Text 1": "Deel C: Bewust informatieverlies"
+    },
+    "c2.block-13": {
+      "Text 1": "Wanneer je GenAI iets vraagt, typ je een prompt. Maar denk eens na over alles wat je vraag heeft gevormd voordat je begon te typen. Je achtergrondkennis. Je aannames over wat belangrijk is. Je emotionele betrokkenheid bij het onderwerp. De context waarin je werkt. De criteria die je in je hoofd hebt, maar nooit hebt opgeschreven. ",
+      "Text 2": "Het meeste daarvan komt niet in de prompt terecht. Dat kan ook bijna niet. Je zou pagina’s moeten schrijven om vast te leggen wat voor jou vanzelfsprekend is. ",
+      "Text 3": "GenAI heeft alleen toegang tot wat expliciet wordt aangeleverd. Wat niet is getypt, bestaat niet voor het model. Dat zorgt voor een structurele kloof tussen wat jij bedoelt en wat het model ontvangt. ",
+      "Text 4": "Zo ziet dat er in de praktijk uit. "
+    },
+    "c2.block-14": {
+      "Text 1": "In elk van deze voorbeelden deed het model iets redelijks met wat het ontving. Het probleem is niet dat het per definitie slecht wek leverde. Het probleem is dat het grootste deel van wat voor jou belangrijk was, het model nooit heeft bereikt.",
+      "Text 2": "Deze kloof verdwijnt niet naarmate je beter wordt in prompten. Je kunt hem verkleinen door meer relevante informatie te geven, maar nooit helemaal wegnemen: niet alles wat je weet, bedoelt of belangrijk vindt, komt in je prompt terecht. ",
+      "Text 3": "Onderzoek laat zien dat dit ook in gesprekken met  large language models een rol speelt. Studies hebben aangetoond dat large language models antwoorden genereren met aanzienlijk minder conversationele afstemming (grounding) dan mensen. In plaats van actief te controleren of ze je correct hebben begrepen, gaan ze er doorgaans van uit dat er al een gemeenschappelijke basis bestaat. Hierbij doet zich een interessante complicatie voor: de fine-tuning die modellen behulpzamer en meer als een assistent laat reageren, kan dit probleem juist verergeren. Hoe meer het model zich als een assistent gedraagt, hoe kleiner de kans dat het eerst controleert wat je daadwerkelijk bedoelde. ",
+      "Text 4": "Over langere gesprekken kan dit probleem zich opstapelen. Zelfs bij de meest geavanceerde modellen die momenteel beschikbaar zijn, daalt de gemiddelde prestatie op generatietaken met ongeveer 39% in gesprekken met meerdere beurten (multi-turn) vergeleken met volledig gespecificeerde instructies in één beurt (single-turn). "
+    },
+    "c2.block-15": {
+      "Text 1": "\n        Sectie 1 Bronnen\n      ",
+      "Text 2": "Xu, Q. et al. (2025). Large language models without grounding recover non sensorimotor but not sensorimotor features of human concepts. ",
+      "Text 3": "Nature Human Behaviour",
+      "Text 4": ", 9, 1871–1886.",
+      "Text 5": "Brown, T. B. et al. (2020). Language models are few shot learners. ",
+      "Text 6": "Advances in Neural Information Processing Systems",
+      "Text 7": ", 33, 1877–1901.",
+      "Text 8": "Baack, S. (2024). A critical analysis of the largest source for generative AI training data: Common Crawl. ",
+      "Text 9": "Proceedings of ACM FAccT 2024",
+      "Text 10": ", pp. 2194–2207.",
+      "Text 11": "Resnik, P. (2025). Large language models are biased because they are large language models. ",
+      "Text 12": "Computational Linguistics",
+      "Text 13": ", 51(3), 885–906. [Position paper]",
+      "Text 14": "Wang, D. et al. (2025/2026). A large scale comparison of divergent creativity in humans and large language models. ",
+      "Text 15": "Nature Human Behaviour",
+      "Text 16": ", 10, 531–540.",
+      "Text 17": "Koivisto, M. & Grassini, S. (2023). Best humans still outperform artificial intelligence in a creative divergent thinking task. ",
+      "Text 18": "Scientific Reports",
+      "Text 19": ", 13, 13601.",
+      "Text 20": "Shaikh, O. et al. (2024). Grounding gaps in language model generations. ",
+      "Text 21": "Proceedings of NAACL 2024",
+      "Text 22": ", pp. 6279–6296.",
+      "Text 23": "Laban, P. et al. (2026). LLMs get lost in multi turn conversation. ",
+      "Text 24": "Proceedings of ICLR 2026",
+      "Text 25": " (Oral). arXiv: 2505.06120."
+    },
+    "c2.block-16": {
+      "Heading 1": "Mens vs GenAI: een functionele vergelijking"
+    },
+    "c2.block-17": {
+      "Text 1": "In sectie 1 is vastgesteld hoe menselijke intelligentie van GenAI verschilt. De input is anders, de trainingsdata zijn geen volledige weerspiegeling van de werkelijkheid, en het grootste deel van wat jij bedoelt, bereikt het model nooit. Maar hoe werken deze structurele verschillen door wanneer mensen en AI specifieke taken uitvoeren? ",
+      "Text 2": "Deze sectie vergelijkt tien cognitieve functies, onderverdeeld in drie categorieën op basis van waar de voorsprong ligt: bij de mens, bij GenAI, of bij geen van beide duidelijk. "
+    },
+    "c2.block-18": {
+      "Text 1": "M",
+      "Text 2": "\n          Mens heeft de voorsprong\n        "
+    },
+    "c2.block-19": {
+      "Text 1": "Waarneming",
+      "Text 2": "Mensen nemen de wereld waar via vijf zintuigen tegelijk, waarvan de informatie wordt geïntegreerd tot een samenhangende ervaring. Als je naast een olifant staat, zie je hoe groot hij is, hoor je zijn bewegingen, ruik je hem en voel je misschien zelfs de grond onder je voeten trillen. GenAI heeft geen eigen zintuiglijke ervaring. Een multimodaal model kan op een foto een olifant herkennen en kenmerken ervan beschrijven, maar het ervaart niet hoe groot, dichtbij of indrukwekkend het dier is. Bij waarneming heeft de mens daarom een duidelijke voorsprong."
+    },
+    "c2.block-20": {
+      "Text 1": "Emotionele verwerking",
+      "Text 2": "Mensen ervaren emoties die hun denken, motivatie en gedrag beïnvloeden. Als je tijdens een gesprek merkt dat iets je ongemakkelijk maakt, kan dat een signaal zijn om beter op te letten, door te vragen of je gedrag aan te passen. GenAI kan emotionele signalen in taal herkennen en daarop passend reageren, maar ervaart die emoties niet zelf en beschikt dus niet over zulke eigen emotionele signalen om een situatie te beoordelen en erop te reageren. "
+    },
+    "c2.block-21": {
+      "Text 1": "Metacognitie",
+      "Text 2": "Mensen kunnen nadenken over wat ze weten en wat ze niet weten. Tijdens het studeren kun je bijvoorbeeld beseffen dat je een begrip nog niet goed genoeg begrijpt en besluiten het opnieuw te bestuderen. Mensen schatten hun eigen kennis overigens niet altijd goed in. GenAI kan onzekerheid uitdrukken, maar heeft geen metacognitief bewustzijn zoals mensen dat hebben. Daardoor kan het onjuiste informatie overtuigend presenteren."
+    },
+    "c2.block-22": {
+      "Text 1": "Sociale cognitie",
+      "Text 2": "Mensen ontwikkelen sociaal begrip via echte relaties, emotionele betrokkenheid en jaren van interactie. Je begrijpt een opmerking van een goede vriend bijvoorbeeld mede door eerdere gesprekken en ervaringen met die persoon. GenAI kan goed presteren op taken die sociaal redeneren meten, maar heeft zelf geen relaties of sociale ervaringen waarop dat begrip is gebaseerd. Daardoor mist het informatie die mensen in echte sociale situaties gebruiken om te begrijpen wat er werkelijk speelt en welke reactie passend is. "
+    },
+    "c2.block-23": {
+      "Text 1": "↔",
+      "Text 2": "\n          Beide bekwaam, afhankelijk van de taak\n        "
+    },
+    "c2.block-24": {
+      "Text 1": "Kortetermijnopslag",
+      "Text 2": "Het menselijk werkgeheugen kan ongeveer vier tot zeven informatieeenheden (chunks) vasthouden en actief bewerken. De contextvensters van GenAI duizenden tokens passief beschikbaar houden. Studies laten zien dat ook GenAI beperkingen heeft wanneer informatie actief moet worden bewerkt. Mensen zijn echter beter in staat om flexibel te bepalen welke informatie relevant is en hun denken aan te passen wanneer de situatie verandert."
+    },
+    "c2.block-25": {
+      "Text 1": "Redeneren",
+      "Text 2": "Mensen kunnen causaal, contrafeitelijk (wat zou er gebeurd zijn als?) en analogisch (wat kan ik uit een vergelijkbare situatie afleiden?) redeneren en zich flexibel aanpassen aan nieuwe situaties. GenAI presteert op sommige gestructureerde redeneertaken beter dan mensen, maar heeft meer moeite met complexe causale vraagstukken, bijvoorbeeld wanneer het moet voorspellen wat er verandert als je actief ingrijpt in een situatie, of bij onzekerheid moet bedenken welke informatie nodig is om tussen verschillende verklaringen te kunnen kiezen. "
+    },
+    "c2.block-26": {
+      "Text 1": "Taalverwerking",
+      "Text 2": "Mensen begrijpen niet alleen de woorden en grammatica van een zin, maar ook wat iemand ermee bedoelt en wat de woorden in die specifieke situatie betekenen. GenAI heeft een sterke beheersing van grammatica, maar is minder consistent in het passend gebruiken van taal in een specifieke context. Het belangrijke verschil is dat een sterke taalbeheersing niet automatisch betekent dat een systeem ook begrijpt en redeneert zoals een mens. GenAI laat daarmee zien dat een sterke taalbeheersing niet automatisch samengaat met een even sterk vermogen om te redeneren of de context te begrijpen. "
+    },
+    "c2.block-27": {
+      "Text 1": "Creativiteit",
+      "Text 2": "Mensen verschillen sterk in hoe creatief hun ideeën zijn. Onderzoek naar het bedenken van originele ideeën laat zien dat de meest creatieve mensen beter presteren dan GenAI. GenAI produceert daarentegen gemiddeld redelijk creatieve resultaten, met minder uitschieters naar boven en beneden. Pogingen om de creativiteit van GenAI met prompt engineering te vergroten, hebben wisselende en soms zelfs negatieve resultaten opgeleverd. "
+    },
+    "c2.block-28": {
+      "Text 1": "G",
+      "Text 2": "\n          GenAI heeft de voorsprong bij grote schaal\n        "
+    },
+    "c2.block-29": {
+      "Text 1": "Patroonherkenning",
+      "Text 2": "GenAI kan statistische patronen herkennen in enorme hoeveelheden voorbeelden, met een snelheid en consistentie die het menselijke vermogen overstijgen. Bij gestructureerde taken waarin overeenkomsten en patronen moeten worden herkend, presteert GenAI soms even goed als of beter dan mensen. De prestaties verschillen echter sterk tussen modellen en soorten taken. "
+    },
+    "c2.block-30": {
+      "Text 1": "Langetermijnopslag",
+      "Text 2": "GenAI legt patronen uit enorme hoeveelheden trainingsdata vast in miljarden parameters, veel meer informatie dan een mens kan onthouden. Na de training veranderen deze parameters niet door een gewoon gesprek met het model. Het menselijke geheugen kan veel minder informatie bevatten, maar blijft leren van nieuwe ervaringen."
+    },
+    "c2.block-31": {
+      "Text 1": "\n        Sectie 2 Bronnen\n      ",
+      "Text 2": "Xu, Q. et al. (2025). ",
+      "Text 3": "Nature Human Behaviour",
+      "Text 4": ", 9, 1871–1886.",
+      "Text 5": "Chemero, A. (2023). ",
+      "Text 6": "Nature Human Behaviour",
+      "Text 7": ", 7(11), 1828–1829.",
+      "Text 8": "Schlegel, K. et al. (2025). ",
+      "Text 9": "Communications Psychology",
+      "Text 10": ", 3, Article 80.",
+      "Text 11": "Cash, T. N. et al. (2025). ",
+      "Text 12": "Memory & Cognition",
+      "Text 13": ".",
+      "Text 14": "Strachan, J. W. A. et al. (2024). ",
+      "Text 15": "Nature Human Behaviour",
+      "Text 16": ", 8(7), 1285–1295.",
+      "Text 17": "Gong, D., Wan, X. & Wang, D. (2024). ",
+      "Text 18": "Proceedings of AAAI 2024",
+      "Text 19": ", 38, 10048–10056.",
+      "Text 20": "Hagendorff, T., Fabi, S. & Kosinski, M. (2023). ",
+      "Text 21": "Nature Computational Science",
+      "Text 22": ", 3(10), 833–838.",
+      "Text 23": "Binz, M. & Schulz, E. (2023). ",
+      "Text 24": "PNAS",
+      "Text 25": ", 120(6), e2218523120.",
+      "Text 26": "Mahowald, K. et al. (2024). ",
+      "Text 27": "Trends in Cognitive Sciences",
+      "Text 28": ", 28(6), 517–540.",
+      "Text 29": "Wang, D. et al. (2025/2026). ",
+      "Text 30": "Nature Human Behaviour",
+      "Text 31": ", 10, 531–540.",
+      "Text 32": "Koivisto, M. & Grassini, S. (2023). ",
+      "Text 33": "Scientific Reports",
+      "Text 34": ", 13, 13601.",
+      "Text 35": "Webb, T., Holyoak, K. J. & Lu, H. (2023). ",
+      "Text 36": "Nature Human Behaviour",
+      "Text 37": ", 7(9), 1526–1541.",
+      "Text 38": "de Varda, A. G., Saponaro, S. & Marelli, M. (2025). ",
+      "Text 39": "Nature Human Behaviour",
+      "Text 40": " [Matters Arising]."
+    },
+    "c2.block-32": {
+      "Heading 1": "Een kader voor samenwerking: S.A.T Framework"
+    },
+    "c2.block-33": {
+      "Text 1": "Het begin is altijd van jou"
+    },
+    "c2.block-34": {
+      "Text 1": "Voordat AI kan helpen, moet er al iets in jouzelf zijn. Een eerste idee van wat je probeert te doen, wat je ermee wilt bereiken, en welke richting je op wilt. GenAI kan niet voor jou bepalen wat jouw bedoeling is. AI is een hulpmiddel, geen wondermiddel. ",
+      "Text 2": "Je moet zelf begrijpen hoe je te werk wilt gaan en bij welke onderdelen AI je kan ondersteunen. Zonder dat is het moeilijk te verwachten dat de interactie met AI tot iets zinvols leidt. Dat geldt vooral voor werk waarbij het denkwerk van jouzelf moet zijn, zoals het schrijven van een paper, het ontwikkelen van een project, of het formuleren van een argument waar je zelf achter staat. "
+    },
+    "c2.block-35": {
+      "Text 1": "De rol van GenAI: Operationalisering"
+    },
+    "c2.block-36": {
+      "Text 1": "Zodra je die richting hebt, zet iets op papier. Schets een idee, maak een eerste opzet of noteer een paar gedachten. Het hoeft niet goed uitgewerkt te zijn. Er moet alleen iets zijn waarmee je verder kunt werken. ",
+      "Text 2": "Dan kan GenAI nuttig worden. Als je niks op papier zet en alles in je hoofd houdt, lopen allerlei gedachten door elkaar en is het lastig om je ideeën volledig uit te werken en te ordenen. Het is ook moeilijker om te beoordelen of een idee echt klopt, logisch samenhangt, of feitelijk juist is. Op basis van jouw input kan GenAI vervolgens bijvoorbeeld mogelijke ontbrekende elementen, relevante informatie of alternatieve structuren genereren. Die output kun je vervolgens kritisch beoordelen en gebruiken om je eigen werk verder te ontwikkelen. ",
+      "Text 3": "GenAI ‘denkt’ daarbij niet in jouw plaats. Het helpt je om je eigen gedachten zichtbaar te maken en te ordenen, zodat je erop voort kan bouwen. Met andere woorden: het kan een hulpmiddel zijn in jouw eigen denkproces om van eerste gedachten naar uitgewerkte ideeën te komen.  "
+    },
+    "c2.block-37": {
+      "Text 1": "S.A.T Framework ",
+      "Text 2": "(Self–AI–Team)",
+      "Diagram label 1": "Self",
+      "Diagram label 2": "Intent",
+      "Diagram label 3": "AI",
+      "Diagram label 4": "Operationalize",
+      "Diagram label 5": "Self",
+      "Diagram label 6": "Judge",
+      "Diagram label 7": "AI",
+      "Diagram label 8": "Refine",
+      "Diagram label 9": "Self",
+      "Diagram label 10": "Present",
+      "Diagram label 11": "Team",
+      "Diagram label 12": "Feedback",
+      "Diagram label 13": "Self",
+      "Diagram label 14": "Integrate",
+      "Diagram label 15": "Team",
+      "Diagram label 16": "Expand",
+      "Diagram label 17": "SELF–AI",
+      "Diagram label 18": "SELF–TEAM",
+      "Diagram label 19": "SELF–AI",
+      "Diagram label 20": "SELF–TEAM",
+      "Diagram label 21": "Cycle 1",
+      "Diagram label 22": "Cycle 2",
+      "Diagram label 23": "Cycle 3",
+      "Diagram label 24": "Cycle 4",
+      "Diagram label 25": "SCALE OF THE WORK",
+      "Diagram label 26": "SESSION PROGRESSION",
+      "Diagram label 27": "“At every transition, you steer.”"
+    },
+    "c2.block-38": {
+      "Text 1": "1.",
+      "Text 2": "De Self–AI loop",
+      "Text 3": "Je brengt een bedoeling en eerste opzet in. GenAI helpt die concreter uit te werken. Jij beoordeelt en stuurt bij, waarna GenAI een nieuwe versie genereert. Zorg ervoor dat in elke ronde je werk verder aangescherpt raakt. ",
+      "Text 4": "Maar op een gegeven moment kan dit proces vastlopen. Het model valt terug op eerdere aannames, geeft \"complete\" antwoorden zonder toelichting, of produceert antwoorden die intern consistent zijn maar toch niet lijken te kloppen. Dan is het aan jou om het resultaat te controleren en te bepalen wat bruikbaar en betrouwbaar is. Maar ook na die controle kan de wisselwerking tussen jou en AI op een gegeven moment weinig nieuws meer opleveren. "
+    },
+    "c2.block-39": {
+      "Text 1": "2.",
+      "Text 2": "De Self–Team loop",
+      "Text 3": "Wanneer de Self-AI loop weinig nieuws meer oplevert, leg je je gecontroleerde werk voor aan anderen: medestudenten, tutoren, je projectgroep. Het team brengt iets in wat GenAI niet heeft: gedeelde context, sociaal inzicht, ervaring met de echte wereld en kennis van wat in de praktijk wel en niet werkt. ",
+      "Text 4": "Jij presenteert je werk, anderen reageren en er ontstaan nieuwe vragen. Je oorspronkelijke idee wordt daardoor niet alleen aangescherpt, maar ook verbreed: er komen perspectieven en mogelijkheden bij die je zelf nog niet had gezien. "
+    },
+    "c2.block-40": {
+      "Text 1": "3.",
+      "Text 2": "Overgang",
+      "Text 3": "Elke overgang is jouw verantwoordelijkheid. Met de ondersteuning van AI breng je werk dat je zelf hebt beoordeeld en gecontroleerd naar het team. Met de feedback van het team keer je terug naar AI met nieuwe informatie en nieuwe vragen. Zo begint iedere nieuwe ronde vanuit een sterker uitgangspunt en bouwt deze voort op de vorige. "
+    },
+    "c2.block-41": {
+      "Text 1": "Uitgewerkt voorbeeld"
+    },
+    "c2.block-42": {
+      "Text 1": "Het einde is ook van jou "
+    },
+    "c2.block-43": {
+      "Text 1": "Net zoals jouw bedoeling en richting aan het begin van jou moeten komen, kun je ook het einde niet uit handen geven. GenAI kan niet verantwoordelijk worden gemaakt voor het uiteindelijke werk. Wanneer de output van de Self-AI loop wordt besproken, gepresenteerd of ingeleverd, staat jouw naam erop en ben jij verantwoordelijk voor wat het werk zegt en waar het voor staat.",
+      "Text 2": "Je toetst daarom wat de interactie met GenAI heeft opgeleverd aan je oorspronkelijke bedoeling en gebruikt dit om je eigen werk verder te ontwikkelen. De uiteindelijke tekst schrijf je zelf: je neemt geen door GenAI gegenereerde tekst over in je werk. Ja, dit gaat deels over plagiaat en regels. Maar belangrijker is dat de ideeën, keuzes en formuleringen in het eindproduct daadwerkelijk van jou zijn en dat je die kunt uitleggen en verantwoorden. Kleine fouten of verkeerde aannames die tijdens het werken met AI ontstaan, kunnen zich in de loop van het proces opstapelen. Blijf daarom gedurende het hele proces kritisch controleren wat je uit de interactie met AI meeneemt in je eigen werk. "
+    },
+    "c2.block-44": {
+      "Text 1": "\n        Sectie 3 Bronnen\n      ",
+      "Text 2": "Laird, J. E., Lebiere, C. & Rosenbloom, P. S. (2017). AI Magazine, 38(4), 13–26.",
+      "Text 3": "Sumers, T. R. et al. (2024). Transactions on Machine Learning Research."
+    },
+    "c2.extra-10": {
+      "Text 1": "\n    Doorgaan naar C3 →\n  "
+    },
+    "c2.extra-11": {
+      "ai 1": "AI",
+      "of 1": "of",
+      "copy 1": "Copy",
+      "self 1": "Self",
+      "team 1": "Team",
+      "adopt 1": "Adopt",
+      "slide 1": "Go to slide",
+      "change 1": "Change",
+      "copied 1": "Copied",
+      "course 1": "Course",
+      "modify 1": "Modify",
+      "typing 1": "What you type",
+      "discard 1": "Discard",
+      "example 1": "Example",
+      "feedback 1": "Feedback",
+      "thinking 1": "What you are actually thinking",
+      "processing 1": "How the model actually processes this",
+      "course help 1": "AI-Wise adapts its examples, explanations, and prompt templates to your course. You can change this at any time.",
+      "subsections 1": "subsections toggle",
+      "Navigation c1 1": "C1: What is AI?",
+      "Navigation c2 1": "C2: What is AI for us?",
+      "Navigation c3 1": "C3: How do we use AI?",
+      "choose course 1": "Choose your course",
+      "send feedback 1": "Send feedback",
+      "close feedback 1": "Close feedback",
+      "feedback thanks 1": "Thank you — your feedback has been noted.",
+      "feedback question 1": "What's on your mind?",
+      "feedback placeholder 1": "Share a thought, suggestion, or issue...",
+      "Navigation c1 section 1 1": "History & Development",
+      "Navigation c1 section 2 1": "Anatomy of GenAI",
+      "Navigation c1 section 3 1": "GenAI Output Traits",
+      "Navigation c2 section 1 1": "AI vs Human Intelligence",
+      "Navigation c2 section 2 1": "Human vs GenAI",
+      "Navigation c2 section 3 1": "Collaboration Framework",
+      "Navigation c3 section 1 1": "Prompt",
+      "Navigation c3 section 2 1": "Critique",
+      "Navigation c3 section 3 1": "Integrate"
+    },
+    "c2.extra-12": {
+      "Page title 1": "AI-Wise · C2: What is AI for us?"
+    },
+    "c2.extra-13": {
+      "aria-label 1": "Previous"
+    },
+    "c2.extra-14": {
+      "aria-label 1": "Next"
+    },
+    "c2.extra-15": {
+      "aria-label 1": "SAT Framework: vier afwisselende Self-AI en Self-Team cycli die samen een versnellende groeicurve vormen, met bij elke overgang een pictogram van een menselijke ankerfiguur "
+    },
+    "c2.extra-16": {
+      "aria-label 1": "Self-AI loop: Self Intentie, AI Operationaliseren, Self Beoordelen, AI Verfijnen"
+    },
+    "c2.extra-17": {
+      "aria-label 1": "Self-Team loop: Self Presenteren, Team Feedback, Self Integreren, Team Uitbreiden"
+    }
+  }
+}
