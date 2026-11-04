@@ -1,13 +1,271 @@
 {
   "schema": 1,
-  "sequence": 17,
+  "sequence": 20,
   "course": "common",
   "chapter": "c3",
   "locale": "nl",
-  "submission_id": "31e34cca-28b9-4819-b7c5-dad87fa1ae47",
+  "submission_id": "93dd1922-7b60-4567-a95e-fd493d2a6566",
   "source_release": "40b214a8-9f92-42b6-a365-6a1d79b61c13",
-  "approved_at": "2026-11-04T11:08:42.280597+00:00",
+  "approved_at": "2026-11-04T13:57:31.423139+00:00",
   "slots": {
+    "_studio": {
+      "boxes": [
+        {
+          "id": "box-85727b86-30f9-437c-a3ee-9b1a0a49d3dc",
+          "size": 0,
+          "slot": "c3.block-44",
+          "align": "left",
+          "anchor": 0,
+          "fields": [
+            [
+              {
+                "text": "V"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "j"
+              },
+              {
+                "text": "f"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "p"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "c"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "p"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "v"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "c"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "m"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": "c"
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "t"
+              }
+            ],
+            [
+              {
+                "text": "Zoals we gedurende de module al hebben aangegeven, verandert het gebruik van GenAI in academisch werk niet wie verantwoordelijk is voor het geleverde werk. Jij bent verantwoordelijk voor het hele proces: van hoe je besluit GenAI te gebruiken, tot wat je uiteindelijk inlevert. \n\nHoud altijd deze vijf principes van academische integriteit in gedachten"
+              },
+              {
+                "text": ": \n\n"
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "1. "
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "Eerlijkheid"
+              },
+              {
+                "text": "\n\n"
+              },
+              {
+                "text": "Wees eerlijk over hoe je GenAI gebruikt. Welke platforms heb je gebruikt? Voor welke specifieke oefeningen? Hoe heb je de output beoordeeld? Hoe heb je de interactie met GenAI gebruikt bij het ontwikkelen van je eigen werk? "
+              },
+              {
+                "text": "\n\n"
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "2. "
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "Zorgvuldigheid"
+              },
+              {
+                "text": "\n\nC"
+              },
+              {
+                "text": "ontroleer door AI gegenereerde informatie, conclusies, redeneringen en bronvermeldingen. Accepteer deze niet zomaar omdat ze aannemelijk klinken of omdat ze bevestigen wat je alverwachtte. Ga waar nodig terug naar de oorspronkelijke en betrouwbare bronnen"
+              },
+              {
+                "text": "."
+              },
+              {
+                "text": "\n\n"
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "3. Transpar"
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "antie"
+              },
+              {
+                "text": "\n\n"
+              },
+              {
+                "text": "Houd bij hoe je AI gebruikt voor je academische werk, ook als dit niet expliciet vereist is binnen een vak."
+              },
+              {
+                "text": "\n\n"
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "4. "
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "Onafhankelijkheid "
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "\n"
+              },
+              {
+                "text": "\nTa"
+              },
+              {
+                "text": "ken en opdrachten zijn ontworpen om je aan het denken te zetten en je eigen leerproces te ontwikkelen. Delegeer dat niet aan AI. Onthoud: het begin is altijd van jou, en het einde is altijd van jou. Begin met je eigen denken en evalueer kritisch wat GenAI oplevert en hoe je dit kunt gebruiken om je eigen werk verder te ontwikkelen. Vraag jezelf af: 1) Zijn de kernideeën en oordelen in deze opdracht van mijzelf? en 2) Zou ik dit kunnen doen zonder de hulp van"
+              },
+              {
+                "text": " GenAI?"
+              },
+              {
+                "text": "\n\n"
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "5. "
+              },
+              {
+                "bold": true,
+                "size": 18,
+                "text": "Verantwoordelijkheid"
+              },
+              {
+                "text": "\n\n"
+              },
+              {
+                "text": "Jij blijft volledig verantwoordelijk voor het werk dat je inlevert. Jet moet ervoor zorgen dat je werk daadwerkelijk van jouzelf is, de juistheid van informatie en bronvermeldingen verifiëren, en in staat zijn je argumenten en conclusies uit te leggen en te verdedigen"
+              },
+              {
+                "text": "."
+              }
+            ]
+          ],
+          "template": "text"
+        }
+      ],
+      "formats": [],
+      "version": 1
+    },
     "c3.block-0": {
       "Heading 1": "Hoe gebruiken we AI?"
     },
