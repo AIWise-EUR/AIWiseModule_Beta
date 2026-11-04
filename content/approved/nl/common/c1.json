@@ -1,0 +1,220 @@
+{
+  "schema": 1,
+  "sequence": 15,
+  "course": "common",
+  "chapter": "c1",
+  "locale": "nl",
+  "submission_id": "53b18ede-b1e9-4615-afbe-dad244d237a2",
+  "source_release": "59f31469-f327-4d7e-a710-4eec97ace5c4",
+  "approved_at": "2026-11-04T11:07:30.312678+00:00",
+  "slots": {
+    "c1.block-0": {
+      "Heading 1": "Wat is Generatieve AI?"
+    },
+    "c1.block-1": {
+      "Text 1": "Je komt het woord “GenAI” overal tegen. Maar bekend zijn met een term is niet hetzelfde als begrijpen wat iets daadwerkelijk inhoudt. Dit blok helpt dat begrip op te bouwen – van waar GenAI vandaan komt tot waar het uit bestaat en waar het (niet) behulpzaam bij is."
+    },
+    "c1.block-2": {
+      "Heading 1": "Wat is AI? Wat is GenAI?"
+    },
+    "c1.block-3": {
+      "Text 1": "Je hebt de term vast al vaak gehoord. Maar wat is GenAI precies, en hoe is het ontstaan? ",
+      "Text 2": "Kunstmatige intelligentie bestaat al meer dan zestig jaar. De tijdlijn hieronder schetst die bredere geschiedenis. Vroege systemen zoals ELIZA in de jaren ‘60 van de vorige eeuw steunden volledig op regels. Ze herkenden patronen in de invoer van gebruikers en gaven vooraf geschreven antwoorden terug. Ze leerden niet van data en genereerden geen nieuwe inhoud. Latere systemen zoals Siri, Google Now en Alexa konden informatie opzoeken en reageren op spraakinvoer, maar leunden nog steeds voornamelijk op herkenning, classificatie en retrieval (het ophalen van informatie). \n      ",
+      "Text 3": "GenAI markeert een ander punt in die geschiedenis. Systemen zoals ChatGPT geven niet simpelweg opgeslagen antwoorden terug. Ze genereren antwoorden door nieuwe tekst te produceren op basis van statistische patronen die zijn geleerd uit grote hoeveelheden menselijke geschreven taal. Dit is een ander mechanisme dan dat van eerdere systemen. \n      ",
+      "Text 4": "Het is ook belangrijk om precies te zijn in de terminologie die we gebruiken. AI is de breedste categorie en omvat veel verschillende soorten systemen, zoals aanbevelingssystemen (denk aan Spotify dat muziek aanbeveelt op basis van je luistergedrag), fraudedetectietools, beeldclassificatoren (bijv. je zoekt in je foto-app naar ‘kat’ en krijgt alle foto's te zien waarop een kat staat) en medische beslissingsondersteuningssystemen. GenAI is een specifiekere categorie binnen AI. Het verwijst naar systemen die nieuwe inhoud genereren in plaats van simpelweg informatie te classificeren, te rangschikken of op te halen. Large language models, of LLM’s, vormen een verdere subcategorie binnen GenAI. Dit zijn modellen die zijn ontworpen om taal te genereren op basis van patronen die zijn geleerd uit grote hoveelheden tekst. Systemen zoals ChatGPT of Claude kan je het beste op deze manier begrijpen: het zijn GenAI-systemen gebouwd op LLM’s. \n      "
+    },
+    "c1.block-4": {
+      "Text 1": " De ontwikkelingslijn van op regels gebaseerde conversatiesystemen naar Generatieve AI (aangepast van Yenduri et al., 2024, Figuur 2). De kwalitatieve verschuiving vindt plaats bij ChatGPT (2022): voor het eerst genereert het systeem nieuwe tekst in plaats van vooraf geschreven antwoorden op te halen of te matchen.",
+      "Text 2": "Bron: Yenduri, G. et al. (2024). GPT — A Comprehensive Review on Enabling Technologies, Potential Applications, Emerging Challenges, and Future Directions. IEEE Access, 12, 54608–54649. DOI: 10.1109/ACCESS.2024.3389497",
+      "Emphasis 1": "Figuur 1.",
+      "Diagram label 1": "ELIZA",
+      "Diagram label 2": "1960",
+      "Diagram label 3": "Patroonherkenning",
+      "Diagram label 4": "",
+      "Diagram label 5": "PARRY",
+      "Diagram label 6": "1970",
+      "Diagram label 7": "Psychologische",
+      "Diagram label 8": "concepten",
+      "Diagram label 9": "ALICE",
+      "Diagram label 10": "1995",
+      "Diagram label 11": "Taalanalyse",
+      "Diagram label 12": "",
+      "Diagram label 13": "Siri",
+      "Diagram label 14": "2010",
+      "Diagram label 15": "Persoonlijke",
+      "Diagram label 16": "assistent",
+      "Diagram label 17": "Google Now",
+      "Diagram label 18": "2012",
+      "Diagram label 19": "Antwoorden &",
+      "Diagram label 20": "acties",
+      "Diagram label 21": "Alexa",
+      "Diagram label 22": "2014",
+      "Diagram label 23": "Intelligente",
+      "Diagram label 24": "assistent",
+      "Diagram label 25": "ChatGPT",
+      "Diagram label 26": "2022",
+      "Diagram label 27": "Genereert",
+      "Diagram label 28": "mensachtige tekst",
+      "Diagram label 29": "Retrieval en op regels gebaseerde systemen",
+      "Diagram label 30": "Generatieve AI"
+    },
+    "c1.block-5": {
+      "Heading 1": "Waar bestaat GenAI uit?"
+    },
+    "c1.block-6": {
+      "Text 1": "Wanneer een antwoord vloeiend klinkt of goed gericht is, is het verleidelijk om het systeem te antropomorfiseren, dat wil zeggen: we schrijven er menselijke eigenschappen aan toe en gaan ervan uit dat het begrijpt wat het zegt zoals een mens dat doet. Deze reactie is natuurlijk, maar onderstaand diagram is bedoeld om die intuïtie te doorbreken. Het diagram helpt je om beter te begrijpen wat er achter GenAI schuilgaat: een systeem van fysieke en digitale onderdelen die samenwerken om antwoorden te genereren. Door beter te begrijpen hoe dit systeem werkt, kun je GenAI ook bewuster en op een passende manier gebruiken. \n      "
+    },
+    "c1.block-7": {
+      "Heading 1": "Waarmee GenAI kan helpen — en waar het structureel tekortschiet"
+    },
+    "c1.block-8": {
+      "Text 1": "Als je weet hoe GenAI werkt, kan je gemakkelijker herkennen bij welke activiteiten het nuttig kan zijn, en wat de beperkingen zijn. De beperkingen die hieronder genoemd worden zijn geen ontwerpfouten, maar vloeien voort uit de manier waarop GenAI werkt, zoals beschreven is in Sectie 2. \n      "
+    },
+    "c1.block-9": {
+      "Text 1": "\n          Nuttige toepassingen\n        "
+    },
+    "c1.extra-0": {
+      "alt 1": "Erasmus University Rotterdam",
+      "Text 1": "AI-Wijs",
+      "Text 2": "Kernblokken",
+      "Text 3": " › C1 · Wat is GenAI?\n  "
+    },
+    "c1.extra-1": {
+      "Text 1": "Navigatie door de kernblokken"
+    },
+    "c1.extra-2": {
+      "Text 1": "C1 · Kernblok"
+    },
+    "c1.extra-3": {
+      "Text 1": "Sectie 1"
+    },
+    "c1.extra-4": {
+      "Text 1": "Sectie 2"
+    },
+    "c1.extra-5": {
+      "Text 1": "Sectie 3"
+    },
+    "c1.extra-6": {
+      "Text 1": "↑"
+    },
+    "c1.extra-7": {
+      "Text 1": "↓"
+    },
+    "c1.extra-8": {
+      "Text 1": "Kernblokken",
+      "Text 2": "← Terug naar Home"
+    },
+    "c1.extra-9": {
+      "Text 1": "← Terug naar Home"
+    },
+    "c1.block-10": {
+      "Text 1": "Brainstormen en ideeën genereren",
+      "Text 2": "GenAI kan snel een breed scala aan ideeën genereren door te putten uit patronen en associaties die het tijdens de training heeft geleerd. De eerste stap bij het bedenken van ideeën moet uiteraard wel van jou komen. Voordat je AI om ideeën vraagt, activeer je eerst wat je zelf al weet: denk na over het onderwerp, formuleer je eigen vragen, leg verbanden, of bespreek het onderwerp met medestudenten. Dit helpt je om je eigen perspectief te ontwikkelen voordat je wordt blootgesteld aan door AI gegenereerde ideeën. Daarna kun je AI gebruiken om nieuwe perspectieven te verkennen en ideeën te ontdekken waar je zelf nog niet aan had gedacht. Evalueer de suggesties kritisch en bepaal welke volgens jou de moeite waard zijn om verder uit te werken."
+    },
+    "c1.block-11": {
+      "Text 1": "Structureren en een opzet maken",
+      "Text 2": "Omdat GenAI enorme hoeveelheden academisch schrijfwerk heeft verwerkt, is het sterk in het herkennen van patronen in conventionele structuren – argumentatielijnen, volgorde van secties, paragraafopbouw. Wanneer je de opdracht al begrijpt en je eigen ideeën hebt ontwikkeld, kan GenAI een plausibele opzet maken voor bijvoorbeeld een literatuuroverzicht of discussie. Behandel de output altijd als een voorlopige opzet die je kritisch beoordeelt en zelf verder uitwerkt, niet als een eindproduct. Jij blijft zelf verantwoordelijk voor de beslissing wat er in je werk hoort en waarom."
+    },
+    "c1.block-12": {
+      "Text 1": "Parafraseren en herformuleren",
+      "Text 2": "GenAI kan je helpen een idee in andere woorden of op een ander complexiteitsniveau uit te drukken. Dit is vooral nuttig wanneer je de stof zelf al hebt bestudeerd en begrijpt wat je probeert te zeggen, maar het (nog) niet helder onder woorden kunt brengen. Wees echter voorzichtig: wanneer je de tekst meerdere keren met behulp van AI aanpast, kan AI geleidelijk nieuwe ideeën of interpretaties toevoegen aan die van jou. Na verloop van tijd kan de resulterende tekst volledig als jouw eigen tekst gaan voelen, zelfs wanneer delen ervan niet langer je oorspronkelijke gedachten weerspiegelen. Zorg ervoor dat je je bewust blijft van wat van jou komt en wat AI heeft bijgedragen."
+    },
+    "c1.block-13": {
+      "Text 1": "Grote hoeveelheden tekst samenvatten",
+      "Text 2": "GenAI kan een lang document snel samenvatten tot de kernpunten. Dit kan tijd besparen bij een eerste oriëntatie op een onbekend onderwerp of literatuurgebied. Er is echter een risico: een samenvatting is een selectie gemaakt door GenAI, en je kunt niet nagaan wat er is weggelaten of verdraaid zonder het origineel te lezen."
+    },
+    "c1.block-14": {
+      "Text 1": "\n          Beperkingen\n        "
+    },
+    "c1.block-15": {
+      "Text 1": "Bronvermelding en refereren",
+      "Text 2": "Hallucinaties zijn geen toevallige fouten – ze zijn een structureel gevolg van de manier waarop GenAI tekst genereert. Het model produceert het statistisch meest waarschijnlijke volgende token, en een geloofwaardig klinkende bronvermelding kan daardoor waarschijnlijker zijn dan aangeven dat het model iets niet weet. Referenties die door GenAI worden gegenereerd, moeten worden gecontroleerd in betrouwbare wetenschappelijke databases voordat je ze gebruikt. Verwijs nooit naar een bron die je niet zelf hebt gelezen. ",
+      "Text 3": "Waarom: via logits softmax worden waarschijnlijkheden toegekend aan mogelijke volgende tokens. Daardoor kan GenAI vloeiende en overtuigend klinkende tekst genereren, ook wanneer de inhoud niet klopt – bijvoorbeeld in de vorm van fictieve referenties (Shanahan, 2024; Huang et al., 2025) "
+    },
+    "c1.block-16": {
+      "Text 1": "Kritische analyse en oorspronkelijke argumentatie",
+      "Text 2": "GenAI heeft geen echt standpunt over wat dan ook. Wat op een argument lijkt, is een statistisch waarschijnlijke reeks tokens die het patroon van een argument volgt. Voor opdrachten waarbij je bewijs moet beoordelen, een standpunt moet innemen of een betoog moet opbouwen, moet je het denkproces zelf starten. Je kunt AI vervolgens gebruiken om tegenargumenten te verkennen en je redenering kritisch te toetsen, in plaats van het je standpunt te laten bepalen.",
+      "Text 3": "Waarom: output wordt gegenereerd op basis van waarschijnlijkheden die uit de trainingsteksten zijn afgeleid – er is geen denkende persoon die een mening heeft (Shanahan, 2024)"
+    },
+    "c1.block-17": {
+      "Text 1": "Meerstaps-redeneren",
+      "Text 2": "Elk token wordt gegenereerd op basis van voorgaande de tokens, wat betekent dat vroege fouten in een vroege stap kunnen doorwerken in de stappen die volgen. Bij taken die berekeningen, logische ketens of meerdere opeenvolgende stappen in een redenering vereisen – zoals het stap voor stap uitvoeren van een statistische methode of uitwerken van een filosofisch argument – blijven fouten in de vroege stappen vaak ongecorrigeerd. Controleer uitkomsten die meerdere redeneerstappen vereisen daarom altijd zelf.",
+      "Text 3": "Waarom: autoregressieve generatie heeft geen ingebouwd mechanisme om eerdere stappen te controleren en te corrigeren – fouten in de reeks kunnen daardoor doorwerken in wat daarna wordt gegenereerd (Naveed et al., 2025)"
+    },
+    "c1.block-18": {
+      "Text 1": "Specialistische en actuele kennis",
+      "Text 2": "Traningsdata bestrijken een bepaalde periode, waardoor het model zelf niet beschikt over kennis van gebeurtenissen of publicaties van daarna. Ook zijn zeer specialistische onderwerpen vaak minder goed vertegenwoordigd in de trainingsdata. GenAI kan daardoor overtuigend klinkende, maar onjuiste antwoorden geven over recente publicaties, specialistische onderwerpen of informatie die specifiek is voor jouw universiteit of opleiding. Raadpleeg voor literatuuronderzoek en feitelijke beweringen binnen jouw vakgebied altijd primaire bronnen en betrouwbare wetenschappelijke databases. ",
+      "Text 3": "Waarom: modelgewichten leggen een vaste momentopname van trainingsdata vast – kennis die niet in de trainingsdata is opgenomen of daarin maar beperkt voorkomt, ontbreekt of is onbetrouwbaar (Yenduri et al., 2024)"
+    },
+    "c1.block-19": {
+      "Text 1": " Shanahan, M. (2024). Talking about Large Language Models. ",
+      "Text 2": "Communications of the ACM",
+      "Text 3": ", 67(2), 68–79. · Naveed, H. et al. (2025). A Comprehensive Overview of Large Language Models. ",
+      "Text 4": "ACM Transactions on Intelligent Systems and Technology",
+      "Text 5": ". · Yenduri, G. et al. (2024). GPT — A Comprehensive Review on Enabling Technologies, Potential Applications, Emerging Challenges, and Future Directions. ",
+      "Text 6": "IEEE Access",
+      "Text 7": ", 12, 54608–54649. · Huang, L. et al. (2025). A Survey on Hallucination in Large Language Models. ",
+      "Text 8": "ACM Transactions on Information Systems",
+      "Text 9": ". · Vaswani, A. et al. (2017). Attention Is All You Need. ",
+      "Text 10": "NeurIPS 2017",
+      "Text 11": ". · Ouyang, L. et al. (2022). Training Language Models to Follow Instructions with Human Feedback. ",
+      "Text 12": "NeurIPS 2022",
+      "Text 13": ".\n    ",
+      "Emphasis 1": "Bronnen:"
+    },
+    "c1.extra-10": {
+      "Text 1": "Volgende"
+    },
+    "c1.extra-11": {
+      "Text 1": "C2 · Wat betekent AI voor ons?"
+    },
+    "c1.extra-12": {
+      "Text 1": "Doorgaan naar C2 →"
+    },
+    "c1.extra-13": {
+      "ai 1": "AI",
+      "of 1": "of",
+      "copy 1": "Copy",
+      "self 1": "Self",
+      "team 1": "Team",
+      "adopt 1": "Adopt",
+      "slide 1": "Go to slide",
+      "change 1": "Change",
+      "copied 1": "Copied",
+      "course 1": "Course",
+      "modify 1": "Modify",
+      "typing 1": "What you type",
+      "discard 1": "Discard",
+      "example 1": "Example",
+      "feedback 1": "Feedback",
+      "thinking 1": "What you are actually thinking",
+      "processing 1": "How the model actually processes this",
+      "course help 1": "AI-Wise adapts its examples, explanations, and prompt templates to your course. You can change this at any time.",
+      "subsections 1": "subsections toggle",
+      "Navigation c1 1": "C1: What is AI?",
+      "Navigation c2 1": "C2: What is AI for us?",
+      "Navigation c3 1": "C3: How do we use AI?",
+      "choose course 1": "Choose your course",
+      "send feedback 1": "Send feedback",
+      "close feedback 1": "Close feedback",
+      "feedback thanks 1": "Thank you — your feedback has been noted.",
+      "feedback question 1": "What's on your mind?",
+      "feedback placeholder 1": "Share a thought, suggestion, or issue...",
+      "Navigation c1 section 1 1": "History & Development",
+      "Navigation c1 section 2 1": "Anatomy of GenAI",
+      "Navigation c1 section 3 1": "GenAI Output Traits",
+      "Navigation c2 section 1 1": "AI vs Human Intelligence",
+      "Navigation c2 section 2 1": "Human vs GenAI",
+      "Navigation c2 section 3 1": "Collaboration Framework",
+      "Navigation c3 section 1 1": "Prompt",
+      "Navigation c3 section 2 1": "Critique",
+      "Navigation c3 section 3 1": "Integrate"
+    },
+    "c1.extra-14": {
+      "Page title 1": "AI-Wise · C1: What is GenAI?"
+    },
+    "c1.extra-15": {
+      "title 1": "GenAI System Map"
+    }
+  }
+}
