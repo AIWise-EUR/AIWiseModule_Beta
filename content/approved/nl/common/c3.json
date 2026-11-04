@@ -1,0 +1,616 @@
+{
+  "schema": 1,
+  "sequence": 17,
+  "course": "common",
+  "chapter": "c3",
+  "locale": "nl",
+  "submission_id": "31e34cca-28b9-4819-b7c5-dad87fa1ae47",
+  "source_release": "40b214a8-9f92-42b6-a365-6a1d79b61c13",
+  "approved_at": "2026-11-04T11:08:42.280597+00:00",
+  "slots": {
+    "c3.block-0": {
+      "Heading 1": "Hoe gebruiken we AI?"
+    },
+    "c3.block-1": {
+      "Text 1": "\n        C1 behandelde wat GenAI is. C2 behandelde wat het voor ons betekent. C3 behandelt de praktische toepassing: hoe we GenAI daadwerkelijk gebruiken. Dit is geen verzameling prompttips, maar een kader dat is opgebouwd rond één cyclus. \n      "
+    },
+    "c3.block-2": {
+      "Text 1": " Prompten",
+      "Text 2": " Bekritiseren",
+      "Text 3": " Integreren"
+    },
+    "c3.block-3": {
+      "Heading 1": "De input ontwerpen"
+    },
+    "c3.block-4": {
+      "Text 1": "\n        Een prompt is de tekstuele input die je aan GenAI geeft om aan te geven welke taak het moet uitvoeren. Onderzoek definieert prompt engineering als \" the skill of articulating a problem, its context, and the constraints of the desired solution to an AI assistant\" (Federiakin et al., 2024). \n      ",
+      "Text 2": "\n       In deze module gaat prompten om",
+      "Text 3": ". Het is het bepalen van wat je wilt doen, wat je verwacht, welk proces je wilt volgen, en onder welke voorwaarden. Zie het als het het vooraf bepalen van de kaders waarbinnen je GenAI wilt gebruiken. Om een goede prompt te schrijven, moet je GenAI begrijpen, maar ook goed weten wat je zelf wilt: wat je taak is, wat je ermee wilt bereiken, waar je je in het proces bevindt en welke grenzen je stelt. \n      ",
+      "Emphasis 1": " kalibratie"
+    },
+    "c3.block-5": {
+      "Text 1": "\"Learning how to interact with AI is not unlike being someone who's really good at asking questions. Prompting AI is very similar. You can't just randomly ask a bunch of questions. Asking AI to be an assistant to you requires some expertise and artistry of how to prompt it.\"",
+      "Text 2": "— Jensen Huang, CEO van NVIDIA (Cleo Abram, \"Huge Conversations\", Januari 2025)"
+    },
+    "c3.block-6": {
+      "Text 1": "ZES SOORTEN INFORMATIE DIE AI GEBRUIKT OM EEN TAAK TE VERWERKEN "
+    },
+    "c3.block-7": {
+      "Text 1": "Onderzoek toont consistent aan dat AI aanzienlijk beter presteert wanneer bepaalde soorten informatie duidelijk worden verstrekt. De volgende zes zijn de kerncomponenten die bepalen hoe AI jouw verzoek verwerkt en welke output het genereert. "
+    },
+    "c3.block-8": {
+      "Text 1": "Duidelijke Instructie",
+      "Text 2": "Rol / Persona ",
+      "Text 3": "Taakontleding",
+      "Text 4": "Few-shotvoorbeelden ",
+      "Text 5": "Chain-of-Thought",
+      "Text 6": "Outputformaat"
+    },
+    "c3.block-9": {
+      "Text 1": "Taakspecificatie",
+      "Text 2": "Duidelijke Instructie",
+      "Text 3": "Informatie over ",
+      "Text 4": ". Hoe specifieker je het doel, de reikwijdte, de context en de voorwaarden van een taak maakt, hoe duidelijker je afbakent welke output je van AI verwacht.",
+      "Text 5": " zal AI de ontbrekende informatie zelf moeten invullen op basis van patronen die het heeft geleerd. Of dit overeenkomt met jouw bedoeling, wordt dan onzeker.",
+      "Text 6": "Consensus: wordt in alle grote overzichtsstudies naar prompt engineering als uitgangspunt behandeld",
+      "Emphasis 1": "wat er moet gebeuren",
+      "Emphasis 2": "Als je dit niet vastlegt:"
+    },
+    "c3.extra-0": {
+      "alt 1": "Erasmus University Rotterdam",
+      "Text 1": "AI-Wijs",
+      "Text 2": "Kernblokken",
+      "Text 3": " › C3 · Hoe gebruiken we AI?"
+    },
+    "c3.extra-1": {
+      "Text 1": "Navigatie Door de Kernblokken"
+    },
+    "c3.extra-2": {
+      "Text 1": "C3 · Kernblok"
+    },
+    "c3.extra-3": {
+      "Text 1": "1"
+    },
+    "c3.extra-4": {
+      "Text 1": "→"
+    },
+    "c3.extra-5": {
+      "Text 1": "2"
+    },
+    "c3.extra-6": {
+      "Text 1": "→"
+    },
+    "c3.extra-7": {
+      "Text 1": "3"
+    },
+    "c3.extra-8": {
+      "Text 1": "Sectie 1 · Prompten"
+    },
+    "c3.extra-9": {
+      "Text 1": "1"
+    },
+    "c3.block-10": {
+      "Text 1": "PERSPECTIEFTOEWIZJING ",
+      "Text 2": "Rol / Persona",
+      "Text 3": "Informatie over ",
+      "Text 4": ". Het instellen van een rol is geen techniek om de nauwkeurigheid van AI te verhogen – je geeft hiermee aan vanuit welk perspectief de output moet worden gegenereerd.",
+      "Text 5": " zal AI doorgaans output genereren die past bij de algemene instructie om een ‘behulpzame assistent’ te zijn.",
+      "Text 6": "Bewijs: geen meetbare verbetering in nauwkeurigheid op benchmarks (Zheng et al., 2024 EMNLP; 162 personas, 4 LLM families). Wel effectief als instrument voor toon en framing.",
+      "Emphasis 1": "het perspectief van waaruit AI de taak moet benaderen",
+      "Emphasis 2": "Als je dit niet vastlegt:"
+    },
+    "c3.block-11": {
+      "Text 1": "STRUCTUUR VAN EEN TAAK ",
+      "Text 2": "Taakontleding ",
+      "Text 3": "Informatie over ",
+      "Text 4": ". Wanneer je een complexe taak in één keer aan AI voorlegt, is het moeilijker om te achterhalen bij welke stap iets fout is gegaan.",
+      "Text 5": " bepaalt het model op basis van je prompt zelf welke tussenstappen nodig zijn. Die hoeven niet overeen te komen met de aanpak die jij voor ogen hebt.",
+      "Text 6": "Bewijs: Least-to-Most prompting liet een winst van 83.5 procentpunt zien op compositionele benchmarks (Zhou et al., 2022 ICLR) ",
+      "Emphasis 1": "de stappen waaruit een taak bestaat",
+      "Emphasis 2": "Als je dit niet vastlegt:"
+    },
+    "c3.block-12": {
+      "Text 1": "Gewenste Output",
+      "Text 2": "Few-shotvoorbeelden",
+      "Text 3": "Informatie over",
+      "Text 4": ". Het maken van een voorbeeld dwingt je om te controleren: weet ik eigenlijk wel wat ik wil? Moderne modellen kunnen ook zonder voorbeelden uit je instructie afleiden wat voor output je verwacht, maar daarbij moeten ze meer zelf invullen.",
+      "Text 5": " heeft het model minder informatie over de vorm en het niveau van de output die je verwacht. ",
+      "Text 6": "Bewijs: vastgesteld in Brown et al. (2020, NeurIPS) GPT-3 artikel. Few-shot CoT scoorde het hoogst in de benchmarks van Schulhoff et al. ",
+      "Emphasis 1": " hoe de gewenste output eruit moet zien, aan de hand van een of enkele voorbeelden.",
+      "Emphasis 2": "Als je dit niet vastlegt:"
+    },
+    "c3.block-13": {
+      "Text 1": "Redeneerstappen",
+      "Text 2": "Chain-of-Thought",
+      "Text 3": "Informatie over",
+      "Text 4": ". Door AI te vragen de analyse in afzonderlijke stappen uit te werken, kun je die stappen afzonderlijk beoordelen. ",
+      "Text 5": " krijg je mogelijk alleen een conclusie, waardoor het moeilijker is om te beoordelen waarop die conclusie is gebaseerd.",
+      "Text 6": "Bewijs: Wei et al. (2022, NeurIPS) GSM8K 18% → 58%. De effecten zijn echter beperkt buiten wiskundig/symbolisch redeneren (Sprague et al., 2024). ",
+      "Emphasis 1": " de stappen waarin een complexe taak moet worden uitgevoerd",
+      "Emphasis 2": "Als je dit niet vastlegt:"
+    },
+    "c3.block-14": {
+      "Text 1": "Vorm van de Output",
+      "Text 2": "Outputformaat",
+      "Text 3": "Informatie over",
+      "Text 4": ". Dezelfde inhoud, weergegeven als een tabel, een lijst, één zin, of een reeks vragen, verandert hoe je de output vervolgens kunt gebruiken. Het specificeren van het formaat is daarom niet alleen een kwestie van gemak: je bepaalt ermee hoe de output in je werkproces kan worden gebruikt. ",
+      "Text 5": " valt AI terug op zijn standaardvorm (meestal lange alinea's).",
+      "Text 6": "Komt terug in Sectie 3 (Integreren) vanuit het perspectief van integratiestrategie. ",
+      "Emphasis 1": " hoe de output moet worden weergegeven",
+      "Emphasis 2": " Als je dit niet vastlegt:"
+    },
+    "c3.block-15": {
+      "Text 1": "Proactief GenAI-Gebruik"
+    },
+    "c3.block-16": {
+      "Text 1": "Als je deze componenten doordenkt voordat je een prompt schrijft, houd je zelf de regie over de taak. Als je dit overslaat, vult AI ze voor je in, en omdat de output aannemelijk oogt, merk je misschien niet dat er beslissingen zijn genomen zonder het jou te vragen. Je merkt zodoende misschien niet dat de uitkomst daardoor afwijkt van wat jij eigenlijk voor ogen had. Vooraf zelf nadenken over deze componenten noemen we proactief GenAI-gebruik. "
+    },
+    "c3.block-17": {
+      "Text 1": "Duidelijke Instructie ",
+      "Text 2": "Rol ",
+      "Text 3": "Taakontleding ",
+      "Text 4": "Few-shot",
+      "Text 5": "Chain-of-Thought",
+      "Text 6": "Outputformaat"
+    },
+    "c3.block-18": {
+      "Text 1": "Vraag jezelf af ",
+      "Text 2": "Duidelijke Instructie ",
+      "List text 1": "Wat probeer ik precies te doen op dit moment? ",
+      "List text 2": "Wat is het doel van deze taak? ",
+      "List text 3": "Wat is de reikwijdte? ",
+      "List text 4": "Bij welke fase van mijn project hoort deze taak? "
+    },
+    "c3.block-19": {
+      "Text 1": "Vraag jezelf af ",
+      "Text 2": "Rol",
+      "List text 1": "Vanuit welk perspectief moet de output worden gegenereerd? ",
+      "List text 2": "Wat mag AI NIET doen? ",
+      "List text 3": "Welke toon en welk niveau van respons heb ik nodig? "
+    },
+    "c3.block-20": {
+      "Text 1": "Vraag jezelf af ",
+      "Text 2": "Taakontleding ",
+      "List text 1": "Kan ik deze taak in kleinere stappen opsplitsen? ",
+      "List text 2": "Probeer ik te veel tegelijk te vragen? ",
+      "List text 3": "In welke volgorde moeten de subtaken worden uitgevoerd? "
+    },
+    "c3.block-21": {
+      "Text 1": "Vraag jezelf af ",
+      "Text 2": "Few-shot",
+      "List text 1": "Weet ik hoe de gewenste output eruitziet? ",
+      "List text 2": "Kan ik één voorbeeld geven? ",
+      "List text 3": "Als ik geen voorbeeld kan geven, weet ik dan eigenlijk wel wat ik wil? "
+    },
+    "c3.block-22": {
+      "Text 1": "Vraag jezelf af ",
+      "Text 2": "Chain-of-Thought",
+      "List text 1": "Uit welke stappen bestaat de analyse die deze taak vereist? ",
+      "List text 2": "Welke stappen moet het model uitvoeren? ",
+      "List text 3": "Wil ik dat deze stappen afzonderlijk in de output worden weergegeven, zodat ik ze kan beoordelen? "
+    },
+    "c3.block-23": {
+      "Text 1": "Vraag jezelf af ",
+      "Text 2": "Outputformaat",
+      "List text 1": "Welk formaat heb ik nodig om de output daadwerkelijk te kunnen gebruiken? ",
+      "List text 2": "Tabel? Lijst? Eén zin? Vragen? ",
+      "List text 3": "Is dit formaat gemakkelijk te integreren in mijn werkproces? "
+    },
+    "c3.block-24": {
+      "Text 1": "Op basis van deze componenten bouw je je prompt op."
+    },
+    "c3.block-25": {
+      "Text 1": "[Rol]",
+      "Text 2": "Jij ben een _______ die _______.",
+      "Text 3": "[Taak]",
+      "Text 4": "Ik wil dat je _______.",
+      "Text 5": "[Context]",
+      "Text 6": "Ik werk op dit moment aan _______. Deze taak maakt deel uit van _______.",
+      "Text 7": "[Randvoorwaarden]",
+      "Text 8": " Doe niet _______. Blijf binnen _______.",
+      "Text 9": "[Redenering]",
+      "Text 10": "Pak dit aan door eerst _______, en dan _______.",
+      "Text 11": "[Formaat]",
+      "Text 12": "Antwoord in de vorm van een _______.",
+      "Text 13": "[Voorbeelden]",
+      "Text 14": "Hier is een voorbeeld van wat ik wil: _______."
+    },
+    "c3.block-26": {
+      "Heading 1": "Output is geen antwoord — het is een voorstel"
+    },
+    "c3.block-27": {
+      "Text 1": "Wat AI je geeft, is geen definitief antwoord maar een ",
+      "Text 2": ": een mogelijke structuur, formulering, vergelijking of interpretatie. Output is materiaal om te beoordelen, niet om rechtstreeks over te nemen.",
+      "Text 3": "Dit sluit direct aan op wat je in C1 hebt geleerd. GenAI-output is statistisch waarschijnlijk, maar daarmee niet feitelijk juist. Het model genereert tekst op basis van patronen en waarschijnlijkheden, zonder zelf te controleren of de inhoud klopt. Het is begrensd door de informatie waarop het model is getraind en de informatie die jij aanlevert. Daarom heb je je eigen kennis nodig om de output kritisch te kunnen beoordelen. ",
+      "Emphasis 1": "voorstel"
+    },
+    "c3.block-28": {
+      "Text 1": "Vier stappen: Lezen → Bevragen → Verifiëren → Beslissen"
+    },
+    "c3.block-29": {
+      "Text 1": "Lezen",
+      "Text 2": "Vaststellen wat eruit kwam",
+      "Text 3": "Bevragen",
+      "Text 4": "Vragen formuleren voordat je oordeelt",
+      "Text 5": "Verifiëren",
+      "Text 6": "Beoordelen aan de hand van criteria",
+      "Text 7": "Beslissen",
+      "Text 8": "Selecteren, aanpassen of verwerpen"
+    },
+    "c3.block-30": {
+      "Text 1": "Lezen – Vaststellen wat eruit kwam",
+      "Emphasis 1": "Voorbeeld ",
+      "List text 1": "Is dit een antwoord op wat ik heb gevraagd? ",
+      "List text 2": "Welke structuur heeft AI gebruikt? (lijst, alinea’s, tabel...) ",
+      "List text 3": "Welke algemene bewering wordt gedaan of welke richting wordt gekozen? "
+    },
+    "c3.block-31": {
+      "Text 1": "Bevragen – Vragen formuleren voordat je oordeelt ",
+      "Emphasis 1": "Voorbeeld ",
+      "List text 1": "Is deze inhoud feitelijk verifieerbaar? ",
+      "List text 2": "Ontbreekt er iets?",
+      "List text 3": "Zijn er delen die te algemeen of vaag zijn? ",
+      "List text 4": "Bevat de output beweringen die ik niet kan verifiëren? ",
+      "List text 5": "Is de output binnen de door mij gevraagde reikwijdte gebleven? "
+    },
+    "c3.block-32": {
+      "Text 1": "Verifiëren - Beoordelen aan de hand van criteria ",
+      "Emphasis 1": "Voorbeeld ",
+      "List text 1": "Als er feiten, bronvermeldingen of cijfers zijn opgenomen – kan ik die aan de hand van de oorspronkelijke bron verifiëren?",
+      "List text 2": "Komt de output overeen met de reikwijdte van mijn verzoek?",
+      "List text 3": "Kan ik deze inhoud zelf uitleggen? ",
+      "List text 4": "Sluit deze output aan bij mijn bedoeling en context? "
+    },
+    "c3.block-33": {
+      "Text 1": "Beslissen – Selecteren, aanpassen of verwerpen ",
+      "Emphasis 1": "Voorbeeld",
+      "List text 1": "Welke inzichten uit de output zijn bruikbaar voor mijn eigen verdere uitwerking en welke verwerp ik? ",
+      "List text 2": "Wat moet ik in mijn eigen werk anders of verder uitwerken? ",
+      "List text 3": "Is een nieuwe prompt nodig? "
+    },
+    "c3.block-34": {
+      "Heading 1": "Hoe AI-output je werk binnenkomt "
+    },
+    "c3.block-35": {
+      "Text 1": "Integratie begint niet pas nadat je de output ontvangt – het begint al bij de promptfase. Op het moment dat je bepaalt in welk formaat je de output wilt ontvangen, beïnvloed je al hoe gemakkelijk je de output kritisch kunt beoordelen en verantwoord kunt gebruiken in je verdere werkproces. ",
+      "Text 2": "\"Vergelijk deze artikelen\" kan alinea's opleveren die gemakkelijk vermengd raken met je eigen tekst. \"Maak een vergelijkingstabel\" houdt de output gescheiden van je eigen tekst en maakt de informatie cel voor cel verifieerbaar. De keuze voor het outputformaat is daarom niet alleen een kwestie van gemak – het helpt je om AI-output",
+      "Text 3": " van je eigen schrijfwerk. ",
+      "Emphasis 1": " gescheiden te houden"
+    },
+    "c3.block-36": {
+      "Text 1": "Hoogste risico op vermenging met je eigen schrijfwerk en op onbedoeld overnemen van AI-gegenereerde formuleringen. Vermijd dit formaat wanneer je werkt aan tekst die je zelf moet schrijven.",
+      "Table text 1": "Gevraagd Formaat ",
+      "Table text 2": "Integratiekenmerken",
+      "Table text 3": "Vergelijkinstabel",
+      "Table text 4": "Cel voor cel verifieerbaar. Houdt de AI-output duidelijk gescheiden van je eigen tekst.",
+      "Table text 5": "Vragenlijst",
+      "Table text 6": "Dient als denkimpuls. Je gebruikt de vragen om zelf verder te denken en te schrijven.",
+      "Table text 7": "Samenvatting in één zin",
+      "Table text 8": "Eén bewering – gemakkelijk afzonderlijk te beoordelen en te verifiëren.",
+      "Table text 9": "Trefwoorden -/termenlijst",
+      "Table text 10": "Geeft mogelijke begrippen of zoekrichtingen die je kunt beoordelen en vervolgens zelf kunt uitwerken.",
+      "Table text 11": "Overzicht met opsommingstekens",
+      "Table text 12": "Maakt een mogelijke structuur zichtbaar die je kunt beoordelen voordat je zelf verder werkt.",
+      "Table text 13": "Volledige alinea"
+    },
+    "c3.block-37": {
+      "Text 1": "Gebruiken / Aanpassen / Verwerpen"
+    },
+    "c3.block-38": {
+      "Text 1": "Segmenteren",
+      "Text 2": "Output in eenheden opsplitsen",
+      "Text 3": "Labelen",
+      "Text 4": "Gebruiken / Aanpassen / Verwerpen",
+      "Text 5": "Uitvoeren",
+      "Text 6": "Handel naar elk label",
+      "Text 7": "Beoordelen",
+      "Text 8": "Kijk naar het geheel"
+    },
+    "c3.block-39": {
+      "Text 1": "Segmenteren — Output in eenheden opsplitsen ",
+      "Text 2": "Splits de output op in eenheden die onafhankelijk beoordeeld kunnen worden. Rijen in tabellen, items in lijsten, beweringen in alinea's. "
+    },
+    "c3.block-40": {
+      "Text 1": "Labelen — Gebruiken / Aanpassen / Verwerpen ",
+      "Text 2": "Ken aan elke eenheid een label toe:",
+      "Text 3": "Gebruiken",
+      "Text 4": "Aanpassen",
+      "Text 5": "Verwerpen",
+      "List text 1": " accuraat, komt overeen met mijn bedoeling, en is bruikbaar als input voor mijn eigen verdere uitwerking",
+      "List text 2": "   de richting klopt, maar de inhoud moet worden bijgesteld",
+      "List text 3": "  onjuist, buiten de reikwijdte, of ik kan het niet verifiëren"
+    },
+    "c3.block-41": {
+      "Text 1": "Uitvoeren — Handel naar elk label",
+      "Emphasis 1": "Gebruiken →",
+      "Emphasis 2": "Aanpassen →",
+      "Emphasis 3": "Verwerpen →",
+      "List text 1": " gebruik het inzicht of de informatie als input voor je eigen werk; controleer de oorspronkelijke bron en formuleer zelf",
+      "List text 2": " bepaal wat er moet veranderen; ga terug naar de oorspronkelijke bron of prompt opnieuw",
+      "List text 3": " gebruik het niet; noteer in één zin waarom"
+    },
+    "c3.block-42": {
+      "Text 1": "Beoordelen — Kijk naar het geheel",
+      "Text 2": "Kijk daarna naar het geheel:",
+      "List text 1": "Weerspiegelt dit mijn eigen denken?",
+      "List text 2": "Heb ik de uiteindelijke tekst zelf geschreven en geen AI-gegenereerde formuleringen overgenomen?",
+      "List text 3": "Kan ik elk onderdeel uitleggen en verdedigen? "
+    },
+    "c3.block-43": {
+      "Text 1": "CHECKLIST MENSELIJKE VERANTWOORDELIJKHEID ",
+      "Text 2": "Gebasserd op de Author Checklist from Cheng, Calhoun, & Reedy (2025). Advances in Simulation, 10, 22. ",
+      "List text 1": "Zijn de kernideeën en oordelen in dit werk van mijzelf? ",
+      "List text 2": "Heb ik alle door AI gegenereerde inhoud die ik heb overgenomen geverifieerd? ",
+      "List text 3": "Kan ik elk onderdeel van dit werk uitleggen en verdedigen? ",
+      "List text 4": "Kan ik transparant toelichten hoe AI is gebruikt? "
+    },
+    "c3.block-44": {
+      "Text 1": "\n        Gebruik GenAI op verantwoorde wijze tijdens je studiewerk, en zorg ervoor dat je je houdt aan de ESSB-principes en richtlijnen.  \n      ",
+      "Link text 1": "ESSB GenAI-richtlijnen ↗"
+    },
+    "c3.block-45": {
+      "Heading 1": "Je prompt opbouwen"
+    },
+    "c3.block-46": {
+      "Text 1": "De manier waarop je een prompt structureert en opmaakt, kan de prestaties van GenAI sterk beïnvloeden. Onderzoek laat zien dat alleen al veranderingen in de opmaak bij sommige modellen en taken verschillen in nauwkeurigheid tot wel 76 procentpunt kunnen veroorzaken (Sclar et al., ICLR 2024). Twee veelgebruikte formats om prompts te structureren zijn Markdown en XML. "
+    },
+    "c3.block-47": {
+      "Text 1": "Markdown",
+      "Text 2": "XML"
+    },
+    "c3.block-48": {
+      "Text 1": "Markdown gebruikt ",
+      "Text 2": "#",
+      "Text 3": " voor koppen en ",
+      "Text 4": "-",
+      "Text 5": "  voor lijsten en is daardoor overzichtelijk en gemakkelijk leesbaar voor mensen. XML gebruikt expliciete openings- en sluittags, waardoor onderdelen van een complexe prompt duidelijk van elkaar kunnen worden gescheiden. XML is het enige format dat door alle drie de grote aanbieders (OpenAI, Anthropic, Google) wordt aanbevolen, en is met name handig voor complexere prompts."
+    },
+    "c3.block-49": {
+      "Text 1": "Promptsjabloon (XML) "
+    },
+    "c3.block-50": {
+      "Text 1": "<rol>",
+      "Text 2": "[Vanuit welk perspectief moet AI de taak benaderen?]",
+      "Text 3": "</rol>",
+      "Text 4": "<taak>",
+      "Text 5": "[Wat moet er specifiek gebeuren? Vermeld doel, context en taak]",
+      "Text 6": "</taak>",
+      "Text 7": "<context>",
+      "Text 8": "[De situatie waarin deze taak plaatsvindt. Huidige fase, achtergrond, materialen]",
+      "Text 9": "</context>",
+      "Text 10": "< randvoorwaarden>",
+      "Text 11": "[Wat mag AI NIET doen? Grenzen van de reikwijdte. Voorwaarden waaraan moet worden voldaan]",
+      "Text 12": "</randvoorwaarden>",
+      "Text 13": "<stappen>",
+      "Text 14": "[De werkstappen waarin de taak moet worden uitgevoerd]\n1. ...\n2. ...\n3. ...",
+      "Text 15": "</stappen>",
+      "Text 16": "<outputformaat>",
+      "Text 17": "[Vorm, lengte en structuur van de output]",
+      "Text 18": "</outputformaat>",
+      "Text 19": "<voorbeelden>",
+      "Text 20": "[Voorbeelden van de gewenste output. 1–3]",
+      "Text 21": "</voorbeelden>"
+    },
+    "c3.block-51": {
+      "Text 1": "Richtlijn voor promptlengte"
+    },
+    "c3.block-52": {
+      "Table text 1": "Taakcomplexiteit",
+      "Table text 2": "Aanbevolen Lengte",
+      "Table text 3": "Eenvoudig",
+      "Table text 4": "50-100 woorden (samenvatting, feitelijke vraag): Houd de prompt kort en geef alleen de informatie die nodig is voor de taak.",
+      "Table text 5": "Gemiddeld",
+      "Table text 6": "150-300 woorden (analyse, vergelijking, gestructureerde output): Voeg relevante context, randvoorwaarden en het gewenste outputformaat toe.",
+      "Table text 7": "Complex",
+      "Table text 8": "300-500 woorden (meerstaps-redenering, gedetailleerde generatie): Maak de verschillende onderdelen en stappen van de taak expliciet.",
+      "Table text 9": "Zeer complex",
+      "Table text 10": "Overweeg de taak op te splitsen in meerdere stappen of prompts, zodat je tussentijds kunt controleren en bijsturen."
+    },
+    "c3.block-53": {
+      "Text 1": "SCHRIJFPRINCIPES "
+    },
+    "c3.block-54": {
+      "Text 1": "Gebruik gebiedende wijs",
+      "Text 2": "Begin instructies met actiewoorden. ",
+      "Text 3": "“Vat samen\", \"Vergelijk\", \"Identificeer\"",
+      "Text 4": "Sla beleefdheidswoorden over ",
+      "Text 5": "“Alsjeblieft\", \"dank je\" en \"als je het niet erg vindt\" zijn onnodig en kunnen de prestaties verminderen (Dobariya & Kumar, 2025). ",
+      "Text 6": "Gebruik positieve instructies ",
+      "Text 7": "Aangeven wat je wél wil maakt vaak duidelijker wat de gewenste output is dan aangeven wat je niet wil. ",
+      "Text 8": "“Gebruik eenvoudige taal\" > \"Gebruik geen jargon\"",
+      "Text 9": "Plaats belangrijke instructies aan het begin of einde",
+      "Text 10": "Zet de belangrijkste instructies helemaal aan het begin of helemaal aan het inde van je prompt om het \"Lost in the Middle\" effect tegen te gaan (Liu et al., 2024)."
+    },
+    "c3.block-55": {
+      "Text 1": " De vooraf ingestelde prompts voor activiteiten in deze module zijn specifieke toepassingen van dit sjabloon, waarbij elk veld al is ingevuld voor en bepaalde leeractiviteit.",
+      "Emphasis 1": "Dit sjabloon is een algemeen toepasbaar kader. "
+    },
+    "c3.block-56": {
+      "Text 1": "\n      Federiakin, D. et al. (2024). Prompt engineering as a new 21st century skill. ",
+      "Text 2": "Frontiers in Education",
+      "Text 3": ", 9, 1366434. ·\n      Schulhoff, S. et al. (2024). The Prompt Report. ",
+      "Text 4": "arXiv:2406.06608",
+      "Text 5": ". ·\n      Sahoo, P. et al. (2024). A Systematic Survey of Prompt Engineering in LLMs. ",
+      "Text 6": "arXiv:2402.07927",
+      "Text 7": ". ·\n      Liu, D. et al. (2026). A comprehensive taxonomy of prompt engineering techniques. ",
+      "Text 8": "Frontiers of Computer Science",
+      "Text 9": ", 20(3). ·\n      White, J. et al. (2023). A Prompt Pattern Catalog. ",
+      "Text 10": "PLoP 2023, Vanderbilt",
+      "Text 11": ". ·\n      Bozkurt, A. & Sharma, R. (2023). ",
+      "Text 12": "Open Praxis",
+      "Text 13": ". ·\n      Wei, J. et al. (2022). Chain-of-Thought Prompting. ",
+      "Text 14": "NeurIPS 2022",
+      "Text 15": ". ·\n      Brown, T. et al. (2020). Language Models are Few-Shot Learners. ",
+      "Text 16": "NeurIPS 2020",
+      "Text 17": ". ·\n      Yusuf, A. et al. (2024). ",
+      "Text 18": "Thinking Skills and Creativity",
+      "Text 19": ", 54, 101619. ·\n      Wang, Z. & Wang, C. (2025). APSE Model. ",
+      "Text 20": "Journal of Second Language Writing",
+      "Text 21": ", 67, 101187. ·\n      Zhu, J. & Duan, C. (2025). Pan-indexicality and prompt. ",
+      "Text 22": "Language and Semiotic Studies",
+      "Text 23": ". ·\n      Cheng, A., Calhoun, A. & Reedy, G. (2025). ",
+      "Text 24": "Advances in Simulation",
+      "Text 25": ", 10, 22. ·\n      Sclar, M. et al. (2024). Sensitivity to Spurious Features. ",
+      "Text 26": "ICLR 2024",
+      "Text 27": ". ·\n      Bsharat, S. et al. (2023). 26 Principled Instructions. ·\n      Liu, N. et al. (2024). Lost in the Middle. ",
+      "Text 28": "TACL",
+      "Text 29": ". ·\n      Levy, M., Jacoby, A. & Goldberg, Y. (2024). Same Task, More Tokens. ",
+      "Text 30": "ACL 2024",
+      "Text 31": ". ·\n      Shanahan, M. (2024). ",
+      "Text 32": "Communications of the ACM",
+      "Text 33": ", 67(2). ·\n      Huang, L. et al. (2025). ",
+      "Text 34": "ACM Transactions on Information Systems",
+      "Text 35": ". ·\n      Naveed, H. et al. (2025). ",
+      "Text 36": "ACM TIST",
+      "Text 37": ". ·\n      Yenduri, G. et al. (2024). ",
+      "Text 38": "IEEE Access",
+      "Text 39": ", 12, 54608–54649.\n    ",
+      "Emphasis 1": "Bronnen:"
+    },
+    "c3.extra-10": {
+      "Text 1": "2"
+    },
+    "c3.extra-11": {
+      "Text 1": "3"
+    },
+    "c3.extra-12": {
+      "Text 1": "4"
+    },
+    "c3.extra-13": {
+      "Text 1": "5"
+    },
+    "c3.extra-14": {
+      "Text 1": "6"
+    },
+    "c3.extra-15": {
+      "Text 1": "1"
+    },
+    "c3.extra-16": {
+      "Text 1": "2"
+    },
+    "c3.extra-17": {
+      "Text 1": "3"
+    },
+    "c3.extra-18": {
+      "Text 1": "4"
+    },
+    "c3.extra-19": {
+      "Text 1": "5"
+    },
+    "c3.extra-20": {
+      "Text 1": "6"
+    },
+    "c3.extra-21": {
+      "Text 1": "Sectie 2 · Bekritiseren"
+    },
+    "c3.extra-22": {
+      "Text 1": "1"
+    },
+    "c3.extra-23": {
+      "Text 1": "2"
+    },
+    "c3.extra-24": {
+      "Text 1": "3"
+    },
+    "c3.extra-25": {
+      "Text 1": "4"
+    },
+    "c3.extra-26": {
+      "Text 1": "← Vorige"
+    },
+    "c3.extra-27": {
+      "Text 1": "Volgende →"
+    },
+    "c3.extra-28": {
+      "Text 1": "Sectie 3 · Integreren"
+    },
+    "c3.extra-29": {
+      "Text 1": "1"
+    },
+    "c3.extra-30": {
+      "Text 1": "2"
+    },
+    "c3.extra-31": {
+      "Text 1": "3"
+    },
+    "c3.extra-32": {
+      "Text 1": "4"
+    },
+    "c3.extra-33": {
+      "Text 1": "← Vorige"
+    },
+    "c3.extra-34": {
+      "Text 1": "Volgende→"
+    },
+    "c3.extra-35": {
+      "Text 1": "dubbelklik om de melding te stoppen "
+    },
+    "c3.extra-36": {
+      "Text 1": "Afsluiting · Sjabloon"
+    },
+    "c3.extra-37": {
+      "Text 1": "Kopiëren"
+    },
+    "c3.extra-38": {
+      "Text 1": "Kernblokken",
+      "Text 2": "← Terug naar Home"
+    },
+    "c3.extra-39": {
+      "Text 1": "← C2 · Wat betekent AI voor ons?"
+    },
+    "c3.extra-40": {
+      "Text 1": "Volgende"
+    },
+    "c3.extra-41": {
+      "Text 1": ""
+    },
+    "c3.extra-42": {
+      "Text 1": "Doorgaan →"
+    },
+    "c3.extra-43": {
+      "ai 1": "AI",
+      "of 1": "of",
+      "copy 1": "Copy",
+      "self 1": "Self",
+      "team 1": "Team",
+      "adopt 1": "Adopt",
+      "slide 1": "Go to slide",
+      "change 1": "Change",
+      "copied 1": "Copied",
+      "course 1": "Course",
+      "modify 1": "Modify",
+      "typing 1": "What you type",
+      "discard 1": "Discard",
+      "example 1": "Example",
+      "feedback 1": "Feedback",
+      "thinking 1": "What you are actually thinking",
+      "processing 1": "How the model actually processes this",
+      "course help 1": "AI-Wise adapts its examples, explanations, and prompt templates to your course. You can change this at any time.",
+      "subsections 1": "subsections toggle",
+      "Navigation c1 1": "C1: What is AI?",
+      "Navigation c2 1": "C2: What is AI for us?",
+      "Navigation c3 1": "C3: How do we use AI?",
+      "choose course 1": "Choose your course",
+      "send feedback 1": "Send feedback",
+      "close feedback 1": "Close feedback",
+      "feedback thanks 1": "Thank you — your feedback has been noted.",
+      "feedback question 1": "What's on your mind?",
+      "feedback placeholder 1": "Share a thought, suggestion, or issue...",
+      "Navigation c1 section 1 1": "History & Development",
+      "Navigation c1 section 2 1": "Anatomy of GenAI",
+      "Navigation c1 section 3 1": "GenAI Output Traits",
+      "Navigation c2 section 1 1": "AI vs Human Intelligence",
+      "Navigation c2 section 2 1": "Human vs GenAI",
+      "Navigation c2 section 3 1": "Collaboration Framework",
+      "Navigation c3 section 1 1": "Prompt",
+      "Navigation c3 section 2 1": "Critique",
+      "Navigation c3 section 3 1": "Integrate"
+    },
+    "c3.extra-44": {
+      "Page title 1": "AI-Wise · C3: How Do We Use AI?"
+    },
+    "c3.extra-45": {
+      "aria-label 1": "Copy prompt template"
+    }
+  }
+}
