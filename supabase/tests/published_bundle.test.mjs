@@ -17,7 +17,7 @@ for(const {id:course,content} of registry.bachelors){
 const build=(v=version,s=sources)=>buildRelease(id,v,'a'.repeat(40),'b'.repeat(40),s);
 test('release includes only allowlisted flat files and sanitized full version; code and snapshot are frozen',()=>{
  const out=build();assert.deepEqual(Object.keys(out).sort(),DEST_FILES.slice().sort());
- assert.doesNotMatch(out['published-content.json'],/PRIVATE/);const data=JSON.parse(out['published-content.json']);assert.equal(data.content.length,8);
+ assert.doesNotMatch(out['published-content.json'],/PRIVATE/);const data=JSON.parse(out['published-content.json']);assert.equal(data.content.length,4+registry.bachelors.length*2);
  for(const html of Object.entries(out).filter(([p])=>p.endsWith('.html')).map(([,s])=>s)){assert.doesNotMatch(html,/\.\.\/(pipelines|workspace|course-specific)\//);assert.match(html,/data-published-release=/);}
  assert.doesNotMatch(out['published-course-loader.js'],/return fetch\(/);assert.match(out['published-content-language.js'],/next.pathname.startsWith/);
  for(const [path,js]of Object.entries(out))if(path.endsWith('.js'))assert.doesNotThrow(()=>new vm.Script(js,{filename:path}));
@@ -42,7 +42,7 @@ test('published runtime reads only its frozen file, preserves text safety and fa
  const original=await window.AIWisePublished.course('psychology.aws1'),courseRows=await window.AIWiseBetaContent.read('psychology');assert.deepEqual(window.AIWiseBetaContent.apply(original,courseRows),original);
  assert.deepEqual(original.course,{id:'psychology.aws1',short_name:'AWS I',full_name:'Psychology – B1 – Academic Writing Skills I',bachelor:'psychology'});
  assert.deepEqual((await window.AIWisePublished.course('psychology.psychodiagnostics')).c2,original.c2,'courses of one bachelor share its examples');
- assert.deepEqual((await window.AIWisePublished.manifest()).map(c=>c.id),['psychology.aws1','psychology.psychodiagnostics','pedagogical-sciences.inleiding']);
+ assert.deepEqual((await window.AIWisePublished.manifest()).map(c=>c.id),registry.courses.map(c=>c.id));
  document.documentElement.dataset.publishedRelease='another';const other={...context,window:{}};vm.runInNewContext(out['published-content.js'],other);await assert.rejects(()=>other.window.AIWiseBetaContent.read('common'),/release is updating/);
 });
 

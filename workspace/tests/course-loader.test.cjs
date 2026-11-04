@@ -69,8 +69,8 @@ test('a missing registry leaves the page announced without a course rather than 
 });
 test('workspace registry names scopes, including the ids saved versions still use',()=>{
  const r=registry();
- assert.deepEqual(plain(r.bachelors().map(b=>b.id)),['psychology','pedagogical-sciences']);
- assert.deepEqual(plain(r.courses().map(c=>[c.id,c.path])),[['psychology.aws1','psychology/aws1/'],['psychology.psychodiagnostics','psychology/psychodiagnostics/'],['pedagogical-sciences.inleiding','pedagogical-sciences/inleiding/']]);
+ assert.deepEqual(plain(r.bachelors().map(b=>b.id)),['psychology','pedagogical-sciences','dpas']);
+ assert.deepEqual(plain(r.courses().map(c=>[c.id,c.path])),[['psychology.aws1','psychology/aws1/'],['psychology.psychodiagnostics','psychology/psychodiagnostics/'],['pedagogical-sciences.inleiding','pedagogical-sciences/inleiding/'],['dpas.dpas-skills','dpas/dpas-skills/']]);
  assert.equal(r.scope('aws1'),'psychology');assert.equal(r.scope('ped'),'pedagogical-sciences');assert.equal(r.scope('common'),'common');assert.equal(r.scope('other'),null);
  assert.equal(r.scopeName('ped'),'Pedagogical Sciences');assert.equal(r.scopeName('common'),'Common');assert.equal(r.scopeName('other'),'other');
  assert.equal(r.previewCourse('psychology'),'psychology.aws1');assert.equal(r.previewCourse('pedagogical-sciences'),'pedagogical-sciences.inleiding');assert.equal(r.previewCourse('common'),'psychology.aws1');

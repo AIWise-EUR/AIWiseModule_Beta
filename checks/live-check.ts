@@ -37,6 +37,26 @@ const supabaseUrl = config.match(/url:\s*'(https:\/\/[a-z0-9]+\.supabase\.co)'/)
 const publicKey = config.match(/publishableKey:\s*'([^']+)'/)?.[1] || '';
 const publicHeaders = { apikey: publicKey, Authorization: 'Bearer ' + publicKey };
 
+await check('All installed Studio capabilities remain enabled together', async () => {
+  const response = await get(`${supabaseUrl}/rest/v1/rpc/workspace_studio_capabilities`, {apikey: publicKey});
+  must(response.ok, `Capability lookup failed: HTTP ${response.status}.`);
+  const capabilities = await response.json();
+  const missing = ['blocks', 'sat_phases', 'approval_merge'].filter(key => capabilities[key] !== 1);
+  must(!missing.length, `Missing flags: ${missing.join(', ')}. A later installer may have overwritten the capability function; apply WORKSPACE_READINESS_SETUP.sql.`);
+  return 'blocks=1, sat_phases=1, approval_merge=1';
+});
+
+await check('Every registered content area has English and Dutch server catalogs', async () => {
+  const registry = JSON.parse(await read('common/courses/registry.json'));
+  const response = await get(`${supabaseUrl}/rest/v1/workspace_content_sources?select=course,chapter,locale`, {apikey: publicKey});
+  must(response.ok, `Content catalog lookup failed: HTTP ${response.status}.`);
+  const rows = await response.json(), keys = new Set(rows.map((r: {course: string; chapter: string; locale: string}) => `${r.course}/${r.chapter}/${r.locale}`));
+  const expected = ['common/c1', 'common/c2', 'common/c3', 'common/map', ...registry.bachelors.flatMap((b: {id: string}) => [b.id+'/c2', b.id+'/c3'])];
+  const missing = expected.flatMap(key => ['en','nl'].map(locale => key+'/'+locale)).filter(key => !keys.has(key));
+  must(!missing.length, `Content areas visible in the registry have no server catalog: ${missing.join(', ')}.`);
+  return `${expected.length * 2} required catalogs found`;
+});
+
 // 1. The URLs the database scheduler calls must be deployed functions that do their own authentication.
 for (const file of ['supabase/ENABLE_GITHUB_PUBLISHING.sql', 'supabase/ENABLE_PUBLISHED_RELEASES.sql']) {
   const url = (await read(file)).match(/https:\/\/[a-z0-9]+\.supabase\.co\/functions\/v1\/[A-Za-z0-9_-]+/)?.[0] || '';
