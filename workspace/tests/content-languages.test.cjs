@@ -64,6 +64,7 @@ test('all course slots render for every bachelor, including translated runtime l
   c.window.AIWiseCourseRenderer.fillSlots(data,document);c.window.AIWiseCourseRenderer.toggleRequired(data,document);
   for(const n of document.querySelectorAll('[data-slot]'))if(!n.closest('[data-requires-slot][hidden]')){
    if(n.dataset.slot==='c2.sat_example'&&!data.c2.sat_example.note&&!data.c2.sat_example.phases.some(p=>p.steps.some(s=>s.text.trim())))assert.equal(n.querySelectorAll('.sat-phase').length,0,'empty template cycles are intentionally hidden');
+   else if(n.dataset.slot.split('.').reduce((v,k)=>v?.[k],data)==='' || (n.dataset.slot==='c3.amd_example' && !data.c3.amd_example.title && data.c3.amd_example.items.every(i=>!i.text&&!i.reason&&!i.tag)))assert.equal(n.textContent.trim(),'','an empty template must not retain another course’s placeholder');
    else assert.ok(n.textContent.trim(),`${course} ${n.dataset.slot} rendered`);
   }
   if(chapter==='c2'){

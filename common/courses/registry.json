@@ -16,6 +16,12 @@
       "aliases": [
         "ped"
       ]
+    },
+    {
+      "id": "dpas",
+      "name": "DPAS",
+      "content": "course-specific/dpas/dpas.json",
+      "aliases": []
     }
   ],
   "courses": [
@@ -44,6 +50,12 @@
       "aliases": [
         "ped"
       ]
+    },
+    {
+      "bachelor": "dpas",
+      "id": "dpas-skills",
+      "name": "DPAS - B1 - 1.1 Skills",
+      "short_name": "Skills"
     }
   ]
 }

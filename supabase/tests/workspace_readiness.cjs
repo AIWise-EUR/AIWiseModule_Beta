@@ -1,0 +1,50 @@
+/* Full ordered migration chain, unlike the earlier per-feature installer tests. */
+const {PGlite}=require(process.env.PGLITE_MODULE||'@electric-sql/pglite');
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+(async()=>{
+ const db=new PGlite();await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;
+ create table auth.users(id uuid primary key,raw_user_meta_data jsonb default '{}',email text,email_confirmed_at timestamptz,created_at timestamptz default now(),deleted_at timestamptz,is_anonymous boolean default false);
+ create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+ grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
+ const root=path.resolve(__dirname,'../..'),dir=path.join(root,'supabase/migrations');
+ const migrations=fs.readdirSync(dir).filter(f=>f.endsWith('.sql')).sort(),repair=migrations.find(f=>f.endsWith('_workspace_readiness_dpas.sql'));
+ for(const f of migrations.filter(f=>f<repair))await db.exec(fs.readFileSync(path.join(dir,f),'utf8'));
+ const before=(await db.query('select workspace_studio_capabilities() c')).rows[0].c;
+ assert.equal(before.approval_merge,undefined,'Reproduce the actual SAT installer regression');
+ assert.ok((await db.query("select to_regprocedure('public.workspace_prepare_content_approval(uuid,integer)') f")).rows[0].f);
+ const admin='11111111-1111-4111-8111-111111111111';
+ await db.query("insert into auth.users(id,email,email_confirmed_at) values($1,'test@example.invalid',now())",[admin]);
+ await db.query("insert into workspace_members(user_id,role,active) values($1,'admin',true)",[admin]);
+ const owner=async(sql,args=[])=>{await db.exec('reset role');return(await db.query(sql,args)).rows;};
+ const as=async(sql,args=[])=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[admin]);await db.exec('set role authenticated');return(await db.query(sql,args)).rows;};
+ const source=(await owner("select slots from workspace_content_sources where course='common' and chapter='c1' and locale='nl'"))[0].slots;
+ const next=structuredClone(source),slot=Object.keys(source)[0],field=Object.keys(source[slot])[0];next[slot][field]='Nederlandse tekst';
+ const id=(await as("select workspace_submit_localized_content($1,'common','c1',$2,$3,null,now(),'Dutch test','nl',null) id",[crypto.randomUUID(),next,source]))[0].id;
+ const snapshot=JSON.stringify(await owner('select to_jsonb(s) r from workspace_submissions s order by id'));
+ const sql=fs.readFileSync(path.join(dir,repair),'utf8');assert.equal(sql,fs.readFileSync(path.join(root,'supabase/WORKSPACE_READINESS_SETUP.sql'),'utf8'));
+ await db.exec(sql);assert.equal(JSON.stringify(await owner('select to_jsonb(s) r from workspace_submissions s order by id')),snapshot);
+ assert.deepEqual((await as('select workspace_studio_capabilities() c'))[0].c,{blocks:1,sat_phases:1,approval_merge:1});
+ const context=(await as('select workspace_prepare_content_approval($1,1) c',[id]))[0].c;
+ await as('select workspace_apply_content_approval($1,1,$2,$3,$4,$5,$6)',[id,context.release,context.latest,[],next,'Reviewed translation']);
+ assert.equal((await owner('select status from workspace_submissions where id=$1',[id]))[0].status,'approved');
+ const registry=JSON.parse(fs.readFileSync(path.join(root,'common/courses/registry.json')));
+ const scopes=await owner("select id,name from workspace_content_scopes where kind='bachelor' and not retired order by id");
+ assert.deepEqual(scopes,registry.bachelors.map(b=>({id:b.id,name:b.name})).sort((a,b)=>a.id.localeCompare(b.id)));
+ const rows=await owner("select chapter,locale,slots from workspace_content_sources where course='dpas' order by chapter,locale");assert.equal(rows.length,4);
+ const content=JSON.parse(fs.readFileSync(path.join(root,'course-specific/dpas/dpas.json')));
+ for(const row of rows){for(const [key,value]of Object.entries(row.slots))assert.deepEqual(value,key.split('.').reduce((v,k)=>v[k],content));assert.equal((await owner('select workspace_valid_content($1,$1) v',[row.slots]))[0].v,true);}
+ // DPAS starts empty; creating it must not borrow Psychology's authored examples.
+ assert.equal(content.c2.examples[0].thinking,'');assert.deepEqual(content.c2.sat_example.phases,[]);
+ const dpas=rows.find(r=>r.chapter==='c2'&&r.locale==='en').slots,edited=structuredClone(dpas);edited['c2.examples'][0].title='First DPAS example';
+ const did=(await as("select workspace_submit_localized_content($1,'dpas','c2',$2,$3,null,now(),'DPAS test','en',null) id",[crypto.randomUUID(),edited,dpas]))[0].id;
+ const dc=(await as('select workspace_prepare_content_approval($1,1) c',[did]))[0].c;
+ await as('select workspace_apply_content_approval($1,1,$2,$3,$4,$5,$6)',[did,dc.release,dc.latest,[],edited,'Reviewed DPAS']);
+ await owner("update workspace_content_sources set slots=jsonb_set(slots,'{c2.sat_example_title}',to_jsonb('Keep authored source'::text)) where course='dpas' and chapter='c2' and locale='en'");
+ const beforeRepeat=JSON.stringify(await owner('select to_jsonb(s) r from workspace_submissions s order by id'));
+ await db.exec(sql);assert.equal(JSON.stringify(await owner('select to_jsonb(s) r from workspace_submissions s order by id')),beforeRepeat);
+ assert.equal((await owner("select slots->>'c2.sat_example_title' t from workspace_content_sources where course='dpas' and chapter='c2' and locale='en'"))[0].t,'Keep authored source');
+ await db.exec('set role anon');assert.deepEqual((await db.query('select workspace_studio_capabilities() c')).rows[0].c,{blocks:1,sat_phases:1,approval_merge:1});
+ await assert.rejects(db.query("update workspace_content_scopes set name='Changed' where id='dpas'"),/permission denied/);
+ await assert.rejects(db.query('select workspace_prepare_content_approval($1,1)',[id]),/permission denied/);
+ await db.close();console.log('PASS full migration readiness: SAT regression, all capability flags, NL approval, DPAS sources/approval, grants, repeat-safe preservation');
+})().catch(e=>{console.error(e);process.exitCode=1;});

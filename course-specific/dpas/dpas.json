@@ -1,0 +1,204 @@
+{
+  "course": {
+    "id": "dpas",
+    "short_name": "DPAS",
+    "full_name": "DPAS"
+  },
+  "c2": {
+    "examples": [
+      {
+        "title": "",
+        "thinking": "",
+        "typing_note": "",
+        "typing": "",
+        "processing": ""
+      }
+    ],
+    "sat_example_title": "",
+    "sat_example": {
+      "phases": [],
+      "note": ""
+    }
+  },
+  "c3": {
+    "techniques": {
+      "clear_instruction": {
+        "bad": "",
+        "good": ""
+      },
+      "role": {
+        "bad": "",
+        "good": ""
+      },
+      "task_decomposition": {
+        "bad": "",
+        "good": ""
+      },
+      "few_shot": {
+        "good": ""
+      },
+      "chain_of_thought": {
+        "bad": "",
+        "good": ""
+      },
+      "output_format": {
+        "bad": "",
+        "good": ""
+      }
+    },
+    "critique": {
+      "read": "",
+      "question": "",
+      "verify": "",
+      "decide": ""
+    },
+    "amd_example": {
+      "title": "",
+      "intro": "",
+      "items": [
+        {
+          "text": "",
+          "tag": "",
+          "reason": ""
+        },
+        {
+          "text": "",
+          "tag": "",
+          "reason": ""
+        },
+        {
+          "text": "",
+          "tag": "",
+          "reason": ""
+        }
+      ]
+    },
+    "template_compare": {
+      "md": [
+        {
+          "heading": "Role",
+          "lines": [
+            ""
+          ]
+        },
+        {
+          "heading": "Task",
+          "lines": [
+            ""
+          ]
+        },
+        {
+          "heading": "Context",
+          "lines": [
+            ""
+          ]
+        },
+        {
+          "heading": "Constraints",
+          "lines": [
+            "",
+            ""
+          ]
+        },
+        {
+          "heading": "Output Format",
+          "lines": [
+            ""
+          ]
+        }
+      ],
+      "xml": [
+        {
+          "tag": "role",
+          "lines": [
+            ""
+          ]
+        },
+        {
+          "tag": "task",
+          "lines": [
+            ""
+          ]
+        },
+        {
+          "tag": "context",
+          "lines": [
+            ""
+          ]
+        },
+        {
+          "tag": "constraints",
+          "lines": [
+            "",
+            ""
+          ]
+        },
+        {
+          "tag": "output_format",
+          "lines": [
+            ""
+          ]
+        }
+      ]
+    },
+    "full_example_title": "",
+    "full_example": [
+      {
+        "tag": "role",
+        "lines": [
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "task",
+        "lines": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "context",
+        "lines": [
+          "",
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "constraints",
+        "lines": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "steps",
+        "lines": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "examples",
+        "lines": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "output_format",
+        "lines": [
+          "",
+          "",
+          ""
+        ]
+      }
+    ]
+  }
+}

@@ -31,7 +31,7 @@ const server = http.createServer(async (req, res) => {
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   const origin='http://127.0.0.1:'+server.address().port, browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,headless:true});
   try {
-    let account = 0; async function context() {const c=await browser.newContext({viewport:{width:1280,height:1000},reducedMotion:'reduce'});await c.addInitScript(id=>window.testAccount=id,'test-admin-'+(++account));await c.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.abort());return c;}
+    let account = 0; async function context() {const c=await browser.newContext({viewport:{width:1280,height:1000},reducedMotion:'reduce'});await c.addInitScript(id=>window.testAccount=id,'test-admin-'+(++account));await c.route('**/*',r=>{const u=new URL(r.request().url());return u.origin===origin?r.continue():u.hostname==='cvcvdiohckwgpgoxibia.supabase.co'&&u.pathname==='/rest/v1/workspace_beta_content'?r.fulfill({status:200,contentType:'application/json',body:'[]'}):r.abort();});return c;}
     const first=await context(), page=await first.newPage(), errors=[];page.on('pageerror',e=>errors.push(e.message));
     const original=JSON.stringify({schema:1,courses:[{id:'test-skills',short_name:'Skills',full_name:'Test Skills'}]});
     await first.addInitScript(value=>localStorage.setItem('aiwise_workspace_courses_v1',value),original);
@@ -62,6 +62,13 @@ const server = http.createServer(async (req, res) => {
     await other.locator('#studio-courses').getByRole('link',{name:'Test Skills',exact:true}).click();
     await other.waitForFunction(()=>location.hash==='#studio/psychology');
     assert.ok((await other.locator('#room').innerText()).includes('Psychology'));
+    if(registry.bachelors.some(b=>b.id==='dpas')) {
+      await other.evaluate(()=>location.hash='#studio/dpas');
+      await other.waitForFunction(()=>document.querySelector('[data-cs-edit]') && !document.querySelector('[data-cs-edit]').disabled,null,{timeout:10000}).catch(async e=>{console.error(await other.locator('#room').innerText());throw e;});
+      assert.ok((await other.locator('#room').innerText()).includes('DPAS'));
+      const thought=await other.locator('#room iframe').first().evaluate(frame=>frame.contentDocument.querySelector('.layer-thinking p')?.textContent);
+      assert.equal(thought,'','DPAS must open its own blank examples');
+    }
     await page.evaluate(()=>location.hash='#courses/psychology.test-skills/edit');
     await page.waitForFunction(()=>document.getElementById('course-save') && !document.getElementById('course-save').disabled);
     assert.equal(await page.locator('#course-name').inputValue(),'Test Skills');assert.equal(await page.locator('#course-id').inputValue(),'test-skills');assert.equal(await page.locator('#course-bachelor').isDisabled(),true);

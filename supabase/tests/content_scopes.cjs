@@ -51,9 +51,10 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
  assert.deepEqual(scopes.filter(s=>s.retired).map(s=>s.id),['other']);
  for(const user of [null,member,admin])await assert.rejects(()=>as(user,"insert into workspace_content_scopes(id,kind,name) values('extra','bachelor','Extra')"));
  for(const user of [member,admin])await assert.rejects(()=>as(user,"update workspace_content_scopes set retired=true where id='psychology'"));
- // The repository's registry and the database name the same bachelors.
+ // Historical rename checks only its original two bachelors; workspace_readiness.cjs
+ // verifies the complete current registry after the full migration chain.
  const registry=JSON.parse(fs.readFileSync(path.join(root,'common/courses/registry.json'),'utf8'));
- assert.deepEqual(registry.bachelors.map(b=>[b.id,b.name]).sort(),scopes.filter(s=>s.kind==='bachelor'&&!s.retired).map(s=>[s.id,s.name]).sort());
+ assert.deepEqual(registry.bachelors.filter(b=>['psychology','pedagogical-sciences'].includes(b.id)).map(b=>[b.id,b.name]).sort(),scopes.filter(s=>s.kind==='bachelor'&&!s.retired).map(s=>[s.id,s.name]).sort());
  assert.deepEqual(registry.bachelors.flatMap(b=>b.aliases.map(a=>[a,b.id])),[['aws1','psychology'],['ped','pedagogical-sciences']]);
  assert.deepEqual((await owner("select aiwise_private.content_scope_alias('aws1') a,aiwise_private.content_scope_alias('ped') p,aiwise_private.content_scope_alias('other') o,aiwise_private.content_scope_alias('psychology') s"))[0],{a:'psychology',p:'pedagogical-sciences',o:null,s:'psychology'});
 

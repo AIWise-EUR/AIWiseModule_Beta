@@ -21,6 +21,12 @@ const root=path.resolve(__dirname,'../..');
  v.content=v.content.filter(r=>r.course!=='other').map(r=>({...r,course:{aws1:'psychology',ped:'pedagogical-sciences'}[r.course]||r.course}));
  const {buildRelease,readRegistry,SOURCE_FILES}=await import('../functions/aiwise-release/index.ts');
  const sources=Object.fromEntries(SOURCE_FILES.map(f=>[f,fs.readFileSync(path.join(root,f),'utf8')]));
+ // Freeze the registry to this historical version's scopes; later DPAS registration
+ // must not be retroactively injected into an already saved review.
+ const historicalRegistry=JSON.parse(sources['common/courses/registry.json']),historicalScopes=new Set(v.content.map(r=>r.course));
+ historicalRegistry.bachelors=historicalRegistry.bachelors.filter(b=>historicalScopes.has(b.id));
+ historicalRegistry.courses=historicalRegistry.courses.filter(c=>historicalScopes.has(c.bachelor));
+ sources['common/courses/registry.json']=JSON.stringify(historicalRegistry);
  for(const b of readRegistry(sources['common/courses/registry.json']).bachelors)sources[b.content]=fs.readFileSync(path.join(root,b.content),'utf8');
  // Historical versions predate Psychology's optional SAT scaffold. Build this
  // frozen release with the matching historical source shape, not today's slots.
