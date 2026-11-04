@@ -171,7 +171,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 15 | C2 reading link | live; browser verified | Passeport citation links to the verified preprint; [record](studio-block-editing.md#2026-10-07-passeport-reading-link) |
 | 16 | Shared course registration | frontend live; missing server function reconfirmed 2026-11-04 | Bachelor selection, shared registry writes, Studio course links, preserved browser entries; [setup](../supabase/WORKSPACE_COURSES_SETUP.md) |
 | 17 | Common language structure | Prepared; owner deployment pending | Approved English layout, preserved Dutch drafts and translations; [record](common-language-structure-sync.md) |
-| 18 | Bidirectional language layout and DPAS editing | Implemented; activation pending | Shared structure, separate translations; [record](bidirectional-layout.md) |
+| 18 | Bidirectional language layout and DPAS editing | Live; 61 test files and ten live checks passed | Shared structure, separate translations; [record](bidirectional-layout.md) |
 
 ## How to verify
 
@@ -329,3 +329,5 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   the correct Zenodo preprint in a new tab. All 47 test files passed.
 
 - **2026-11-05** (Codex) Prepared bidirectional structure approvals with separate language wording and DPAS C2/C3 editing fixes. See [bidirectional-layout.md](bidirectional-layout.md); backend activation follows the owner setup procedure.
+
+- **2026-11-05** (Codex) Owner authorized backend deployment for this change. GitHub-Publish v10 and bidirectional_layout are live; existing content/request/version fingerprints unchanged. All 61 test files and ten live checks passed; Beta 8e51a58 verified, student V11 unchanged.

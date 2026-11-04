@@ -98,7 +98,7 @@ begin
  return context||jsonb_build_object('layout',r.layout_plan||jsonb_build_object('locale',other_locale));
 end; $$;
 
-create or replace function public.workspace_submit_layout_content(p_client_id uuid,p_course text,p_chapter text,p_slots jsonb,p_base_slots jsonb,p_base_release uuid,p_saved_at timestamptz,p_summary text,p_locale text,p_source_release uuid,p_layout jsonb)
+create or replace function aiwise_private.submit_layout_content(p_client_id uuid,p_course text,p_chapter text,p_slots jsonb,p_base_slots jsonb,p_base_release uuid,p_saved_at timestamptz,p_summary text,p_locale text,p_source_release uuid,p_layout jsonb)
 returns uuid language plpgsql security definer set search_path='' as $$
 declare result uuid; existing public.workspace_submissions; peer jsonb; peer_release uuid;
 begin
@@ -159,7 +159,7 @@ end; $$;
 create or replace function public.workspace_prepare_content_approval(p_id uuid,p_revision integer)
 returns jsonb language sql security invoker set search_path='' as $$select aiwise_private.layout_context(p_id,p_revision);$$;
 
-create or replace function public.workspace_apply_layout_approval(p_id uuid,p_revision integer,p_expected_release uuid,p_expected_slots jsonb,p_resolutions jsonb,p_result jsonb,p_reason text,p_peer_result jsonb)
+create or replace function aiwise_private.apply_layout_approval(p_id uuid,p_revision integer,p_expected_release uuid,p_expected_slots jsonb,p_resolutions jsonb,p_result jsonb,p_reason text,p_peer_result jsonb)
 returns uuid language plpgsql security definer set search_path='' as $$
 declare r public.workspace_submissions; context jsonb; projected jsonb; other_locale text; peer_id uuid:=gen_random_uuid(); reviewer text; peer_row public.workspace_beta_content;
 begin
@@ -186,6 +186,13 @@ begin
  end if;
  return p_id;
 end; $$;
+
+create or replace function public.workspace_submit_layout_content(p_client_id uuid,p_course text,p_chapter text,p_slots jsonb,p_base_slots jsonb,p_base_release uuid,p_saved_at timestamptz,p_summary text,p_locale text,p_source_release uuid,p_layout jsonb)
+returns uuid language sql security invoker set search_path='' as $$select aiwise_private.submit_layout_content(p_client_id,p_course,p_chapter,p_slots,p_base_slots,p_base_release,p_saved_at,p_summary,p_locale,p_source_release,p_layout);$$;
+create or replace function public.workspace_apply_layout_approval(p_id uuid,p_revision integer,p_expected_release uuid,p_expected_slots jsonb,p_resolutions jsonb,p_result jsonb,p_reason text,p_peer_result jsonb)
+returns uuid language sql security invoker set search_path='' as $$select aiwise_private.apply_layout_approval(p_id,p_revision,p_expected_release,p_expected_slots,p_resolutions,p_result,p_reason,p_peer_result);$$;
+revoke all on function aiwise_private.submit_layout_content(uuid,text,text,jsonb,jsonb,uuid,timestamptz,text,text,uuid,jsonb),aiwise_private.apply_layout_approval(uuid,integer,uuid,jsonb,jsonb,jsonb,text,jsonb) from public,anon,authenticated;
+grant execute on function aiwise_private.submit_layout_content(uuid,text,text,jsonb,jsonb,uuid,timestamptz,text,text,uuid,jsonb),aiwise_private.apply_layout_approval(uuid,integer,uuid,jsonb,jsonb,jsonb,text,jsonb) to authenticated;
 
 -- A human content approval clears structure-only status. Layout-only copies never
 -- masquerade as completed Dutch translations in a freshly prepared release.

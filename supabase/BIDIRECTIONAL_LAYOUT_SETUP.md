@@ -1,8 +1,10 @@
 # Activate shared English / Dutch layout approvals
 
-Prepared 2026-11-05. Installation has not been applied to the live project.
-Per AGENTS.md, the owner applies SQL and Edge Functions in the Supabase dashboard,
-unless the owner explicitly delegates this deployment.
+Activated 2026-11-05 by Codex after the owner's explicit authorization for this
+change: GitHub-Publish v10, followed by the bidirectional_layout migration.
+Existing source, approval, request and version fingerprints were identical before
+and after activation. All five capabilities and all ten live checks passed.
+The procedure below remains the normal owner-run deployment path per AGENTS.md.
 
 1. Deploy the updated `supabase/functions/github-publish/index.ts` to the existing
    **GitHub-Publish** function. Preserve its name, secrets and authentication settings.

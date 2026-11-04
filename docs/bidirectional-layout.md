@@ -10,8 +10,8 @@ directions, and make every DPAS C2/C3 example editable.
 | English/Dutch structural projection and approval preview | Implemented |
 | Original wording, rich formatting and conflict protection | Tested in JS and temporary PostgreSQL |
 | DPAS empty fields, SAT controls, AMD selections | Implemented; real Studio browser verification |
-| Backend activation | Owner deployment pending; setup below |
-| Frontend deployment | All 61 test files passed; ready for gated Beta deployment |
+| Backend activation | Live: GitHub-Publish v10 and bidirectional_layout; owner explicitly delegated |
+| Frontend deployment | Beta 8e51a58 deployed; all 61 test files and all ten live checks passed |
 
 ## Decisions
 
@@ -56,3 +56,10 @@ when the new capability is active. Frozen student releases remain unchanged.
   exposed editable inputs and saved, including empty critique, AMD selectors,
   Markdown, XML and the full example. Reload restored saved wording. Live DPAS still
   has no submissions or approvals, and the new backend capability is not yet active.
+- 2026-11-05: With the owner's explicit deployment permission, activated
+  GitHub-Publish v10 and bidirectional_layout. All five capabilities enabled.
+  Fingerprints unchanged: 24 source rows, 9 approved copies, 21 requests and 8
+  saved versions. Beta deployment verified at 8e51a58; student V11 unchanged.
+  Security and performance advisory categories/counts unchanged. Public mutation
+  endpoints use SECURITY INVOKER wrappers; private implementations enforce admin
+  permissions. Final 61-file repository gate and ten live checks passed.
