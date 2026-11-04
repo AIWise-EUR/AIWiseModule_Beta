@@ -159,7 +159,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 2 | Content scopes | live | SQL applied by the owner on 2026-10-04 |
 | 3 | Workspace, loaders, functions | live | signed-in screens and the two redeployed functions still need a first real use; see Log |
 | 4 | Per-course publishing | fixed share links implemented; folder bundles pending | `?course=<bachelor.course>&fixed=1`; no SQL/function changes for this stage |
-| 5 | Share links | implemented on Workspace home | Below Published in map and list views; fixed student home links with Copy; no separate page |
+| 5 | Share links | English/Dutch pairs implemented and tested | Eight fixed lobby links with Copy, below Published in map and list views; [record](fixed-course-links.md) |
 | 6 | Activities | not started | |
 | 7 | Course overrides | not started | not needed yet |
 | 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
@@ -185,6 +185,11 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- **2026-11-04** (Codex) Added English/Nederlands share links for each of the four
+  courses. Both start at the lobby as requested; descriptive text follows the
+  selected language and course. Current Published lobby receives the same helper
+  without changing the frozen V11 content. See `fixed-course-links.md`.
 
 - **2026-11-04** (Codex) Prepared Common language structure synchronization on a separate branch. Added boxes follow approved English, Dutch edits and deleted translations are preserved, and frozen review/published copies use their own English source. No new SQL/functions or production deployment. See [record](common-language-structure-sync.md).
 

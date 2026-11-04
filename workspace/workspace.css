@@ -182,10 +182,12 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 22px; border: 1px
 /* Fixed student links sit immediately below Published in both home views. */
 .share-links { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); box-shadow: var(--sh); }
 .share-links h2 { margin: 0 0 4px; font: 600 12px/1.5 var(--font-heading); color: var(--ink); }
-.share-link-row { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-top: 1px solid var(--line-2); }
+.share-link-course { padding: 9px 0; border-top: 1px solid var(--line-2); }
+.share-link-course h3 { margin: 0; font: 600 12px/1.5 var(--font-heading); color: var(--ink); overflow-wrap: anywhere; }
+.share-link-course > small { display: block; margin-bottom: 4px; color: var(--ink-3); font-size: 10px; }
+.share-link-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
 .share-link-row a { flex: 1; min-width: 0; color: var(--signal); text-decoration: none; font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
 .share-link-row a:hover { text-decoration: underline; }
-.share-link-row small { display: block; color: var(--ink-3); font-size: 10px; font-weight: 400; }
 .share-link-row .button { flex-shrink: 0; min-width: 54px; min-height: 36px; padding: 5px 8px; font-size: 11px; }
 .share-link-status { margin: 0; color: var(--ink-3); font-size: 11px; }
 .share-link-status:empty { display: none; }

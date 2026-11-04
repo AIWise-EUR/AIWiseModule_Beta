@@ -2,7 +2,10 @@
 
 ## Status
 
-Implemented and tested for Beta and the current student V9 runtime. Separate
+English/Dutch links implemented for all four courses (eight links in each home view).
+Both languages start at the lobby; Dutch links show Dutch descriptive text and
+retain their language through module navigation. Local and browser checks passed.
+Separate
 `<bachelor>/<course>/` bundles remain a future step in `course-structure.md`.
 The Workspace home now lists Share link directly below Published in map and list
 views. This change does not generate course folders.
@@ -31,8 +34,9 @@ public link is still possible. Examples remain shared by bachelor.
 ## Workspace shortcuts
 
 `workspace/share-links.js` reads the existing course registry and builds fixed
-`lobby.html` URLs on the student domain. Both home views show the course and bachelor,
-a new-tab link, and a Copy button. Copy success is announced; if clipboard access is
+`lobby.html` URLs on the student domain, with explicit `lang=en` and `lang=nl`.
+Both home views show the course and bachelor, English/Nederlands new-tab links,
+and a Copy button for each language. Copy success names the course and language; if clipboard access is
 unavailable, a selected read-only URL allows manual copying. The controls write no
 browser storage, content or requests. Future courses must be published before their
 registry-backed share links are distributed; automatic live-status tracking is deferred.
@@ -75,6 +79,20 @@ and the 390px mobile list without horizontal overflow. The fixture was removed
 before committing. Live Workspace verification follows the Pages deployment.
 
 ## Log
+
+- 2026-11-04 — Added English/Nederlands links for AWS I, Psychodiagnostics, Inleiding
+  and DPAS Skills (eight total), in both map and list views. The owner explicitly
+  chose the lobby as the first screen. Its hero and card descriptions follow
+  `lang=nl`, preserving course-name slots and the existing navigation. English
+  descriptions remain unchanged. `common/lobby-language.js` is mirrored to the
+  current Published lobby; the lobby is outside the frozen release bundle, so its
+  helper persists across releases. No approved content, release snapshot, SQL or
+  Edge Function changes. Added checks for both languages, copying, unavailable
+  clipboard/registry, course-slot preservation and default English.
+  All 59 repository test files passed. Browser checks covered eight links per view,
+  copying, the 390px list without horizontal overflow, Dutch DPAS descriptions and
+  English AWS descriptions with the actual V11 course renderer. The Published
+  content snapshot remains byte-identical.
 
 - 2026-10-06 — Implemented fixed share links as requested, without changing the
   existing approval/publishing workflow or claiming that folder-based course bundles
