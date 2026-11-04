@@ -169,7 +169,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 12 | Control Tower item approval | live; signed-in previews verified | [Comparison rules and rollout](control-tower-item-approval.md) |
 | 14 | S.A.T per-cycle editing | live; activation verified | Empty cycles hidden; per-box Add/Delete; [record](sat-phase-editing.md) |
 | 15 | C2 reading link | live; browser verified | Passeport citation links to the verified preprint; [record](studio-block-editing.md#2026-10-07-passeport-reading-link) |
-| 16 | Shared course registration | implemented; owner function deployment pending | Bachelor selection, shared registry writes, Studio course links, preserved browser entries; [setup](../supabase/WORKSPACE_COURSES_SETUP.md) |
+| 16 | Shared course registration | frontend live; missing server function reconfirmed 2026-11-04 | Bachelor selection, shared registry writes, Studio course links, preserved browser entries; [setup](../supabase/WORKSPACE_COURSES_SETUP.md) |
 
 ## How to verify
 
@@ -184,6 +184,17 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- **2026-11-04** (Codex) Diagnosed Dutch approval blocking as capability drift:
+  the SAT installer erased `approval_merge` while the approval RPCs remained live.
+  The frontend now uses the guarded read-only preparation RPC as the authoritative
+  readiness check, validates the response, and never falls back to legacy approval.
+  Three pending real Dutch Common snapshots have matching English source releases
+  and zero merge conflicts in read-only JavaScript/SQL comparison. No real request
+  was approved. `workspace-courses` remains undeployed (six recent 404s); its error
+  guidance now names the missing/unreachable service. DPAS and a full migration
+  readiness repair are prepared separately; registry activation must wait for the
+  matching server setup. See [incident analysis](workspace-readiness-incident-2026-11-04.md).
 
 - **2026-11-02** (Codex) Replaced browser-only Add course with administrator-checked
   shared registry registration, using the new `workspace-courses` function. The
