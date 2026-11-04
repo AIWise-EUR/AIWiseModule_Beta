@@ -170,10 +170,11 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 14 | S.A.T per-cycle editing | live; activation verified | Empty cycles hidden; per-box Add/Delete; [record](sat-phase-editing.md) |
 | 15 | C2 reading link | live; browser verified | Passeport citation links to the verified preprint; [record](studio-block-editing.md#2026-10-07-passeport-reading-link) |
 | 16 | Shared course registration | frontend live; missing server function reconfirmed 2026-11-04 | Bachelor selection, shared registry writes, Studio course links, preserved browser entries; [setup](../supabase/WORKSPACE_COURSES_SETUP.md) |
+| 17 | Common language structure | Prepared; owner deployment pending | Approved English layout, preserved Dutch drafts and translations; [record](common-language-structure-sync.md) |
 
 ## How to verify
 
-- `sh checks/run-tests.sh` runs the tests under Deno (47 files).
+- `sh checks/run-tests.sh` runs the tests under Deno (52 files).
   Run it before every push.
 - `deno run --allow-read=. --allow-net=cvcvdiohckwgpgoxibia.supabase.co,api.github.com,aiwise-eur.github.io,raw.githubusercontent.com checks/live-check.ts`
   checks the live setup without credentials or writes. Run it after the owner applies
@@ -184,6 +185,8 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- **2026-11-04** (Codex) Prepared Common language structure synchronization on a separate branch. Added boxes follow approved English, Dutch edits and deleted translations are preserved, and frozen review/published copies use their own English source. No new SQL/functions or production deployment. See [record](common-language-structure-sync.md).
 
 - **2026-11-04** (Codex) Diagnosed Dutch approval blocking as capability drift:
   the SAT installer erased `approval_merge` while the approval RPCs remained live.

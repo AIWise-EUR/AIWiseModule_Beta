@@ -62,8 +62,7 @@ Rich text controls appear below editable text fields. Select words in the input;
 formatting is shown both below it and in the real module preview. Plain text inputs
 prevent pasted HTML. Undo/redo history is in-session; Save draft persists the result.
 
-All new authoring controls are English-only. Attribute values, page titles and SVG
-labels stay plain. Existing Dutch workflows keep their previous behavior.
+Structural authoring controls are English-only. The November [language sync](common-language-structure-sync.md) change adds Dutch text editing for approved English boxes while sharing their structure. Attribute values, page titles and SVG labels stay plain.
 
 The real `workspace_studio_capabilities` RPC gates the controls. If the backend is
 not updated, old text editing remains available. Authentication, role checks,

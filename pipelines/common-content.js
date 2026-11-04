@@ -277,6 +277,43 @@
     }
     return blocks;
   }
+  // English owns added-box identity, placement and order. Translation owns text.
+  // This pure projection never changes approved rows or an original draft.
+  function translationFields(slots) {
+    const fields = new Map();
+    for (const [slot, value] of Object.entries(slots)) if (slot !== '_studio')
+      for (const [key, text] of Object.entries(value)) fields.set(JSON.stringify(['field',slot,key]),text);
+    for (const box of slots._studio?.boxes || []) box.fields.forEach((runs,index) =>
+      fields.set(JSON.stringify(['box',box.id,index]),window.AIWiseStudioBlocks.plain(runs)));
+    return fields;
+  }
+  function translation(english, translated, previous = null, reviewed = false) {
+    const M=window.AIWiseStudioBlocks, clone=value=>JSON.parse(JSON.stringify(value));
+    if (!M.validCopy(translated,english)) throw Error('Translation fields no longer match the shared page. Review the saved draft before synchronizing.');
+    const slots=clone(translated), enBoxes=english._studio?.boxes || [], nlBoxes=translated._studio?.boxes || [];
+    const history=previous?.version===1 && Array.isArray(previous.retired) ? previous.retired : [];
+    const retired=clone(history), pending=[], previousFields=previous?.source ? translationFields(previous.source) : null;
+    const oldPending=new Map((previous?.pending || []).map(item=>[item.id,item.kind]));
+    const unknown=new Set(), used=new Set();
+    const archive=box=>{if(!retired.some(old=>JSON.stringify(old)===JSON.stringify(box)))retired.push(clone(box));};
+    const boxes=enBoxes.map(en=>{
+      let nl=nlBoxes.find(box=>box.id===en.id);
+      if(!nl)nl=[...history].reverse().find(box=>box.id===en.id&&box.template===en.template&&box.fields?.length===en.fields.length);
+      const compatible=nl&&nl.template===en.template&&nl.fields.length===en.fields.length;
+      if(nl&&!compatible)archive(nl);
+      used.add(en.id);
+      if(!compatible)en.fields.forEach((_,index)=>unknown.add(JSON.stringify(['box',en.id,index])));
+      return {...clone(en),fields:clone(compatible?nl.fields:en.fields)};
+    });
+    nlBoxes.filter(box=>!used.has(box.id)).forEach(archive);
+    if(english._studio || translated._studio) slots._studio={version:1,formats:clone(translated._studio?.formats || []),boxes};
+    for(const [id,text] of translationFields(english)) {
+      const kind=unknown.has(id)||oldPending.get(id)==='translate'?'translate':previousFields?(previousFields.get(id)!==text?'review':oldPending.get(id)):reviewed?null:'review';
+      if(kind)pending.push({id,kind});
+    }
+    if(!M.validCopy(slots,english))throw Error('The synchronized translation has an unsupported format. The original is preserved.');
+    return {slots,state:{version:1,source:clone(english),pending,retired}};
+  }
   function copy(doc, key, fallback='') { return doc.querySelector('[data-copy="'+key+'"]')?.textContent ?? fallback; }
   function sync(doc) {
     doc.querySelectorAll('[data-example-index]').forEach(node=>{node.textContent=copy(doc,'example','Example')+' '+node.dataset.exampleIndex+' '+copy(doc,'of','of')+' '+node.dataset.exampleTotal;});
@@ -308,7 +345,7 @@
     window.AIWiseStudioBlocks.common(doc,slots,blocks);
     sync(doc);
   }
-  window.AIWiseCommonContent = Object.freeze({chapters, names, catalog, legacyCatalog, valid, apply, copy, sync});
+  window.AIWiseCommonContent = Object.freeze({chapters, names, catalog, legacyCatalog, valid, apply, copy, sync, translation, translationFields});
   if (document.currentScript?.hasAttribute('data-editor-only')) return;
   if (new URL(location.href).searchParams.has('studio-preview')) return;
   const chapter = document.querySelector('[data-current-block]')?.dataset.currentBlock || (document.querySelector('[data-anatomy-copy]') ? 'map' : null);
@@ -318,8 +355,19 @@
     if (!chapters.includes(chapter)) return;
     const locale=window.AIWiseLanguage?.current() || 'en';
     try {
-      const rows=await window.AIWiseBetaContent.read('common',locale), row=rows.find(r=>r.chapter===chapter);
-      if(row) { apply(document,chapter,row.slots,sourceBlocks); document.documentElement.lang=row.fallback_locale||locale;
+      const rows=await window.AIWiseBetaContent.read('common',locale);
+      let row=rows.find(r=>r.chapter===chapter),slots=row?.slots,translationNotice='';
+      if(locale==='nl' && !row?.fallback_locale) {
+        // The reader supplies the same frozen review/release when one is selected.
+        const en=(await window.AIWiseBetaContent.read('common','en')).find(r=>r.chapter===chapter);
+        if(en && !row){row={...en,fallback_locale:'en'};slots=en.slots;}
+        else if(en){const projected=translation(en.slots,slots,null,row.source_release===en.submission_id);slots=projected.slots;
+          if(projected.state.pending.length)translationNotice='The layout follows the approved English version. Some text still needs Dutch translation or review; new boxes show English until translated.';
+        }
+      }
+      if(row) { apply(document,chapter,slots,sourceBlocks);
+        if(translationNotice){const note=document.createElement('p');note.dataset.languageNotice='';note.setAttribute('role','status');note.textContent=translationNotice;(document.querySelector('main')||document.body).prepend(note);}
+         document.documentElement.lang=row.fallback_locale||locale;
         if(row.fallback_locale){const note=document.createElement('p');note.dataset.languageNotice='';note.setAttribute('role','status');note.textContent='Nederlands was not approved for this page in this version. The saved English content is shown.';note.style.cssText='padding:12px;background:#fff3e8;color:#682b1b;margin:0';(document.querySelector('main')||document.body).prepend(note);}
       }
       else if(locale==='nl') {

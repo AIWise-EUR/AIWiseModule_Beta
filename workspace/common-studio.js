@@ -50,6 +50,24 @@
     }
     return {...JSON.parse(JSON.stringify(base)),...saved.slots};
   }
-  window.AIWiseCommonStudio = {chapters, names, catalog, apply, upgradeDraft,
+  function syncTranslation(s) {
+    if(!s.isCommon || s.locale!=='nl' || !s.englishApproved || s.blocked)return;
+    const before=JSON.stringify(s.values);
+    const result=window.AIWiseCommonContent.translation(s.englishApproved,s.values,s.translationSync,s.reviewedSource===s.englishRelease && !(s.translationNew&&!s.raw));
+    if(s.translationNew&&!s.raw&&!s.translationSync)result.state.pending.forEach(item=>item.kind='translate');
+    s.values=result.slots;s.translationSync=result.state;
+    if(before!==JSON.stringify(s.values)){s.needsUpgrade=true;s.translationBackupNeeded=true;}
+  }
+  function translationField(s,wrap,id,english) {
+    if(!s.translationSync)return;
+    const status=document.createElement('p');status.className='cs-language-status';
+    const button=document.createElement('button');button.type='button';button.className='button';button.textContent='Mark translation reviewed';
+    const draw=()=>{const item=s.translationSync.pending.find(item=>item.id===id);status.textContent=item?.kind==='translate'?'Translation needed · English starting text':item?'Translation review needed':'Translation reviewed';button.hidden=!item;};
+    button.onclick=()=>{s.translationSync.pending=s.translationSync.pending.filter(item=>item.id!==id);s.needsUpgrade=true;draw();s.refreshLanguageStatus();s.blockEditing?.controls();};
+    wrap.append(status,button);
+    if(typeof english==='string'){const detail=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='Show approved English source';text.textContent=english;detail.append(summary,text);wrap.append(detail);}
+    draw();
+  }
+  window.AIWiseCommonStudio = {chapters, names, catalog, apply, upgradeDraft, syncTranslation, translationField,
     target: (s, index) => s.commonBlocks?.[index]?.target || s.commonBlocks?.[index]?.node};
 })();

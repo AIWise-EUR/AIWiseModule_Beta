@@ -1,0 +1,37 @@
+/* Existing real SQL contracts accept synchronized copies, retain history and reject stale sources. */
+const {PGlite}=require(process.env.PGLITE_MODULE||'@electric-sql/pglite');
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+(async()=>{const root=path.resolve(__dirname,'../..'),db=new PGlite();try{
+ await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;
+ create table auth.users(id uuid primary key,raw_user_meta_data jsonb default '{}',email text,email_confirmed_at timestamptz,created_at timestamptz default now(),deleted_at timestamptz,is_anonymous boolean default false);
+ create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+ grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
+ const dir=path.join(root,'supabase/migrations');for(const name of fs.readdirSync(dir).filter(f=>f.endsWith('.sql')).sort())await db.exec(fs.readFileSync(path.join(dir,name),'utf8'));
+ const user='11111111-1111-4111-8111-111111111111';await db.query("insert into auth.users(id,email,email_confirmed_at) values($1,'sync@example.invalid',now())",[user]);await db.query("insert into workspace_members(user_id,role,active) values($1,'admin',true)",[user]);
+ const owner=async(sql,args=[])=>{await db.exec('reset role');return(await db.query(sql,args)).rows;};
+ const as=async(sql,args=[])=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[user]);await db.exec('set role authenticated');return(await db.query(sql,args)).rows;};
+ const c={window:{},document:{currentScript:{hasAttribute:()=>true}},NodeFilter:{SHOW_TEXT:4}};
+ for(const file of ['pipelines/common-content.js','workspace/draft-recovery.js'])vm.runInNewContext(fs.readFileSync(path.join(root,file),'utf8'),c);
+ const C=c.window.AIWiseCommonContent,R=c.window.AIWiseDraftRecovery,js=v=>JSON.parse(JSON.stringify(v));
+ const source=async locale=>(await owner("select slots from workspace_content_sources where course='common' and chapter='c2' and locale=$1",[locale]))[0].slots;
+ const beta=async locale=>(await owner("select * from workspace_beta_content where course='common' and chapter='c2' and locale=$1",[locale]))[0];
+ const submit=async(locale,slots,base,release=null,english=null)=>(await as("select workspace_submit_localized_content($1,'common','c2',$2,$3,$4,now(),'Language structure test',$5,$6) id",[crypto.randomUUID(),slots,base,release,locale,english]))[0].id;
+ const prepare=async id=>(await as('select workspace_prepare_content_approval($1,1) v',[id]))[0].v;
+ const approve=async id=>{const p=await prepare(id),result=js(R.combine(R.plan(p.base,p.draft,p.latest)));await as('select workspace_apply_content_approval($1,1,$2,$3,$4,$5,$6)',[id,p.release,p.latest,[],result,'Reviewed translation']);};
+ const enBase=await source('en'),nlBase=await source('nl'),en=structuredClone(enBase);
+ en._studio=JSON.parse(fs.readFileSync(path.join(root,'content/approved/en/common/c2.json'),'utf8')).slots._studio;
+ const eid=await submit('en',en,enBase);await approve(eid);const approvedEN=await beta('en');
+ const first=C.translation(approvedEN.slots,nlBase,null,true);const textBox=first.slots._studio.boxes.find(b=>b.template==='text');textBox.fields[0]=[{text:'Voordat we beginnen'}];
+ const nid=await submit('nl',js(first.slots),nlBase,null,eid);await approve(nid);const approvedNL=await beta('nl');assert.equal(approvedNL.slots._studio.boxes.find(b=>b.id===textBox.id).fields[0][0].text,'Voordat we beginnen');
+ const originalSubmission=(await owner('select to_jsonb(s) v from workspace_submissions s where id=$1',[nid]))[0].v;
+ const pending=await submit('nl',approvedNL.slots,approvedNL.slots,nid,eid);
+ const changed=structuredClone(approvedEN.slots);changed._studio.boxes=changed._studio.boxes.filter(b=>b.id!==textBox.id);changed._studio.boxes[0].align='right';
+ const next=await submit('en',changed,approvedEN.slots,eid);await approve(next);
+ assert.deepEqual(await beta('nl'),approvedNL,'English approval does not silently rewrite or approve Dutch');await assert.rejects(()=>prepare(pending),/English source changed/);
+ const second=C.translation((await beta('en')).slots,approvedNL.slots,first.state);assert.equal(second.state.retired.find(b=>b.id===textBox.id).fields[0][0].text,'Voordat we beginnen');
+ const n2=await submit('nl',js(second.slots),approvedNL.slots,nid,next);await approve(n2);
+ assert.equal((await beta('nl')).slots._studio.boxes.length,changed._studio.boxes.length);assert.equal((await beta('nl')).slots._studio.boxes[0].align,'right');
+ assert.deepEqual((await owner('select to_jsonb(s) v from workspace_submissions s where id=$1',[nid]))[0].v,originalSubmission,'original translation and audit record remain immutable');
+ assert.equal((await owner('select status from workspace_submissions where id=$1',[pending]))[0].status,'pending');
+ console.log('PASS language structure SQL: full migration chain, English approval, Dutch submission/approval, source race guard, layout projection and immutable translation history');
+ }finally{await db.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
