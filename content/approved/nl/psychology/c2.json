@@ -1,15 +1,124 @@
 {
   "schema": 1,
-  "sequence": 29,
+  "sequence": 39,
   "course": "psychology",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "a0438f9e-3252-4da6-95f8-8968c3d93bb3",
+  "submission_id": "bc5d68f2-b34c-4c73-b4b8-5a129a02bb8a",
   "source_release": "80f83cd9-140e-4f15-8bcb-42ca4a14d9fc",
-  "approved_at": "2026-11-05T11:33:11.647783+00:00",
+  "approved_at": "2026-11-05T20:31:50.567295+00:00",
   "slots": {
     "_studio": {
-      "boxes": [],
+      "boxes": [
+        {
+          "id": "box-e701ae2e-71c9-4e23-95c4-93c29f05193d",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "template": "text"
+        },
+        {
+          "id": "box-dde4f466-c300-4be6-8197-fce452aabf35",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "example": 1,
+          "template": "text"
+        },
+        {
+          "id": "box-e9307913-acf2-430b-bcdf-44d2b7c1e7f2",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "example": 2,
+          "template": "text"
+        },
+        {
+          "id": "box-482fbaaf-3337-4b05-bb0e-04fdca8ed475",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "example": 3,
+          "template": "text"
+        },
+        {
+          "id": "box-08f89403-4330-41d3-8ef1-d9ae8418f33d",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "example": 4,
+          "template": "text"
+        }
+      ],
       "formats": [],
       "version": 1
     },
@@ -136,5 +245,6 @@
       ]
     },
     "c2.sat_example_title": "S.A.T uitgewerkt voorbeeld"
-  }
+  },
+  "layout_review_required": true
 }
