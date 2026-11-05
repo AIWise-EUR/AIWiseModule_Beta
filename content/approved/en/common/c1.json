@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 8,
+  "sequence": 35,
   "course": "common",
   "chapter": "c1",
   "locale": "en",
-  "submission_id": "59f31469-f327-4d7e-a710-4eec97ace5c4",
+  "submission_id": "3c5320f2-ef13-4071-a45e-6fb0755f1dd3",
   "source_release": null,
-  "approved_at": "2026-10-05T16:20:43.273524+00:00",
+  "approved_at": "2026-11-05T20:13:12.331518+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -24,7 +24,13 @@
             ],
             [
               {
-                "text": "the fact that GenAI can help you with some activities does not remove your responsibility for your own development and work as a student. Using GenAI appropriately means remaining actively in control of your thinking and writing process. Always follow the ESSB principles and guidelines for GenAI use."
+                "text": "T"
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e fact that GenAI can help you with some activities does not remove your responsibility for your own development and work as a student. Using GenAI appropriately means remaining actively in control of your thinking and writing process. Always follow the ESSB principles and guidelines for GenAI use."
               }
             ]
           ],
@@ -38,7 +44,7 @@
       "Heading 1": "What is Generative AI?"
     },
     "c1.block-1": {
-      "Text 1": "\n        The word \"GenAI\" is everywhere. But familiarity with a term is not the same as understanding what the thing actually is. This block builds that understanding : From where it came from, to what it is made of.\n      "
+      "Text 1": "\n        The word \"GenAI\" is everywhere. But familiarity with a term is not the same as understanding what the thing actually is. This block builds that understanding : From where it came from, to how it works and what it can (and cannot) help with.\n      "
     },
     "c1.block-2": {
       "Heading 1": "What is AI? What is GenAI?"
@@ -47,7 +53,7 @@
       "Text 1": "\n        You have heard the term many times. But what exactly is GenAI, and how did it emerge?\n      ",
       "Text 2": "\n        Artificial intelligence has been developing for more than sixty years. The timeline below traces that broader history. Early systems such as ELIZA in the 1960s relied entirely on rules. They matched patterns in user input and returned prewritten responses. They did not learn from data, and they did not generate new content. Later systems such as Siri, Google Now, and Alexa could retrieve information and respond to voice input, but they still mainly depended on recognition, classification, and retrieval.\n      ",
       "Text 3": "\n        GenAI marks a different point in that history. Systems such as ChatGPT do not simply return stored answers. They generate responses by producing new text based on statistical patterns learned from large amounts of human written language. This is a different mechanism from the one used in earlier systems.\n      ",
-      "Text 4": "\n        It is also useful to be precise about the terms. AI is the broadest category and includes many different kinds of systems, such as recommendation engines, fraud detection tools, image classifiers, and medical decision support systems. GenAI is a more specific category within AI. It refers to systems that generate new content rather than simply classifying, ranking, or retrieving information. Large language models, or LLMs, are a further subset within GenAI. They are models designed to generate language based on patterns learned from large amounts of text. Systems such as ChatGPT or Claude are best understood in this way: they are GenAI systems built on LLMs.\n      "
+      "Text 4": "\n        It is also important to be precise about the terms. AI is the broadest category and includes many different kinds of systems, such as recommendation engines (think of Spotify recommending music based on your listening habits), fraud detection tools, image classifiers (e.g., you search for \"cat\" in your photo app and see all the pictures containing a cat), and medical decision support systems. GenAI is a more specific category within AI. It refers to systems that generate new content rather than simply classifying, ranking, or retrieving information. Large language models, or LLMs, are a further subset within GenAI. They are models designed to generate language based on patterns learned from large amounts of text. Systems such as ChatGPT or Claude are best understood in this way: they are GenAI systems built on LLMs.\n      "
     },
     "c1.block-4": {
       "Text 1": " The developmental stream from rule-based conversational systems to Generative AI (adapted from Yenduri et al., 2024, Figure 2). The qualitative shift occurs at ChatGPT (2022): for the first time, the system generates new text rather than retrieving or matching pre-written responses. ",
@@ -88,7 +94,7 @@
       "Heading 1": "What is GenAI made of?"
     },
     "c1.block-6": {
-      "Text 1": "\n        When a response sounds fluent or well targeted, it is easy to start anthropomorphizing the system, that is, treating it as if it were a mind or an entity that understands in the human sense. This reaction is natural, but this diagram is meant to interrupt that intuition. Its purpose is not to make you memorize every component one by one. Rather, it is to help you see GenAI more clearly as a system made up of physical and informational parts that work together to produce each response. Clearing away that fog is an important first step toward understanding GenAI and using it more appropriately.\n      "
+      "Text 1": "\n        When a response sounds fluent or well targeted, it is tempting to start anthropomorphizing the system, that is, attributing human characteristics to it and assuming that it understands what it says in the same way a human does. This reaction is natural, but the diagram below is intended to challenge that intuition. It helps you better understand what lies behind GenAI: a system made up of physical and informational parts that work together to generate responses. By gaining a better understanding of how this system works, you can also use GenAI more consciously and appropriately.      "
     },
     "c1.block-7": {
       "Heading 1": "What GenAI can help with — and where it structurally falls short"
@@ -153,24 +159,24 @@
       "Text 1": "\n          Limitations\n        "
     },
     "c1.block-15": {
-      "Text 1": "Sourcing and citation",
-      "Text 2": "Hallucination is not a bug — it is a structural consequence of the generation mechanism. The model produces the most statistically plausible next token, and a plausible-sounding citation is often more likely than an admission of uncertainty. References produced by GenAI must be verified against actual databases before use. Never cite a source you have not read.",
-      "Text 3": "Why: logits/softmax assigns high probability to fluent, confident-sounding output — including fictional references (Shanahan, 2024; Huang et al., 2025)"
+      "Text 1": "Referencing and citations",
+      "Text 2": "Hallucinations are not random errors — they are a structural consequence of the way GenAI generates text. The model produces the most statistically plausible next token, meaning that a plausible-sounding reference may be more likely to be generated than an admission of uncertainty. References generated by GenAI must be verified against actual databases before you use them. Never cite a source that you have not read yourself.",
+      "Text 3": "Why: Through the logits/softmax process, probabilities are assigned to possible next tokens. This allows GenAI to generate fluent and confident-sounding text even when the content is incorrect — for example, in the form of fabricated references (Shanahan, 2024; Huang et al., 2025)"
     },
     "c1.block-16": {
       "Text 1": "Critical analysis and original argumentation",
-      "Text 2": "GenAI has no genuine position on anything. What appears to be an argument is a statistically likely sequence of tokens associated with argument-shaped text. For tasks requiring you to evaluate evidence, take a stance, or construct an original claim, you need to start the thinking process on your own. You could then use AI to explore counterarguments and challenge your reasoning, rather than letting it determine your position. ",
-      "Text 3": "Why: output is sampled from a distribution over training text — there is no reasoning agent holding a view (Shanahan, 2024)"
+      "Text 2": "GenAI has no genuine position on anything. What appears to be an argument is a statistically likely sequence of tokens associated with argument-shaped text. For tasks requiring you to evaluate evidence, take a stance, or construct an original argument, you need to start the thinking process on your own. You could then use AI to explore counterarguments and challenge your reasoning, rather than letting it determine your position. ",
+      "Text 3": "Why: output is generated based on probabilities derived from training texts — there is no thinking agent holding an opinion (Shanahan, 2024)"
     },
     "c1.block-17": {
       "Text 1": "Multi-step reasoning",
-      "Text 2": "Each token is generated conditioned on previous tokens, which means early errors propagate and compound. For tasks involving calculation, logical chains, or sequential inference — such as working through a statistical method or a philosophical argument step by step — errors in early steps often go uncorrected. Always verify reasoning-intensive outputs manually.",
-      "Text 3": "Why: autoregressive generation has no backtracking mechanism — errors in the sequence condition all subsequent tokens (Naveed et al., 2025)"
+      "Text 2": "Each token is generated based on the previous tokens, which means that early errors in an initial step can carry over into subsequent steps. For tasks involving calculation, logical chains, or multiple consecutive steps of reasoning — such as applying a statistical method or developing a philosophical argument step by step — errors in early steps often remain uncorrected. Always verify reasoning-intensive outputs manually.",
+      "Text 3": "Why: autoregressive generation has no built-in mechanism for checking and correcting previous steps. As a result, errors in the sequence can carry over into subsequent output (Naveed et al., 2025)"
     },
     "c1.block-18": {
       "Text 1": "Specialist and current knowledge",
-      "Text 2": "Training data has a cutoff date, and rarer domains are underrepresented in the corpus. GenAI may produce confident-sounding output on recent publications, niche subfields, or local institutional knowledge that is partially or wholly inaccurate. For literature searches and factual claims in your field, always go to primary sources and verified databases.",
-      "Text 3": "Why: model weights encode a fixed snapshot of training data — post-cutoff and low-frequency knowledge is absent or unreliable (Yenduri et al., 2024)"
+      "Text 2": "Training data cover a specific period, meaning that the model does not inherently have knowledge of events or publications that appeared afterwards. In addition, highly specialised topics are often less well represented in the training data. As a result, GenAI may provide confident-sounding but incorrect answers about recent publications, niche subfields, or information specific to your university or degree programme. For literature reviews and factual claims in your field, always check primary sources and reliable academic databases.",
+      "Text 3": "Why: model weights capture a fixed snapshot of the training data. Knowledge that is not included in the training data, or is only minimally represented, is therefore absent or unreliable (Yenduri et al., 2024)"
     },
     "c1.block-19": {
       "Text 1": " Shanahan, M. (2024). Talking about Large Language Models. ",
@@ -226,9 +232,9 @@
       "feedback thanks 1": "Thank you — your feedback has been noted.",
       "feedback question 1": "What's on your mind?",
       "feedback placeholder 1": "Share a thought, suggestion, or issue...",
-      "Navigation c1 section 1 1": "History & Development",
-      "Navigation c1 section 2 1": "Anatomy of GenAI",
-      "Navigation c1 section 3 1": "GenAI Output Traits",
+      "Navigation c1 section 1 1": "What is AI? What is GenAI?",
+      "Navigation c1 section 2 1": "What is GenAI made of?",
+      "Navigation c1 section 3 1": "What GenAI can help with — and where it structurally falls short",
       "Navigation c2 section 1 1": "AI vs Human Intelligence",
       "Navigation c2 section 2 1": "Human vs GenAI",
       "Navigation c2 section 3 1": "Collaboration Framework",
