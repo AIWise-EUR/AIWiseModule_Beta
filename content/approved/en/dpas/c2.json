@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "sequence": 32,
+  "course": "dpas",
+  "chapter": "c2",
+  "locale": "en",
+  "submission_id": "b5d044ee-41d5-49bf-adcb-5c9d77779d47",
+  "source_release": null,
+  "approved_at": "2026-11-05T11:33:25.26999+00:00",
+  "slots": {
+    "c2.examples": [
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      }
+    ],
+    "c2.sat_example": {
+      "note": "",
+      "phases": [
+        {
+          "label": "",
+          "steps": [
+            {
+              "name": "",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "ai"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "ai"
+            }
+          ]
+        },
+        {
+          "label": "",
+          "steps": [
+            {
+              "name": "",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "team"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "team"
+            }
+          ]
+        }
+      ]
+    },
+    "c2.sat_example_title": ""
+  },
+  "structure_only": true,
+  "layout_review_required": true
+}
