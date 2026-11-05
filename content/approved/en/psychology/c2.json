@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 38,
+  "sequence": 41,
   "course": "psychology",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "695e6266-c74e-4801-ac70-277d83f2f9b1",
+  "submission_id": "a6b1bb4f-cfdc-4d5f-a221-96dd7da84b0f",
   "source_release": null,
-  "approved_at": "2026-11-05T20:31:50.567295+00:00",
+  "approved_at": "2026-11-05T21:38:46.504591+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -3816,7 +3816,7 @@
       }
     ],
     "c2.sat_example": {
-      "note": "",
+      "note": "The example ends here, but the S.A.T process does not have to stop here. If the student feels that the idea still needs to be developed or wants to ask for feedback, they can start another Self–Team or Self–AI cycle.",
       "phases": [
         {
           "label": "Self–AI",
