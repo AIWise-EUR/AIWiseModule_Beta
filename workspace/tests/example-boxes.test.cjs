@@ -57,7 +57,7 @@ test('every example has a fourth matching layer without mutating existing saved 
  render();render();
  const cards=[...doc.querySelectorAll('.carousel-card')];
  assert.equal(cards.length,3);
- for(const card of cards){assert.equal(card.querySelectorAll('.carousel-layer').length,4);assert.equal(card.querySelector('.layer-unknown .carousel-layer-label').textContent,'What the model doesn’t know');assert.equal(card.querySelector('.layer-unknown .carousel-layer-label').style.textTransform,'none');}
+ for(const card of cards){assert.equal(card.querySelectorAll('.carousel-layer').length,4);assert.equal(card.querySelector('.layer-unknown .carousel-layer-label').textContent,'What the model doesn’t know');assert.ok(!card.querySelector('.layer-unknown .carousel-layer-label').style.textTransform);}
  assert.equal(JSON.stringify(s.values),before);assert.ok(M.valid(s.values._studio,s.values));
 });
 test('legacy missing-context text and formatting become the fourth section without duplicate boxes or reminders',()=>{

@@ -126,7 +126,6 @@
         var unknown = layer("unknown", window.AIWiseStudioBlocks?.unknownTitle(renderDoc.documentElement.lang) || "What the model doesn’t know", el("p", null, ""));
         unknown.classList.add("layer-processing");
         var unknownLabel=unknown.querySelector('.carousel-layer-label');
-        unknownLabel.style.textTransform='none';
         unknownLabel.querySelector('[data-copy-use]').removeAttribute('data-copy-use');
         layers.appendChild(unknown);
 

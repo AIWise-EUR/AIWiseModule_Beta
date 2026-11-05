@@ -207,8 +207,8 @@ that storage key; existing Control Tower regression tests cover their old format
 ## 2026-11-06: Fourth C2 example section
 
 Requested as a permanent fourth layer below Thinking, Typing and Processing,
-with the same padding, divider, dot and typography. Its title is sentence case,
-not forced uppercase. English defaults to “What the model doesn’t know”; Dutch
+with the same padding, divider, dot and typography. Its title uses the same uppercase styling, font, weight and size as the other
+section labels. English defaults to “What the model doesn’t know”; Dutch
 defaults to “Wat het model niet weet”. Both title and body are editable per example.
 
 The existing example-scoped text-box extension stores the independently editable
@@ -226,4 +226,5 @@ removal and existing extension validation are covered by regression tests.
 Student publication remains a separate Publish to students action.
 
 Validation: all 61 test files passed. Browser preview shows six fourth sections,
-matching the existing card design, with sentence-case headings.
+matching the existing card design. The follow-up restores the shared uppercase
+label styling at the user’s request; saved title text is unchanged.
