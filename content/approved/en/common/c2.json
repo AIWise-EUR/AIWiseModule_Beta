@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 36,
+  "sequence": 45,
   "course": "common",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "5447828c-40e9-4983-b45c-ca75f7067ef3",
+  "submission_id": "bf8d3669-3791-49f3-b322-d2f23fdb9050",
   "source_release": null,
-  "approved_at": "2026-11-05T20:13:50.097927+00:00",
+  "approved_at": "2026-11-05T21:56:12.213894+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -545,10 +545,10 @@
       "feedback placeholder 1": "Share a thought, suggestion, or issue...",
       "Navigation c1 section 1 1": "History & Development",
       "Navigation c1 section 2 1": "Anatomy of GenAI",
-      "Navigation c1 section 3 1": "Is Artifical Intelligence Same as Human Intelligence?",
-      "Navigation c2 section 1 1": "Is Artifical Intelligence Same as Human Intelligence?  ",
+      "Navigation c1 section 3 1": "Is artifical intelligence the same as human intelligence?",
+      "Navigation c2 section 1 1": "Is artifical intelligence the same as human Intelligence?  ",
       "Navigation c2 section 2 1": "Human vs GenAI: a functional comparison",
-      "Navigation c2 section 3 1": "A Framework for Collaboration: S.A.T Framework",
+      "Navigation c2 section 3 1": "A framework for collaboration: S.A.T Framework",
       "Navigation c3 section 1 1": "Prompt",
       "Navigation c3 section 2 1": "Critique",
       "Navigation c3 section 3 1": "Integrate"
