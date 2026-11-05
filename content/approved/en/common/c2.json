@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 12,
+  "sequence": 36,
   "course": "common",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "724af4d1-48f3-40c0-8e39-736e12d6c66c",
+  "submission_id": "5447828c-40e9-4983-b45c-ca75f7067ef3",
   "source_release": null,
-  "approved_at": "2026-10-05T16:44:43.69695+00:00",
+  "approved_at": "2026-11-05T20:13:50.097927+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -19,7 +19,46 @@
           "fields": [
             [
               {
-                "text": "Intersubjective meaning-making: stimulated, not lived"
+                "text": "Intersubjective meaning-making: s"
+              },
+              {
+                "text": "imulated, not"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "x"
+              },
+              {
+                "text": "p"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "c"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "d"
               }
             ],
             [
@@ -44,7 +83,103 @@
             ],
             [
               {
-                "text": "Before we start with this block, we want to address that it is by no means necessary that you use AI when studying or working on assignments. All previous generations have studied without the use of AI and have successfully graduated and contributed to societal progress.\n\nIn that sense, this module is not about convincing you to use AI. Instead, it aims to help you make informed choices about if, when, and how AI might be useful for your learning. If you choose not to use it, that is a valid approach. If you do want to use it, the goal is to do so in a way that supports, rather than replaces, your own thinking and learning. And be mindful, you will still need to put in a lot of time and effort to produce high-quality work, even, or especially, with the input of GenAI.\n\nFor a critical perspective on the use of GenAI-use in higher education, see Passeport et al. (2026)."
+                "text": "Before we start with this block, we want to address that it is by no means necessary that you use AI when studying or working on assignments. "
+              },
+              {
+                "text": "P"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "v"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "u"
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "f"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "u"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": " have studied without the use of AI and have successfully graduated and contributed to societal progress.\n\nIn that sense, this module is not about convincing you to use AI. Instead, it aims to help you make informed choices about if, when, and how AI might be useful for your learning. If you choose not to use it, that is a valid approach. If you do want to use it, the goal is to do so in a way that supports, rather than replaces, your own thinking and learning. And be mindful, you will still need to put in a lot of time and effort to produce high-quality work, even, or especially, with the input of GenAI.\n\nFor a critical perspective on the use of GenAI-use in higher education, see Passeport et al. (2026)."
               }
             ]
           ],
@@ -61,10 +196,10 @@
       "Text 1": "\n        Knowing what GenAI is made of is a starting point. The next question is what it can and cannot do compared to you, and how to work with it effectively.\n      "
     },
     "c2.block-2": {
-      "Heading 1": "Is Artifical Intelligence Same as Human Intelligence?\n    "
+      "Heading 1": "Is artifical intelligence the same as human intelligence?    "
     },
     "c2.block-3": {
-      "Text 1": "Before comparing what humans and GenAI can do, it is necessary to understand why they differ in the first place. The differences are not superficial. They are structural, rooted in how each system receives and processes information."
+      "Text 1": "Before comparing what humans and GenAI can do, it is important to understand why they differ in the first place. The differences are not superficial. They are structural, rooted in how each system receives and processes information."
     },
     "c2.block-4": {
       "Text 1": "Part A: Input channel asymmetry"
@@ -79,18 +214,18 @@
       "Text 1": "Human",
       "Text 2": "Five senses, all at once. Smell, sound, scale, proximity, integrated into one layered experience. Your brain does not process these separately and stitch them together later. They arrive as a single, unified representation of the world.",
       "Text 3": "GenAI",
-      "Text 4": "A token. A numerical code that stands for a word. By the time any input reaches the model, it has already been compressed and stripped down to symbolic structure. The model operates entirely at the level of abstracted language, with no connection to the sensory world the language describes."
+      "Text 4": "Tokens: numerical representations of pieces of text. By the time any input reaches the model, it has already been compressed and stripped down to symbolic structure. The model operates entirely at the level of abstracted language, with no connection to the sensory world the language describes."
     },
     "c2.block-7": {
       "Text 1": "✓",
-      "Text 2": "Nonsensory meaning: recovered at human level",
+      "Text 2": "Abstract and relational meaning: similar to humans",
       "Text 3": "Abstract, relational knowledge. Things like \"elephants are mammals,\" \"they live in herds,\" \"they are associated with memory.\" These are patterns that exist fully in language itself, and LLMs pick them up about as well as humans do.",
       "Text 4": "~",
-      "Text 5": "Sensory features: partially recovered",
+      "Text 5": "Sensory meaning: partially comparable to humans",
       "Text 6": "What something looks, sounds, or feels like. Multimodal models that process images alongside text do better here, especially for vision. But \"partially\" is the key word: the gap narrows for what can be photographed, not for what can only be experienced.",
       "Text 7": "✗",
-      "Text 8": "Motor and bodily features: not recovered",
-      "Text 9": "What it feels like to stand next to something enormous. The weight of an object in your hand. The muscle memory of a familiar movement. These dimensions of meaning are grounded in having a body, and no amount of text training has bridged this gap. There is no current pathway by which it would."
+      "Text 8": "Motor and physical meaning: absent",
+      "Text 9": "What it feels like to stand next to something enormous. The weight of an object in your hand. The muscle memory of a familiar movement. These dimensions of meaning are grounded in having a body, and no amount of text training has bridged this gap. At present, there is no way for a language model to acquire these kinds of bodily experiences for itself."
     },
     "c2.block-8": {
       "Text 1": "Part B: Distance from reality"
@@ -144,13 +279,13 @@
       "Text 9": "What gets selected for training data",
       "Text 10": "Only what dataset builders choose to include.",
       "Text 11": "What the model learns",
-      "Text 12": "The statistical average of everything above.",
-      "Text 13": "At every step, noise enters and fidelity decreases. The result is a model trained on the statistical average of online text, which is itself a narrow and unrepresentative sample of human experience.",
-      "Text 14": "To give you a sense of scale: GPT 3 was trained on hundreds of billions of words. About 82% of those words came from a single source, a massive collection of web pages scraped automatically from the internet. Research has shown that this collection systematically overrepresents certain languages, cultures, and demographics. Some researchers argue that this is not simply a technical problem with a straightforward fix, but something more deeply tied to how large language models work: they predict text based on what they have seen, so the patterns in the training data inevitably shape the patterns in the output."
+      "Text 12": "Statistical patterns and relationships in the information that makes it into the training data after all these selection steps.",
+      "Text 13": "At every step, information is lost and biases can emerge. The result is a model trained on a limited and unrepresentative selection of what people have documented and published online.",
+      "Text 14": "To give you an idea of the scale: GPT 3 was trained on hundreds of billions of words. About 82% of those words came from a single source, a massive collection of web pages scraped automatically from the internet. Research has shown that this collection systematically overrepresents certain languages, cultures, and demographic groups. Some researchers argue that this is not simply a technical problem with an easy solution, but something more deeply tied to how large language models work: they predict text based on patterns learned during training, meaning that biases in the training data can also carry over into the output."
     },
     "c2.block-11": {
       "Text 1": "What this means for output",
-      "Text 2": "LLM's output tends to get drifted from reality and eventually leads to a more biased result. Therefore, it is hard to say that the output of the LLM reflects the reality."
+      "Text 2": "LLM's output is not a direct reflection of reality. The model generates output based on patterns in information that has already gone through various selection and processing steps. As a result, biases that have emerged during these steps can also be reflected in the output."
     },
     "c2.block-12": {
       "Text 1": "Part C: Intentional information loss"
@@ -162,8 +297,8 @@
       "Text 4": "Here is what that looks like in practice."
     },
     "c2.block-14": {
-      "Text 1": "In every one of these examples, the model did something reasonable with what it received. The problem is not that it did a bad job. The problem is that most of what mattered to you never reached the model in the first place.",
-      "Text 2": "This gap does not disappear as you get better at prompting. You can narrow it, but you cannot close it.",
+      "Text 1": "In every one of these examples, the model did something reasonable with what it received. The problem is not that it did a bad job per se. The problem is that most of what mattered to you never reached the model in the first place.",
+      "Text 2": "This gap does not disappear as you get better at prompting. You can narrow it by providing more relevant information, but you can never eliminate it entirely: not everything you know, intend, or consider important makes it into your prompt.",
       "Text 3": "Research supports this. Studies have found that language models generate responses with significantly less conversational grounding than humans. Rather than actively checking whether they understood you correctly, they tend to assume that common ground already exists. And here is an interesting complication: the fine tuning that makes models more helpful and polished actually makes this worse. The more \"assistant like\" the model becomes, the less likely it is to pause and verify what you actually meant.",
       "Text 4": "Across longer conversations, this adds up. Even for the most advanced models available today, average performance on generation tasks drops by about 39% in multi turn conversations compared to fully specified single turn instructions."
     },
@@ -207,19 +342,19 @@
     },
     "c2.block-19": {
       "Text 1": "Perception",
-      "Text 2": "Humans receive the world through five senses at once, integrated into one experience. GenAI receives tokens. The gap is largest for bodily, physical experience, and partially closed for vision in multimodal models."
+      "Text 2": "Humans perceive the world through five senses at once, with information from these senses being integrated into one, coherent experience. If you stand next to an elephant, you can see how big it is, hear it moving, smell it, and perhaps even feel the ground vibrating beneath your feet. GenAI has no sensory experience of its own. A multimodal model can recognise an elephant in a photograph and describe its features, but it does not experience how big, close, or impressive the animal is. In terms of perception, humans therefore have a clear advantage."
     },
     "c2.block-20": {
       "Text 1": "Emotional processing",
-      "Text 2": "Humans experience emotion as a genuine internal state that shapes thinking, motivation, and behavior. GenAI recognizes and produces emotionally appropriate language, but has no internal feeling behind it."
+      "Text 2": "Humans experience emotions that influence their thinking, motivation, and behavior. For example, if you notice during a conversation that something makes you uncomfortable, this can be a signal to pay closer attention, ask follow-up questions, or adjust your behavior. GenAI can recognize emotional cues in language and respond appropriately, but it does not experience these emotions itself. It therefore lacks its own emotional signals to assess a situation and respond to it."
     },
     "c2.block-21": {
       "Text 1": "Metacognition",
-      "Text 2": "Humans know what they know and what they don't. They monitor their own confidence and adjust. GenAI produces confidence estimates through probability distributions, but has no persistent self check. This is part of why it can say something false without hesitating."
+      "Text 2": "Humans can reflect on what they know and what they don't. For example, while studying, you might realise that you do not yet understand a concept well enough and decide to study it again. However, humans do not always accurately assess their own knowledge. GenAI can express uncertainty, but it does not have metacognitive awareness in the same way humans do. As a result, it can present incorrect information convincingly."
     },
     "c2.block-22": {
       "Text 1": "Social cognition",
-      "Text 2": "Humans develop social understanding through real relationships, emotional resonance, and years of interaction. GenAI can pass structured social reasoning tests at high levels, but without the developmental grounding and relational stakes behind it."
+      "Text 2": "Humans develop social understanding through real relationships, emotional involvement, and years of interaction. For example, you may understand a comment made by a close friend partly through previous conversations and experiences with that person. GenAI can perform well on tasks that measure social reasoning, but it has no relationships or social experiences of its own on which to base this understanding. As a result, it lacks information that humans use in real social situations to understand what is actually happening and what an appropriate response would be."
     },
     "c2.block-23": {
       "Text 1": "↔",
@@ -227,19 +362,19 @@
     },
     "c2.block-24": {
       "Text 1": "Short term storage",
-      "Text 2": "Human working memory holds roughly four to seven chunks and actively manipulates them. GenAI context windows hold thousands of tokens passively. Studies show comparable limits under active maintenance conditions, but humans manipulate held information more flexibly."
+      "Text 2": "Human working memory holds can hold and actively manipulate approximately four to seven units of information (chunks). GenAI's context windows can passively hold thousands of tokens. Studies show that GenAI also has limitations when information needs to be actively manipulated. However, humans are better able to flexibly determine which information is relevant and adapt their thinking when the situation changes."
     },
     "c2.block-25": {
       "Text 1": "Reasoning",
-      "Text 2": "Humans support causal, counterfactual, and analogical reasoning and adapt flexibly to new situations. GenAI outperforms humans on some structured reasoning tasks, but fails on tasks that require distinguishing observation from intervention, or deliberately exploring uncertain options."
+      "Text 2": "Humans can reason causally, counterfactually (what would have happened if?), and analogically (what can I infer from a similar situation?), and can flexibly adapt to new situations. GenAI outperforms humans on some structured reasoning tasks, but has more difficulty with complex causal questions. For example, it may struggle to predict what changes when you actively intervene in a situation, or to determine what information is needed to choose between different explanations when faced with uncertainty."
     },
     "c2.block-26": {
       "Text 1": "Language processing",
-      "Text 2": "Humans integrate grammar with pragmatics, social intent, and contextual meaning. GenAI achieves strong grammatical competence but functional competence (using language appropriately in context) is uneven. The key insight: language ability and thinking ability are separate systems, and GenAI has acquired one without fully having the other."
+      "Text 2": "Humans understand not only the words and grammar of a sentence, but also what someone intends to communicate and what the words mean in a specific situation. GenAI has a strong command of grammar, but is less consistent in using language appropriately in a specific context. The important distinction is that strong language proficiency does not automatically mean that a system understands and reasons in the same way a human does. GenAI therefore demonstrates that strong language proficiency does not necessarily go hand in hand with an equally strong ability to reason or understand context."
     },
     "c2.block-27": {
       "Text 1": "Creativity",
-      "Text 2": "Humans produce highly variable creative output, with the best human work exceeding anything GenAI produces. GenAI raises the floor by producing consistently competent results, but the upper tail is smaller. Attempts to boost GenAI creativity through prompt engineering have yielded mixed to negative results."
+      "Text 2": "People differ considerably in how creative their ideas are. Research on generating original ideas shows that the most creative people outperform GenAI. GenAI, on the other hand, produces reasonably creative results on average, with fewer exceptionally high- or low-performing results. Attempts to increase GenAI's creativity through prompt engineering have produced mixed and sometimes even negative results."
     },
     "c2.block-28": {
       "Text 1": "G",
@@ -247,11 +382,11 @@
     },
     "c2.block-29": {
       "Text 1": "Pattern recognition",
-      "Text 2": "GenAI detects statistical regularities across billions of examples with consistency and speed beyond human capacity. On structured analogy tasks, it has matched or surpassed human performance, though results vary significantly across model versions and task types."
+      "Text 2": "GenAI can recognise statistical patterns in enormous amounts of data, at a speed and level of consistency that exceed human capabilities. On structured tasks involving the recognition of similarities and patterns, GenAI sometimes performs as well as or better than humans. However, performance varies considerably across models and types of tasks."
     },
     "c2.block-30": {
       "Text 1": "Long term storage",
-      "Text 2": "GenAI encodes patterns from its entire training corpus into billions of parameters, far exceeding human memory in raw volume. But this knowledge is frozen at the training cutoff and cannot be updated through conversation. Human memory holds less, but keeps learning from lived experience."
+      "Text 2": "GenAI captures patterns from enormous amounts of training data in billions of parameters, representing far more information than a human can remember. After training, these parameters do not change through an ordinary conversation with the model. Human memory can hold considerably less information, but continues to learn from new experiences."
     },
     "c2.block-31": {
       "Text 1": "\n        Section 2 Sources\n      ",
@@ -296,22 +431,22 @@
       "Text 40": " [Matters Arising]."
     },
     "c2.block-32": {
-      "Heading 1": "A Framework for Collaboration: S.A.T Framework"
+      "Heading 1": "A framework for collaboration: S.A.T Framework"
     },
     "c2.block-33": {
       "Text 1": "The beginning is always yours"
     },
     "c2.block-34": {
       "Text 1": "Before AI can help, something has to already exist in you. A rough sense of what you are trying to do, what you want out of it, and what direction feels right. GenAI cannot produce this, since there is no statistically probable answer for that. AI is a systematic tool, not a genie from a lamp.",
-      "Text 2": "You have to know the process of your work, and which parts AI can take over. Without that, it is hard to expect the interaction with AI to land anywhere meaningful, especially in work where the thinking has to be yours, such as writing a paper, developing a project, or forming an argument you will stand behind."
+      "Text 2": "You have to know the process of your work, and which parts AI can support you with. Without that, it is hard to expect the interaction with AI to land anywhere meaningful, especially in work where the thinking has to be yours, such as writing a paper, developing a project, or forming an argument you will stand behind."
     },
     "c2.block-35": {
       "Text 1": "GenAI's role: Operationalization"
     },
     "c2.block-36": {
-      "Text 1": "Once you have that direction, put it on paper. Sketch an idea, a rough structure, a set of notes. It does not need to be polished. It just needs to exist.",
-      "Text 2": "This is where GenAI becomes useful. When you only think in your head, everything happens at once, and it is hard to make your ideas complete or untangled. It is also hard to tell whether your idea actually makes sense, holds together logically, or is even factually correct. Once you have something on paper, GenAI can help you work through it systematically, like a thinking partner. It organizes what you have and what you don't have, gives you quick access to knowledge, and guides you toward a more structured process.",
-      "Text 3": "GenAI is not thinking instead of you. It is making your thinking visible fast enough to work with. In other words, it helps your ideas go through operationalization."
+      "Text 1": "Once you have that direction, put it on paper. Sketch out an idea, a first draft, a set of notes. It does not need to be polished. You just need something to work with.",
+      "Text 2": "This is where GenAI can become useful. If you do not put anything on paper and keep everything in your head, different thoughts can become tangled up together, making it difficult to fully develop and organise your ideas. It also becomes harder to assess whether an idea actually makes sense, is logically coherent, or is factually correct. Based on your input, GenAI can then generate, for example, potentially missing elements, relevant information, or alternative structures. You can critically evaluate this output and use it to further develop your own work. ",
+      "Text 3": "GenAI does not \"think\" on your behalf. It helps you make your own thoughts visible and organise them so that you can build on them. In other words, it can serve as a tool in your own thinking process, helping you move from initial thoughts to fully developed ideas."
     },
     "c2.block-37": {
       "Text 1": "S.A.T Framework ",
@@ -347,19 +482,19 @@
     "c2.block-38": {
       "Text 1": "1.",
       "Text 2": "The Self–AI loop",
-      "Text 3": "You bring an intention and a rough sketch. GenAI operationalizes it. You judge, redirect, and GenAI produces again. Each cycle sharpens the work, and the process accelerates.",
-      "Text 4": "But the loop stalls. The model returns to early assumptions, delivers \"complete\" answers without clarifying, or produces outputs that are internally consistent but feel off. The work has been operationalized, not tested against reality."
+      "Text 3": "You bring an intention and an initial draft. GenAI helps you develop it further and make it more concrete. You evaluate and adjust the output, after which GenAI generates a new version. Make sure that your work becomes more refined with each round.",
+      "Text 4": "However, at some point, this process can reach a dead end. The model falls back on previous assumptions, delivers \"complete\" answers without explanation, or generates responses that are internally consistent but feel off. At that point, it is up to you to check the result and decide what is useful and reliable. Even after that, the Self–AI loop may reach a point where it produces little that is genuinely new."
     },
     "c2.block-39": {
       "Text 1": "2.",
       "Text 2": "The Self–Team loop",
-      "Text 3": "When the Self–AI loop stalls, you bring the work to people: classmates, tutors, your project group. The team brings what GenAI structurally cannot: shared context, social judgment, real world experience, and practical matters.",
-      "Text 4": "You present the work, the team responds, and new questions emerge. The scope does not just refine. It grows."
+      "Text 3": "When the Self–AI loop produces little that is genuinely new, you bring your checked work to people: classmates, tutors, your project group. The team brings what GenAI structurally cannot: shared context, social judgment, real world experience, and practical matters.",
+      "Text 4": "You present the work, the team responds, and new questions emerge. This not only helps refine your original idea but broadens it: new perspectives and possibilities emerge that you had not yet considered yourself."
     },
     "c2.block-40": {
       "Text 1": "3.",
       "Text 2": "Transition",
-      "Text 3": "Each transition belongs to you. With the support of AI, you bring verified and reliable work to the team. With the team's feedback, you return to AI with new material. The starting point is higher, and each cycle builds on what the last one produced."
+      "Text 3": "Each transition is your responsibility. With the support of AI, you bring work that you have judged and checked to the team. With the team’s feedback, you return to AI with new information and new questions. You decide what to carry from one step into the next. The starting point is higher, and each cycle builds on what the last one produced."
     },
     "c2.block-41": {
       "Text 1": "Worked example"
@@ -368,8 +503,8 @@
       "Text 1": "The ending is also yours"
     },
     "c2.block-43": {
-      "Text 1": "Just as the beginning cannot be generated, the ending cannot be delegated. GenAI cannot be held responsible. When the output of the Self–AI loop is discussed, presented, or submitted, your name is attached, and what the work represents is what you stand behind.",
-      "Text 2": "You check the output against your original intent, line by line. Yes, this is partly about plagiarism and rules. But more importantly, it is about your own work. Small flaws that go unchecked compound over time, especially when working with AI."
+      "Text 1": "Just as your intention and direction must come from you at the beginning, you cannot hand over the responsibility for the outcome either. GenAI cannot be held responsible for the finished work. When the output of the Self–AI loop is discussed, presented, or submitted, your name is on it, and you are responsible for what the work says and what it stands for.",
+      "Text 2": "You check what your interaction with GenAI has produced against your original intention and use it to develop your own work further. You write the final text yourself: you do not copy AI-generated text into your work. Yes, this is partly about plagiarism and rules. But more importantly, the ideas, choices, and wording in the final product should genuinely be yours, and you should be able to explain and justify them. Small errors or incorrect assumptions that arise while working with AI can accumulate over the course of the process. Throughout the process, therefore, keep critically evaluating what you take from your interaction with AI into your own work."
     },
     "c2.block-44": {
       "Text 1": "\n        Section 3 Sources\n      ",
@@ -410,10 +545,10 @@
       "feedback placeholder 1": "Share a thought, suggestion, or issue...",
       "Navigation c1 section 1 1": "History & Development",
       "Navigation c1 section 2 1": "Anatomy of GenAI",
-      "Navigation c1 section 3 1": "GenAI Output Traits",
-      "Navigation c2 section 1 1": "AI vs Human Intelligence",
-      "Navigation c2 section 2 1": "Human vs GenAI",
-      "Navigation c2 section 3 1": "Collaboration Framework",
+      "Navigation c1 section 3 1": "Is Artifical Intelligence Same as Human Intelligence?",
+      "Navigation c2 section 1 1": "Is Artifical Intelligence Same as Human Intelligence?  ",
+      "Navigation c2 section 2 1": "Human vs GenAI: a functional comparison",
+      "Navigation c2 section 3 1": "A Framework for Collaboration: S.A.T Framework",
       "Navigation c3 section 1 1": "Prompt",
       "Navigation c3 section 2 1": "Critique",
       "Navigation c3 section 3 1": "Integrate"
