@@ -7,6 +7,12 @@
   const scopeConfig = id => { const b = bachelor(id); return b ? {label: b.name, source: '../' + b.content} : null; };
   const language = () => window.AIWiseLanguage;
   const chapterURL = chapter => `../common/${chapter === 'map' ? 'aiwise-c1-anatomy-2d' : 'aiwise-'+chapter+'-final'}.html`;
+  function betaURL(chapter, course, locale) {
+    const url = new URL(chapterURL(chapter), location.href);
+    url.searchParams.set('course', course);
+    url.searchParams.set('fixed', '1');
+    return language().url(url.href, locale);
+  }
   const common = () => window.AIWiseCommonStudio;
   const targetNode = (s, index) => s.isCommon ? common().target(s, index) : s.frame.contentDocument.getElementById('cs-item-' + index);
   const supports = id => !!bachelor(id);
@@ -606,7 +612,7 @@
     const context = isCommon ? registry().bachelors()[0].id : courseId, preview = registry().course(registry().previewCourse(context));
     const config = isCommon ? {label: 'AI-Wise Common', source: scopeConfig(context).source} : scopeConfig(courseId), chapterName = chapter.toUpperCase();
     if (!isCommon) adoptEarlierDrafts(courseId, locale);
-    shell(isCommon ? 'common' : 'studio', config.label, `<p>${chapterName} ${isCommon ? 'shared content · Course examples are read-only.' : 'examples · Shown in ' + registry().coursesOf(courseId).map(c => c.name.replace(/[&<>"']/g, '')).join(', ') + ' · Common content is read-only.'} Drafts stay in this browser. Saving does not update Beta or Published.</p><p data-cs-coverage></p><p><a href="${language().url(new URL(chapterURL(chapter),location.href).href+(isCommon?'':'?course='+preview.id),locale)}" target="_blank" rel="noopener">Open ${chapterName} in Beta ↗</a></p>`, `
+    shell(isCommon ? 'common' : 'studio', config.label, `<p>${chapterName} ${isCommon ? 'shared content · Course examples are read-only.' : 'examples · Shown in ' + registry().coursesOf(courseId).map(c => c.name.replace(/[&<>"']/g, '')).join(', ') + ' · Common content is read-only.'} Drafts stay in this browser. Saving does not update Beta or Published.</p><p data-cs-coverage></p><p data-cs-example-context></p><p><a href="${betaURL(chapter,preview.id,locale)}" target="_blank" rel="noopener">Open ${chapterName} in Beta ↗</a></p>`, `
       <div id="cs-studio">
         <div class="cs-toolbar">
           <label class="cs-language">Language<select data-cs-language><option value="en">English</option><option value="nl">Nederlands</option></select></label>
@@ -742,6 +748,15 @@
 
       document.querySelector('[data-cs-coverage]').textContent = `${s.items.length} editable items.` + (missing.length ? ' Not configured for this course: ' + missing.join(', ') + '.' : ' All course slots in this chapter are connected.');
       }
+      const contextNote = document.querySelector('[data-cs-example-context]');
+      contextNote.textContent = `Example course: ${preview.bachelor_name} · ${preview.short_name} · ${language().name(locale)}.`;
+      if (isCommon && chapter === 'c2') {
+        contextNote.append(` ${data.c2.examples.length} examples in this preview. `);
+        const editExamples = document.createElement('a');
+        editExamples.href = `#studio/${context}/c2/0`;
+        editExamples.textContent = 'Open these course examples';
+        contextNote.append(editExamples);
+      }
       const sourceBase=clone(s.base);
       s.englishBase=isCommon?Object.fromEntries(Object.entries(sourceBase).map(([path,fields])=>[path,Object.fromEntries(Object.keys(fields).map(key=>[key,englishReleases.find(r=>r.chapter===chapter)?.slots?.[path]?.[key] ?? fields[key]]))])):
         Object.fromEntries(Object.keys(sourceBase).map(path=>[path,clone(get(englishData,path))]));
@@ -871,7 +886,7 @@
   }
   window.AIWiseAuth?.subscribe(() => { if(session) controls(session); });
   window.addEventListener('beforeunload', event => { if (dirty()) { event.preventDefault(); event.returnValue = ''; } });
-  window.AIWiseContentStudio = {render, supports,
+  window.AIWiseContentStudio = {render, supports, betaURL,
     canLeave: () => (!session?.feedback?.canLeave||session.feedback.canLeave()) && (!dirty() || confirm(`Leave ${session?.isCommon ? 'Common' : 'Content'} Studio without saving your edits?`)),
     dispose: () => { const old = session; session = null; old?.recoveryUI?.dispose();old?.feedback?.();old?.abort.abort(); old?.cancelPickerClose?.(); old?.cancelEditorClose?.(); if (old?.dialog.open) old.dialog.close(); if (old?.submitDialog.open) old.submitDialog.close(); }
   };

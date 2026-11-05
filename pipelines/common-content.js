@@ -326,7 +326,66 @@
     return {slots,state:{version:1,source:clone(english),pending,retired}};
   }
   function copy(doc, key, fallback='') { return doc.querySelector('[data-copy="'+key+'"]')?.textContent ?? fallback; }
+  const measuredFonts = new WeakSet();
+  function fitContent(doc) {
+    if (doc.querySelector('[data-content-fit]')) return;
+    const style = doc.createElement('style'); style.dataset.contentFit = '';
+    style.textContent = `
+      .sl-card.open .sl-item-body, .fn-card.open .fn-card-body { max-height:none; }
+      .sl-item-body, .carousel-card, .fn-card, .sat-step-content, .framework-card-text,
+      .technique-window, .technique-pane, .amd-step > div, .critique-slide,
+      .code-panel, .template-block, .studio-text-box { min-width:0; overflow-wrap:anywhere; }
+      .carousel-slide, .critique-slide { flex:0 0 100%; min-width:0; }
+      .styled-table { table-layout:fixed; }
+      .styled-table td:first-child { white-space:normal; }
+      .styled-table th, .styled-table td { overflow-wrap:anywhere; }
+      @media (max-width:600px) {
+        .styled-table thead th, .styled-table tbody td { padding:10px 8px; }
+        .critique-stepper-bar { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; }
+        .critique-stepper-tab, .critique-stepper-tab:first-child, .critique-stepper-tab:last-child { min-width:0; clip-path:none; border-radius:8px; padding:12px; }
+        .critique-stepper-tab > div { min-width:0; overflow-wrap:anywhere; }
+      }
+    `;
+    doc.head.append(style);
+  }
+  function fitSAT(doc) {
+    const symbols = [...doc.querySelectorAll('#sat-loop-ai,#sat-loop-team')];
+    if (!symbols.length) return;
+    const canvas = doc.createElement('canvas');
+    if (typeof canvas.getContext !== 'function') return;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+    const width = Math.max(68, ...symbols.flatMap(symbol => [...symbol.querySelectorAll('text')].map(text => {
+      context.font = `${text.getAttribute('font-weight') || '400'} ${text.getAttribute('font-size')}px ${text.getAttribute('font-family')}`;
+      return Math.ceil(context.measureText(text.textContent).width + 16);
+    })));
+    for (const symbol of symbols) {
+      const texts = [...symbol.querySelectorAll('text')], rects = [...symbol.querySelectorAll('rect')], lines = [...symbol.querySelectorAll('line')];
+      if (texts.length !== 8 || rects.length !== 4 || lines.length !== 4) continue;
+      // Resize the shared symbol, keeping the original text nodes and editor keys.
+      const left = 3 + width / 2, right = 31 + width * 1.5;
+      const set = (node, attrs) => Object.entries(attrs).forEach(([key,value]) => node.setAttribute(key,String(value)));
+      rects.forEach((rect,i) => set(rect,{x:i===1||i===2?width+31:3,width}));
+      texts.forEach((text,i) => set(text,{x:i>=2&&i<6?right:left}));
+      [{x1:width+3,y1:37,x2:width+29,y2:37}, {x1:right,y1:62,x2:right,y2:88},
+       {x1:width+31,y1:115,x2:width+5,y2:115}, {x1:left,y1:90,x2:left,y2:64}]
+        .forEach((attrs,i) => set(lines[i],attrs));
+      const viewBox = `0 0 ${width*2+34} 150`;
+      symbol.setAttribute('viewBox',viewBox);
+      doc.querySelectorAll('.framework-card-diagram svg').forEach(svg => {
+        if(svg.querySelector('use')?.getAttribute('href')==='#'+symbol.id) {
+          svg.setAttribute('viewBox',viewBox);
+          svg.querySelector('use').setAttribute('width',String(width*2+34));
+          svg.parentElement.style.maxWidth = `${(width*2+34)*200/170}px`;
+        }
+      });
+    }
+    if (doc.fonts?.ready && !measuredFonts.has(doc)) {
+      measuredFonts.add(doc); doc.fonts.ready.then(() => fitSAT(doc));
+    }
+  }
   function sync(doc) {
+    fitContent(doc);
     doc.querySelectorAll('[data-example-index]').forEach(node=>{node.textContent=copy(doc,'example','Example')+' '+node.dataset.exampleIndex+' '+copy(doc,'of','of')+' '+node.dataset.exampleTotal;});
     doc.querySelectorAll('[data-copy-use]').forEach(node => {node.textContent=copy(doc,node.dataset.copyUse,node.textContent);});
     doc.querySelectorAll('[data-copy-toggle]').forEach(node => {node.setAttribute('aria-label',copy(doc,'nav-'+node.dataset.copyToggle)+' '+copy(doc,'subsections'));});
@@ -335,6 +394,7 @@
       if(['aria-label','placeholder'].includes(attr))node.setAttribute(attr,copy(doc,key,node.getAttribute(attr)));
     });
     doc.defaultView?.AIWiseAnatomy?.refreshTexts();
+    fitSAT(doc);
   }
   function valid(slots, blocks) {
     return slots && typeof slots === 'object' && !Array.isArray(slots) &&

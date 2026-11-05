@@ -138,3 +138,30 @@ for(const chapter of ['c1','c2','c3']) test(`${chapter}: shared labels entry is 
   button.click();assert.ok(session.commonBlocks[opened[0]].node.hasAttribute('data-common-copy'));
   assert.deepEqual(Object.keys(values),Array.from(blocks,b=>b.path),'field identities remain unchanged');
 });
+
+test('SAT sizing keeps long translated labels inside boxes without changing saved text fields',()=>{
+  const document=source('c2'), create=document.createElement.bind(document);
+  document.createElement=tag=>tag==='canvas'?{getContext:()=>({measureText:text=>({width:text.length*7})})}:create(tag);
+  const blocks=api.catalog(document,'c2'), slots=Object.fromEntries(blocks.map(b=>[b.path,b.fields]));
+  const long=document.querySelector('#sat-loop-ai text:nth-of-type(4)');
+  long.textContent='Operationaliseren met aanvullende context';
+  const before=api.catalog(document,'c2').map(b=>({path:b.path,fields:{...b.fields}}));
+  api.sync(document);api.sync(document);
+  const symbol=document.querySelector('#sat-loop-ai'), rects=[...symbol.querySelectorAll('rect')];
+  assert.ok(Number(rects[1].getAttribute('width'))>=long.textContent.length*7+16);
+  assert.equal(document.querySelectorAll('[data-content-fit]').length,1);
+  assert.deepEqual(api.catalog(document,'c2').map(b=>({path:b.path,fields:{...b.fields}})),before);
+  assert.equal(document.querySelector('.framework-card-diagram svg').getAttribute('viewBox'),symbol.getAttribute('viewBox'));
+});
+
+test('Open in Beta pins the preview course and preserves the chosen language',()=>{
+  const window={addEventListener(){}};const context={window,location:{href:'https://example.test/module/workspace/?lang=nl#common/c2/0'},URL};
+  vm.runInNewContext(fs.readFileSync(path.join(root,'pipelines/content-language.js'),'utf8'),{...context,document:{currentScript:{hasAttribute:()=>true}}});
+  vm.runInNewContext(fs.readFileSync(path.join(root,'workspace/content-studio.js'),'utf8'),context);
+  for(const course of ['psychology.aws1','dpas.dpas-skills'])for(const locale of ['en','nl']){
+    const url=new URL(window.AIWiseContentStudio.betaURL('c2',course,locale));
+    assert.equal(url.searchParams.get('course'),course);
+    assert.equal(url.searchParams.get('fixed'),'1');
+    assert.equal(url.searchParams.get('lang')||'en',locale);
+  }
+});
