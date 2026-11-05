@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 24,
+  "sequence": 53,
   "course": "common",
   "chapter": "c3",
   "locale": "nl",
-  "submission_id": "1a6524f3-05f6-4fff-82ef-382bedffdc21",
-  "source_release": "40b214a8-9f92-42b6-a365-6a1d79b61c13",
-  "approved_at": "2026-11-05T10:58:41.654541+00:00",
+  "submission_id": "6d29ba3b-d44c-4c2c-b689-7ed5ff470990",
+  "source_release": "555653a6-692d-4064-9fda-c89608ea4e27",
+  "approved_at": "2026-11-05T22:33:30.320395+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -860,9 +860,9 @@
       "Navigation c2 section 1 1": "Is kunstmatige intelligentie hetzelfde als menselijke intelligentie?",
       "Navigation c2 section 2 1": "Mens vs GenAI: een functionele vergelijking",
       "Navigation c2 section 3 1": "Een kader voor samenwerking: S.A.T Framework",
-      "Navigation c3 section 1 1": "Prompten",
-      "Navigation c3 section 2 1": "Bekritiseren",
-      "Navigation c3 section 3 1": "Integreren"
+      "Navigation c3 section 1 1": "De input ontwerpen",
+      "Navigation c3 section 2 1": "Output is geen antwoord — het is een voorstel",
+      "Navigation c3 section 3 1": "Hoe AI-output je werk binnenkomt "
     },
     "c3.extra-44": {
       "Page title 1": "AI-Wise · C3: How Do We Use AI?"
