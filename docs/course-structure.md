@@ -173,7 +173,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 17 | Common language structure | Prepared; owner deployment pending | Approved English layout, preserved Dutch drafts and translations; [record](common-language-structure-sync.md) |
 | 18 | Bidirectional language layout and DPAS editing | Live; 61 test files and ten live checks passed | Shared structure, separate translations; [record](bidirectional-layout.md) |
 | 19 | Shared heading shortcuts | live; Common and DPAS browser verified | [Entry points and coverage audit](shared-heading-shortcuts.md) |
-| 20 | Content fit and six DPAS examples | DPAS EN/NL six confirmed; 61 test files passed; frontend ready | [Record](content-fit-and-examples.md) |
+| 20 | Content fit and six DPAS examples | Beta deployed; six DPAS slots confirmed; draft recovery fix validated; 61 test files passed | [Record](content-fit-and-examples.md) |
 
 ## How to verify
 

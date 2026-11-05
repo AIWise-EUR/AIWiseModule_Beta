@@ -85,11 +85,21 @@
   function recoveredPlan(s,saved,values){
     if(!saved?.layoutPlan)return null;
     const recovered=clone(saved),oldBase={...saved.baseSlots,...(saved.baseExamples?{'c2.examples':saved.baseExamples}:{})};
+    let rebased=false;
     for(const key of Object.keys(arrays)){
       const latest=at(s.base,key);if(!Array.isArray(latest))continue;
       if(canonical(at(oldBase,key))===canonical(latest))continue;
       if(canonical(at(values,key))!==canonical(latest))throw Error('The example or S.A.T item order changed. Keep the latest item list in this review, then reapply text from the original backup.');
       recovered.layoutPlan.maps[key]=latest.map((_,i)=>i);
+      rebased=true;
+    }
+    // A completed two-language approval can leave this browser's own draft behind.
+    // Once recovery chose the current lists and no layout edits remain, use their
+    // current counterpart too. Keep old snapshots for still-pending layout changes.
+    if(rebased&&s.layoutPeer&&!changed(s.base,values,recovered.layoutPlan.maps)){
+      project(s.base,values,s.layoutPeer.slots,recovered.layoutPlan.maps);
+      recovered.layoutPlan.peer_base=clone(s.layoutPeer.slots);
+      recovered.layoutPlan.peer_release=s.layoutPeer.submission_id||null;
     }
     return recovered;
   }

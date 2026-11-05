@@ -52,3 +52,8 @@ Student publication remains the separate reviewed Publish to students action.
   longest measured body grows to 427px. At 390px, C3 page width is 390px and both
   tables fit at 350px; no overflow in the measured active panels/templates.
   SAT labels fit widened, equal-size nodes without reducing the small-loop text.
+
+- Fixed a reproduced post-approval draft recovery failure: when both copies already
+  agree on the new list and no structural draft changes remain, recovery now uses
+  the matching current peer baseline. Pending structural intent and ambiguous
+  list changes still require review. Original draft and language wording remain.

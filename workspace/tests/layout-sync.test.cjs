@@ -51,3 +51,19 @@ test('recovery refuses ambiguous example and SAT rebase; latest lists reset orig
  assert.deepEqual(copy(L.recoveredPlan(s,saved,s.base).layoutPlan.maps['c2.sat_example']),[0]);
  assert.equal(saved.layoutPlan.maps['c2.examples'][0],1);
 });
+test('an already-approved six-example draft recovers against the matching current peer without losing wording',()=>{
+ const old=base(),current=copy(old),peer=copy(old);
+ current['c2.examples'].push(...Array.from({length:4},()=>({title:'',thinking:'',typing:'',processing:''})));
+ peer['c2.examples']=copy(current['c2.examples']);peer['c2.examples'][0].thinking='Other language text';
+ const saved={baseExamples:copy(old['c2.examples']),baseSlots:copy(old),layoutPlan:{peer_base:copy(old),peer_release:'old',maps:{'c2.examples':[0,1,null,null,null,null],'c2.sat_example':[]}}};
+ const s={base:current,layoutPeer:{slots:peer,submission_id:'new'}};
+ const values=copy(current);values['c2.sat_example'].note='My unsaved wording';
+ const recovered=L.recoveredPlan(s,saved,values);
+ assert.equal(recovered.layoutPlan.peer_release,'new');
+ assert.equal(recovered.layoutPlan.peer_base['c2.examples'].length,6);
+ assert.equal(values['c2.sat_example'].note,'My unsaved wording');
+ assert.equal(saved.layoutPlan.peer_base['c2.examples'].length,2);
+ assert.equal(L.project(current,values,recovered.layoutPlan.peer_base,recovered.layoutPlan.maps)['c2.examples'][0].thinking,'Other language text');
+ const reordered=copy(saved);reordered.layoutPlan.maps['c2.sat_example']=[1,0];
+ assert.equal(L.recoveredPlan(s,reordered,values).layoutPlan.peer_release,'old','pending layout intent still needs explicit peer review');
+});
