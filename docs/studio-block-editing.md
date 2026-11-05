@@ -202,3 +202,28 @@ that storage key; existing Control Tower regression tests cover their old format
   Pages runs both succeeded. Live C2 displays one underlined citation in the existing
   notice; clicking it opens Zenodo record 21893023 in a new tab. Verified the Beta
   link too. All 47 test files passed; actual Published V9 snapshot was byte-identical.
+
+
+## 2026-11-06: Fourth C2 example section
+
+Requested as a permanent fourth layer below Thinking, Typing and Processing,
+with the same padding, divider, dot and typography. Its title is sentence case,
+not forced uppercase. English defaults to “What the model doesn’t know”; Dutch
+defaults to “Wat het model niet weet”. Both title and body are editable per example.
+
+The existing example-scoped text-box extension stores the independently editable
+rich-text fields, using a reserved family UUID to retain identity after translating
+the title. This is supported by the installed validators and publication pipeline;
+there is no schema or Edge Function change. Empty default sections are rendered
+without modifying saved content. The first text box whose English title matches
+“What the model doesn’t/does not know” is displayed in this layer, retaining its
+ID, original text and formatting. Additional boxes remain separate. Once edited,
+the existing box receives the reserved family so translated titles still resolve.
+These fourth-section boxes do not show import reminders on other examples.
+
+Preview/save/reload, legacy formatting, independent example text, duplication,
+removal and existing extension validation are covered by regression tests.
+Student publication remains a separate Publish to students action.
+
+Validation: all 61 test files passed. Browser preview shows six fourth sections,
+matching the existing card design, with sentence-case headings.

@@ -123,6 +123,13 @@
         layers.appendChild(layer("processing", copy("processing", "How the model actually processes this"),
           el("p", null, item.processing || "")));
 
+        var unknown = layer("unknown", window.AIWiseStudioBlocks?.unknownTitle(renderDoc.documentElement.lang) || "What the model doesn’t know", el("p", null, ""));
+        unknown.classList.add("layer-processing");
+        var unknownLabel=unknown.querySelector('.carousel-layer-label');
+        unknownLabel.style.textTransform='none';
+        unknownLabel.querySelector('[data-copy-use]').removeAttribute('data-copy-use');
+        layers.appendChild(unknown);
+
         card.appendChild(layers);
         slide.appendChild(card);
         container.appendChild(slide);

@@ -2,7 +2,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const {parseHTML}=require(process.env.LINKEDOM_MODULE||'linkedom');
 const root=path.resolve(__dirname,'../..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const id=n=>'box-11111111-1111-4111-8111-'+String(n).padStart(12,'0');
-const makeBox=(n,example)=>({id:id(n),slot:'c2.examples',template:'text',anchor:0,fields:[[{text:'WHAT THE MODEL DOES NOT KNOW'}],[{text:'Specific context',bold:true}]],align:'left',size:0,...(example===undefined?{}:{example,family:id(n)})});
+const makeBox=(n,example)=>({id:id(n),slot:'c2.examples',template:'text',anchor:0,fields:[[{text:'Additional context'}],[{text:'Specific context',bold:true}]],align:'left',size:0,...(example===undefined?{}:{example,family:id(n)})});
 function setup(boxes=[makeBox(1)]){
  const {document:doc}=parseHTML('<html><body><main><div class="carousel-wrapper"><div class="carousel-track" data-slot="c2.examples" data-slot-type="carousel"></div></div></main><div id="editor"></div></body></html>');
  Object.defineProperty(doc,'currentScript',{value:{src:'https://test/repo/pipelines/course-loader.js',hasAttribute:()=>true}});
@@ -49,4 +49,47 @@ test('unactivated backend cannot create example metadata, including by direct re
  const {s,E,open,host}=setup();s.exampleBoxesEnabled=false;open(1);
  assert.ok([...host.querySelectorAll('button')].filter(b=>['Add text box','Add this box to this version','Duplicate card','Move up','Remove card'].includes(b.textContent)).every(b=>b.disabled));
  const before=JSON.stringify(s.values);E.addExampleBox(s,s.values._studio.boxes[0],1);assert.equal(JSON.stringify(s.values),before);
+});
+
+
+test('every example has a fourth matching layer without mutating existing saved content',()=>{
+ const {s,doc,M,render}=setup([]),before=JSON.stringify(s.values);
+ render();render();
+ const cards=[...doc.querySelectorAll('.carousel-card')];
+ assert.equal(cards.length,3);
+ for(const card of cards){assert.equal(card.querySelectorAll('.carousel-layer').length,4);assert.equal(card.querySelector('.layer-unknown .carousel-layer-label').textContent,'What the model doesn’t know');assert.equal(card.querySelector('.layer-unknown .carousel-layer-label').style.textTransform,'none');}
+ assert.equal(JSON.stringify(s.values),before);assert.ok(M.valid(s.values._studio,s.values));
+});
+test('legacy missing-context text and formatting become the fourth section without duplicate boxes or reminders',()=>{
+ const box=makeBox(1);box.fields[0]=[{text:"WHAT THE MODEL DOESN'T KNOW"}];
+ const {s,doc,M,E,render,window:w}=setup([box]),before=JSON.stringify(s.values);
+ render();render();
+ assert.equal(doc.querySelectorAll('[data-studio-box]').length,1);
+ assert.equal(doc.querySelectorAll('.studio-text-box').length,0);
+ assert.equal(doc.querySelectorAll('[data-studio-reminder]').length,0);
+ const layer=doc.querySelector('.layer-unknown');assert.match(layer.textContent,/Specific context/);assert.equal(layer.querySelector('p span').style.fontWeight,'700');
+ assert.equal(E.exampleReminders(s,1).length,0);assert.equal(JSON.stringify(s.values),before);
+ M.course(doc,{c2:{examples:s.values['c2.examples']},_studio:{c2:s.values._studio}});
+ assert.equal(doc.querySelectorAll('.layer-unknown').length,3);assert.match(doc.querySelector('.layer-unknown').textContent,/Specific context/);
+});
+test('fourth-section edits stay independent across examples and retain translated titles after save/reload',()=>{
+ const {s,doc,host,E,M,open,render,click}=setup([]);
+ const edit=(index,title,text)=>{
+  open(index);E.unknownPanel(s,host,index);
+  const inputs=[...host.querySelectorAll('input,textarea')];
+  inputs[0].value=title;inputs[0].oninput();inputs[1].value=text;inputs[1].oninput();
+ };
+ edit(0,'Wat het model niet weet','Alleen voorbeeld één');
+ edit(1,'Different heading','Only example two');
+ assert.ok(M.valid(s.values._studio,s.values));assert.equal(s.values._studio.boxes.length,2);
+ s.values=JSON.parse(JSON.stringify(s.values));render();
+ const cards=[...doc.querySelectorAll('.carousel-card')];
+ assert.match(cards[0].querySelector('.layer-unknown').textContent,/Alleen voorbeeld één/);
+ assert.doesNotMatch(cards[1].querySelector('.layer-unknown').textContent,/Alleen voorbeeld één/);
+ assert.match(cards[1].querySelector('.layer-unknown').textContent,/Only example two/);
+ assert.equal(cards[2].querySelector('.layer-unknown p').textContent,'');
+ assert.equal(doc.querySelectorAll('[data-studio-reminder]').length,0);
+ open(0);click('Duplicate card');assert.equal(s.values._studio.boxes.length,3);
+ assert.ok(M.valid(s.values._studio,s.values));
+ open(0);click('Remove card');assert.equal(s.values._studio.boxes.length,2);assert.ok(M.valid(s.values._studio,s.values));
 });

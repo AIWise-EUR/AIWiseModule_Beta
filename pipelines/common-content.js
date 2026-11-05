@@ -13,6 +13,12 @@
   const exampleBox = b => b.slot==='c2.examples' && b.template==='text';
   const exampleIndex = b => b.example ?? 0;
   const boxFamily = b => b.family || b.id;
+  // A normal, independently editable example box, with a stable semantic family.
+  // Keeping the established extension format preserves approval/publish compatibility.
+  const unknownFamily = 'box-4d99e321-117e-4569-8afe-41a1eaeb5aac';
+  const unknownBox = b => exampleBox(b) && (boxFamily(b)===unknownFamily || /^what the model (?:doesn['’]t|does not) know$/i.test(plain(b.fields[0]).trim()));
+  const unknownFor = (boxes,index) => boxes.find(b=>unknownBox(b)&&exampleIndex(b)===index);
+  const unknownTitle = locale => locale==='nl'?'Wat het model niet weet':'What the model doesn’t know';
   function validRuns(runs) {
     return Array.isArray(runs) && runs.length>0 && runs.length<=2000 && runs.every(r=>only(r,['text','bold','italic','color','size']) && typeof r.text==='string' && r.text.length<=100000 && (r.bold===undefined||typeof r.bold==='boolean') && (r.italic===undefined||typeof r.italic==='boolean') && (r.color===undefined||/^#[0-9a-f]{6}$/i.test(r.color)) && (r.size===undefined||sizes.includes(r.size)));
   }
@@ -108,7 +114,12 @@
   function restore(doc,group='common') {
     const pairs=replaced.get(doc)||[];for(const pair of pairs.filter(p=>p.group===group)){if(pair.wrapper.parentNode)pair.wrapper.replaceWith(pair.node);}
     replaced.set(doc,pairs.filter(p=>p.group!==group));
-    doc.querySelectorAll(group==='course'?'[data-studio-course-box]':'[data-studio-box]:not([data-studio-course-box])').forEach(n=>n.remove());
+    doc.querySelectorAll(group==='course'?'[data-studio-course-box]':'[data-studio-box]:not([data-studio-course-box])').forEach(n=>{
+      if(group==='course'&&n.classList.contains('layer-unknown')){
+        for(const name of ['data-studio-box','data-studio-course-box','data-studio-example','data-review-common-key'])n.removeAttribute(name);
+        n.querySelector('.carousel-layer-label span:last-child').textContent=unknownTitle(doc.documentElement.lang);n.querySelector('p').textContent='';
+      }else n.remove();
+    });
   }
   function replaceText(node,runs,group='common') {
     if(!node?.parentNode||node.nodeType!==3)return;
@@ -131,6 +142,15 @@
     for(const box of ext.boxes){let root=blocks.find(b=>b.path===box.slot)?.node;if(!root)throw Error('The added box location is no longer available.');
       const inExample=courseBoxes&&exampleBox(box);
       if(inExample){root=root.querySelectorAll('.carousel-card')[exampleIndex(box)];if(!root)throw Error('The added box example is no longer available.');}
+      if(inExample && box===unknownFor(ext.boxes,exampleIndex(box))){
+        const layer=root.querySelector('.layer-unknown');
+        if(layer){
+          const title=layer.querySelector('.carousel-layer-label span:last-child'),body=layer.querySelector('p');
+          title.replaceChildren(renderRuns(doc,plain(box.fields[0]).trim()?box.fields[0]:rich(unknownTitle(doc.documentElement.lang)),box.size));body.replaceChildren(renderRuns(doc,box.fields[1],box.size));
+          layer.dataset.studioBox=box.id;layer.dataset.studioExample=String(exampleIndex(box));layer.dataset.reviewCommonKey=box.slot;
+          continue;
+        }
+      }
       const source=candidates(root,box.template)[box.anchor];if(!source)throw Error('The added box template is no longer available.');
       let node;
       if(box.template==='text'){node=doc.createElement('div');node.className='studio-text-box';node.style.cssText='padding:24px;margin:16px 0;border:1px solid #d7e0e0;border-radius:16px;background:#f5f7f7';node.innerHTML='<h4 style="margin:0 0 12px;font-weight:600"></h4><div style="line-height:1.7"></div>';[...node.children].forEach((n,i)=>n.append(renderRuns(doc,box.fields[i],box.size)));}
@@ -196,7 +216,7 @@
     if(!field&&(!valid(value[key],value)||!valid(base[key],base)))return false;
     return Object.keys(base).filter(k=>field||k!==key).every(k=>k==='typing_note'&&!Object.hasOwn(value,k)&&Object.hasOwn(base,'typing')||validCopy(value[k],base[k],k))&&Object.keys(value).every(k=>!field&&k===key||Object.hasOwn(base,k)||k==='typing_note'&&Object.hasOwn(base,'typing')&&typeof value[k]==='string');
   }
-  window.AIWiseStudioBlocks={key,sizes,templates,clone,plain,rich,format,valid,validRuns,validSAT,validCopy,clean,extension,renderRuns,replaceText,restore,nodes,candidates,common,course,exampleBox,exampleIndex,boxFamily};
+  window.AIWiseStudioBlocks={key,sizes,templates,clone,plain,rich,format,valid,validRuns,validSAT,validCopy,clean,extension,renderRuns,replaceText,restore,nodes,candidates,common,course,exampleBox,exampleIndex,boxFamily,unknownFamily,unknownBox,unknownFor,unknownTitle};
 })();
 
 /* Shared text catalog and safe approved-content renderer. Course slots are excluded. */

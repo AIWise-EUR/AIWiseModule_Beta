@@ -174,6 +174,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 18 | Bidirectional language layout and DPAS editing | Live; 61 test files and ten live checks passed | Shared structure, separate translations; [record](bidirectional-layout.md) |
 | 19 | Shared heading shortcuts | live; Common and DPAS browser verified | [Entry points and coverage audit](shared-heading-shortcuts.md) |
 | 20 | Content fit and six DPAS examples | Beta deployed; six DPAS slots confirmed; draft recovery fix validated; 61 test files passed | [Record](content-fit-and-examples.md) |
+| 21 | Fourth C2 example section | 61 test files passed; browser layout verified | Independent title/body, existing text retained; [record](studio-block-editing.md#2026-11-06-fourth-c2-example-section) |
 
 ## How to verify
 
@@ -337,3 +338,5 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 - **2026-11-05** (Codex) Added direct C2 shared-heading editing in Common and bachelor Studio, keeping the selected language and existing draft guards. Added a visible shared-label entry and audited remaining indirect fields. All 61 test files and isolated browser checks passed. See [shared-heading-shortcuts.md](shared-heading-shortcuts.md); no backend change.
 
 - **2026-11-05** (Codex) Removed reading-card height limits, made tables wrap at mobile widths, sized SAT nodes to translated labels, and pinned Studio Beta links to their preview course. Approved five blank DPAS Part C additions through the normal two-language review flow; existing Dutch SAT content is retained. Example-specific added boxes remain on hold. See [record](content-fit-and-examples.md).
+
+- **2026-11-06** (Codex) Added the fourth C2 example section, “What the model doesn’t know”, using the existing approved box format. Existing matching boxes render as the fourth layer; every example has its own title and text editor. No saved content is rewritten on opening; no SQL or Edge Function installation is required.

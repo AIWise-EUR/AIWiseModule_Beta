@@ -48,7 +48,7 @@
     });
   }
   function exampleReminders(s,index){
-    const boxes=(s.values._studio?.boxes||[]).filter(M().exampleBox),own=new Set(boxes.filter(b=>M().exampleIndex(b)===index).map(M().boxFamily)),seen=new Set();
+    const boxes=(s.values._studio?.boxes||[]).filter(b=>M().exampleBox(b)&&!M().unknownBox(b)),own=new Set(boxes.filter(b=>M().exampleIndex(b)===index).map(M().boxFamily)),seen=new Set();
     return boxes.filter(b=>{const family=M().boxFamily(b);if(own.has(family)||seen.has(family))return false;seen.add(family);return true;});
   }
   function addExampleBox(s,source,index){
@@ -71,6 +71,38 @@
     if(s.isCommon||s.chapter!=='c2')return;
     const doc=s.frame.contentDocument;doc.querySelectorAll('[data-studio-reminder]').forEach(n=>n.remove());
     doc.querySelectorAll('.carousel-card').forEach((card,index)=>{for(const source of exampleReminders(s,index))card.append(reminder(s,source,index,doc));});
+  }
+  function unknownPanel(s,container,index){
+    const read=()=>M().unknownFor(s.values._studio?.boxes||[],index);
+    const full=!read()&&(s.values._studio?.boxes.length||0)>=50;
+    const enabled=s.blocksEnabled&&s.exampleBoxesEnabled&&(s.locale==='en'||s.layoutEnabled)&&!s.blocked&&!s.layoutProblem&&!full;
+    const defaults=[M().rich(M().unknownTitle(s.locale)),M().rich('')];
+    const section=document.createElement('fieldset'),legend=document.createElement('legend');
+    legend.textContent='What the model doesn’t know';section.append(legend);
+    if(full){const note=document.createElement('p');note.textContent='Remove an unused added box before adding text here; this chapter has reached its box limit.';section.append(note);}
+    const write=(i,runs)=>{
+      if(!enabled)return;
+      let box=read();
+      if(!box){
+        if((s.values._studio?.boxes.length||0)>=50){s.blockEditing.message('This chapter has reached its box limit. Remove an unused added box before adding text here.');return;}
+        box={id:'box-'+crypto.randomUUID(),slot:'c2.examples',template:'text',anchor:0,example:index,family:M().unknownFamily,fields:clone(defaults),align:'left',size:0};
+        ext(s).boxes.push(box);
+      }
+      // Keep the original ID and all text, while recognizing translated titles too.
+      box.family=M().unknownFamily;box.example=index;box.fields[i]=runs;
+    };
+    ['Section title','What the model doesn’t know — text'].forEach((name,i)=>{
+      const wrap=document.createElement('label'),input=document.createElement(i===0?'input':'textarea');
+      wrap.textContent=name;input.setAttribute('aria-label',name);input.value=M().plain(read()?.fields[i]||defaults[i]);input.disabled=!enabled;
+      if(i===1)input.rows=5;
+      input.oninput=()=>{if(!enabled)return;remember(s);const f={runs:clone(read()?.fields[i]||defaults[i])};editRuns(f,input.value);write(i,f.runs);changed(s);};
+      wrap.append(input);if(enabled)toolbar(s,wrap,input,()=>read()?.fields[i]||defaults[i],runs=>write(i,runs));section.append(wrap);
+      if(s.locale==='nl'){
+        const source=M().unknownFor(s.englishBase?._studio?.boxes||[],index);
+        if(source){const detail=document.createElement('details'),summary=document.createElement('summary'),p=document.createElement('p');summary.textContent='Show English source';p.textContent=M().plain(source.fields[i]);detail.append(summary,p);section.append(detail);}
+      }
+    });
+    container.append(section);
   }
   function panel(s,container,item){
     if(s.isCommon&&s.locale==='nl'&&!s.layoutEnabled){translationPanel(s,container,item);return;}
@@ -95,7 +127,7 @@
         const addText=button('Add text box',()=>add('text',0,block.node,false));addText.disabled=item.example!==undefined&&!s.exampleBoxesEnabled;actions.append(addText);
       }
       if(item.example!==undefined&&!s.exampleBoxesEnabled){const note=document.createElement('p');note.textContent='Example-specific box controls become available after the workspace update.';section.append(note);}
-      for(const box of s.values._studio?.boxes.filter(b=>b.slot===item.path&&(item.example===undefined||M().exampleIndex(b)===item.example))||[]){
+      for(const box of s.values._studio?.boxes.filter(b=>b.slot===item.path&&(item.example===undefined||M().exampleIndex(b)===item.example)&&!(item.example!==undefined&&b===M().unknownFor(s.values._studio.boxes,item.example)))||[]){
         const card=document.createElement('fieldset'),legend=document.createElement('legend');legend.textContent='Added box · '+(M().plain(box.fields[0]).trim()||'Untitled');card.append(legend);
         box.fields.forEach((runs,i)=>{const wrap=document.createElement('label');wrap.textContent=i===0?'Title':'Text '+i;const input=document.createElement('textarea');input.setAttribute('aria-label',i===0?'Title':'Text '+i);input.rows=i===0?2:5;input.value=M().plain(runs);
           input.oninput=()=>{remember(s);const f={runs:box.fields[i]};editRuns(f,input.value);box.fields[i]=f.runs;changed(s);};wrap.append(input);toolbar(s,wrap,input,()=>box.fields[i],runs=>box.fields[i]=runs);card.append(wrap);});
@@ -214,5 +246,5 @@
       examplePreview(s);
     }).catch(()=>{});
   }
-  window.AIWiseStudioEditing={mount,field,panel,satPanel,remember,textChanged,examplePreview,exampleReminders,addExampleBox};
+  window.AIWiseStudioEditing={mount,field,panel,satPanel,remember,textChanged,examplePreview,exampleReminders,addExampleBox,unknownPanel};
 })();
