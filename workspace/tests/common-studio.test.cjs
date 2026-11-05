@@ -97,3 +97,44 @@ test('Common template examples link to course editing and preserve slot content'
   assert.deepEqual(opened,['c3.template_compare.md','c3.template_compare.xml']);
   assert.deepEqual([...document.querySelectorAll('[data-slot]')].map(n=>n.outerHTML),before);
 });
+
+test('example heading shortcuts target the shared owner and survive repeated edits',()=>{
+  const document=source('c2');
+  Object.defineProperty(document,'currentScript',{value:{src:'https://example.invalid/pipelines/course-loader.js',hasAttribute:()=>true}});
+  const window={AIWiseCommonContent:api};
+  const context={window,document,URL};
+  vm.runInNewContext(fs.readFileSync(path.join(root,'pipelines/course-loader.js'),'utf8'),context);
+  vm.runInNewContext(fs.readFileSync(path.join(root,'workspace/common-studio.js'),'utf8'),context);
+  const blocks=api.catalog(document,'c2'), values=Object.fromEntries(blocks.map(b=>[b.path,{...b.fields}]));
+  const owner=blocks.find(b=>b.node.hasAttribute('data-common-copy')), opened=[];
+  const session={frame:{contentDocument:document},items:blocks,chapter:'c2',locale:'nl',values,
+    source:{c2:{examples:[{title:'First',thinking:'First body'},{title:'Second',thinking:'Second body'}]}},
+    openSharedHeading:key=>opened.push(key)};
+  const original=JSON.stringify(values);
+  window.AIWiseCommonStudio.apply(session,()=>{});
+  assert.equal(document.querySelectorAll('[data-cs-shared-heading]').length,6);
+  document.querySelector('[data-cs-shared-heading="thinking"]').click();
+  assert.deepEqual(opened,['thinking']);
+  assert.equal(JSON.stringify(values),original,'opening a shortcut never changes content');
+  values[owner.path]['thinking 1']='Wat je eigenlijk denkt';
+  window.AIWiseCommonStudio.apply(session,()=>{});
+  window.AIWiseCommonStudio.apply(session,()=>{});
+  assert.equal(document.querySelectorAll('[data-cs-shared-heading]').length,6,'no duplicate buttons after rerender');
+  assert.equal(document.querySelectorAll('[data-cs-shared-labels]').length,1);
+  assert.deepEqual([...document.querySelectorAll('[data-copy-use="thinking"]')].map(n=>n.textContent),['Wat je eigenlijk denkt','Wat je eigenlijk denkt']);
+  assert.deepEqual([...document.querySelectorAll('.layer-thinking p')].map(n=>n.textContent),['First body','Second body']);
+  assert.equal(owner.fields['thinking 1'],'What you are actually thinking');
+});
+
+for(const chapter of ['c1','c2','c3']) test(`${chapter}: shared labels entry is outside navigation and opens existing fields`,()=>{
+  const document=source(chapter), blocks=api.catalog(document,chapter), opened=[];
+  const values=Object.fromEntries(blocks.map(b=>[b.path,{...b.fields}]));
+  const window={AIWiseCommonContent:api,AIWiseCourseRenderer:{fillSlots(){},toggleRequired(){}}};
+  vm.runInNewContext(fs.readFileSync(path.join(root,'workspace/common-studio.js'),'utf8'),{window});
+  const session={frame:{contentDocument:document},items:blocks,chapter,source:{},values};
+  window.AIWiseCommonStudio.apply(session,(_,i)=>opened.push(i));
+  const button=document.querySelector('[data-cs-shared-labels]');
+  assert.ok(button);assert.equal(button.closest('[hidden],nav,#coreNavDesktop,#mobileCoreNav'),null);
+  button.click();assert.ok(session.commonBlocks[opened[0]].node.hasAttribute('data-common-copy'));
+  assert.deepEqual(Object.keys(values),Array.from(blocks,b=>b.path),'field identities remain unchanged');
+});

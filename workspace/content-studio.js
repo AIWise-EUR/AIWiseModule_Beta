@@ -330,6 +330,7 @@
     });
     if(s.chapter==='c2'){const dots=doc.getElementById('carouselDots');if(dots){dots.replaceChildren();s.values['c2.examples'].forEach((_,i)=>{const dot=doc.createElement('button');dot.className='carousel-dot';dot.type='button';dot.setAttribute('aria-label','Show example '+(i+1));dot.onclick=()=>selectItem(s,i);dots.append(dot);});}}
     window.AIWiseStudioEditing?.examplePreview(s);
+    common().linkExampleHeadings(doc, key => s.openSharedHeading(key));
     refreshPicker(s); s.frame.contentWindow.scrollTo(0, y);
   }
   function openEditor(s, index) {
@@ -340,6 +341,11 @@
     s.feedback?.();if(window.AIWiseStudioFeedback)s.feedback=window.AIWiseStudioFeedback.mount(s.host.querySelector("[data-cs-feedback]"),{course:s.isCommon?"common":s.courseId,chapter:s.chapter,locale:s.locale,key:item.path,extraKey:item.titlePath,node:targetNode(s,index),doc:s.frame.contentDocument});
     s.host.querySelector('#cs-editor-title').textContent = s.isCommon ? item.title : item.example === undefined ? label(item.path) : `Example ${item.example + 1}`;
     const container = s.host.querySelector('.cs-fields'); container.replaceChildren();
+    if (s.isCommon && s.commonBlocks?.[index]?.node.hasAttribute('data-common-copy')) {
+      const note = document.createElement('p'); note.className = 'cs-language-status';
+      note.textContent = 'Shared headings and labels: changes apply to all courses and examples in this chapter, in ' + language().name(s.locale) + ' only. The other language keeps its own wording.';
+      container.append(note);
+    }
     function field(value, path, name, valuePath = item.path) {
       if (typeof value === 'string') {
         const wrap = document.createElement('label'); wrap.textContent = label(name);
@@ -478,6 +484,8 @@
       .cs-editable:hover,.cs-editable:focus-visible { outline:3px solid #35617f; }
       .cs-edit-label { display:block; position:relative; z-index:2; width:max-content; margin:0 0 8px auto; padding:5px 12px; border:1px solid #c6d4de; border-radius:6px; color:#294c63; background:#edf3f7; cursor:pointer; font:600 12px/1.5 sans-serif; }
       .cs-edit-label:hover,.cs-edit-label:focus-visible { background:#dee8ef; outline:2px solid #35617f; }
+      .carousel-layer-label { flex-wrap:wrap; }
+      .cs-shared-heading-edit { display:inline-block; margin:0 0 0 8px; text-transform:none; letter-spacing:normal; white-space:normal; max-width:100%; }
       [data-cs-common-item] { overflow-wrap:anywhere; }
       .carousel-card p { white-space:pre-wrap; overflow-wrap:anywhere; }
       .carousel-card-header { overflow-wrap:anywhere; }
@@ -575,6 +583,7 @@
       s.host.querySelectorAll('[data-cs-ready]').forEach(node => node.disabled = false);
       controls(s); selectItem(s, s.index, true);
       if (s.blocked) s.recoveryUI?.open();
+      else if (s.focusCopy) { const key=s.focusCopy; s.focusCopy=null; s.openSharedHeading(key); }
     } catch { message(s, 'The preview could not be prepared. Reload to try again; saved drafts are unchanged.', true); }
   }
 
@@ -590,7 +599,7 @@
       } catch { /* An unreadable earlier draft is left where it is. */ }
     }
   }
-  async function render(shell, courseId, chapter = 'c2', itemIndex = 0) {
+  async function render(shell, courseId, chapter = 'c2', itemIndex = 0, focusCopy = null) {
     const isCommon = courseId === 'common', locale=language().current();
     if (isCommon ? !common().chapters.includes(chapter) : !supports(courseId) || !['c2','c3'].includes(chapter)) throw Error('Course editor not connected');
     // Common Studio shows one bachelor's examples as read-only context.
@@ -645,7 +654,18 @@
       </div>`, false);
     const host = document.getElementById('cs-studio');
     const s = session = {host, courseId, chapter, isCommon, locale, config, key: language().draftKey(courseId,chapter,locale), frame: host.querySelector('iframe'), dialog: host.querySelector('.cs-editor'), submitDialog: host.querySelector('.cs-submit-dialog'),
-      abort: new AbortController(), index: typeof itemIndex === 'string' ? 0 : itemIndex, requestedPath: typeof itemIndex === 'string' ? itemIndex : null, slideIndex: 0, raw: null, blocked: false, storageRead: false, ready: false};
+      abort: new AbortController(), index: typeof itemIndex === 'string' ? 0 : itemIndex, requestedPath: typeof itemIndex === 'string' ? itemIndex : null, focusCopy, slideIndex: 0, raw: null, blocked: false, storageRead: false, ready: false};
+    s.openSharedHeading = key => {
+      if (!common().headingKeys.includes(key)) return;
+      if (!s.isCommon) { location.hash = `#common/${s.chapter}/labels/${key}`; return; }
+      const index = s.commonBlocks?.findIndex(block => block.node.hasAttribute('data-common-copy')) ?? -1;
+      if (index < 0) return;
+      openEditor(s, index);
+      if (!s.dialog.open || s.index !== index) return;
+      const input = [...s.dialog.querySelectorAll('.cs-fields input,.cs-fields textarea')].find(node => node.name === key+' 1');
+      input?.focus();
+      input?.scrollIntoView({block:'center'});
+    };
     s.openCourseSlot = path => {
       if (['c3.template_compare.md','c3.template_compare.xml'].includes(path)) location.hash = `#studio/${context}/${chapter}/${path}`;
     };

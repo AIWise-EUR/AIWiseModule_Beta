@@ -3,6 +3,19 @@
 (() => {
   'use strict';
   const {chapters, names, catalog} = window.AIWiseCommonContent;
+  const headingKeys = ['thinking', 'typing', 'processing'];
+  function linkExampleHeadings(doc, open) {
+    doc.querySelectorAll('.carousel-layer-label [data-copy-use]').forEach(label => {
+      const key = label.dataset.copyUse;
+      if (!headingKeys.includes(key) || label.parentElement.querySelector('[data-cs-shared-heading]')) return;
+      const button = doc.createElement('button'); button.type = 'button';
+      button.className = 'cs-edit-label cs-shared-heading-edit'; button.dataset.csSharedHeading = key;
+      button.textContent = 'Edit shared heading';
+      button.title = 'Shared by all examples in this chapter and language.';
+      button.addEventListener('click', event => { event.stopPropagation(); open(key); });
+      label.after(button);
+    });
+  }
   function apply(s, openEditor) {
     const doc = s.frame.contentDocument;
     window.AIWiseStudioBlocks?.restore(doc);
@@ -43,15 +56,6 @@
         button.addEventListener('click', event => { event.stopPropagation(); openEditor(s, index); });
         use.closest('svg').before(button);
       });
-      // Navigation copy is stored in a hidden source block, but its editor must
-      // remain reachable from the visible navigation itself.
-      const navigation = s.commonBlocks.findIndex(block => block.node.hasAttribute('data-common-copy'));
-      if (navigation >= 0) {
-        const target = doc.querySelector('#coreNavDesktop') || doc.body;
-        const button = doc.createElement('button'); button.type = 'button'; button.className = 'cs-edit-label';
-        button.textContent = s.chapter === 'map' ? 'Edit diagram annotations' : 'Edit navigation labels';
-        button.addEventListener('click', () => openEditor(s, navigation)); target.prepend(button);
-      }
       if (s.openCourseSlot) doc.querySelectorAll('[data-slot^="c3.template_compare."]').forEach(node => {
         const button = doc.createElement('button'); button.type = 'button'; button.className = 'cs-edit-label';
         button.textContent = 'Edit course ' + (node.dataset.slot.endsWith('.md') ? 'Markdown' : 'XML') + ' example';
@@ -72,6 +76,18 @@
       node.prepend(button);
     });
     window.AIWiseCommonContent.sync(doc);
+    // Install after rendering, outside the navigation's catalogued text/attributes.
+    // The same entry remains visible when the desktop navigation is collapsed.
+    const navigation = s.commonBlocks.findIndex(block => block.node.hasAttribute('data-common-copy'));
+    if (navigation >= 0 && !doc.querySelector('[data-cs-shared-labels]')) {
+      const button = doc.createElement('button'); button.type = 'button'; button.className = 'cs-edit-label';
+      button.dataset.csSharedLabels = '';
+      button.textContent = s.chapter === 'map' ? 'Edit diagram annotations' : 'Edit shared headings & labels';
+      button.addEventListener('click', event => { event.stopPropagation(); openEditor(s, navigation); });
+      const anchor = doc.querySelector('.hero') || doc.querySelector('header');
+      if (anchor) anchor.before(button); else doc.body.prepend(button);
+    }
+    linkExampleHeadings(doc, key => s.openSharedHeading?.(key));
     doc.documentElement.lang = s.locale || 'en';
   }
   function upgradeDraft(saved,base) {
@@ -103,6 +119,6 @@
     if(typeof english==='string'){const detail=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='Show approved English source';text.textContent=english;detail.append(summary,text);wrap.append(detail);}
     draw();
   }
-  window.AIWiseCommonStudio = {chapters, names, catalog, apply, upgradeDraft, syncTranslation, translationField,
+  window.AIWiseCommonStudio = {chapters, names, catalog, apply, upgradeDraft, syncTranslation, translationField, headingKeys, linkExampleHeadings,
     target: (s, index) => s.commonBlocks?.[index]?.target || s.commonBlocks?.[index]?.node};
 })();

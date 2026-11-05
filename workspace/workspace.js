@@ -138,6 +138,8 @@
 
   function renderCommon(part) {
     if (part) {
+      const heading = /^(c2)\/labels\/(thinking|typing|processing)$/.exec(part);
+      if (heading) { window.AIWiseContentStudio.render(shell, 'common', heading[1], 0, heading[2]); return; }
       const [chapter, index = '0', extra] = part.split('/');
       if (['c1','c2','c3','map'].includes(chapter) && /^\d+$/.test(index) && Number.isSafeInteger(Number(index)) && !extra) { window.AIWiseContentStudio.render(shell, 'common', chapter, Number(index)); return; }
       renderNotFound(); return;
