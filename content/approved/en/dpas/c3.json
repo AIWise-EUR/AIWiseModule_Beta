@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 28,
+  "sequence": 52,
   "course": "dpas",
   "chapter": "c3",
   "locale": "en",
-  "submission_id": "622802a8-c441-4682-bc49-c0feab7c7f3b",
+  "submission_id": "925deaa6-74b1-4ab9-9407-50529a35e02f",
   "source_release": null,
-  "approved_at": "2026-11-05T11:31:46.589458+00:00",
+  "approved_at": "2026-11-05T22:27:17.104583+00:00",
   "slots": {
     "c3.amd_example": {
       "intro": "",
@@ -31,14 +31,14 @@
     },
     "c3.full_example": [
       {
-        "tag": "role",
+        "tag": "rol",
         "lines": [
           "",
           ""
         ]
       },
       {
-        "tag": "task",
+        "tag": "taak",
         "lines": [
           "",
           "",
@@ -55,7 +55,7 @@
         ]
       },
       {
-        "tag": "constraints",
+        "tag": "randvoorwaarden",
         "lines": [
           "",
           "",
@@ -63,7 +63,7 @@
         ]
       },
       {
-        "tag": "steps",
+        "tag": "stappen",
         "lines": [
           "",
           "",
@@ -71,7 +71,7 @@
         ]
       },
       {
-        "tag": "examples",
+        "tag": "outputformaat",
         "lines": [
           "",
           "",
@@ -79,7 +79,7 @@
         ]
       },
       {
-        "tag": "output_format",
+        "tag": "voorbeelden",
         "lines": [
           "",
           "",
@@ -134,13 +134,13 @@
     ],
     "c3.template_compare.xml": [
       {
-        "tag": "role",
+        "tag": "rol",
         "lines": [
           ""
         ]
       },
       {
-        "tag": "task",
+        "tag": "taak",
         "lines": [
           ""
         ]
@@ -152,14 +152,14 @@
         ]
       },
       {
-        "tag": "constraints",
+        "tag": "randvoorwaarden",
         "lines": [
           "",
           ""
         ]
       },
       {
-        "tag": "output_format",
+        "tag": "outputformaat",
         "lines": [
           ""
         ]
