@@ -1,0 +1,187 @@
+{
+  "schema": 1,
+  "sequence": 28,
+  "course": "dpas",
+  "chapter": "c3",
+  "locale": "en",
+  "submission_id": "622802a8-c441-4682-bc49-c0feab7c7f3b",
+  "source_release": null,
+  "approved_at": "2026-11-05T11:31:46.589458+00:00",
+  "slots": {
+    "c3.amd_example": {
+      "intro": "",
+      "items": [
+        {
+          "tag": "adopt",
+          "text": "",
+          "reason": ""
+        },
+        {
+          "tag": "modify",
+          "text": "",
+          "reason": ""
+        },
+        {
+          "tag": "discard",
+          "text": "",
+          "reason": ""
+        }
+      ],
+      "title": ""
+    },
+    "c3.full_example": [
+      {
+        "tag": "role",
+        "lines": [
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "task",
+        "lines": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "context",
+        "lines": [
+          "",
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "constraints",
+        "lines": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "steps",
+        "lines": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "examples",
+        "lines": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "output_format",
+        "lines": [
+          "",
+          "",
+          ""
+        ]
+      }
+    ],
+    "c3.critique.read": "",
+    "c3.critique.decide": "",
+    "c3.critique.verify": "",
+    "c3.techniques.role": {
+      "bad": "",
+      "good": ""
+    },
+    "c3.critique.question": "",
+    "c3.full_example_title": "",
+    "c3.techniques.few_shot": {
+      "good": ""
+    },
+    "c3.template_compare.md": [
+      {
+        "lines": [
+          ""
+        ],
+        "heading": "Role"
+      },
+      {
+        "lines": [
+          ""
+        ],
+        "heading": "Task"
+      },
+      {
+        "lines": [
+          ""
+        ],
+        "heading": "Context"
+      },
+      {
+        "lines": [
+          "",
+          ""
+        ],
+        "heading": "Constraints"
+      },
+      {
+        "lines": [
+          ""
+        ],
+        "heading": "Output Format"
+      }
+    ],
+    "c3.template_compare.xml": [
+      {
+        "tag": "role",
+        "lines": [
+          ""
+        ]
+      },
+      {
+        "tag": "task",
+        "lines": [
+          ""
+        ]
+      },
+      {
+        "tag": "context",
+        "lines": [
+          ""
+        ]
+      },
+      {
+        "tag": "constraints",
+        "lines": [
+          "",
+          ""
+        ]
+      },
+      {
+        "tag": "output_format",
+        "lines": [
+          ""
+        ]
+      }
+    ],
+    "c3.techniques.output_format": {
+      "bad": "",
+      "good": ""
+    },
+    "c3.techniques.chain_of_thought": {
+      "bad": "",
+      "good": ""
+    },
+    "c3.techniques.clear_instruction": {
+      "bad": "",
+      "good": ""
+    },
+    "c3.techniques.task_decomposition": {
+      "bad": "",
+      "good": ""
+    }
+  },
+  "structure_only": true,
+  "layout_review_required": true
+}
