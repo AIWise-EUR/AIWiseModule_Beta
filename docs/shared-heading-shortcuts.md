@@ -12,7 +12,7 @@ location, and audit other editable fields without a nearby entry point.
 | Common shared-label entry outside desktop navigation | Implemented for C1/C2/C3; map annotation entry retained |
 | Coverage audit | Completed; remaining indirect entries listed below |
 | Validation | All 61 repository test files passed; isolated browser save/reload and keyboard checks passed |
-| Beta deployment | Pending |
+| Beta deployment | Live at 8acb7bd; Pages run 42010495394 succeeded; real Common and DPAS paths verified |
 
 ## Behavior
 
@@ -59,3 +59,5 @@ configured slot; this is conditional content rather than a missing text field.
   retention and protection of unsaved example edits. Existing content/field
   identities stay intact. All 61 test files passed after allowing the test runner's
   required local listener; the first restricted run failed only on listener access.
+
+- 2026-11-05: Deployed 8acb7bd to Beta. Pages run 42010495394 succeeded. In the live Dutch editor, the heading button opened Thinking 1; the DPAS heading button opened the same editable Common field while retaining Nederlands. No live wording was changed or saved.

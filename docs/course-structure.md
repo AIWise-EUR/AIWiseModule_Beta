@@ -172,7 +172,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 16 | Shared course registration | frontend live; missing server function reconfirmed 2026-11-04 | Bachelor selection, shared registry writes, Studio course links, preserved browser entries; [setup](../supabase/WORKSPACE_COURSES_SETUP.md) |
 | 17 | Common language structure | Prepared; owner deployment pending | Approved English layout, preserved Dutch drafts and translations; [record](common-language-structure-sync.md) |
 | 18 | Bidirectional language layout and DPAS editing | Live; 61 test files and ten live checks passed | Shared structure, separate translations; [record](bidirectional-layout.md) |
-| 19 | Shared heading shortcuts | implemented and verified; Beta deployment pending | [Entry points and coverage audit](shared-heading-shortcuts.md) |
+| 19 | Shared heading shortcuts | live; Common and DPAS browser verified | [Entry points and coverage audit](shared-heading-shortcuts.md) |
 
 ## How to verify
 
