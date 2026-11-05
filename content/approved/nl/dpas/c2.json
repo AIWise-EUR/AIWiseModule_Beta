@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "sequence": 33,
+  "course": "dpas",
+  "chapter": "c2",
+  "locale": "nl",
+  "submission_id": "1f21e766-bf81-4850-a0fc-1af374b7e4c9",
+  "source_release": "b5d044ee-41d5-49bf-adcb-5c9d77779d47",
+  "approved_at": "2026-11-05T11:43:47.701474+00:00",
+  "slots": {
+    "c2.examples": [
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      }
+    ],
+    "c2.sat_example": {
+      "note": "Opmerking: het voorbeeld stopt hier, maar het SAT-proces hoeft hier niet te eindigen. Als de student het gevoel heeft dat het idee nog verder ontwikkeld moet worden, of om feedback wil vragen, kan ze een nieuwe Self-AI of Self-Team cyclus starten. ",
+      "phases": [
+        {
+          "label": "Self–AI",
+          "steps": [
+            {
+              "name": "Intentie",
+              "text": "Een student wil haar literatuuroverzicht schrijven over politieke participatie. Ze is geïnteresseerd in waarom jongeren minder geneigd zijn te stemmen dan ouderen en heeft een ruw idee van wat de onderzoeksvraag zou kunnen zijn: Waarom stemmen jongeren minder? Ze weet echter niet zeker of dit specifiek genoeg is voor de opdracht.",
+              "actor": "self"
+            },
+            {
+              "name": "Operationaliseren",
+              "text": "De student vraagt AI hoe ze haar onderzoeksvraag specifieker zou kunnen maken. AI stelt voor om te kijken naar verschillende vormen van politieke participatie, verschillende typen verkiezingen, en verschillende verklaringen voor verschillen in stemgedrag.",
+              "actor": "ai"
+            },
+            {
+              "name": "Beoordelen",
+              "text": "De student overweegt deze mogelijkheden en besluit zich te richten op het vertrouwen van jongeren in politieke instituties. Haar nieuwe onderzoeksvraag is: Waarom stemmen jongeren minder, en speelt vertrouwen in politieke instituties een rol in deze relatie?",
+              "actor": "self"
+            },
+            {
+              "name": "Verfijnen",
+              "text": "De student vraagt AI om de formulering van haar onderzoeksvraag te helpen verfijnen zonder te veranderen wat ze wil onderzoeken. AI stelt voor om in de eerste vraag geen duidelijke bewering te maken, en de tweede vraag te veranderen van een ja/nee-vraag naar een open vraag, zodat er een bredere verklaring gegeven kan worden. De student formuleert op basis van deze input zelf een nieuwe specifieke onderzoeksvraag: In hoeverre verklaart het vertrouwen van jongeren in politieke instituties hun lagere politieke participatie?",
+              "actor": "ai"
+            }
+          ]
+        },
+        {
+          "label": "Self–Team",
+          "steps": [
+            {
+              "name": "Presenteren",
+              "text": "In de les deelt de student haar onderzoeksvraag met haar medestudenten en vraagt om feedback.",
+              "actor": "self"
+            },
+            {
+              "name": "Feedback",
+              "text": "Over het algemeen begrijpen de andere medestudenten het idee en vinden ze het onderwerp interessant. Een medestudent merkt op dat de vraag lijkt te veronderstellen dat een lager vertrouwen in politieke instituties de belangrijkste verklaring is voor verschillen in politieke participatie, terwijl er ook andere relevante verklaringen zouden kunnen zijn.",
+              "actor": "team"
+            },
+            {
+              "name": "Integreren",
+              "text": "De student is het eens met haar medestudent en besluit de onderzoeksvraag te herformuleren. Ze zal de algemene relatie tussen het vertrouwen van jongeren in politieke instituties en hun politieke participatie onderzoeken, zonder een direct causaal verband te suggereren.",
+              "actor": "self"
+            },
+            {
+              "name": "Uitbreden",
+              "text": "De student en haar medestudenten bespreken de onderzoeksvraag verder. Een andere medestudent wijst erop dat de relatie mogelijk niet eenduidig is: het zou bijvoorbeeld interessant kunnen zijn om te kijken naar jongeren met verschillende sociaaleconomische achtergronden. Dit herinnert de student aan iets wat hierover in de les is besproken, en ze besluit dit op te nemen in haar vraag: In hoeverre hangt vertrouwen in politieke instituties samen met politieke participatie onder jongeren, en welke rol speelt sociaaleconomische achtergrond in deze relatie? De student is nu tevreden met haar onderzoeksvraag en klaar om te beginnen met het plannen van de literatuurzoektocht.",
+              "actor": "team"
+            }
+          ]
+        }
+      ]
+    },
+    "c2.sat_example_title": "S.A.T uitgewerkt voorbeeld"
+  }
+}

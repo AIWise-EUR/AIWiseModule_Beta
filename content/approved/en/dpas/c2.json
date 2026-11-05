@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "sequence": 34,
+  "course": "dpas",
+  "chapter": "c2",
+  "locale": "en",
+  "submission_id": "4148efd0-2304-49f3-85f6-6788839232d2",
+  "source_release": null,
+  "approved_at": "2026-11-05T11:43:47.701474+00:00",
+  "slots": {
+    "c2.examples": [
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      }
+    ],
+    "c2.sat_example": {
+      "note": "",
+      "phases": [
+        {
+          "label": "",
+          "steps": [
+            {
+              "name": "",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "ai"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "ai"
+            }
+          ]
+        },
+        {
+          "label": "",
+          "steps": [
+            {
+              "name": "",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "team"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "",
+              "text": "",
+              "actor": "team"
+            }
+          ]
+        }
+      ]
+    },
+    "c2.sat_example_title": ""
+  },
+  "structure_only": true,
+  "layout_review_required": true
+}
