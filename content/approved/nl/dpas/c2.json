@@ -1,14 +1,49 @@
 {
   "schema": 1,
-  "sequence": 31,
+  "sequence": 33,
   "course": "dpas",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "7cf54482-9932-42e2-abdb-0a319edaa957",
-  "source_release": null,
-  "approved_at": "2026-11-05T11:33:25.26999+00:00",
+  "submission_id": "1f21e766-bf81-4850-a0fc-1af374b7e4c9",
+  "source_release": "b5d044ee-41d5-49bf-adcb-5c9d77779d47",
+  "approved_at": "2026-11-05T11:43:47.701474+00:00",
   "slots": {
     "c2.examples": [
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
+      {
+        "title": "",
+        "typing": "",
+        "thinking": "",
+        "processing": "",
+        "typing_note": ""
+      },
       {
         "title": "",
         "typing": "",
