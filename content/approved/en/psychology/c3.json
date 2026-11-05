@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 46,
+  "sequence": 50,
   "course": "psychology",
   "chapter": "c3",
   "locale": "en",
-  "submission_id": "dcb54674-a48e-4d33-b8d0-a5d0aa7875ef",
+  "submission_id": "4d53c246-fa4e-45ff-9339-a6d3e8f374a0",
   "source_release": null,
-  "approved_at": "2026-11-05T21:59:51.027769+00:00",
+  "approved_at": "2026-11-05T22:24:14.554209+00:00",
   "slots": {
     "c3.amd_example": {
       "intro": "Student asked AI to extract common themes from three papers. AI presented three themes:",
@@ -14,7 +14,7 @@
         {
           "tag": "adopt",
           "text": "Theme 1: \"Sleep disruption as a mediator between screen time and adolescent anxiety\"",
-          "reason": "Matches the original papers. Usable as an outline starting point. Placed as starting point for first outline section."
+          "reason": "Matches the original papers. Usable as starting point for first outline section."
         },
         {
           "tag": "modify",
