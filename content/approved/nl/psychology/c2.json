@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "sequence": 23,
+  "course": "psychology",
+  "chapter": "c2",
+  "locale": "nl",
+  "submission_id": "ee15249d-d63b-466f-a1df-c0d4d6411456",
+  "source_release": "80f83cd9-140e-4f15-8bcb-42ca4a14d9fc",
+  "approved_at": "2026-11-05T10:26:53.206299+00:00",
+  "slots": {
+    "_studio": {
+      "boxes": [
+        {
+          "id": "box-a024abd9-0878-475f-841f-268fa581ee9d",
+          "size": 0,
+          "slot": "c2.sat_example",
+          "align": "left",
+          "anchor": 0,
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "template": "text"
+        }
+      ],
+      "formats": [],
+      "version": 1
+    },
+    "c2.examples": [
+      {
+        "title": "Studies verbinden in een literatuuroverzicht",
+        "typing": "\"Hoe verbind ik deze twee studies in mijn literatuuroverzicht?\"",
+        "thinking": "Ik moet een manier vinden om deze twee studies met elkaar te verbinden voor mijn literatuuroverzicht. De ene gaat over sociale media en zelfwaardering, de andere over schermtijd en slaap. Mijn docent zei dat de overgang tussen paragrafen heel belangrijk is. Ik probeerde mijn paragrafen te verbinden via \"het welzijn van adolescenten\", maar dat voelde te vaag. Ik wil iets specifieker, maar ik weet niet precies hoe dat eruit zou moeten zien. ",
+        "processing": "De volledige tekst van beide artikelen wordt verwerkt. Thema's, bevindingen, methodologieën en theoretische kaders worden allemaal geëxtraheerd. Het statistisch meest waarschijnlijke \"behulpzame\" antwoordpatroon voor \" verbind deze twee studies\" wordt geactiveerd. → Genereer een uitgebreid antwoord dat meerdere mogelijke verbindingspunten behandelt: gedeelde concepten, overlappende bestuursniveaus, complementaire bevindingen, theoretische aansluiting. Presenteer deze als opties. Klink zelfverzekerd en grondig. ",
+        "typing_note": "[uploadt twee PDF's]"
+      },
+      {
+        "title": "Oefenvragen maken",
+        "typing": "\"Maak wat meerkeuzevragen over hoofdstuk 4.\"",
+        "thinking": "Mijn tentamen is volgende week en ik wil mezelf testen op hoofdstuk 4. De docent schrijft altijd lastige meerkeuzevragen waarbij twee antwoordopties bijna hetzelfde lijken en je de exacte definitie moet kennen om ze van elkaar te onderscheiden. Ik heb vragen nodig op dat niveau, niet de makkelijke waarbij je door uitsluiting kunt raden. ",
+        "processing": "De volledige hoofdstuktekst wordt verwerkt. Kernbegrippen, definities en verbanden worden geïdentificeerd. \"Meerkeuzevraag\" activeert een standaardtype: één juist antwoord, drie afleiders, gemiddelde moeilijkheidsgraad, gericht op reproductie. → Genereer vragen die het hoofdstuk gelijkmatig dekken, maak afleiders geloofwaardig maar duidelijk te onderscheiden van het juiste antwoord.",
+        "typing_note": "[plakt tekst van hoofdstuk 4]"
+      },
+      {
+        "title": "Een artikel samenvatten",
+        "typing": "\"Kun je dit artikel samenvatten?\"",
+        "thinking": "Ik heb dit artikel gelezen, maar ik weet niet zeker of ik de methodesectie goed heb begrepen. Ik denk dat ze een between-subjects design gebruikten, maar de manier waarop ze de groepen beschrijven is verwarrend. Ik heb geen volledige samenvatting nodig, ik wil alleen dat het onderzoeksdesign wordt uitgelegd zodat ik kan bepalen of de conclusie daadwerkelijk uit het onderzoek volgt.",
+        "processing": "Het volledige artikel wordt verwerkt. Alle secties worden even zwaar gewogen. \"Samenvatten\" activeert een standaardstructuur: achtergrond, doel, methode, belangrijkste bevindingen, conclusie. Min or meer gelijke dekking van alle secties. → Produceer iets dat leest als een compleet, evenwichtig overzicht. Kink helder en georganisserd.",
+        "typing_note": "[uploadt PDF] "
+      },
+      {
+        "title": "Understanding a concept",
+        "typing": "\"Wat is ecologische validiteit?\"",
+        "thinking": "De docent gebruikte vandaag tijdens het college de term \"ecologische validiteit\" en ik begreep het min of meer uit de context, maar toen ik het aan mijn vriend probeerde uit te leggen, lukte dat niet. Ik denk dat het iets te maken heeft met hoe realistisch een onderzoek is, maar ik weet niet zeker of het gaat om de onderzoeksomgeving, de taak of allebei. En ik begrijp niet goed hoe dit verschilt van externe validiteit, omdat die begrippen nogal op elkaar lijken. ",
+        "processing": "Een verzoek om een definitie. \"Street-level bureaucracy\" is een goed vertegenwoordigd concept in de trainingsdata. → Genereer een heldere, leerboekachtige definitie. Voeg een voorbeeld toe. Noem mogelijk gerelateerde termen. Presenteer een op zichzelf staande uitleg, die het concept breed behandelt in plaats van gericht in te gaan op een specifiek punt van verwarring. "
+      },
+      {
+        "title": "Feedback vragen op je schrijfwerk",
+        "typing": "\"Wat vind je hiervan? Nog feedback?\"",
+        "thinking": "Ik heb twee uur besteed aan deze inleiding en ik denk dat de argumentatie redelijk loopt, maar de laatste zin voelt zwak. Mijn tutor zei de vorige keer dat ik dingen te vaak te breed stel zonder een duidelijk standpunt in te nemen. Ik wil weten of ik dat hier weer doe, specifiek in de laatste twee zinnen.",
+        "processing": "Er wordt een alinea aangeleverd. Feedback wordt gevraagd zonder specifieke focus. → Scan de hele alinea op grammatica, helderheid, structuur en argumentatiekracht. Genereer een evenwichtige reeks opmerkingen die meerdere aspecten bestrijkt. Benoem eerst de positieve punten, geef daarna verbeterpunten. Verdeel de aandacht gelijkmatig over de hele tekst. ",
+        "typing_note": "[plakt alinea]"
+      },
+      {
+        "title": "Een motivatiebrief schrijven",
+        "typing": "\"Help mee een motivatiebrief schrijven voor een onderzoeksstage.\"",
+        "thinking": "Ik solliciteer naar deze stage bij een onderzoekslaboratoriume en ik wil hem heel graag, omdat de begeleider een artikel heeft gepubliceerd waarnaar ik in mijn scriptie heb verwerzen. Ik heb wat relevante ervaring vanuit mijn vak statistiek en een klein project dat ik samen met een medestudent heb gedaan, maar ik weet niet zeker of dat meetelt. De deadline is morgen en ik zag dat ze \"zelfstandige denkers\" waarderen, maar ik wil niet arrogant overkomen. ",
+        "processing": "Een motivatiebrief voor een onderzoeksstage. Geen specifieke laboratorium, geen vakgebied, geen achtergrond van de sollicitant, geen deadlinedruk, geen voorkeur voor toon. → Genereer een gepolijste, algemeen toepasbare sjabloon voor een motivatiebrief. Gebruik breed toepasbare taal over “passie voor openbaar beleid” en “leergierigheid.” Structureer deze in een standaardformaat. Klink professioneel en enthousiast. "
+      }
+    ],
+    "c2.sat_example": {
+      "note": "Opmerking: het voorbeeld stopt hier, maar het SAT-proces hoeft hier niet te eindigen. Als de student het gevoel heeft dat het idee nog verder ontwikkeld moet worden, of om feedback wil vragen, kan ze een nieuwe Self-AI of Self-Team cyclus starten. ",
+      "phases": [
+        {
+          "label": "Self–AI",
+          "steps": [
+            {
+              "name": "Intentie",
+              "text": "Een student wil haar literatuuroverzicht schrijven over sociale media en mentale gezondheid. Ze is geïnteresseerd in de vraag of het gebruik van sociale media samenhangt met het zelfbeeld van mensen en heeft een ruw idee van wat de onderzoeksvraag zou kunnen zijn: Heeft sociale mediagebruik invloed op het zelfbeeld? Ze weet echter niet zeker of dit specifiek genoeg is voor de opdracht.",
+              "actor": "self"
+            },
+            {
+              "name": "Operationaliseren",
+              "text": "De student vraagt AI hoe ze haar onderzoeksvraag specifieker zou kunnen maken. AI stelt voor om te kijken naar verschillende vormen van sociale mediagebruik, verschillende aspecten van het zelfbeeld, verschillende leeftijdsgroepen en mogelijke psychologische mechanismen die het verband zouden kunnen verklaren.",
+              "actor": "ai"
+            },
+            {
+              "name": "Beoordelen",
+              "text": "De student overweegt deze mogelijkheden en besluit zich te richten op passief gebruik van sociale media, het zelfbeeld van adolescenten en opwaartse sociale vergelijking. Haar nieuwe onderzoeksvraag is: Hoe hangt passief gebruik van sociale media samen met het zelfbeeld van adolescenten, en speelt opwaartse sociale vergelijking een rol in dit verband?",
+              "actor": "self"
+            },
+            {
+              "name": "Verfijnen",
+              "text": "De student vraagt AI om de formulering van haar onderzoeksvraag te helpen verfijnen zonder te veranderen wat ze wil onderzoeken. AI stelt voor om de tweede vraag te veranderen van een ja/nee-vraag naar een open vraag, zodat er een bredere verklaring gegeven kan worden. De student formuleert op basis van deze input zelf een nieuwe specifieke onderzoeksvraag: How hangt passief gebruik van sociale media samen met het zelfbeeld van adolescenten, en welke rol speelt opwaartse sociale vergelijking in dit verband? ",
+              "actor": "ai"
+            }
+          ]
+        },
+        {
+          "label": "Self–Team",
+          "steps": [
+            {
+              "name": "Presenteren",
+              "text": "In de les deelt de student haar onderzoeksvraag met haar medestudenten en vraagt om feedback.",
+              "actor": "self"
+            },
+            {
+              "name": "Feedback",
+              "text": "Over het algemeen begrijpen de andere medestudenten het idee en vinden ze het onderwerp interessant. Een medestudent stelt voor om, met het oog op de specifiteit en haalbaarheid, slechts één van de twee vragen te kiezen: of passief gebruik van sociale media samenhangt met het zelfbeeld, of opwaartse sociale vergelijking dit verband specifiek verklaart.",
+              "actor": "team"
+            },
+            {
+              "name": "Integreren",
+              "text": "De student is het eens met haar medestudent en besluit de onderzoeksvraag te af te bakenen. Ze zal de algemene relatie tussen sociale mediagebruik en zelfbeeld onderzoeken, zonder vooraf aannames te doen over de onderliggende mechanismen.",
+              "actor": "self"
+            },
+            {
+              "name": "Uitbreden",
+              "text": "De student en haar medestudenten bespreken de onderzoeksvraag verder. Een andere medestudent wijst erop dat de relatie mogelijk niet eenduidig is: sommige studies vinden bijvoorbeeld negatieve verbanden, terwijl andere positieve, zwakke of helemaal geen verbanden vinden. Hierdoor realiseert de student zich dat ze geen aannames moet doen over de richting van het verbnd voordat ze de literatuur gaat lezen. De student is nu tevreden met haar onderzoeksvraag en klaar om te beginnen met het plannen van de literatuurzoektocht.",
+              "actor": "team"
+            }
+          ]
+        },
+        {
+          "label": "Self–AI",
+          "steps": [
+            {
+              "name": "Intent",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "Operationalize",
+              "text": "",
+              "actor": "ai"
+            },
+            {
+              "name": "Judge",
+              "text": "",
+              "actor": "self"
+            },
+            {
+              "name": "Refine",
+              "text": "",
+              "actor": "ai"
+            }
+          ]
+        }
+      ]
+    },
+    "c2.sat_example_title": "S.A.T uitgewerkt voorbeeld"
+  }
+}
