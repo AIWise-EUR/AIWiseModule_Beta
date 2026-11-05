@@ -1,89 +1,89 @@
 {
   "schema": 1,
-  "sequence": 27,
+  "sequence": 51,
   "course": "dpas",
   "chapter": "c3",
   "locale": "nl",
-  "submission_id": "6479960e-929d-4432-b2f3-f85123802e3c",
-  "source_release": null,
-  "approved_at": "2026-11-05T11:31:46.589458+00:00",
+  "submission_id": "eb428777-7135-41ea-9aca-c842f7cb8141",
+  "source_release": "622802a8-c441-4682-bc49-c0feab7c7f3b",
+  "approved_at": "2026-11-05T22:27:17.104583+00:00",
   "slots": {
     "c3.amd_example": {
-      "intro": "Een student vroeg AI om de centrale argumentatie van el van de drie artikelen te achterhalen. AI presenteerde de volgende drie argumenten:  ",
+      "intro": "Een student vroeg AI om gemeenschappelijke thema's uit drie artikelen te halen. AI presenteerde de volgende drie thema's:  ",
       "items": [
         {
           "tag": "adopt",
-          "text": "Artikel A: “Sociale ongelijkheid beïnvloedt de toegang tot gezondheidszorg en draagt bij aan verschillen in gezondheidsuitkomsten.” ",
-          "reason": "Komt overeen met de centrale argumentatie van het oorspronkelijke artikel. Bruikbaar als uitgangspunt om het bewijs voor en tegen mijn stelling te ordenen. "
+          "text": "Thema 1: “Sociale ongelijkheid beïnvloedt de toegang tot gezondheidszorg en draagt bij aan verschillen in gezondheidsuitkomsten.” ",
+          "reason": "Komt overeen met de oorspronkelijke artikelen. Bruikbaar als startpunt voor het eerste onderdeel van de outline. "
         },
         {
           "tag": "modify",
-          "text": "Artikel B: “De invoering van digitale overheidsdiensten leidt tot meer vertrouwen van burgers in overheidsinstellingen.” ",
-          "reason": "De richting klopt, maar AI heeft en positieve samenhang veralgemeniseerd tot een causaal verband. Aangepast naar “positieve samenhang”. Oorspronkelijke artikel opnieuw geraadpleegd. "
+          "text": "Thema 2: “De invoering van digitale overheidsdiensten leidt tot meer vertrouwen van burgers in overheidsinstellingen.” ",
+          "reason": "De richting klopt, maar AI heeft en positieve samenhang weergegeven als een causaal verband. Aangepast naar “positieve samenhang”. Oorspronkelijke artikel opnieuw geraadpleegd. "
         },
         {
           "tag": "discard",
-          "text": "Artikel C: “Overheidsinstellingen zouden verplicht gebruik moeten maken van algoritmen bij het nemen van beleidsbeslissingen.” ",
-          "reason": "Ik vroeg naar de centrale argumentatie van het artikel, niet naar beleidsaanbevelingen. Deze aanbeveling geeft de centrale claim van het artikel niet weer. Verwijderd. Registratie: “AI is buiten de reikwijdte van de opdracht getreden door beleidsaanbevelingen toe te voegen.” "
+          "text": "Thema 3: “Brede implicaties voor het volksgezondheidsbeleid” ",
+          "reason": "Ik vroeg om gemeenschappelijke thema's, niet om implicaties. Dit onderwerp komt niet voor in de artikelen. AI heeft dit verzonnen. Verwijderd. Registratie: “AI is buiten de reikwijdte van de opdracht getreden door implicaties toe te voegen.” "
         }
       ],
-      "title": "UITGEWERKT VOORBEELD – DE CENTRALE ARGUMENTATIE ACHTERHALEN "
+      "title": "UITGEWERKT VOORBEELD – Gemeenschappelijke thema's identificeren"
     },
     "c3.full_example": [
       {
-        "tag": "role",
+        "tag": "rol",
         "lines": [
-          "",
-          ""
+          "Jij bent een assistent voor academische literatuuranalyse ",
+          "voor een eerstejaarsstudent sociologie/bestuurskunde. "
         ]
       },
       {
-        "tag": "task",
+        "tag": "taak",
         "lines": [
-          "",
-          "",
-          ""
+          "Identificeer gemeenschappelijke thema's in de volgende drie  ",
+          "wetenschappelijke artikelen. Focus op overlappende onderzoeksonderwerpen,",
+          "niet op methodologische overeenkomsten. "
         ]
       },
       {
         "tag": "context",
         "lines": [
-          "",
-          "",
-          "",
-          ""
+          "Ik schrijf een literatuuroverzicht voor mijn vak. ",
+          "Ik heb alle drie de artikelen gelezen. Ik bevind me momenteel ",
+          "in de fase van het ordenen van mijn bronnen voordat",
+          "ik een overzicht opstel. "
         ]
       },
       {
-        "tag": "constraints",
+        "tag": "randvoorwaarden",
         "lines": [
-          "",
-          "",
-          ""
+          "Vat niet elk artikel afzonderlijk samen. ",
+          "Stel geen overzicht of structuur voor. ",
+          "Blijf alleen op het niveau van identificeren van thema’s. "
         ]
       },
       {
-        "tag": "steps",
+        "tag": "stappen",
         "lines": [
-          "",
-          "",
-          ""
+          "1. Lees de drie samenvattingen die ik hieronder aanlever. ",
+          "2. Indentificeer terugkende onderwepen of constructen. ",
+          "3. Groepeer deze in afzonderlijke thema's. "
         ]
       },
       {
-        "tag": "examples",
+        "tag": "outputformaat",
         "lines": [
-          "",
-          "",
-          ""
+          "Een genummerde lijst van 3-5 gemeenschappelijke thema's. ",
+          "Elk thema in één zin, met de relevante artikelen",
+          "tussen haakjes vermeld. "
         ]
       },
       {
-        "tag": "output_format",
+        "tag": "voorbeelden",
         "lines": [
-          "",
-          "",
-          ""
+          "Voorbeeld themaformaat:  ",
+          "\"Verminderde nabijheid tot het bestuur als mediator tussen gemeentelijke herindelingen ",
+          " en lokale politieke participatie (Artikel A, Artikel C)\" "
         ]
       }
     ],
@@ -95,73 +95,73 @@
       "good": "\"Jij bent een zoekstrategie-adviseur voor academische databases. Beoordeel de zoekopdracht voor wetenschappelijke artikelen met Booleaanse operatoren die ik heb geschreven. Als er logische fouten in zitten, los ze dan niet direct op – stel mij vragen over wat er misging.\""
     },
     "c3.critique.question": "Komen deze drie thema's daadwerkelijk uit de artikelen, of heeft AI gegeneraliseerd? Is het derde thema te breed? Artikel B is aan twee thema's gekoppeld – klopt dat? Ik vroeg alleen om gemeenschappelijke thema's, maar AI voegde \"implicaties\" toe – valt dat buiten de gevraagde reikwijdte? ",
-    "c3.full_example_title": "",
+    "c3.full_example_title": "Volledig uitgewerkt voorbeeld — Gemeenschappelijke thema's halen uit drie artikelen",
     "c3.techniques.few_shot": {
       "good": "\"Vat het kernargument van elk artikel samen in één zin, zoals dit: Smith (2022): Gemeentelijke herindelingen hangen positief samen met een afname van lokale politieke participatie, gemedieerd door en verminderd gevoel van nabijheid tot het bestuur. Doe hetzelfde voor de overige drie artikelen.\""
     },
     "c3.template_compare.md": [
       {
         "lines": [
-          ""
+          "Jij bent een assistent voor literatuuranalyse."
         ],
-        "heading": "Role"
+        "heading": "Rol"
       },
       {
         "lines": [
-          ""
+          "Identificeer gemeenschappelijke thema’s in drie artikelen."
         ],
-        "heading": "Task"
+        "heading": "Taak"
       },
       {
         "lines": [
-          ""
+          "Ik schrijf een literatuuroverzicht voor [vak]. "
         ],
         "heading": "Context"
       },
       {
         "lines": [
-          "",
-          ""
+          "- Vat niet elk artikel afzonderlijk samen",
+          "- Blijf alleen bij het identificeren van thema’s "
         ],
-        "heading": "Constraints"
+        "heading": "Randvoorwaarden"
       },
       {
         "lines": [
-          ""
+          "Genummerde lijst, één zin per thema. "
         ],
-        "heading": "Output Format"
+        "heading": "Outputformaat"
       }
     ],
     "c3.template_compare.xml": [
       {
-        "tag": "role",
+        "tag": "rol",
         "lines": [
-          ""
+          "Jij bent een assistent voor literatuuranalyse."
         ]
       },
       {
-        "tag": "task",
+        "tag": "taak",
         "lines": [
-          ""
+          "Identificeer gemeenschappelijke thema's in drie artikelen."
         ]
       },
       {
         "tag": "context",
         "lines": [
-          ""
+          "Ik schrijf een literatuuroverzicht voor [vak]."
         ]
       },
       {
-        "tag": "constraints",
+        "tag": "randvoorwaarden",
         "lines": [
-          "",
-          ""
+          "Vat niet elk artikel afzonderlijk samen.",
+          "Blijf alleen bij het identificeren van thema’s."
         ]
       },
       {
-        "tag": "output_format",
+        "tag": "outputformaat",
         "lines": [
-          ""
+          "Genummerde lijst, één zin per thema."
         ]
       }
     ],
