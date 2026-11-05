@@ -1,13 +1,129 @@
 {
   "schema": 1,
-  "sequence": 33,
+  "sequence": 43,
   "course": "dpas",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "1f21e766-bf81-4850-a0fc-1af374b7e4c9",
+  "submission_id": "ab31387a-8128-4934-99e5-ed7fe372145f",
   "source_release": "b5d044ee-41d5-49bf-adcb-5c9d77779d47",
-  "approved_at": "2026-11-05T11:43:47.701474+00:00",
+  "approved_at": "2026-11-05T21:38:57.413086+00:00",
   "slots": {
+    "_studio": {
+      "boxes": [
+        {
+          "id": "box-137d0445-abe6-471e-98e3-6917ca46676c",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "example": 0,
+          "template": "text"
+        },
+        {
+          "id": "box-13cfedb8-abfd-498c-bd58-9028cfb8281e",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "example": 1,
+          "template": "text"
+        },
+        {
+          "id": "box-1ef4bb3e-a1c3-45f8-9dc0-88b954ac8f0b",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "example": 2,
+          "template": "text"
+        },
+        {
+          "id": "box-cb1d0c32-19c7-4675-ab97-199f1a72044c",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "example": 3,
+          "template": "text"
+        },
+        {
+          "id": "box-bc3c76ad-70a8-4b42-9443-5dfcc197b611",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "example": 4,
+          "template": "text"
+        }
+      ],
+      "formats": [],
+      "version": 1
+    },
     "c2.examples": [
       {
         "title": "",
@@ -108,5 +224,6 @@
       ]
     },
     "c2.sat_example_title": "S.A.T uitgewerkt voorbeeld"
-  }
+  },
+  "layout_review_required": true
 }
