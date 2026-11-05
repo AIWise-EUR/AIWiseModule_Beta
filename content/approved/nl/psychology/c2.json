@@ -1,35 +1,15 @@
 {
   "schema": 1,
-  "sequence": 39,
+  "sequence": 47,
   "course": "psychology",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "bc5d68f2-b34c-4c73-b4b8-5a129a02bb8a",
-  "source_release": "80f83cd9-140e-4f15-8bcb-42ca4a14d9fc",
-  "approved_at": "2026-11-05T20:31:50.567295+00:00",
+  "submission_id": "4128699c-063f-4f1b-8729-b8c838c55133",
+  "source_release": "a6b1bb4f-cfdc-4d5f-a221-96dd7da84b0f",
+  "approved_at": "2026-11-05T22:06:04.945043+00:00",
   "slots": {
     "_studio": {
       "boxes": [
-        {
-          "id": "box-e701ae2e-71c9-4e23-95c4-93c29f05193d",
-          "size": 0,
-          "slot": "c2.examples",
-          "align": "left",
-          "anchor": 0,
-          "fields": [
-            [
-              {
-                "text": ""
-              }
-            ],
-            [
-              {
-                "text": ""
-              }
-            ]
-          ],
-          "template": "text"
-        },
         {
           "id": "box-dde4f466-c300-4be6-8197-fce452aabf35",
           "size": 0,
@@ -40,12 +20,81 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "W"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "m"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "w"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
               }
             ],
             [
               {
-                "text": ""
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: dat je docent moeilijke vragen stelt, dat antwoordopties vaak sterk op elkaar lijken en dat precieze kennis van definities nodig is om het juiste antwoord te kunnen kiezen. "
               }
             ]
           ],
@@ -62,12 +111,78 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "W"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "m"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "w"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
               }
             ],
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet, is alles wat je niet hebt verteld: dat je het artikel al hebt gelezen, dat je vooral moeite hebt met het onderzoeksdesign, dat je vermoedt dat het om een between-subjects design gaat en dat je wilt beoordelen of het design de conclusie ondersteunt."
               }
             ]
           ],
@@ -84,12 +199,93 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "W"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "m"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "w"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
               }
             ],
             [
               {
-                "text": ""
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: dat je het concept al gedeeltelijk begrijpt, dat je denkt dat het te maken heeft met hoe "
+              },
+              {
+                "text": "realistisch een onderzoek is"
+              },
+              {
+                "text": " en dat je vooral niet begrijpt hoe het verschilt van "
+              },
+              {
+                "text": "externe validiteit"
+              },
+              {
+                "text": "."
               }
             ]
           ],
@@ -106,16 +302,131 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "W"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "m"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "w"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
               }
             ],
             [
               {
-                "text": ""
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: dat je zelf twijfelt over de laatste zin, dat je tutor eerder heeft aangegeven dat je beweringen te breed formuleert zonder een duidelijk standpunt in te nemen, en dat je vooral wilt weten of je dat in de laatste twee zinn"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n opnieuw doet"
+              },
+              {
+                "text": "."
               }
             ]
           ],
           "example": 4,
+          "template": "text"
+        },
+        {
+          "id": "box-7e02c780-656d-4772-9e8e-e6e5192691a6",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": "Wat het model niet weet"
+              }
+            ],
+            [
+              {
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: dat je docent veel belang hecht aan de overgang tussen paragrafen, dat je zelf al aan"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "het welzijn van adolescenten"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "hebt gedacht en dat je die verbinding te vaag vindt. "
+              }
+            ]
+          ],
+          "example": 0,
           "template": "text"
         }
       ],
@@ -245,6 +556,5 @@
       ]
     },
     "c2.sat_example_title": "S.A.T uitgewerkt voorbeeld"
-  },
-  "layout_review_required": true
+  }
 }
