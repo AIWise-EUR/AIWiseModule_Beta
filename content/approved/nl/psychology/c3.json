@@ -1,33 +1,33 @@
 {
   "schema": 1,
-  "sequence": 21,
+  "sequence": 49,
   "course": "psychology",
   "chapter": "c3",
   "locale": "nl",
-  "submission_id": "b314577a-3e97-4fda-ac2d-9551d1fd8597",
-  "source_release": null,
-  "approved_at": "2026-11-05T10:26:17.218226+00:00",
+  "submission_id": "88ecc4a1-2424-4241-8f1f-ccf4d856d82e",
+  "source_release": "dcb54674-a48e-4d33-b8d0-a5d0aa7875ef",
+  "approved_at": "2026-11-05T22:22:22.295184+00:00",
   "slots": {
     "c3.amd_example": {
-      "intro": "Een student vroeg AI om de centrale argumentatie van el van de drie artikelen te achterhalen. AI presenteerde de volgende drie argumenten: ",
+      "intro": "Een student vroeg AI om gemeenschappelijke thema's uit drie artikelen te halen. AI presenteerde de volgende drie thema's:  ",
       "items": [
         {
           "tag": "adopt",
-          "text": "Artikel A: \"Slaapverstoring als mediator tussen schermtijd en angst bij adolescenten\"",
-          "reason": "Komt overeen met de centrale argumentatie van het oorspronkelijke artikel. Bruikbaar als uitgangspunt om het bewijs voor en tegen mijn stelling te ordenen."
+          "text": "Thema 1: \"Slaapverstoring als mediator tussen schermtijd en angst bij adolescenten\"",
+          "reason": "Komt overeen met de oorspronkelijke artikelen. Bruikbaar als startpunt voor het eerste onderdeel van de outline. "
         },
         {
           "tag": "modify",
-          "text": "Artikel B: \"De rol van ouderlijk toezicht bij het beperken van de negatieve effecten van sociale mediagebruik\"",
-          "reason": "De richting klopt, maar AI heeft \"blootstelling aan sociale media\" veralgemeniseerd tot \"digitale schade\". Aangepast naar “plotstelling aan sociale media”. Oorspronkelijke artikel opnieuw geraadpleegd. "
+          "text": "Thema 2: \"De rol van ouderlijk toezicht bij het beperken van digitale schade\"",
+          "reason": "De richting klopt, maar AI heeft \"blootstelling aan sociale media\" verbreed naar \"digitale schade\". Aangepast naar “plotstelling aan sociale media”. Oorspronkelijke artikel opnieuw geraadpleegd. "
         },
         {
           "tag": "discard",
           "text": "Theme 3: \"Brede implicaties voor het volksgezondheidsbeleid\"",
-          "reason": "Ik vroeg naar de centrale argumentatie van het artikel, niet naar beleidsaanbevelingen. Deze aanbeveling geeft de centrale claim van het artikel niet weer. Verwijderd. Registratie: “AI is buiten de reikwijdte van de opdracht getreden door beleidsaanbevelingen toe te voegen.”"
+          "reason": "Ik vroeg om gemeenschappelijke thema's, niet om implicaties. Dit onderwerp komt niet voor in de artikelen. AI heeft dit verzonnen. Verwijderd. Registratie: “AI is buiten de reikwijdte van de opdracht getreden door implicaties toe te voegen.” "
         }
       ],
-      "title": "Uitgewerkt voorbeeld — De centrale argumentatie achterhalen"
+      "title": "Uitgewerkt voorbeeld — Gemeenschappelijke thema's identificeren"
     },
     "c3.full_example": [
       {
