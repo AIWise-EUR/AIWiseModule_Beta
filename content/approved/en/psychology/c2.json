@@ -1,51 +1,15 @@
 {
   "schema": 1,
-  "sequence": 10,
+  "sequence": 30,
   "course": "psychology",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "80f83cd9-140e-4f15-8bcb-42ca4a14d9fc",
+  "submission_id": "68f4660e-24bd-4d37-9ce4-59d786eb7409",
   "source_release": null,
-  "approved_at": "2026-10-05T16:39:50.86526+00:00",
+  "approved_at": "2026-11-05T11:33:11.647783+00:00",
   "slots": {
     "_studio": {
-      "boxes": [
-        {
-          "id": "box-a024abd9-0878-475f-841f-268fa581ee9d",
-          "size": 0,
-          "slot": "c2.sat_example",
-          "align": "left",
-          "anchor": 0,
-          "fields": [
-            [
-              {
-                "text": "N"
-              },
-              {
-                "text": "o"
-              },
-              {
-                "text": "t"
-              },
-              {
-                "text": "e"
-              },
-              {
-                "text": ":"
-              }
-            ],
-            [
-              {
-                "text": "T"
-              },
-              {
-                "text": "he example ends here, but the SAT process does not have to stop here. If the student feels that the idea still needs to be developed or wants to ask for feedback, they can start another Self-Team or Self-AI cycle."
-              }
-            ]
-          ],
-          "template": "text"
-        }
-      ],
+      "boxes": [],
       "formats": [],
       "version": 1
     },
@@ -172,5 +136,6 @@
       ]
     },
     "c2.sat_example_title": "S.A.T worked example"
-  }
+  },
+  "layout_review_required": true
 }
