@@ -447,17 +447,16 @@
     const locale=window.AIWiseLanguage?.current() || 'en';
     try {
       const rows=await window.AIWiseBetaContent.read('common',locale);
-      let row=rows.find(r=>r.chapter===chapter),slots=row?.slots,translationNotice='';
+      let row=rows.find(r=>r.chapter===chapter),slots=row?.slots;
       if(locale==='nl' && !row?.fallback_locale) {
         // The reader supplies the same frozen review/release when one is selected.
         const en=(await window.AIWiseBetaContent.read('common','en')).find(r=>r.chapter===chapter);
         if(en && !row){row={...en,fallback_locale:'en'};slots=en.slots;}
-        else if(en){const projected=translation(en.slots,slots,null,row.source_release===en.submission_id);slots=projected.slots;
-          if(projected.state.pending.length)translationNotice='The layout follows the approved English version. Some text still needs Dutch translation or review; new boxes show English until translated.';
+        else if(en){
+          slots=translation(en.slots,slots,null,row.source_release===en.submission_id).slots;
         }
       }
       if(row) { apply(document,chapter,slots,sourceBlocks);
-        if(translationNotice){const note=document.createElement('p');note.dataset.languageNotice='';note.setAttribute('role','status');note.textContent=translationNotice;(document.querySelector('main')||document.body).prepend(note);}
          document.documentElement.lang=row.fallback_locale||locale;
         if(row.fallback_locale){const note=document.createElement('p');note.dataset.languageNotice='';note.setAttribute('role','status');note.textContent='Nederlands was not approved for this page in this version. The saved English content is shown.';note.style.cssText='padding:12px;background:#fff3e8;color:#682b1b;margin:0';(document.querySelector('main')||document.body).prepend(note);}
       }

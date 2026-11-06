@@ -55,7 +55,7 @@ test('module uses its reader’s frozen English structure, preserves Dutch, and 
  const en=JSON.parse(fs.readFileSync(path.join(root,'content/approved/en/common/c2.json'),'utf8'));
  const nl=structuredClone(en);nl.locale='nl';nl.source_release='old-source';nl.slots._studio.boxes=[];nl.slots['c2.block-0'][Object.keys(nl.slots['c2.block-0'])[0]]='Nederlandse kop';
  const frozen=structuredClone(en);frozen.slots._studio.boxes=frozen.slots._studio.boxes.slice(0,1);
- const rendered=await moduleRender({nl:[nl],en:[frozen]});assert.deepEqual(rendered.calls,[['common','nl'],['common','en']]);assert.equal(rendered.document.querySelectorAll('[data-studio-box]').length,1);assert.equal(rendered.document.querySelector('.hero h2').textContent,'Nederlandse kop');assert.match(rendered.document.querySelector('[data-language-notice]').textContent,/layout follows/);
+ const rendered=await moduleRender({nl:[nl],en:[frozen]});assert.deepEqual(rendered.calls,[['common','nl'],['common','en']]);assert.equal(rendered.document.querySelectorAll('[data-studio-box]').length,1);assert.equal(rendered.document.querySelector('.hero h2').textContent,'Nederlandse kop');assert.equal(rendered.document.querySelector('[data-language-notice]'),null);
  const fallback=await moduleRender({nl:[],en:[en]});assert.equal(fallback.document.querySelectorAll('[data-studio-box]').length,en.slots._studio.boxes.length);assert.match(fallback.document.querySelector('[data-language-notice]').textContent,/not approved/);
  const alreadyFallback=await moduleRender({nl:[{...en,fallback_locale:'en'}],en:[]});assert.equal(alreadyFallback.calls.length,1,'a frozen English fallback never looks up a newer English source');
 });
