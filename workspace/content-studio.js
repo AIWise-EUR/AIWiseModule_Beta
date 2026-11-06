@@ -237,23 +237,54 @@
   }
   function currentValue(s, item) { return item.example === undefined ? s.values[item.path] : s.values[item.path][item.example]; }
   function itemTitle(s, item) { if (s.isCommon) return item.title; return item.example === undefined ? label(item.path) : currentValue(s, item).title || 'Untitled example'; }
+  function showExample(s, example) {
+    const doc = s.frame.contentDocument;
+    s.slideIndex = example;
+    doc.getElementById('carouselTrack').style.transform = `translateX(-${example * 100}%)`;
+    doc.querySelectorAll('.carousel-slide').forEach((slide, i) => {
+      slide.inert = i !== example;
+      slide.setAttribute('aria-hidden', String(i !== example));
+    });
+    doc.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+      dot.classList.toggle('active', i === example);
+      dot.setAttribute('aria-pressed', String(i === example));
+    });
+    doc.getElementById('carouselPrev').disabled = example === 0;
+    doc.getElementById('carouselNext').disabled = example === s.values['c2.examples'].length - 1;
+  }
+
+  function connectExampleControls(s) {
+    const doc = s.frame.contentDocument;
+    const examples = s.values['c2.examples'];
+    const dots = doc.getElementById('carouselDots');
+    function selectExample(example) {
+      const index = s.items.findIndex(item => item.path === 'c2.examples' && item.example === example);
+      if (index >= 0) selectItem(s, index);
+    }
+    dots.replaceChildren();
+    examples.forEach((_, i) => {
+      const dot = doc.createElement('button');
+      dot.className = 'carousel-dot';
+      dot.type = 'button';
+      dot.setAttribute('aria-label', 'Show example ' + (i + 1));
+      dot.onclick = () => selectExample(i);
+      dots.appendChild(dot);
+    });
+    doc.getElementById('carouselPrev').onclick = () => selectExample(s.slideIndex - 1);
+    doc.getElementById('carouselNext').onclick = () => selectExample(s.slideIndex + 1);
+    showExample(s, Math.min(s.slideIndex, examples.length - 1));
+  }
+
   function selectItem(s, index, scroll = false) {
     s.index = Math.max(0, Math.min(index, s.items.length - 1));
-    const item = s.items[s.index], doc = s.frame.contentDocument;
+    const item = s.items[s.index];
     s.host.querySelector('[data-cs-count]').textContent = `${s.chapter==='map'?'System map':s.chapter.toUpperCase()} · ${s.index + 1} / ${s.items.length}`;
     s.host.querySelector('[data-cs-title]').textContent = itemTitle(s, item);
     s.host.querySelector('[data-cs-prev]').disabled = s.index === 0;
     s.host.querySelector('[data-cs-next]').disabled = s.index === s.items.length - 1;
     s.host.querySelectorAll('[data-cs-choice]').forEach((button, i) => button.setAttribute('aria-pressed', String(i === s.index)));
     const target = targetNode(s, s.index);
-    if (item.example !== undefined) {
-      doc.getElementById('carouselTrack').style.transform = `translateX(-${item.example * 100}%)`;
-      doc.querySelectorAll('.carousel-slide').forEach((slide, i) => { slide.inert = i !== item.example; slide.setAttribute('aria-hidden', String(i !== item.example)); });
-      doc.querySelectorAll('.carousel-dot').forEach((dot, i) => { dot.classList.toggle('active', i === item.example); dot.setAttribute('aria-pressed', String(i === item.example)); });
-      doc.getElementById('carouselPrev').disabled = item.example === 0;
-      doc.getElementById('carouselNext').disabled = item.example === s.values['c2.examples'].length - 1;
-      s.slideIndex = item.example;
-    }
+    if (item.example !== undefined) showExample(s, item.example);
     const pane = target?.closest('.technique-pane');
     if (pane) pane.closest('.technique-panel').querySelector(`[data-tab="${pane.dataset.pane}"]`)?.click();
     const slide = target?.closest('.critique-slide');
@@ -334,7 +365,7 @@
         target.onkeydown = event => { if (event.target===target&&(event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openEditor(s, i); } };
       });
     });
-    if(s.chapter==='c2'){const dots=doc.getElementById('carouselDots');if(dots){dots.replaceChildren();s.values['c2.examples'].forEach((_,i)=>{const dot=doc.createElement('button');dot.className='carousel-dot';dot.type='button';dot.setAttribute('aria-label','Show example '+(i+1));dot.onclick=()=>selectItem(s,i);dots.append(dot);});}}
+    if (s.chapter === 'c2') connectExampleControls(s);
     window.AIWiseStudioEditing?.examplePreview(s);
     common().linkExampleHeadings(doc, key => s.openSharedHeading(key));
     refreshPicker(s); s.frame.contentWindow.scrollTo(0, y);
@@ -538,15 +569,6 @@
         stepper.querySelector('.critique-next').addEventListener('click', () => go(index + 1));
         go(0);
       });
-      if (s.chapter === 'c2' && !s.isCommon) {
-        const dots = doc.getElementById('carouselDots'); dots.replaceChildren();
-        s.values['c2.examples'].forEach((_, i) => {
-          const dot = doc.createElement('button'); dot.className = 'carousel-dot'; dot.type = 'button'; dot.setAttribute('aria-label', `Show example ${i + 1}`);
-          dot.addEventListener('click', () => selectItem(s, i)); dots.appendChild(dot);
-        });
-        doc.getElementById('carouselPrev').addEventListener('click', () => selectItem(s, s.slideIndex - 1));
-        doc.getElementById('carouselNext').addEventListener('click', () => selectItem(s, s.slideIndex + 1));
-      }
       if (s.isCommon && s.chapter === 'c2') {
         const slides = [...doc.querySelectorAll('.carousel-slide')], dots = doc.getElementById('carouselDots');
         let index = 0;

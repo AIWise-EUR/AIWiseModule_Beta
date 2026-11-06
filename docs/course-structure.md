@@ -174,7 +174,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 18 | Bidirectional language layout and DPAS editing | Live; 61 test files and ten live checks passed | Shared structure, separate translations; [record](bidirectional-layout.md) |
 | 19 | Shared heading shortcuts | live; Common and DPAS browser verified | [Entry points and coverage audit](shared-heading-shortcuts.md) |
 | 20 | Content fit and six DPAS examples | Beta deployed; six DPAS slots confirmed; draft recovery fix validated; 61 test files passed | [Record](content-fit-and-examples.md) |
-| 21 | Fourth C2 example section | 61 test files passed; browser layout verified | Independent title/body; shared heading typography; existing text retained; [record](studio-block-editing.md#2026-11-06-fourth-c2-example-section) |
+| 21 | Fourth C2 example section | 61 test files passed; browser layout verified | Restored-draft carousel navigation corrected; independent title/body; shared heading typography; existing text retained; [record](studio-block-editing.md#2026-11-06-fourth-c2-example-section) |
 
 ## How to verify
 
@@ -344,3 +344,5 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 - **2026-11-06** (Codex) Matched the fourth C2 section heading to the existing uppercase label style, including font, size, weight and spacing. Saved title wording is unchanged.
 
 - Removed the pending-translation notice from Dutch chapter reading pages.
+
+- C2 Content Studio preview arrows and dots now select the owning example even when a restored draft lists S.A.T first. The toolbar, active card and editing target use the same item.
