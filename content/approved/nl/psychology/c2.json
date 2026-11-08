@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 47,
+  "sequence": 59,
   "course": "psychology",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "4128699c-063f-4f1b-8729-b8c838c55133",
+  "submission_id": "6b846e4c-4e97-4ff7-a566-f9ee33aa1417",
   "source_release": "a6b1bb4f-cfdc-4d5f-a221-96dd7da84b0f",
-  "approved_at": "2026-11-05T22:06:04.945043+00:00",
+  "approved_at": "2026-11-08T18:19:32.20762+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -428,6 +428,28 @@
           ],
           "example": 0,
           "template": "text"
+        },
+        {
+          "id": "box-89f02c8e-82f7-421a-8666-e0a5b91be1bf",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": ""
+              }
+            ]
+          ],
+          "example": 5,
+          "template": "text"
         }
       ],
       "formats": [],
@@ -556,5 +578,6 @@
       ]
     },
     "c2.sat_example_title": "S.A.T uitgewerkt voorbeeld"
-  }
+  },
+  "layout_review_required": true
 }
