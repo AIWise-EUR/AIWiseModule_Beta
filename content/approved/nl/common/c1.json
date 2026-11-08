@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 26,
+  "sequence": 54,
   "course": "common",
   "chapter": "c1",
   "locale": "nl",
-  "submission_id": "6fb5ae97-5b87-42e6-b458-879f6aaba9c7",
-  "source_release": "59f31469-f327-4d7e-a710-4eec97ace5c4",
-  "approved_at": "2026-11-05T10:59:30.864967+00:00",
+  "submission_id": "7d869344-80df-42a1-9c6c-9648fbde3c1c",
+  "source_release": "3c5320f2-ef13-4071-a45e-6fb0755f1dd3",
+  "approved_at": "2026-11-08T18:05:31.771717+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -148,14 +148,33 @@
           "template": "text"
         }
       ],
-      "formats": [],
+      "formats": [
+        {
+          "path": [
+            "Text 2"
+          ],
+          "runs": [
+            {
+              "text": "Kunstmatige intelligentie bestaat al meer dan zestig jaar. De tijdlijn hieronder schetst die bredere geschiedenis. Vroege systemen zoals ELIZA in de jaren ‘60 van de vorige eeuw steunden volledig op regels. Ze herkenden patronen in de invoer van gebruikers en gaven vooraf geschreven antwoorden terug. Ze leerden niet van data en genereerden geen nieuwe inhoud. Latere systemen zoals Siri, Google Now en Alexa konden informatie opzoeken en reageren op spraakinvoer, maar leunden nog steeds voornamelijk op herkenning, classificatie en "
+            },
+            {
+              "text": "retrieval",
+              "italic": true
+            },
+            {
+              "text": " (het ophalen van informatie). \n      "
+            }
+          ],
+          "slot": "c1.block-3"
+        }
+      ],
       "version": 1
     },
     "c1.block-0": {
       "Heading 1": "Wat is Generatieve AI?"
     },
     "c1.block-1": {
-      "Text 1": "Je komt het woord “GenAI” overal tegen. Maar bekend zijn met een term is niet hetzelfde als begrijpen wat iets daadwerkelijk inhoudt. Dit blok helpt dat begrip op te bouwen – van waar GenAI vandaan komt tot waar het uit bestaat en waar het (niet) behulpzaam bij is."
+      "Text 1": "Je komt het woord “GenAI” overal tegen. Maar bekend zijn met een term is niet hetzelfde als begrijpen wat iets daadwerkelijk inhoudt. Dit blok helpt dat begrip op te bouwen: van waar GenAI vandaan komt tot waar het uit bestaat en waar het (niet) behulpzaam bij is."
     },
     "c1.block-2": {
       "Heading 1": "Wat is AI? Wat is GenAI?"
