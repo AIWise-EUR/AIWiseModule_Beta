@@ -134,7 +134,7 @@ including the 390px layout. Production deployment is checked separately after pu
 
 ## 2026-11-09 · Storage-full recovery and work export
 
-Implemented and validated; deployment pending. This change is local-browser
+Deployed to Beta at `1a3a6c59f187849b57e3511f976e021582a038f1`; Pages run `42561031191` succeeded. The live standalone archive page was verified. This change is local-browser
 storage only. No SQL, Edge Function, approved content or online request changes.
 
 - `draft-storage.js` stores new pre-merge/pre-layout backups in IndexedDB. Immutable
