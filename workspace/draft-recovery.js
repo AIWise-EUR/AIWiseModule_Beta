@@ -87,11 +87,38 @@
       }
     }
     for (const slot of new Set([base, draft, latest].flatMap(v => Object.keys(v).filter(k => k !== '_studio')))) walk([slot], [base[slot], draft[slot], latest[slot]]);
-    const boxes = [base, draft, latest].map(v => v._studio?.boxes || []);
+    const boxes = [base, draft, latest].map(v => copy(v._studio?.boxes || []));
+    // Two independently added C2 boxes may represent the same placement. Only
+    // reconcile unique NEW additions; never reinterpret an existing/deleted ID.
+    const placement = b => b.slot === 'c2.examples' && b.template === 'text' && b.family && Number.isInteger(b.example)
+      ? JSON.stringify([b.slot, b.family, b.example]) : null;
+    const reconciled = new Set();
+    for (const mine of boxes[1]) {
+      const key = placement(mine);
+      if (!key || boxes[0].some(b => b.id === mine.id || placement(b) === key) ||
+          boxes[2].some(b => b.id === mine.id) || boxes[1].filter(b => placement(b) === key).length !== 1) continue;
+      const matches = boxes[2].filter(b => placement(b) === key);
+      if (matches.length !== 1) continue;
+      const beta = matches[0];
+      if (boxes[0].some(b => b.id === beta.id) || boxes[1].some(b => b.id === beta.id)) continue;
+      // Keep the approved identity so later language projection preserves peer text.
+      mine.id = beta.id;
+      reconciled.add(beta.id);
+    }
     for (const id of new Set(boxes.flatMap(list => list.map(b => b.id)))) {
       const values = boxes.map(list => list.find(b => b.id === id));
       const box = values[2] || values[1] || values[0];
-      add([id], 'box', values.map(value => value && {value: copy(value)}), (box.fields[0]?.map(r => r.text).join('') || 'Added box') + ' · Box');
+      const name = box.fields[0]?.map(r => r.text).join('') || values[1]?.fields[0]?.map(r => r.text).join('') || 'Added box';
+      add([id], 'box', values.map(value => value && {value: copy(value)}), name + ' · Box' + (placement(box) ? ` · Example ${box.example + 1}` : ''));
+      if (reconciled.has(id)) {
+        const empty = b => b.fields.every(field => field.every(run => run.text === ''));
+        const [mine, beta] = values.slice(1);
+        const layout = b => Object.fromEntries(Object.entries(b).filter(([k]) => k !== 'fields'));
+        // Auto-preserve authored rich text only when layout agrees and the other
+        // side is entirely blank. Different wording or layout requires a choice.
+        if (equal(layout(mine), layout(beta)) && empty(mine) !== empty(beta))
+          units[units.length - 1].decision = empty(beta) ? 'draft' : 'beta';
+      }
     }
     // Independently added boxes keep Beta order followed by draft-only additions.
     // Reordering pre-existing boxes is a separate explicit choice if both differ.

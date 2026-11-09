@@ -197,3 +197,41 @@ browser contents. Remote submission is not automatically retried by this feature
   capacity, unchanged unrelated settings and readable labels/old backup references.
 - Native fixtures were cleaned. No real browser drafts or online records were
   edited in these tests; Neus's browser contents remain uninspected.
+
+
+## 2026-11-09 C2 box placement recovery
+
+Status: validated and prepared for Beta rollout.
+
+A supplied DPAS C2 Dutch work export reproduced a valid saved draft with five
+authored boxes and a valid latest Beta with six blank boxes. The old comparison
+treated different UUIDs as independent additions, producing eleven boxes and
+failing the placement-uniqueness validator at apply. The private export is not
+committed.
+
+New C2 text-box additions are paired only when their explicit family and example
+placement match uniquely and neither placement/identity existed in the saved
+baseline. The combined copy keeps the Beta identity. With identical layout, a
+fully blank counterpart yields to authored rich text. Different authored content
+or layout requires an explicit choice. Existing IDs/deletion conflicts and
+unrelated families/placements retain their previous behavior. Originals remain
+unchanged; the usual backup-before-save and server baseline checks still apply.
+Box comparison titles now identify the example number.
+
+Validation: all 62 repository test files passed under Deno 2.9.6 (no-check,
+CommonJS detection and bare Node builtins enabled for npm-installed test dependencies).
+Native-browser verification was unavailable because the Chromium download failed.
+Five regression tests cover the five-plus-six case, rich text,
+conflicting wording, layout changes, identical additions, independent placements,
+and deletion-versus-edit. The supplied export also passed the actual comparison,
+combination, copy validation, recovered layout-plan initialization and payload
+checks: six boxes, all five authored boxes preserved, no layout payload required.
+The other-language review marker correctly remains stale.
+
+Rollout: reload Workspace in the original browser/profile, reopen DPAS C2 Dutch
+and apply the reviewed recovery. Deployment alone cannot write another browser's
+localStorage. No approved content, pending submission, SQL or Edge Function is
+changed by this patch.
+
+Log: 2026-11-09 — reproduced the user's exported failure; implemented placement
+matching and verified preservation without committing private authored content.

@@ -104,3 +104,35 @@ test('unreadable draft requires explicit restart, preview, and callback; pause n
  dialog.querySelector('input[value="latest"]').dispatchEvent(new window.Event('change'));next.click();assert.match(dialog.textContent,/Original intro/);assert.equal(applied,0);
  next.click();await new Promise(resolve=>setTimeout(resolve,0));assert.equal(applied,1);
 });
+
+const exampleBox=(id,family,example,text='')=>({...box(id,''),slot:'c2.examples',family:box(family,'').id,example,fields:[[{text}],[{text:text?'Body':''}]]});
+test('independent same-placement C2 additions keep authored text under Beta IDs',()=>{
+ const {R,M}=setup(),original={'c2.examples':Array.from({length:6},()=>({title:''}))},mine=plain(original),beta=plain(original);
+ mine._studio=ext(Array.from({length:5},(_,i)=>exampleBox(String(i+1),'a',i,'Dutch '+i)));
+ beta._studio=ext(Array.from({length:6},(_,i)=>exampleBox((i+7).toString(16),'a',i)));
+ mine._studio.boxes[0].fields[1]=[{text:'Styled',bold:true,color:'#123456'}];mine['c2.examples'][0].title='Saved wording';
+ const before=JSON.stringify([original,mine,beta]),model=R.plan(original,mine,beta),result=plain(R.combine(model));
+ assert.equal(model.conflicts.length,0);assert.equal(result._studio.boxes.length,6);assert.ok(M.validCopy(result,beta));
+ assert.deepEqual(result._studio.boxes.map(b=>b.id),beta._studio.boxes.map(b=>b.id));
+ mine._studio.boxes.forEach((b,i)=>assert.deepEqual(result._studio.boxes[i].fields,b.fields));
+ assert.deepEqual(result['c2.examples'],mine['c2.examples']);assert.equal(JSON.stringify([original,mine,beta]),before);
+});
+test('same-placement authored conflicts retain both choices and approved identity',()=>{
+ const {R,M}=setup(),original={'c2.examples':[{title:''}]},mine={...plain(original),_studio:ext([exampleBox('1','a',0,'Mine')])},beta={...plain(original),_studio:ext([exampleBox('2','a',0,'Beta')])};
+ const model=R.plan(original,mine,beta);assert.equal(model.conflicts.length,1);assert.throws(()=>R.combine(model),/Choose/);
+ for(const choice of ['draft','beta']){const result=plain(R.combine(model,{[model.conflicts[0].id]:choice}));assert.ok(M.validCopy(result,beta));assert.equal(result._studio.boxes[0].id,beta._studio.boxes[0].id);assert.equal(result._studio.boxes[0].fields[0][0].text,choice==='draft'?'Mine':'Beta');}
+});
+test('blank draft preserves Beta wording; layout differences remain explicit',()=>{
+ const {R}=setup(),original={'c2.examples':[{title:''}]},mine={...plain(original),_studio:ext([exampleBox('1','a',0)])},beta={...plain(original),_studio:ext([exampleBox('2','a',0,'Beta')])};
+ assert.equal(R.combine(R.plan(original,mine,beta))._studio.boxes[0].fields[0][0].text,'Beta');
+ mine._studio.boxes[0].align='right';assert.equal(R.plan(original,mine,beta).conflicts.length,1);
+});
+test('identical additions coalesce; other families and examples remain independent',()=>{
+ const {R,M}=setup(),original={'c2.examples':[{title:''},{title:''}]},mine={...plain(original),_studio:ext([exampleBox('1','a',0,'Same'),exampleBox('3','b',0,'Other family'),exampleBox('4','a',1,'Other example')])},beta={...plain(original),_studio:ext([exampleBox('2','a',0,'Same')])};
+ const model=R.plan(original,mine,beta),result=plain(R.combine(model));assert.equal(model.conflicts.length,0);assert.equal(result._studio.boxes.length,3);assert.ok(M.validCopy(result,beta));
+});
+test('existing deletion-versus-edit conflict is never silently rematched to a replacement',()=>{
+ const {R}=setup(),original={'c2.examples':[{title:''}],_studio:ext([exampleBox('1','a',0,'Original')])},mine=plain(original),beta=plain(original);
+ mine._studio.boxes[0].fields[0][0].text='Edited';beta._studio.boxes=[exampleBox('2','a',0,'Replacement')];
+ const model=R.plan(original,mine,beta);assert.equal(model.conflicts.length,1);assert.equal(model.conflicts[0].mine.value.id,original._studio.boxes[0].id);assert.equal(model.conflicts[0].beta,undefined);
+});

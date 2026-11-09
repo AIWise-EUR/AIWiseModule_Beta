@@ -165,7 +165,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
 | 9 | Studio block editing | live; cross-chapter box fix verified | [Compatibility and rollout](studio-block-editing.md); original IDs unchanged |
 | 10 | Psychology SAT empty template | source prepared; owner SQL pending | [Setup](../supabase/PSYCHOLOGY_SAT_SETUP.md); existing requests remain unchanged |
-| 11 | Studio draft recovery | Live; 62 test files and native browser recovery checks passed | [Visual comparison, location diagnostics and backups](studio-draft-recovery.md); no SQL or function changes |
+| 11 | Studio draft recovery | C2 duplicate-placement recovery fix; all 62 test files passed | [Visual comparison, location diagnostics and backups](studio-draft-recovery.md); no SQL or function changes |
 | 12 | Control Tower item approval | live; signed-in previews verified | [Comparison rules and rollout](control-tower-item-approval.md) |
 | 14 | S.A.T per-cycle editing | live; activation verified | Empty cycles hidden; per-box Add/Delete; [record](sat-phase-editing.md) |
 | 15 | C2 reading link | live; browser verified | Passeport citation links to the verified preprint; [record](studio-block-editing.md#2026-10-07-passeport-reading-link) |
@@ -348,3 +348,5 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 - C2 Content Studio preview arrows and dots now select the owning example even when a restored draft lists S.A.T first. The toolbar, active card and editing target use the same item.
 
 - **2026-11-09** (Codex) Added verified IndexedDB backup archiving, quota-error retries and portable exports of unsaved work/recovery choices. Standalone archive page lets an already-open editor keep its in-memory work during rollout. Existing drafts and online state are not migrated. See `studio-draft-recovery.md`.
+
+- 2026-11-09 — C2 recovery now reconciles independently added same-family/example boxes under the approved identity, preserving authored Dutch text. See studio-draft-recovery.md.
