@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 54,
+  "sequence": 83,
   "course": "common",
   "chapter": "c1",
   "locale": "nl",
-  "submission_id": "7d869344-80df-42a1-9c6c-9648fbde3c1c",
-  "source_release": "3c5320f2-ef13-4071-a45e-6fb0755f1dd3",
-  "approved_at": "2026-11-08T18:05:31.771717+00:00",
+  "submission_id": "b8956e44-c992-4475-b30f-3b361063ecc4",
+  "source_release": "441c9747-a1fb-4af6-b895-3d1d9d895495",
+  "approved_at": "2026-11-09T13:03:40.294961+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -367,10 +367,10 @@
       "Navigation c1 section 3 1": "Waarmee GenAI kan helpen – en waar het structureel tekortschiet ",
       "Navigation c2 section 1 1": "Is kunstmatige intelligentie hetzelfde als menselijke intelligentie? ",
       "Navigation c2 section 2 1": "Mens vs. GenAI: een functionele vergelijking ",
-      "Navigation c2 section 3 1": "Een Kader voor Samenwerking: S.A.T - Framework ",
-      "Navigation c3 section 1 1": "Prompten",
-      "Navigation c3 section 2 1": "Bekritiseren",
-      "Navigation c3 section 3 1": "Integreren"
+      "Navigation c2 section 3 1": "Een kader voor samenwerking: S.A.T - Framework ",
+      "Navigation c3 section 1 1": "De input ontwerpen",
+      "Navigation c3 section 2 1": "Output is geen antwoord — het is een voorstel",
+      "Navigation c3 section 3 1": "Hoe AI-output je werk binnenkomt"
     },
     "c1.extra-14": {
       "Page title 1": "AI-Wise · C1: What is GenAI?"
