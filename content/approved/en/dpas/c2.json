@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 42,
+  "sequence": 73,
   "course": "dpas",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "acaa9022-9e28-4fe1-a0b9-543870646714",
+  "submission_id": "d6e8e1e0-11b0-41a2-90b4-fbfdaa77c619",
   "source_release": null,
-  "approved_at": "2026-11-05T21:38:57.413086+00:00",
+  "approved_at": "2026-11-09T11:13:32.315426+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -151,7 +151,46 @@
             ],
             [
               {
-                "text": "What you haven't explained: that you allready partially understand the concept, that you think it has to do with how "
+                "text": "E"
+              },
+              {
+                "text": "v"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "y"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "y"
+              },
+              {
+                "text": "ou haven't explained: that you al"
+              },
+              {
+                "text": "ready partially understand the concept, that you think it has to do with how "
               },
               {
                 "text": "c"
@@ -470,6 +509,28 @@
           ],
           "example": 4,
           "template": "text"
+        },
+        {
+          "id": "box-fbba5c29-8901-4153-a857-4f9e2f796fc6",
+          "size": 0,
+          "slot": "c2.examples",
+          "align": "left",
+          "anchor": 0,
+          "family": "box-4d99e321-117e-4569-8afe-41a1eaeb5aac",
+          "fields": [
+            [
+              {
+                "text": "What the model doesn’t know"
+              }
+            ],
+            [
+              {
+                "text": "Everything you haven't explained: why you specifically want this internship, what you already know about the supervisor, what relevant experience you have, that the organisation is looking for \"independent thinkers\", and that you want to come across as enthusiastic and independent without sounding arrogant."
+              }
+            ]
+          ],
+          "example": 5,
+          "template": "text"
         }
       ],
       "formats": [],
@@ -512,10 +573,10 @@
         "typing_note": "[pastes paragraph]"
       },
       {
-        "title": "",
-        "typing": "",
-        "thinking": "",
-        "processing": "",
+        "title": "What you are actually thinking",
+        "typing": "\"Help me write a motivation letter for an internship in policy development\"",
+        "thinking": "I am applying for this internship in a municipality's policy department, and I really want it because the supervisor was involved in a reorganisation that I read about for my thesis. I have some relevant experience from my research methods course as a small policy evaluation project I completed with a classmate, but I am not sure if that counts. The deadline is tomorrow and I saw that they value \"independent thinkers\" but I do not want to sound arrogant.",
+        "processing": "A motivation letter for an internship in policy development. No specific municipality,department, no field, no applicant background, no deadline pressure, no tone preference. → Generate a polished, general purpose motivation letter template. Use broadly applicable language about \"passion for public policy\" and \"eagerness to learn.\" Structure it in a standard format. Sound professional and enthusiastic.",
         "typing_note": ""
       }
     ],
