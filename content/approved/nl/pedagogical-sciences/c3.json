@@ -1,0 +1,205 @@
+{
+  "schema": 1,
+  "sequence": 68,
+  "course": "pedagogical-sciences",
+  "chapter": "c3",
+  "locale": "nl",
+  "submission_id": "33051384-65f4-43dc-946c-c8c057bc3d00",
+  "source_release": null,
+  "approved_at": "2026-11-09T10:50:25.495184+00:00",
+  "slots": {
+    "c3.amd_example": {
+      "intro": "Een student vroeg AI om het hoofdargument uit elk van de drie artikelen te halen. AI presenteerde de volgende drie hoofdargumenten:  ",
+      "items": [
+        {
+          "tag": "adopt",
+          "text": "Artikel A: \"Ondersteunende relaties tussen leerkrachten en leerlingen hangen samen met een betere sociaal-emotionele ontwikkeling van kinderen\"",
+          "reason": "Komt overeen met het hoofdargument van het oorspronkelijke artikel. Bruikbaar als startpunt voor het structureren van bewijs voor en tegen mijn stelling. "
+        },
+        {
+          "tag": "modify",
+          "text": "Artikel B: \"Ouderbetrokkenheid op scholen leidt tot betere onderwijsresultaten\"",
+          "reason": "De richting klopt, maar AI heeft en positieve samenhang weergegeven als een causaal verband. Aangepast naar “positieve samenhang”. Oorspronkelijke artikel opnieuw geraadpleegd. "
+        },
+        {
+          "tag": "discard",
+          "text": "Artikel C: \"Scholen zouden verplichte opvoedingsprogramma's voor ouders moeten invoeren\"",
+          "reason": "Ik vroeg om het hoofdargument van het artikel, niet om implicaties. Deze aanbeveling geeft de centrale claim van het artikel niet weer. Verwijderd. Registratie: “AI is buiten de reikwijdte van de opdracht getreden door implicaties toe te voegen.” "
+        }
+      ],
+      "title": "UITGEWERKT VOORBEELD – Hoofdargumenten identificeren"
+    },
+    "c3.full_example": [
+      {
+        "tag": "rol",
+        "lines": [
+          "Jij bent een assistent voor academische schrijven",
+          "voor een eerstejaarsstudent pedagogische wetenschappen."
+        ]
+      },
+      {
+        "tag": "taak",
+        "lines": [
+          "Haal het hoofdargument uit elk van de",
+          "volgende drie wetenschappelijke artikelen. Richt je op",
+          "de centrale claim van de auteurs, niet op secundaire punten",
+          "of praktische implicaties."
+        ]
+      },
+      {
+        "tag": "context",
+        "lines": [
+          "Ik schrijf een wetenschappelijk essay voor mijn vak",
+          "\"Inleiding in opvoeding en onderwijs\". ",
+          "Ik heb alle drie de artikelen gelezen. Ik bevind me momenteel ",
+          "in de fase van het ordenen van mijn bronnen voordat",
+          "ik een overzicht opstel. "
+        ]
+      },
+      {
+        "tag": "randvoorwaarden",
+        "lines": [
+          "Vat niet elk artikel afzonderlijk samen. ",
+          "Baseer je antwoord uitsluitend op het bewijs",
+          "dat in elk artikel word gepresenteerd.",
+          "Voeg geen interpretaties of praktische",
+          "implicaties toe."
+        ]
+      },
+      {
+        "tag": "stappen",
+        "lines": [
+          "1. Lees de drie samenvattingen die ik hieronder aanlever. ",
+          "2. Identificeer het hoofdargument van de auteurs in elk",
+          "   artikel.",
+          "3. Formuleer elk hoofdargument helder en beknopt."
+        ]
+      },
+      {
+        "tag": "outputformaat",
+        "lines": [
+          "Genummerde lijst, één artikel per onderdeel.",
+          "Geef voor elk artikel het hoofdargument",
+          "in één of twee zinnen weer.",
+          ""
+        ]
+      },
+      {
+        "tag": "voorbeelden",
+        "lines": [
+          "Voorbeeld themaformaat:  ",
+          "Artikel A: Ondersteunende relaties tussen lerrkrachten en leerlingen hangen samen met een",
+          "betere sociaal-emotionele ontwikkeling van kinderen.\""
+        ]
+      }
+    ],
+    "c3.critique.read": "Een student vroeg: \"Haal het belangrijkste argument uit elk van deze drie artikelen.\" AI leverde drie alinea's op. Observatie: AI identificeerde voor elk artikel één hoofdargument en presenteerde de uitkomst in alineavorm.",
+    "c3.critique.decide": "Het hoofdargument van artikel A is bruikbaar als uitgangspunt. Het hoofdargument van artikel B moet worden aangepast. De implicaties van artikel C worden verwijderd – mogelijk kan ik daarna een nieuwe prompt gebruiken nadat ik het oorspronkelijke artikel heb gecontroleerd. ",
+    "c3.critique.verify": "Controle van artikel A: AI heeft het hoofdargument correct geïdentificeerd, maar ook een secundair argument toegevoegd. Controle van artikel B: AI heeft de oorspronkelijke claim gegeneraliseerd. Controle van artikel C: AI heeft op basis van de bevindingen \"implicaties\" gegeven in plaats van het hoofdargument te formuleren. De sectie \"implicaties\" behandelt een deel waar ik nog niet aan toe ben. ",
+    "c3.techniques.role": {
+      "bad": "\"Controleer mijn zoekopdracht voor wetenschappelijke artikelen\"",
+      "good": "\"Jij bent een zoekstrategie-adviseur voor academische databases. Beoordeel de zoekopdracht voor wetenschappelijke artikelen met Booleaanse operatoren die ik heb geschreven. Als er logische fouten in zitten, los ze dan niet direct op – stel mij vragen over wat er misging.\""
+    },
+    "c3.critique.question": "Zijn dit daadwerkelijk de hoofdargumenten van de artikelen, of heeft AI gegeneraliseerd? Heeft AI de hoofdargumenten van de auteurs correct onderscheiden van de secundaire punten? Het argument van artikel B klinkt sterker dan ik me herinner – is dat daadwerkelijk wat de auteurs hebben geconcludeerd? Ik vroeg alleen om de belangrijkste argumenten, maar AI voegde \"implicaties\" toe – valt dat buiten de gevraagde reikwijdte? ",
+    "c3.full_example_title": "Volledig uitgewerkt voorbeeld — Artikelen koppelen aan een stelling",
+    "c3.techniques.few_shot": {
+      "good": "\"Vat het kernargument van elk artikel samen in één zin, zoals dit: \nSmith (2022): Ondersteunde relaties tussen leerkrachten en leerlingen kunnen de negatieve invloed van risicofactoren binnen het gezin op de sociaal-emotionele ontwikkeling van kinderen verminderen.\nDoe hetzelfde voor de overige drie artikelen.\""
+    },
+    "c3.template_compare.md": [
+      {
+        "lines": [
+          "Jij bent een assistent voor academisch schrijven."
+        ],
+        "heading": "Rol"
+      },
+      {
+        "lines": [
+          "Haal het hoofdargument uit elk van",
+          "deze drie artikelen."
+        ],
+        "heading": "Taak"
+      },
+      {
+        "lines": [
+          "Ik schrijf een wetenschappelijk essay voor",
+          "\"Inleiding in opvoeding en onderwijs\"."
+        ],
+        "heading": "Context"
+      },
+      {
+        "lines": [
+          "- Vat niet elk artikel afzonderlijk samen",
+          "- Baseer je antwoord uitsluitend op het bewijs dat in",
+          "  elk artikel wordt gepresenteerd",
+          "- Voeg geen interpretaties of praktische",
+          "  implicaties toe"
+        ],
+        "heading": "Randvoorwaarden"
+      },
+      {
+        "lines": [
+          "Genummerde lijst, één artikelper onderdeel. ",
+          "Geef voor elk artikel het hoofdargument",
+          "in één of twee zinnen weer."
+        ],
+        "heading": "Outputformaat"
+      }
+    ],
+    "c3.template_compare.xml": [
+      {
+        "tag": "rol",
+        "lines": [
+          "Jij bent een assistent voor academisch schrijven."
+        ]
+      },
+      {
+        "tag": "taak",
+        "lines": [
+          "Haal het hoofdargument uit elk van",
+          "deze drie artikelen."
+        ]
+      },
+      {
+        "tag": "context",
+        "lines": [
+          "Ik schrijf een wetenschappelijk essay voor",
+          "\"Inleiding in opvoeding en onderwijs\"."
+        ]
+      },
+      {
+        "tag": "randvoorwaarden",
+        "lines": [
+          "Vat niet elk artikel afzonderlijk samen.",
+          "Baseer je antwoord uitsluitend op het bewijs dat in",
+          "elk artikel wordt gepresenteerd.",
+          "Voeg geen interpretaties of praktische",
+          "implicaties toe."
+        ]
+      },
+      {
+        "tag": "outputformaat",
+        "lines": [
+          "Genummerde lijst, één artikelper onderdeel.",
+          "Geef voor elk artikel het hoofdargument",
+          "in één of twee zinnen weer."
+        ]
+      }
+    ],
+    "c3.techniques.output_format": {
+      "bad": "\"Vergelijk deze drie artikelen\"",
+      "good": "\"Maak een vergelijkingstabel voor deze drie artikelen. Kolommen: auteur/jaar, onderzoeksvraag, methode, belangrijkste bevindingen, beperkingen. Eén zin per cel.\""
+    },
+    "c3.techniques.chain_of_thought": {
+      "bad": "\"Zijn de conclusies van deze twee artikelen tegenstrijdig?\"",
+      "good": "\"Bepaal of de conclusies van deze twee artikelen elkaar tegenspreken. Vat eerst het kernargument van elk artikel samen. Vergelijk vervolgens waar ze overlappen en waar ze verschillen. Leg ten slotte stap voor stap uit of het verschil een echte tegenstrijdigheid is, of een verschil in reikwijdte of voorwaarden.\""
+    },
+    "c3.techniques.clear_instruction": {
+      "bad": "\"Vat dit artikel samen\"",
+      "good": "\"Vat het hoofdargument en de onderzoeksmethodologie van dit artikel samen in telkens twee zinnen. Dit is voor een presentatie in een bacheloropleiding pedagogie.\""
+    },
+    "c3.techniques.task_decomposition": {
+      "bad": "\"Maak een overzicht voor mijn wetenschappelijk essay\"",
+      "good": "Stap 1: \"Haal het belangrijkste argument uit elk van deze drie artikelen\" → Stap 2: \"Vergelijk de belangrijkste argumenten en breng de overeenkomsten en verschillen tussen de artikelen in kaart\" → Stap 3: \"Stel mogelijke manieren voor om deze artikelen te structureren op basis van hun belangrijkste argumenten\""
+    }
+  }
+}
