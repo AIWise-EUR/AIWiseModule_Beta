@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 74,
+  "sequence": 82,
   "course": "dpas",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "60678713-e126-416a-939d-c433dc22b946",
-  "source_release": "b5d044ee-41d5-49bf-adcb-5c9d77779d47",
-  "approved_at": "2026-11-09T11:13:32.315426+00:00",
+  "submission_id": "0f6f492e-ca0a-4271-8b3f-3f60d4ee5719",
+  "source_release": "6ca6eb09-c106-4a67-8443-5a9ecb902177",
+  "approved_at": "2026-11-09T12:54:04.364722+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -20,12 +20,15 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: dat je docent veel belang hecht aan de overgang tussen paragrafen, dat je zelf al aan institutioneel vertrouwen hebt gedacht en dat je die verbinding te vaag vindt. "
               }
             ]
           ],
@@ -42,12 +45,15 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: dat je docent moeilijke vragen stelt, dat antwoordopties vaak sterk op elkaar lijken en dat precieze kennis van definities nodig is om het juiste antwoord te kunnen kiezen."
               }
             ]
           ],
@@ -64,12 +70,15 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: dat je het artikel al hebt gelezen, dat je vooral moeite hebt met het onderzoeksdesign, dat je vermoedt dat het om een between-subjects design gaat en dat je wilt beoordelen of het design de conclusie ondersteunt. "
               }
             ]
           ],
@@ -86,12 +95,15 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: dat je het concept al gedeeltelijk begrijpt, dat je denkt dat het te maken heeft met hoe ambtenaren beleid in de praktijk toepassen en dat je vooral niet begrijpt hoe het verschilt van beleidsvrijheid of van het werk van een uitvoerend ambtenaar."
               }
             ]
           ],
@@ -108,12 +120,15 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: dat je zelf twijfelt over de laatste zin, dat je tutor eerder heeft aangegeven dat je beweringen te breed formuleert zonder een duidelijk standpunt in te nemen, en dat je vooral wilt weten of je dat in de laatste twee zinnen opnieuw doet."
               }
             ]
           ],
@@ -130,12 +145,15 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: waarom je juist deze stage wilt, wat je al weet over de begeleider, welke relevante ervaring je hebt, dat de organisatie ‘zelfstandige denkers’ zoekt en dat je enthousiast en zelfstandig wilt overkomen zonder arrogant te klinken."
               }
             ]
           ],
@@ -148,45 +166,45 @@
     },
     "c2.examples": [
       {
-        "title": "",
-        "typing": "",
-        "thinking": "",
-        "processing": "",
+        "title": "Studies verbinden in een literatuuroverzicht",
+        "typing": "[uploadt twee PDF's] \n\"Hoe verbind ik deze twee studies in mijn literatuuroverzicht?\" ",
+        "thinking": "Ik moet een manier vinden om deze twee studies met elkaar te verbinden voor mijn literatuuroverzicht. De ene gaat over gemeentelijke herindelingen en lokale democratische participatie, de andere over de digitalisering van publieke dienstverlening en het vertrouwen van burgers in de overheid. Mijn docent zei dat de overgang tussen paragrafen heel belangrijk is. Ik probeerde mijn paragrafen te verbinden via \"institutioneel vertrouwen\", maar dat voelde te vaag. Ik wil iets specifieker, maar ik weet niet precies hoe dat eruit zou moeten zien.",
+        "processing": "De volledige tekst van beide artikelen wordt verwerkt. Thema's, bevindingen, methodologieën en theoretische kaders worden allemaal geëxtraheerd. Het statistisch meest waarschijnlijke \"behulpzame\" antwoordpatroon voor \" verbind deze twee studies\" wordt geactiveerd. → Genereer een uitgebreid antwoord dat meerdere mogelijke verbindingspunten behandelt: gedeelde concepten, overlappende bestuursniveaus, complementaire bevindingen, theoretische aansluiting. Presenteer deze als opties. Klink zelfverzekerd en grondig. ",
         "typing_note": ""
       },
       {
-        "title": "",
-        "typing": "",
-        "thinking": "",
-        "processing": "",
+        "title": "Oefenvragen maken",
+        "typing": "[plakt tekst van hoofdstuk 4] \n\"Maak wat meerkeuzevragen over hoofdstuk 4.\" ",
+        "thinking": "Mijn tentamen is volgende week en ik wil mezelf testen op hoofdstuk 4. De docent schrijft altijd lastige meerkeuzevragen waarbij twee antwoordopties bijna hetzelfde lijken en je de exacte definitie moet kennen om ze van elkaar te onderscheiden. Ik heb vragen nodig op dat niveau, niet de makkelijke waarbij je door uitsluiting kunt raden.",
+        "processing": "De volledige hoofdstuktekst wordt verwerkt. Kernbegrippen, definities en verbanden worden geïdentificeerd. \"Meerkeuzevraag\" activeert een standaardtype: één juist antwoord, drie afleiders, gemiddelde moeilijkheidsgraad, gericht op reproductie. → Genereer vragen die het hoofdstuk gelijkmatig dekken, maak afleiders geloofwaardig maar duidelijk te onderscheiden van het juiste antwoord.",
         "typing_note": ""
       },
       {
-        "title": "",
-        "typing": "",
-        "thinking": "",
-        "processing": "",
+        "title": "Een artikel samenvatten",
+        "typing": "[uploadt PDF] \n\"Kun je dit artikel samenvatten?\" ",
+        "thinking": "Ik heb dit artikel gelezen, maar ik weet niet zeker of ik de methodesectie goed heb begrepen. Ik denk dat ze een between-subjects design gebruikten, maar de manier waarop ze de groepen beschrijven is verwarrend. Ik heb geen volledige samenvatting nodig, ik wil alleen dat het onderzoeksdesign wordt uitgelegd zodat ik kan bepalen of de conclusie daadwerkelijk uit het onderzoek volgt.",
+        "processing": "Het volledige artikel wordt verwerkt. Alle secties worden even zwaar gewogen. \"Samenvatten\" activeert een standaardstructuur: achtergrond, doel, methode, belangrijkste bevindingen, conclusie. Min or meer gelijke dekking van alle secties. → Produceer iets dat leest als een compleet, evenwichtig overzicht. Kink helder en georganiseerd.",
         "typing_note": ""
       },
       {
-        "title": "",
-        "typing": "",
-        "thinking": "",
-        "processing": "",
+        "title": "Een concept begrijpen",
+        "typing": "\"Wat is street-level bureaucracy?\"",
+        "thinking": "De docent gebruikte vandaag tijdens het college de term \"street-level bureaucracy\" en ik begreep het min of meer uit de context, maar toen ik het aan mijn vriend probeerde uit te leggen, lukte dat niet. Ik denk dat het iets te maken heeft met hoe ambtenaren beleid in de praktijk toepassen, maar ik weet niet zeker hoe dit verschilt van simpelweg beleidsvrijheid hebben of gewoon een uitvoerend ambtenaar zijn.",
+        "processing": "Een verzoek om een definitie. \"Street-level bureaucracy\" is een goed vertegenwoordigd concept in de trainingsdata. → Genereer een heldere, leerboekachtige definitie. Voeg een voorbeeld toe. Noem mogelijk gerelateerde termen. Presenteer een op zichzelf staande uitleg, die het concept breed behandelt in plaats van gericht in te gaan op een specifiek punt van verwarring.",
         "typing_note": ""
       },
       {
-        "title": "",
-        "typing": "",
-        "thinking": "",
-        "processing": "",
+        "title": "Feedback vragen op je schrijfwerk",
+        "typing": "[plakt alinea] \n\"Wat vind je hiervan? Nog feedback?\" ",
+        "thinking": "Ik heb twee uur besteed aan deze inleiding en ik denk dat de argumentatie redelijk loopt, maar de laatste zin voelt zwak. Mijn tutor zei de vorige keer dat ik dingen te vaak te breed stel zonder een duidelijk standpunt in te nemen. Ik wil weten of ik dat hier weer doe, specifiek in de laatste twee zinnen.",
+        "processing": "Er wordt een alinea aangeleverd. Feedback wordt gevraagd zonder specifieke focus. → Scan de hele alinea op grammatica, helderheid, structuur en argumentatiekracht. Genereer een evenwichtige reeks opmerkingen die meerdere aspecten bestrijkt. Benoem eerst de positieve punten, geef daarna verbeterpunten. Verdeel de aandacht gelijkmatig over de hele tekst.",
         "typing_note": ""
       },
       {
-        "title": "",
-        "typing": "",
-        "thinking": "",
-        "processing": "",
+        "title": "WAT JE EIGENLIJK DENKT ",
+        "typing": "\"Help mee een motivatiebrief schrijven voor een beleidsstage.\" ",
+        "thinking": "Ik solliciteer naar deze stage bij de beleidsafdeling van een gemeente en ik wil hem heel graag, omdat de begeleider heeft meegewerkt aan een reorganisatie waarover ik voor mijn scriptie heb gelezen. Ik heb wat relevante ervaring vanuit mijn vak onderzoeksmethoden en een klein beleidsevaluatieproject dat ik samen met een medestudent heb gedaan, maar ik weet niet zeker of dat meetelt. De deadline is morgen en ik zag dat ze \"zelfstandige denkers\" waarderen, maar ik wil niet arrogant overkomen. ",
+        "processing": "Een motivatiebrief voor een beleidsstage. Geen specifieke afdeling, geen vakgebied, geen achtergrond van de sollicitant, geen deadlinedruk, geen voorkeur voor toon. → Genereer een gepolijste, algemeen toepasbare sjabloon voor een motivatiebrief. Gebruik breed toepasbare taal over “passie voor openbaar beleid” en “leergierigheid.” Structureer deze in een standaardformaat. Klink professioneel en enthousiast. ",
         "typing_note": ""
       }
     ],
@@ -246,6 +264,5 @@
       ]
     },
     "c2.sat_example_title": "S.A.T uitgewerkt voorbeeld"
-  },
-  "layout_review_required": true
+  }
 }
