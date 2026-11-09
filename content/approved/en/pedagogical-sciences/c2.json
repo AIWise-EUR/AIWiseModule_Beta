@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 60,
+  "sequence": 67,
   "course": "pedagogical-sciences",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "a237f390-8cc3-4f0b-ad6f-69ac0bc8ba52",
+  "submission_id": "26139d79-8531-4cd7-a33e-a607fefaaa1b",
   "source_release": null,
-  "approved_at": "2026-11-08T18:53:06.808925+00:00",
+  "approved_at": "2026-11-09T10:50:16.336872+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -1193,34 +1193,10 @@
               "actor": "team"
             }
           ]
-        },
-        {
-          "label": "Self–AI",
-          "steps": [
-            {
-              "name": "Intent",
-              "text": "The student wants to make the statement more specific regarding the type of prevention and the preventive measures teachers could use. However, they realize they lack knowledge about these concepts.",
-              "actor": "self"
-            },
-            {
-              "name": "Operationalize",
-              "text": "The student asks AI to clarify the concepts and provide some examples.",
-              "actor": "ai"
-            },
-            {
-              "name": "Judge",
-              "text": "The student evaluates the explanations and the examples and decides that education about recognizing inappropriate behavior and seeking help fits their intended focus best. They also decide that they want the intervention to be delivered as part of regular classroom education to all students.",
-              "actor": "self"
-            },
-            {
-              "name": "Refine",
-              "text": "The student asks AI to help formulate a statement that is more specific, including the new insights. AI suggests several formulations, and the student selects the one that best reflects their intended position: primary school teachers should play a larger role in the prevention of child maltreatment by providing all students with education on recognizing inappropriate behavior and seeking help.",
-              "actor": "ai"
-            }
-          ]
         }
       ]
     },
     "c2.sat_example_title": "Developing a scientific essay statement through S.A.T loop"
-  }
+  },
+  "layout_review_required": true
 }
