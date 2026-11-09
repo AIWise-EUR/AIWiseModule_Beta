@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 59,
+  "sequence": 63,
   "course": "psychology",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "6b846e4c-4e97-4ff7-a566-f9ee33aa1417",
-  "source_release": "a6b1bb4f-cfdc-4d5f-a221-96dd7da84b0f",
-  "approved_at": "2026-11-08T18:19:32.20762+00:00",
+  "submission_id": "f80c142b-1ded-4aaf-a699-11355b10666c",
+  "source_release": "ae925013-3d4f-42f6-97ff-23f532948e37",
+  "approved_at": "2026-11-09T08:06:49.18471+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -376,13 +376,13 @@
                 "text": "A"
               },
               {
-                "text": "lles wat je niet hebt verteld: dat je zelf twijfelt over de laatste zin, dat je tutor eerder heeft aangegeven dat je beweringen te breed formuleert zonder een duidelijk standpunt in te nemen, en dat je vooral wilt weten of je dat in de laatste twee zinn"
+                "text": "lles wat je niet hebt verteld: dat je zelf twijfelt over de laatste zin, dat je tutor eerder heeft aangegeven dat je beweringen te breed formuleert zonder een duidelijk standpunt in te nemen, en dat je vooral wilt weten of je dat in de laatste "
               },
               {
-                "text": "e"
+                "text": "zin"
               },
               {
-                "text": "n opnieuw doet"
+                "text": " opnieuw doet"
               },
               {
                 "text": "."
@@ -416,7 +416,13 @@
                 "text": " "
               },
               {
+                "text": "\""
+              },
+              {
                 "text": "het welzijn van adolescenten"
+              },
+              {
+                "text": "\""
               },
               {
                 "text": " "
@@ -439,12 +445,81 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "W"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "m"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "w"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
               }
             ],
             [
               {
-                "text": ""
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: waarom je juist deze stage wilt, wat je al weet over de begeleider, welke relevante ervaring je hebt, dat de organisatie ‘zelfstandige denkers’ zoekt en dat je enthousiast en zelfstandig wilt overkomen zonder arrogant te klinken."
               }
             ]
           ],
@@ -486,7 +561,7 @@
       {
         "title": "Feedback vragen op je schrijfwerk",
         "typing": "\"Wat vind je hiervan? Nog feedback?\"",
-        "thinking": "Ik heb twee uur besteed aan deze inleiding en ik denk dat de argumentatie redelijk loopt, maar de laatste zin voelt zwak. Mijn tutor zei de vorige keer dat ik dingen te vaak te breed stel zonder een duidelijk standpunt in te nemen. Ik wil weten of ik dat hier weer doe, specifiek in de laatste twee zinnen.",
+        "thinking": "Ik heb twee uur besteed aan deze inleiding en ik denk dat de argumentatie redelijk loopt, maar de laatste zin voelt zwak. Mijn tutor zei de vorige keer dat ik dingen te vaak te breed stel zonder een duidelijk standpunt in te nemen. Ik wil weten of ik dat hier weer doe, specifiek in de laatste zin.",
         "processing": "Er wordt een alinea aangeleverd. Feedback wordt gevraagd zonder specifieke focus. → Scan de hele alinea op grammatica, helderheid, structuur en argumentatiekracht. Genereer een evenwichtige reeks opmerkingen die meerdere aspecten bestrijkt. Benoem eerst de positieve punten, geef daarna verbeterpunten. Verdeel de aandacht gelijkmatig over de hele tekst. ",
         "typing_note": "[plakt alinea]"
       },
@@ -578,6 +653,5 @@
       ]
     },
     "c2.sat_example_title": "S.A.T uitgewerkt voorbeeld"
-  },
-  "layout_review_required": true
+  }
 }
