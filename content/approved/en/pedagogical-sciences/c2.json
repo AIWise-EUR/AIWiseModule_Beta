@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 67,
+  "sequence": 70,
   "course": "pedagogical-sciences",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "26139d79-8531-4cd7-a33e-a607fefaaa1b",
+  "submission_id": "13140aaf-1cd9-41f0-b6f1-ccbba5014040",
   "source_release": null,
-  "approved_at": "2026-11-09T10:50:16.336872+00:00",
+  "approved_at": "2026-11-09T10:56:17.519312+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -877,7 +877,43 @@
             ],
             [
               {
-                "text": "What you haven't explained: that you already partially understand the concept, that you think it has to do with"
+                "text": "E"
+              },
+              {
+                "text": "v"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "y"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "y"
+              },
+              {
+                "text": "ou haven't explained: that you already partially understand the concept, that you think it has to do with"
               },
               {
                 "text": " "
@@ -1197,6 +1233,5 @@
       ]
     },
     "c2.sat_example_title": "Developing a scientific essay statement through S.A.T loop"
-  },
-  "layout_review_required": true
+  }
 }
