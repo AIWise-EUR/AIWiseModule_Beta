@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 73,
+  "sequence": 81,
   "course": "dpas",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "d6e8e1e0-11b0-41a2-90b4-fbfdaa77c619",
+  "submission_id": "6ca6eb09-c106-4a67-8443-5a9ecb902177",
   "source_release": null,
-  "approved_at": "2026-11-09T11:13:32.315426+00:00",
+  "approved_at": "2026-11-09T11:46:10.724117+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -588,22 +588,22 @@
           "steps": [
             {
               "name": "Intent",
-              "text": "A student wants to write their literature review about social media and mental health. They are interested in whether social media use is related to people’s self-esteem, and have a rough idea of what the research question could be: Does social media affect self-esteem? However, they are unsure whether this is specific enough for the assignment.",
+              "text": "A student wants to write their literature review about political participation. They are interested in why young people are less likely to vote than older people and has a rough idea of what the research research question could be: Why do young people vote less? However, they are unsure whether this is specific enough for the assignment.",
               "actor": "self"
             },
             {
               "name": "Operationalize",
-              "text": "The student asks AI how they could make their research question more specific. AI suggests considering different types of social media use, different aspects of self-esteem, different age groups, and possible psychological mechanisms that could explain the relationship. ",
+              "text": "The student asks AI how they could make their research question more specific. AI suggests considering different types of political participation, different types of elections, and different explanations for differences in voting behaviour. ",
               "actor": "ai"
             },
             {
               "name": "Judge",
-              "text": "The student considers these possibilities and decides that they will focus on passive social media use, self-esteem among adolescents, and upward social comparison. Their new research question is: How is passive social media use related to adolescents’ self-esteem, and does upward social comparison play a role in this relationship?  ",
+              "text": "The student considers these possibilities and decides that they will focus on young people's trust in political institutions. Their new research question is: Why do young people vote less, and does trust in political institutions play a role in this relationship?",
               "actor": "self"
             },
             {
               "name": "Refine",
-              "text": "The student asks AI to help refine the wording of their research question without changing what they want to investigate. AI suggests changing the second question from a yes/no question to an open question, in order to be able to give a broader explanation. The student uses this input to formulate a new, specific research question independently: How is passive social media use related to adolescents’ self-esteem, and what role does upward social comparison play in this relationship? ",
+              "text": "The student asks AI to help refine the wording of their research question without changing what they want to investigate. AI suggests avoiding a clear assumption in the first question and changing the second question from a yes/no question to an open question, in order to be able to give a broader explanation. The student uses this input to formulate a new, specific research question independently: To what extent does young people's trust in political institutions explain their lower levels of political participation?",
               "actor": "ai"
             }
           ]
@@ -618,17 +618,17 @@
             },
             {
               "name": "Feedback",
-              "text": "Overall, the student’s classmates understand the idea and think the topic is interesting. One classmate suggests choosing only one of the two questions for specificity and feasibility: whether passive social media is associated with self-esteem, or whether upward social comparison specifically explains this association.  ",
+              "text": "Overall, the student’s classmates understand the idea and think the topic is interesting. One classmate points out that the question seems to assume that lower trust in political institutions is the main explanation for differences in political participation, whereas there may be other relevant explanations.",
               "actor": "team"
             },
             {
               "name": "Integrate",
-              "text": "The student agrees with their classmate and decides to narrow down the research question. They will explore the general association between social media and self-esteem, without making any a priori assumption about the mechanisms involved.",
+              "text": "The student agrees with their classmate and decides to reformulate the research question. They will explore the general association between young people's trust in political institutions and their political participation, without making any a priori assumption about direct causal relationship.",
               "actor": "self"
             },
             {
               "name": "Expand",
-              "text": "The student and their classmates discuss the research question further. Another classmate points out that the relationship might not be straightforward: for example, some studies may find negative associations, while others may find positive, weak or no associations. This makes the student realize that they should avoid making any assumptions about the direction of the relationship before starting to read the literature. The student is now happy with their research question and ready to start planning the literature search. ",
+              "text": "The student and their classmates discuss the research question further. Another classmate points out that the relationship might not be straightforward: for example, it could be interesting to consider young people from different socioeconomic backgrounds. This reminds the student of something discussed in class, and she decides to incorporate ir into her research question: To what extent is trust in political institutions associated with political participation among young people, and what role does socioeconomic background play in this relationship? The student is now happy with their research question and ready to start planning the literature search. ",
               "actor": "team"
             }
           ]
