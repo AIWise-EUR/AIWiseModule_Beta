@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 50,
+  "sequence": 75,
   "course": "psychology",
   "chapter": "c3",
   "locale": "en",
-  "submission_id": "4d53c246-fa4e-45ff-9339-a6d3e8f374a0",
+  "submission_id": "febc4286-b684-488e-b878-34913d4b6de8",
   "source_release": null,
-  "approved_at": "2026-11-05T22:24:14.554209+00:00",
+  "approved_at": "2026-11-09T11:25:48.620671+00:00",
   "slots": {
     "c3.amd_example": {
       "intro": "Student asked AI to extract common themes from three papers. AI presented three themes:",
@@ -31,14 +31,14 @@
     },
     "c3.full_example": [
       {
-        "tag": "rol",
+        "tag": "role",
         "lines": [
           "You are an academic literature analysis assistant",
           "for a first-year psychology student."
         ]
       },
       {
-        "tag": "taak",
+        "tag": "task",
         "lines": [
           "Identify the common themes across the following",
           "three journal articles. Focus on overlapping",
@@ -48,14 +48,14 @@
       {
         "tag": "context",
         "lines": [
-          "I am writing a literature review for my Academic",
-          "Writing Skills course. I have read all three papers.",
+          "I am writing a literature review for my psychology",
+          "course. I have read all three papers.",
           "I am currently at the stage of organizing my sources",
           "before drafting an outline."
         ]
       },
       {
-        "tag": "randvoorwaarden",
+        "tag": "constraints",
         "lines": [
           "Do not summarize each paper individually.",
           "Do not suggest an outline or structure.",
@@ -63,7 +63,7 @@
         ]
       },
       {
-        "tag": "stappen",
+        "tag": "steps",
         "lines": [
           "1. Read the three abstracts I provide below.",
           "2. Identify recurring topics or constructs.",
@@ -71,7 +71,7 @@
         ]
       },
       {
-        "tag": "outputformaat",
+        "tag": "output_format",
         "lines": [
           "Example theme format:",
           "\"Sleep disruption as a mediator between screen time",
@@ -79,7 +79,7 @@
         ]
       },
       {
-        "tag": "voorbeelden",
+        "tag": "examples",
         "lines": [
           "A numbered list of 3–5 common themes.",
           "Each theme in one sentence, with the relevant",
@@ -114,7 +114,7 @@
       },
       {
         "lines": [
-          "I am writing a literature review for AWS."
+          "I am writing a literature review for a psychology course."
         ],
         "heading": "Context"
       },
@@ -134,13 +134,13 @@
     ],
     "c3.template_compare.xml": [
       {
-        "tag": "rol",
+        "tag": "role",
         "lines": [
           "You are a literature analysis assistant."
         ]
       },
       {
-        "tag": "taak",
+        "tag": "task",
         "lines": [
           "Identify common themes across three papers."
         ]
@@ -148,18 +148,18 @@
       {
         "tag": "context",
         "lines": [
-          "I am writing a literature review for AWS."
+          "I am writing a literature review for a psychology course."
         ]
       },
       {
-        "tag": "randvoorwaarden",
+        "tag": "constraints",
         "lines": [
           "Do not summarize each paper individually.",
           "Stay at theme identification only."
         ]
       },
       {
-        "tag": "outputformaat",
+        "tag": "output_format",
         "lines": [
           "Numbered list, one sentence per theme."
         ]
