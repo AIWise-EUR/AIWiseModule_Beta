@@ -52,6 +52,7 @@ async function check(loader,modern=false) {
    const fixed=await page(loader,{modern,search:'?course='+id+'&fixed=1',scoped:'ped',stored:'aws1'});
    assert.equal(fixed.window.AIWISE_COURSE_ID,id);assert.equal(fixed.store.get('aiwise-published-course'),'ped');
    assert.equal(fixed.document.querySelector('.aiwise-course-modal'),null);assert.ok(fixed.document.getElementById('aiwiseCourseLabel'));
+   assert.equal(fixed.document.querySelector('#aiwiseCourseLabel .acs-name').textContent,id.startsWith('psychology.')?'Psychology':'Pedagogical Sciences');
   }
   const invalid=await page(loader,{modern,search:'?course=missing&fixed=1',scoped:'ped'});
   assert.equal(invalid.window.AIWISE_COURSE,null);assert.equal(invalid.document.querySelector('.aiwise-course-modal'),null);assert.match(invalid.document.querySelector('#aiwise-course-unavailable').textContent,/instructor/);

@@ -359,7 +359,7 @@
         manifestCache = registry.courses.map(function (c) {
           var b = bachelors[c.bachelor];
           return { id: c.bachelor + "." + c.id, short_name: c.short_name, full_name: b.name + " – " + c.name,
-            bachelor: c.bachelor, content: b.content, aliases: c.aliases || [] };
+            bachelor: c.bachelor, bachelor_name: b.name, content: b.content, aliases: c.aliases || [] };
         });
         return manifestCache;
       });
@@ -405,7 +405,7 @@
     var currentId = window.AIWISE_COURSE_ID;
     var entry = null;
     list.forEach(function (c) { if (c.id === currentId) entry = c; });
-    var currentName = entry ? entry.short_name
+    var currentName = entry ? (entry.bachelor_name || (entry.bachelor && entry.full_name.split(" – ")[0]) || entry.short_name)
       : (window.AIWISE_COURSE && window.AIWISE_COURSE.course && window.AIWISE_COURSE.course.short_name) || copy("choose-course", "Choose your course");
 
     if (pinnedCourse()) {

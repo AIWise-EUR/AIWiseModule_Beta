@@ -23,10 +23,11 @@ async function page({search='',force='',stored=null,scoped=null,missing=false}={
 }
 const psychology=JSON.parse(read('course-specific/aws1/course-specific-content_aws1.json'));
 test('fixed share links override preferences without changing them and never offer another course',async()=>{
- for(const id of ['psychology.aws1','psychology.psychodiagnostics','pedagogical-sciences.inleiding']){
+ for(const id of ['psychology.aws1','psychology.psychodiagnostics','pedagogical-sciences.inleiding','dpas.dpas-skills']){
   const p=await page({search:'?course='+id+'&fixed=1',scoped:'ped',stored:'aws1'});
   assert.equal(p.window.AIWISE_COURSE_ID,id);assert.equal(p.store.get('aiwise-beta-course'),'ped');assert.equal(p.store.get('aiwise-course'),'aws1');
   assert.equal(p.document.querySelector('.aiwise-course-modal'),null);assert.equal(p.document.getElementById('aiwiseCourseSwitch'),null);assert.ok(p.document.getElementById('aiwiseCourseLabel'));
+  assert.equal(p.document.querySelector('#aiwiseCourseLabel .acs-name').textContent,registry().courses().find(c=>c.id===id).bachelor_name);
  }
  for(const search of ['?fixed=1','?course=missing&fixed=1']){
   const p=await page({search,scoped:'ped'});assert.equal(p.window.AIWISE_COURSE,null);assert.deepEqual(p.scopes,[]);assert.equal(p.document.querySelector('.aiwise-course-modal'),null);assert.match(p.document.querySelector('#aiwise-course-unavailable').textContent,/instructor/);
@@ -57,7 +58,7 @@ test('the chooser lists every registered course; a pinned course has no chooser'
  const options=[...open.document.querySelectorAll('.acm-option')];
  assert.deepEqual(options.map(o=>o.querySelector('span').textContent),plain(registry().courses().map(c=>c.full_name)));
  assert.equal(open.document.querySelector('.acm-option.active strong').textContent,'AWS I');
- assert.equal(open.document.querySelector('#aiwiseCourseSwitch .acs-name').textContent,'AWS I');
+ assert.equal(open.document.querySelector('#aiwiseCourseSwitch .acs-name').textContent,'Psychology');
  const pinned=await page({search:'?course=psychology.aws1',force:'pedagogical-sciences.inleiding',stored:'psychology.aws1'});
  assert.equal(pinned.window.AIWISE_COURSE_ID,'pedagogical-sciences.inleiding');
  assert.equal(pinned.document.getElementById('aiwiseCourseSwitch'),null);

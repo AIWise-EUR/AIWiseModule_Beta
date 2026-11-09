@@ -159,7 +159,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 2 | Content scopes | live | SQL applied by the owner on 2026-10-04 |
 | 3 | Workspace, loaders, functions | live | signed-in screens and the two redeployed functions still need a first real use; see Log |
 | 4 | Per-course publishing | fixed share links implemented; folder bundles pending | `?course=<bachelor.course>&fixed=1`; no SQL/function changes for this stage |
-| 5 | Share links | English/Dutch pairs implemented and tested | Eight fixed lobby links with Copy, below Published in map and list views; [record](fixed-course-links.md) |
+| 5 | Share links | English/Dutch pairs; module badge shows bachelor name | Eight fixed lobby links with Copy, below Published in map and list views; [record](fixed-course-links.md) |
 | 6 | Activities | not started | |
 | 7 | Course overrides | not started | not needed yet |
 | 8 | Published ID compatibility | live; browser verified | [Hotfix and full-transition plan](published-course-compat.md) |
@@ -350,3 +350,5 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 - **2026-11-09** (Codex) Added verified IndexedDB backup archiving, quota-error retries and portable exports of unsaved work/recovery choices. Standalone archive page lets an already-open editor keep its in-memory work during rollout. Existing drafts and online state are not migrated. See `studio-draft-recovery.md`.
 
 - 2026-11-09 — C2 recovery now reconciles independently added same-family/example boxes under the approved identity, preserving authored Dutch text. See studio-draft-recovery.md.
+
+- 2026-11-09 — Module bottom-left badges now display registry bachelor names (Psychology, Pedagogical Sciences, DPAS). Course identities, fixed links, content lookup and individual course chooser entries remain unchanged. Existing loader checks cover all four fixed course links and the unpinned badge.
