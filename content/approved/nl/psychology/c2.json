@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 65,
+  "sequence": 80,
   "course": "psychology",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "412abd55-de47-42c0-8556-bfaf311862bd",
-  "source_release": "ae925013-3d4f-42f6-97ff-23f532948e37",
-  "approved_at": "2026-11-09T10:50:06.123345+00:00",
+  "submission_id": "b0712311-7df4-411c-a6aa-39271106b4ad",
+  "source_release": "4e4b7b8b-088f-45cd-92ca-50572ce8737e",
+  "approved_at": "2026-11-09T11:32:24.826775+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -182,7 +182,10 @@
             ],
             [
               {
-                "text": "Wat het model niet weet, is alles wat je niet hebt verteld: dat je het artikel al hebt gelezen, dat je vooral moeite hebt met het onderzoeksdesign, dat je vermoedt dat het om een between-subjects design gaat en dat je wilt beoordelen of het design de conclusie ondersteunt."
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: dat je het artikel al hebt gelezen, dat je vooral moeite hebt met het onderzoeksdesign, dat je vermoedt dat het om een between-subjects design gaat en dat je wilt beoordelen of het design de conclusie ondersteunt."
               }
             ]
           ],
