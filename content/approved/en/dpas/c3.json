@@ -1,187 +1,185 @@
 {
   "schema": 1,
-  "sequence": 52,
+  "sequence": 78,
   "course": "dpas",
   "chapter": "c3",
   "locale": "en",
-  "submission_id": "925deaa6-74b1-4ab9-9407-50529a35e02f",
+  "submission_id": "051cb5cb-4f0a-42f6-9145-c4c7a85d1224",
   "source_release": null,
-  "approved_at": "2026-11-05T22:27:17.104583+00:00",
+  "approved_at": "2026-11-09T11:27:27.616198+00:00",
   "slots": {
     "c3.amd_example": {
-      "intro": "",
+      "intro": "Student asked AI to extract common themes from three papers. AI presented three themes:",
       "items": [
         {
           "tag": "adopt",
-          "text": "",
-          "reason": ""
+          "text": "Theme 1: \"Social inequality affects access to healthcare and contributes to differences in health outcomes\"",
+          "reason": "Matches the original papers. Usable as an outline starting point. Placed as starting point for first outline section."
         },
         {
           "tag": "modify",
-          "text": "",
-          "reason": ""
+          "text": "Theme 2: \"The introduction of digital government services leads to greater trust among citizens in government institutions.\"",
+          "reason": "Direction is correct but AI presented a positive association as a causal relationship. Corrected to \"positive association\". Original paper re-checked."
         },
         {
           "tag": "discard",
-          "text": "",
-          "reason": ""
+          "text": "Theme 3: \"Broader implications for public health policy\"",
+          "reason": "I asked for common themes, not implications. This topic does not appear in the papers. AI fabricated it. Deleted. Record: \"AI exceeded request scope by adding implications.\""
         }
       ],
-      "title": ""
+      "title": "Worked example — Common theme extraction"
     },
     "c3.full_example": [
       {
-        "tag": "rol",
+        "tag": "role",
         "lines": [
-          "",
-          ""
+          "You are an academic literature analysis assistant",
+          "for a first-year public policy/sociology student."
         ]
       },
       {
-        "tag": "taak",
+        "tag": "task",
         "lines": [
-          "",
-          "",
-          ""
+          "Identify the common themes across the following",
+          "three journal articles. Focus on overlapping",
+          "research topics, not methodological similarities."
         ]
       },
       {
         "tag": "context",
         "lines": [
-          "",
-          "",
-          "",
-          ""
+          "I am writing a literature review for my public policy/sociology",
+          "course. I have read all three papers.",
+          "I am currently at the stage of organizing my sources",
+          "before drafting an outline."
         ]
       },
       {
-        "tag": "randvoorwaarden",
+        "tag": "constraints",
         "lines": [
-          "",
-          "",
-          ""
+          "Do not summarize each paper individually.",
+          "Do not suggest an outline or structure.",
+          "Stay at the level of theme identification only."
         ]
       },
       {
-        "tag": "stappen",
+        "tag": "steps",
         "lines": [
-          "",
-          "",
-          ""
+          "1. Read the three abstracts I provide below.",
+          "2. Identify recurring topics or constructs.",
+          "3. Group them into distinct themes."
         ]
       },
       {
-        "tag": "outputformaat",
+        "tag": "output_format",
         "lines": [
-          "",
-          "",
-          ""
+          "Example theme format:",
+          "\"Reduced perceived proximity to local government as a mediator between municipal mergers",
+          "and local participation (Paper A, Paper C)\""
         ]
       },
       {
-        "tag": "voorbeelden",
+        "tag": "examples",
         "lines": [
-          "",
-          "",
-          ""
+          "A numbered list of 3–5 common themes.",
+          "Each theme in one sentence, with the relevant",
+          "paper(s) noted in parentheses."
         ]
       }
     ],
-    "c3.critique.read": "",
-    "c3.critique.decide": "",
-    "c3.critique.verify": "",
+    "c3.critique.read": "Student asked \"Extract the common themes from these three papers.\" AI returned three paragraphs. Observation: AI identified three themes, assigned papers to each, and wrote in paragraph form.",
+    "c3.critique.decide": "Themes 1 and 2 are usable as starting points. Theme 3 is discarded. The implications section is deleted. Theme 2's paper assignment needs verification — may re-prompt after checking the original.",
+    "c3.critique.verify": "Checking Paper A: AI's first theme is correct but was a secondary point, not the core finding. The third theme uses phrasing that doesn't appear in any original paper — AI generalized. The \"implications\" section covers a stage I haven't reached yet.",
     "c3.techniques.role": {
-      "bad": "",
-      "good": ""
+      "bad": "\"Check my search string for scientific articles\"",
+      "good": "\"You are a search strategy advisor for academic databases. Review the Boolean search string I wrote. If there are logical errors, don't fix them directly — ask me questions about what went wrong.\""
     },
-    "c3.critique.question": "",
-    "c3.full_example_title": "",
+    "c3.critique.question": "Are these three themes actually from the papers, or did AI generalize? Is the third theme too broad? Paper B is assigned to two themes — is that accurate? I only asked for common themes, but AI added \"implications\" — did it exceed my request scope?",
+    "c3.full_example_title": "Full worked example — Common theme extraction from three papers",
     "c3.techniques.few_shot": {
-      "good": ""
+      "good": "\"Summarize each paper's core claim in one sentence, like this: \nSmith (2022): Municipal mergers are positively associated with a decline in local political participation, mediated by a reduced sense of proximity to local government. Do the same for the remaining three articles.\""
     },
     "c3.template_compare.md": [
       {
         "lines": [
-          ""
+          "You are a literature analysis assistant."
         ],
         "heading": "Role"
       },
       {
         "lines": [
-          ""
+          "Identify common themes across three papers."
         ],
         "heading": "Task"
       },
       {
         "lines": [
-          ""
+          "I am writing a literature review for a public policy/sociology course."
         ],
         "heading": "Context"
       },
       {
         "lines": [
-          "",
-          ""
+          "- Do not summarize each paper individually",
+          "- Stay at theme identification only"
         ],
         "heading": "Constraints"
       },
       {
         "lines": [
-          ""
+          "Numbered list, one sentence per theme."
         ],
         "heading": "Output Format"
       }
     ],
     "c3.template_compare.xml": [
       {
-        "tag": "rol",
+        "tag": "role",
         "lines": [
-          ""
+          "You are a literature analysis assistant."
         ]
       },
       {
-        "tag": "taak",
+        "tag": "task",
         "lines": [
-          ""
+          "Identify common themes across three papers."
         ]
       },
       {
         "tag": "context",
         "lines": [
-          ""
+          "I am writing a literature review for a public policy/sociology course."
         ]
       },
       {
-        "tag": "randvoorwaarden",
+        "tag": "constraints",
         "lines": [
-          "",
-          ""
+          "Do not summarize each paper individually.",
+          "Stay at theme identification only."
         ]
       },
       {
-        "tag": "outputformaat",
+        "tag": "output_format",
         "lines": [
-          ""
+          "Numbered list, one sentence per theme."
         ]
       }
     ],
     "c3.techniques.output_format": {
-      "bad": "",
-      "good": ""
+      "bad": "\"Compare these three papers\"",
+      "good": "\"Create a comparison table for these three papers. Columns: author/year, research question, methodology, key findings, limitations. One sentence per cell.\""
     },
     "c3.techniques.chain_of_thought": {
-      "bad": "",
-      "good": ""
+      "bad": "\"Are the conclusions of these two papers contradictory?\"",
+      "good": "\"Determine whether the conclusions of these two papers contradict each other. First, summarize each paper's core claim. Then compare where they overlap and where they differ. Finally, explain step by step whether the difference is a genuine contradiction or a difference in scope or conditions.\""
     },
     "c3.techniques.clear_instruction": {
-      "bad": "",
-      "good": ""
+      "bad": "\"Summarize this paper\"",
+      "good": "\"Summarize this paper's main argument and research methodology in two sentences each. This is for an undergraduate sociology/public administration class presentation.\""
     },
     "c3.techniques.task_decomposition": {
-      "bad": "",
-      "good": ""
+      "bad": "\"Build my literature review outline\"",
+      "good": "Step 1: \"Extract the common themes from the five papers I read\" → Step 2: \"Map the relationships between those themes\" → Step 3: \"Suggest possible outline structures based on those relationships\""
     }
-  },
-  "structure_only": true,
-  "layout_review_required": true
+  }
 }
