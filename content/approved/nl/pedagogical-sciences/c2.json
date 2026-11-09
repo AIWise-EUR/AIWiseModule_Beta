@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 66,
+  "sequence": 72,
   "course": "pedagogical-sciences",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "d32258af-c6fd-4384-9e0f-e46fdcd6b0d0",
-  "source_release": "a237f390-8cc3-4f0b-ad6f-69ac0bc8ba52",
-  "approved_at": "2026-11-09T10:50:16.336872+00:00",
+  "submission_id": "6e5a1430-70af-4a10-af9b-d08dbe7b27dc",
+  "source_release": "13140aaf-1cd9-41f0-b6f1-ccbba5014040",
+  "approved_at": "2026-11-09T11:02:07.001159+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -239,9 +239,6 @@
               },
               {
                 "text": "t"
-              },
-              {
-                "text": " "
               },
               {
                 "text": " "
@@ -762,7 +759,10 @@
             ],
             [
               {
-                "text": "Wat het model niet weet, is alles wat je niet hebt verteld: dat je het artikel al hebt gelezen, dat je vooral moeite hebt met het onderzoeksdesign, dat je vermoedt dat het om een between-subjects design gaat en dat je wilt beoordelen of het design de conclusie ondersteunt."
+                "text": "A"
+              },
+              {
+                "text": "lles wat je niet hebt verteld: dat je het artikel al hebt gelezen, dat je vooral moeite hebt met het onderzoeksdesign, dat je vermoedt dat het om een between-subjects design gaat en dat je wilt beoordelen of het design de conclusie ondersteunt."
               }
             ]
           ],
@@ -1257,7 +1257,7 @@
             },
             {
               "name": "Verfijnen",
-              "text": "De student vraagt AI om de formulering van haar stelling te helpen verfijnen zonder het onderliggende standpunt te veranderen. AI stelt voor om \"zijn belangrijk bij\" te vervangen door \"zouden betrokken moeten zijn bij\". De student formuleert op basis van deze input zelf een nieuwe specifieke en betwistbare stelling: leerkrachten in het basisonderwijs zouden een grotere rol moeten spelen bij het voorkomen van kindermishandeling.",
+              "text": "De student vraagt AI om de formulering van haar stelling te helpen verfijnen zonder het onderliggende standpunt te veranderen. AI stelt voor om \"zijn belangrijk bij\" te vervangen door \"zouden meer betrokken moeten zijn bij\". De student vindt dit een goed idee en past op basis van deze input de formulering naar \"zouden een grotere rol moeten spelen bij\". De student heeft nu een specifieke en betwistbare stelling: leerkrachten in het basisonderwijs zouden een grotere rol moeten spelen bij het voorkomen van kindermishandeling.",
               "actor": "ai"
             }
           ]
