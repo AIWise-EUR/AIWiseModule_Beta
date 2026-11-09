@@ -165,7 +165,7 @@
     const styles = new Set((entry.formats || []).flatMap(f => f.runs).concat(value?.fields?.flat() || []).flatMap(r => [r.bold && 'Bold', r.italic && 'Italic', r.color && `Colour ${r.color}`, r.size && `${r.size}px`]).filter(Boolean));
     if (styles.size) { const note = document.createElement('small'); note.className = 'dr-style-note'; note.textContent = 'Formatting: ' + [...styles].join(' · '); node.append(note); }
   }
-  function mount(host, {model, issue, scope, savedAt, raw, apply, latest, returnToEditor, sendForReview}) {
+  function mount(host, {model, issue, scope, savedAt, raw, apply, latest, returnToEditor, sendForReview, exportWork, archiveBackups}) {
     const dialog = document.createElement('dialog'); dialog.className = 'aw-account-dialog dr-dialog';
     dialog.setAttribute('aria-labelledby', 'dr-title');
     dialog.innerHTML = `<div class="aw-account-header"><div><small data-dr-scope></small><h2 id="dr-title"></h2></div><button type="button" class="aw-account-close" data-dr-close aria-label="Close draft review">×</button></div><div class="dr-body"><p data-dr-intro></p><div data-dr-content></div><p class="aw-account-error" data-dr-error role="alert"></p></div><div class="dr-footer"><button type="button" class="button" data-dr-download>Download original draft</button><div><button type="button" class="button" data-dr-back>Not now</button><button type="button" class="button primary" data-dr-next></button></div></div>`;
@@ -175,6 +175,30 @@
     const el = (tag, text, cls) => { const node = document.createElement(tag); if (text) node.textContent = text; if (cls) node.className = cls; return node; };
     const selected = unit => choices[unit.id]?.choice || choices[unit.id];
     const unanswered = () => model.conflicts.some(u => !selected(u) || selected(u) === 'edit' && !choices[u.id].text?.trim());
+    const snapshot=()=>({step,choices:copy(choices),comparison:copy(model),originalRaw:raw,latest:copy(latest),issue:issue||null,
+      combinedValues:step===2 && (issue || !unanswered()) ? (issue?copy(latest):combine(model,choices)) : null});
+    const storageActions=exportWork && window.AIWiseDraftStorage?.actions(q('[data-dr-error]').parentElement,{
+      exportWork:()=>exportWork(snapshot()),retry:()=>runApply(true)
+    });
+    async function runApply(clean=false) {
+      if(busy || done || step!==2)return;
+      let failure;
+      try {
+        busy=true;dialog.querySelectorAll('button,input,textarea').forEach(node=>node.disabled=true);
+        // Export remains available even during a slow archive operation.
+        storageActions?.busy(true);
+        const exportButton=dialog.querySelector('[data-work-export]');if(exportButton)exportButton.disabled=false;
+        next.textContent=clean?'Archiving backups…':'Saving draft…';
+        if(clean)await archiveBackups(({moved,total})=>{q('[data-dr-error]').textContent=`Archiving backups… ${moved} of ${total}. Keep this page open.`;});
+        await apply(issue?copy(latest):combine(model,choices),{restart:!!issue});done=true;action=null;
+      }catch(error){failure=error;}
+      finally{
+        busy=false;dialog.querySelectorAll('button,input,textarea').forEach(node=>node.disabled=false);draw();
+        storageActions?.busy(false);storageActions?.show(failure);
+        if(failure)q('[data-dr-error]').textContent=window.AIWiseDraftStorage?.quota(failure)?'Browser storage is full. Archive backups and retry, or export your current work. Your original draft and review choices are preserved.':failure.message||'Could not update this draft. The original copy is preserved.';
+      }
+    }
+
     function actionOption(value, title, explanation) {
       const label = el('label', '', 'dr-copy dr-action'), radio = document.createElement('input');
       radio.type = 'radio'; radio.name = 'dr-action'; radio.value = value; radio.checked = action === value;
@@ -291,10 +315,7 @@
       if (done) { dialog.close(); if (action === 'editor') returnToEditor?.(); else if (action === 'submit') sendForReview?.(); return; }
       if (issue && step !== 2) { if (action === 'pause') { dialog.close(); return; } step = 2; draw(); return; }
       if (step < 2) { step = step === 0 && !model.conflicts.length ? 2 : step + 1; draw(); dialog.scrollTop = 0; q('#dr-title').focus(); return; }
-      let failure;
-      try { busy = true; dialog.querySelectorAll('button,input,textarea').forEach(node => node.disabled = true); next.textContent = 'Saving draft…'; await apply(issue ? copy(latest) : combine(model, choices), {restart:!!issue}); done = true; action = null; }
-      catch (error) { failure = error.message || 'Could not update this draft. The original copy is preserved.'; }
-      finally { busy = false; dialog.querySelectorAll('button,input,textarea').forEach(node => node.disabled = false); draw(); if (failure) q('[data-dr-error]').textContent = failure; }
+      await runApply();
     });
     const close = () => { if (!busy) dialog.close(); };
     q('[data-dr-close]').onclick = close;
@@ -303,7 +324,7 @@
     dialog.addEventListener('cancel', event => { if (busy) event.preventDefault(); });
     q('#dr-title').tabIndex = -1;
     draw();
-    return {open() { if (!dialog.open) { dialog.showModal(); window.AIWiseMotion?.enter(dialog); q('#dr-title').focus(); } }, dispose() { dialog.close(); dialog.remove(); }};
+    return {snapshot,hasChanges:()=>!done && (step===2 || Object.keys(choices).length>0),isBusy:()=>busy,open() { if (!dialog.open) { dialog.showModal(); window.AIWiseMotion?.enter(dialog); q('#dr-title').focus(); } }, dispose() { dialog.close(); dialog.remove(); }};
   }
   window.AIWiseDraftRecovery = {equal, normalizeSource, sameSource, sourceReport, restrictLocations, plan, combine, storeRecovered, download, mount, valueView};
 })();

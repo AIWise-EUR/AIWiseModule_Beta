@@ -53,21 +53,57 @@
     });
   }
   let session = null;
-  const dirty = () => !!session?.values && (!!session.needsUpgrade || !equal(session.values, session.saved));
+  const dirty = () => !!session?.values && (!!session.needsUpgrade || !!session.saveFailed || !equal(session.values, session.saved));
+  const storage = () => window.AIWiseDraftStorage;
   const reduceMotion = () => window.AIWiseMotion.reduced();
   const finishAfterMotion = (node, token, complete) => window.AIWiseMotion.after(node, complete, token);
   function message(s, text, error = false) {
     s.host.querySelectorAll('.cs-status').forEach(node => { node.textContent = text; node.dataset.error = String(error); });
   }
+  function storageBusy(s, value) {
+    s.storageBusy=value;
+    for(const selector of ['.cs-toolbar','.cs-fields','.cs-preview','[data-cs-reset]','[data-cs-source-reviewed]']) {
+      const node=s.host.querySelector(selector);if(node)node.inert=value;
+    }
+    s.storageActions?.forEach(action=>action.busy(value));controls(s);
+  }
+  function storageError(s,error) {
+    s.saveFailed=true;
+    s.storageActions?.forEach(action=>action.show(error));
+    message(s,storage().quota(error)?'Browser storage is full. Archive backups and retry, or export your current work. Keep this editor open.':error.message || 'Saving failed. Keep this editor open and export your current work.',true);
+  }
+  function exportWork(s,recovery=s.recoveryUI?.snapshot?.()) {
+    try {
+      const file=storage().exportPackage({key:s.key,workingDraft:record(s),savedRaw:s.raw,recovery,
+        editorState:{itemIndex:s.index,slideIndex:s.slideIndex,blocked:s.blocked,sourceStale:s.sourceStale,
+          pendingRecoveryDraft:s.pendingRecoveryDraft || null,
+          submissionSummary:s.submitDialog?.querySelector('[data-cs-submit-summary]')?.value || ''}});
+      storage().download(JSON.stringify(file,null,2),`aiwise-${s.courseId}-${s.chapter}-${s.locale}-work-${Date.now()}.json`);
+    }catch(error){message(s,'Export failed: '+error.message+'. Keep this editor open and copy your text before leaving.',true);}
+  }
+  async function archiveAndRetry(s) {
+    if(s.storageBusy || session!==s)return;
+    storageBusy(s,true);
+    try {
+      const result=await storage().migrate(({moved,total})=>message(s,`Archiving backups… ${moved} of ${total}. Keep this page open.`));
+      message(s,`${result.moved} backup(s) archived. Retrying draft save…`);
+    }catch(error){storageError(s,error);return;}
+    finally{storageBusy(s,false);}
+    if(session===s)await save(s);
+  }
+  function backupIdentity(s,raw) {
+    if(s.pendingBackup?.raw!==raw)s.pendingBackup={raw,key:s.key+':recovery-backup:'+crypto.randomUUID()};
+    return s.pendingBackup.key;
+  }
   function controls(s) {
     s.host.querySelectorAll('[data-cs-edit]').forEach(button => button.disabled = !s.ready || s.blocked);
-    s.host.querySelectorAll('[data-cs-save]').forEach(button => button.disabled = !s.ready || s.blocked || (!dirty() && s.raw !== null && !s.needsUpgrade));
+    s.host.querySelectorAll('[data-cs-save]').forEach(button => button.disabled = !!s.storageBusy || !s.ready || s.blocked || (!dirty() && s.raw !== null && !s.needsUpgrade));
     s.host.querySelectorAll('[data-cs-submit]').forEach(button => {
       button.disabled = !canSubmit(s);
       button.title = window.AIWiseAuth?.snapshot().role !== 'admin' ? 'Administrator access is required to submit content.' : button.disabled ? 'Save this chapter’s draft before sending it for review.' : 'Send the saved chapter to the review queue.';
     });
   }
-  const canSubmit = s => s.ready && !s.blocked && !s.sourceStale && !s.layoutPeerChanged && !s.translationSync?.pending.length && !s.needsUpgrade && !!s.raw && !dirty() && window.AIWiseAuth?.snapshot().status === 'member' && window.AIWiseAuth?.snapshot().role === 'admin';
+  const canSubmit = s => !s.storageBusy && s.ready && !s.blocked && !s.sourceStale && !s.layoutPeerChanged && !s.translationSync?.pending.length && !s.needsUpgrade && !!s.raw && !dirty() && window.AIWiseAuth?.snapshot().status === 'member' && window.AIWiseAuth?.snapshot().role === 'admin';
   function openSubmission(s) {
     if (!canSubmit(s)) return;
     try {
@@ -108,32 +144,35 @@
     }
     return {...shared, chapter: s.chapter, baseSlots: s.base, slots: s.values};
   }
-  function save(s) {
-    if (s !== session || s.blocked || !s.ready) return;
+  async function save(s) {
+    if (s !== session || s.blocked || !s.ready || s.storageBusy) return;
+    storageBusy(s,true);
     try {
-      if (localStorage.getItem(s.key) !== s.raw) {
-        message(s, 'Another tab changed this draft. Your edits have not been saved. Copy any text you want to keep before reloading.', true); return;
-      }
       if(s.layoutEnabled)window.AIWiseLayoutSync?.payload(s);
       if(!valid(s.values,s.base))throw Error('The draft contains an unsupported block or text format.');
-      // Preserve the exact original before writing a synchronized local copy.
+      let backupRaw,backupKey;
       if((s.layoutBackupNeeded&&s.raw!==null)||(s.translationSync && s.translationBackupNeeded && (s.raw!==null || s.translationSync.retired.length))){
-        const original=s.raw ?? JSON.stringify({...record(s),slots:s.base,translationSync:undefined});
-        const key=s.key+':recovery-backup:'+crypto.randomUUID();localStorage.setItem(key,original);s.backupKey=key;
-        s.host.querySelector('[data-cs-backup]').hidden=false;
+        backupRaw=s.raw ?? JSON.stringify({...record(s),slots:s.base,translationSync:undefined});
+        backupKey=backupIdentity(s,backupRaw);
       }
-      const raw = JSON.stringify(record(s)); localStorage.setItem(s.key, raw);
-      s.raw = raw; s.layoutBackupNeeded=false; s.translationBackupNeeded=false; s.needsUpgrade=false; s.saved = clone(s.values); controls(s);
+      const raw=JSON.stringify(record({...s,backupKey:backupKey || s.backupKey})),values=clone(s.values);
+      await storage().write({key:s.key,expected:s.raw,next:raw,backupKey,backupRaw,reason:'before-layout-sync',
+        check:()=>{if(session!==s)throw Error('This editor was closed. Your previous saved draft is preserved.');}});
+      if(backupKey){s.backupKey=backupKey;s.host.querySelector('[data-cs-backup]').hidden=false;}
+      s.raw=raw;s.layoutBackupNeeded=false;s.translationBackupNeeded=false;s.needsUpgrade=false;s.saved=values;s.pendingBackup=null;s.saveFailed=false;
+      s.storageActions?.forEach(action=>action.show(null));
       message(s, 'Draft saved in this browser · ' + new Date().toLocaleTimeString() + '. Beta is unchanged.');
-    } catch(error) { message(s, error.message || 'Draft could not be saved. Keep this page open and try again.', true); }
+    }catch(error){storageError(s,error);}
+    finally{storageBusy(s,false);}
   }
   function reset(s) {
+    if(s.storageBusy)return;
     if (!confirm(`Discard this browser’s ${s.chapter.toUpperCase()} draft and current edits? The preview will return to current Beta content.`)) return;
     try {
       if (!s.storageRead || localStorage.getItem(s.key) !== s.raw) {
         message(s, 'The saved draft could not be safely reset. Copy any text you want to keep before reloading.', true); return;
       }
-      localStorage.removeItem(s.key); s.raw = null; s.blocked = false;
+      localStorage.removeItem(s.key); s.raw = null; s.blocked = false; s.saveFailed=false;
       s.recoveryUI?.dispose(); s.recoveryUI = null; s.host.querySelector('[data-cs-recover]').hidden = true;
       s.values = clone(s.base);if(s.layoutEnabled)window.AIWiseLayoutSync?.initialize(s,null);s.translationSync=null;s.translationBackupNeeded=false;common()?.syncTranslation(s);s.refreshLanguageStatus(); s.saved = clone(s.base);
       updatePreview(s); controls(s); message(s, 'Draft reset to current Beta content.');
@@ -172,10 +211,13 @@
     } catch (error) { issue = error.message || 'This draft could not be read.'; }
     if (!model && report) model = {details:report.details};
     s.recoveryUI = recovery.mount(s.host, {model, issue, latest:clone(s.base), scope:`${s.config.label} · ${s.chapter.toUpperCase()} · ${language().name(s.locale)}`, savedAt:saved?.savedAt, raw:s.raw,
+      exportWork:context=>exportWork(s,context), archiveBackups:progress=>storage().migrate(progress),
       returnToEditor: () => { if (session === s) openEditor(s, s.index); },
       sendForReview: () => { if (session === s) openSubmission(s); },
       apply: async (values, {restart = false} = {}) => {
-        if (session !== s || !s.ready) throw Error('Reopen this chapter before applying the draft.');
+        if (session !== s || !s.ready || s.storageBusy) throw Error('Reopen this chapter after the current save finishes.');
+        storageBusy(s,true);
+        try {
         if (!valid(values, s.base)) throw Error('The selected combination does not fit the current page structure. Choose the latest Beta version for removed or restructured items, or download the original draft for manual recovery.');
         const releases = await (window.AIWiseBetaContent.editing||window.AIWiseBetaContent.read)(s.courseId, s.locale);
         if (session !== s) throw Error('This chapter was closed. Nothing was changed.');
@@ -198,14 +240,18 @@
           const wasBlocked=s.blocked;s.blocked=false;try{common()?.syncTranslation(s);}finally{s.blocked=wasBlocked;}
           // Render before storing; stale box anchors must not destroy the original.
           updatePreview(s);
-          s.backupKey = s.key + ':recovery-backup:' + crypto.randomUUID();
+          s.backupKey = backupIdentity(s,s.raw);
           const raw = JSON.stringify(record(s));
-          recovery.storeRecovered(localStorage, s.key, s.raw, raw, s.backupKey);
+          s.pendingRecoveryDraft=JSON.parse(raw);
+          await storage().write({key:s.key,expected:s.raw,next:raw,backupKey:s.backupKey,backupRaw:s.raw,reason:'before-merge',
+            check:()=>{if(session!==s)throw Error('This editor was closed. The original draft is preserved.');}});
+          s.pendingRecoveryDraft=null;s.pendingBackup=null;s.saveFailed=false;
           s.raw = raw; s.layoutBackupNeeded=false; s.translationBackupNeeded=false;s.saved = clone(s.values); s.blocked = false; s.needsUpgrade = false;
           s.host.querySelector('[data-cs-recover]').hidden = true;
           s.host.querySelector('[data-cs-backup]').hidden = false;
           s.refreshLanguageStatus(); controls(s); message(s, 'Updated draft saved in this browser. Your original is backed up. Continue editing, then send to Control Tower when ready.');
         } catch (error) { Object.assign(s,previousLayout);s.values = previous; s.backupKey = previousBackup; s.reviewedSource = previousReviewed; s.sourceStale = previousStale;s.translationSync=previousSync;s.needsUpgrade=previousUpgrade;s.translationBackupNeeded=previousBackupNeeded; updatePreview(s); throw error; }
+        } finally {storageBusy(s,false);}
       }
     });
     s.host.querySelector('[data-cs-recover]').hidden = false;
@@ -839,14 +885,18 @@
         prepareRecovery(s, html);
       }
       const backup = host.querySelector('[data-cs-backup]'); backup.hidden = !s.backupKey;
-      backup.onclick = () => {
-        try { const raw = localStorage.getItem(s.backupKey); if (!raw) throw Error('The original backup is not available in this browser.'); window.AIWiseDraftRecovery.download(raw, `aiwise-${s.chapter}-original-draft.json`); }
+      backup.onclick = async () => {
+        try { const raw = await storage().read(s.backupKey); if (!raw) throw Error('The original backup is not available in this browser.'); window.AIWiseDraftRecovery.download(raw, `aiwise-${s.chapter}-original-draft.json`); }
         catch (error) { message(s, error.message, true); }
       };
       if(s.layoutEnabled&&!s.blocked)window.AIWiseLayoutSync?.initialize(s,s.raw?JSON.parse(s.raw):null);
       common()?.syncTranslation(s);
       languageStatus();
       s.saved = clone(s.values); message(s, status, s.blocked);
+      s.storageActions=[...host.querySelectorAll('.cs-status')].map(node=>{
+        const holder=document.createElement('div');node.after(holder);
+        return storage().actions(holder,{exportWork:()=>exportWork(s),retry:()=>archiveAndRetry(s)});
+      });
       window.AIWiseStudioEditing?.mount(s,{update:()=>updatePreview(s),controls:()=>controls(s),open:()=>openEditor(s,s.index),message:text=>message(s,text)});
       host.querySelectorAll('[data-cs-save]').forEach(button => button.addEventListener('click', () => save(s)));
       host.querySelector('[data-cs-reset]').addEventListener('click', () => reset(s));
@@ -908,9 +958,9 @@
     } catch (error) { if (session === s && error.name !== 'AbortError') { console.error('[Content Studio]',error); message(s, 'This chapter could not be loaded. Reload to try again or open it in Beta. Saved drafts are unchanged.', true); } }
   }
   window.AIWiseAuth?.subscribe(() => { if(session) controls(session); });
-  window.addEventListener('beforeunload', event => { if (dirty()) { event.preventDefault(); event.returnValue = ''; } });
+  window.addEventListener('beforeunload', event => { if (dirty() || session?.storageBusy || session?.recoveryUI?.hasChanges?.()) { event.preventDefault(); event.returnValue = ''; } });
   window.AIWiseContentStudio = {render, supports, betaURL,
-    canLeave: () => (!session?.feedback?.canLeave||session.feedback.canLeave()) && (!dirty() || confirm(`Leave ${session?.isCommon ? 'Common' : 'Content'} Studio without saving your edits?`)),
+    canLeave: () => !session?.storageBusy && !session?.recoveryUI?.isBusy?.() && (!session?.feedback?.canLeave||session.feedback.canLeave()) && (!(dirty() || session?.recoveryUI?.hasChanges?.()) || confirm(`Leave ${session?.isCommon ? 'Common' : 'Content'} Studio without saving your edits?`)),
     dispose: () => { const old = session; session = null; old?.recoveryUI?.dispose();old?.feedback?.();old?.abort.abort(); old?.cancelPickerClose?.(); old?.cancelEditorClose?.(); if (old?.dialog.open) old.dialog.close(); if (old?.submitDialog.open) old.submitDialog.close(); }
   };
 })();

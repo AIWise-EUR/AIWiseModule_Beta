@@ -130,3 +130,70 @@ including the 390px layout. Production deployment is checked separately after pu
   Fifteen focused recovery tests and the real Studio/iframe browser fixture passed,
   including 390px layout, manual wording, completion actions, malformed-file backup,
   current Beta races and cross-tab preservation. No live-account test writes.
+
+
+## 2026-11-09 · Storage-full recovery and work export
+
+Implemented and validated; deployment pending. This change is local-browser
+storage only. No SQL, Edge Function, approved content or online request changes.
+
+- `draft-storage.js` stores new pre-merge/pre-layout backups in IndexedDB. Immutable
+  backup IDs retain their original keys. Write transactions must complete and exact
+  raw text must read back before a draft can be replaced.
+- Existing localStorage backups move only on an explicit Archive action. The exact
+  key allowlist covers Common C1/C2/C3/map and bachelor chapters in EN/NL. Current
+  drafts, settings and other application data are excluded. Each original is removed
+  only after verified archive commit and an immediate source equality check.
+- Archive labels include scope, chapter, language, original draft savedAt, archivedAt,
+  reason, original key, estimated text size and current-draft reference. Legacy backup
+  creation times/reasons are unknown; the original draft timestamp is not substituted.
+- Storage-full errors offer Archive backups and retry. Save retries use the live
+  in-memory edits; recovery retries preserve review selections and rerun baseline
+  checks. Repeated attempts reuse the same backup identity. Inputs/navigation are
+  guarded while saving; exports remain available. Failure never resets a draft.
+- Export current work downloads versioned JSON without writing browser storage. It
+  includes current rich-text values, baseline, source HTML, prior saved raw record,
+  pending recovery record and review choices, item position and submission summary.
+  The export is unapproved data; external tools must compare/validate and use the
+  normal submission/approval flow. It contains no credentials. This release supplies
+  export and archive preview/download, not an automatic file importer or publisher.
+- Existing original-backup downloads search both stores. `backup-storage.html` lists,
+  filters, previews and downloads archives and moves old backups on explicit click.
+
+### Rollout preserving already-open unsaved editors
+
+Open `workspace/backup-storage.html` in a **new tab in the same browser/profile**.
+Keep the old editor open without reloading. Archive backups in the new tab, then
+retry Save draft / Apply to my draft in the old tab. Only after the old work is saved
+(or separately copied/exported) should that editor be refreshed to load the new UI.
+Old tabs can still create localStorage backups; another archive pass can move them.
+A deployment cannot reach or export unsaved memory in an already-loaded old client.
+If archiving fails, keep that tab open and manually copy unsaved text before reload.
+
+### Limits
+
+IndexedDB is still browser/device-local and can be unavailable, full or cleared by
+site-data removal. If the active drafts themselves fill localStorage, moving backups
+may not resolve the error. Export remains the fallback. No automatic permanent
+archive deletion is introduced. Tests use isolated synthetic data, not Neus's actual
+browser contents. Remote submission is not automatically retried by this feature.
+
+
+### Validation
+
+- All 62 repository test files pass, including 13 new archive/export tests.
+- Actual Studio save/export functions tested across 20 scope/chapter/language
+  combinations (Common C1/C2/C3/map and three bachelors C2/C3, EN/NL).
+- Native browser localStorage quota reproduced on an isolated localhost origin.
+  Actual archive and Studio save functions moved 128 synthetic backups, retried
+  successfully and preserved unsaved Unicode text. Downloaded work JSON was read
+  back and checked against the unsaved editor text and original raw draft.
+- Actual recovery popup retained replacement text through a quota error and a
+  single Archive backups and retry action; native IndexedDB original verified.
+- Separate archive tab moved backups while the original editor tab retained later
+  unsaved input; saving in that original tab succeeded without reloading.
+- Failure tests cover rejected archive writes, verification mismatches, interrupted
+  migration/resume, changed source/current drafts, identity conflicts, unavailable
+  capacity, unchanged unrelated settings and readable labels/old backup references.
+- Native fixtures were cleaned. No real browser drafts or online records were
+  edited in these tests; Neus's browser contents remain uninspected.
