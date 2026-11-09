@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 64,
+  "sequence": 65,
   "course": "psychology",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "76191140-6990-4830-b7cb-2ab9f1ba933e",
+  "submission_id": "412abd55-de47-42c0-8556-bfaf311862bd",
   "source_release": "ae925013-3d4f-42f6-97ff-23f532948e37",
-  "approved_at": "2026-11-09T09:27:59.533769+00:00",
+  "approved_at": "2026-11-09T10:50:06.123345+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -620,7 +620,7 @@
             },
             {
               "name": "Uitbreden",
-              "text": "De student en haar medestudenten bespreken de onderzoeksvraag verder. Een andere medestudent wijst erop dat de relatie mogelijk niet eenduidig is: sommige studies vinden bijvoorbeeld negatieve verbanden, terwijl andere positieve, zwakke of helemaal geen verbanden vinden. Hierdoor realiseert de student zich dat ze geen aannames moet doen over de richting van het verbnd voordat ze de literatuur gaat lezen. De student is nu tevreden met haar onderzoeksvraag en klaar om te beginnen met het plannen van de literatuurzoektocht.",
+              "text": "De student en haar medestudenten bespreken de onderzoeksvraag verder. Een andere medestudent wijst erop dat de relatie mogelijk niet eenduidig is: sommige studies vinden bijvoorbeeld negatieve verbanden, terwijl andere positieve, zwakke of helemaal geen verbanden vinden. Hierdoor realiseert de student zich dat ze geen aannames moet doen over de richting van het verbind voordat ze de literatuur gaat lezen. De student is nu tevreden met haar onderzoeksvraag en klaar om te beginnen met het plannen van de literatuurzoektocht.",
               "actor": "team"
             }
           ]
