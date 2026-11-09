@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 44,
+  "sequence": 89,
   "course": "common",
   "chapter": "c3",
   "locale": "en",
-  "submission_id": "555653a6-692d-4064-9fda-c89608ea4e27",
+  "submission_id": "4156e466-9a67-4ce0-b3af-29eaaa25b374",
   "source_release": null,
-  "approved_at": "2026-11-05T21:55:12.683825+00:00",
+  "approved_at": "2026-11-09T13:16:59.076291+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -1994,7 +1994,7 @@
       "processing 1": "How the model actually processes this",
       "course help 1": "AI-Wise adapts its examples, explanations, and prompt templates to your course. You can change this at any time.",
       "subsections 1": "subsections toggle",
-      "Navigation c1 1": "C1: What is AI?",
+      "Navigation c1 1": "C1: What is Generative AI?",
       "Navigation c2 1": "C2: What is AI for us?",
       "Navigation c3 1": "C3: How do we use AI?",
       "choose course 1": "Choose your course",
@@ -2003,12 +2003,12 @@
       "feedback thanks 1": "Thank you — your feedback has been noted.",
       "feedback question 1": "What's on your mind?",
       "feedback placeholder 1": "Share a thought, suggestion, or issue...",
-      "Navigation c1 section 1 1": "History & Development",
-      "Navigation c1 section 2 1": "Anatomy of GenAI",
-      "Navigation c1 section 3 1": "GenAI Output Traits",
-      "Navigation c2 section 1 1": "AI vs Human Intelligence",
-      "Navigation c2 section 2 1": "Human vs GenAI",
-      "Navigation c2 section 3 1": "Collaboration Framework",
+      "Navigation c1 section 1 1": "What is AI? What is GenAI?",
+      "Navigation c1 section 2 1": "What is GenAI made of?",
+      "Navigation c1 section 3 1": "What GenAI can help with — and where it structurally falls short",
+      "Navigation c2 section 1 1": "Is artifical intelligence the same as human intelligence?",
+      "Navigation c2 section 2 1": "Human vs GenAI: a functional comparison",
+      "Navigation c2 section 3 1": "A framework for collaboration: S.A.T Framework",
       "Navigation c3 section 1 1": "Designing the input",
       "Navigation c3 section 2 1": "Output is not an answer — it is a proposal",
       "Navigation c3 section 3 1": "How AI output enters your work"
