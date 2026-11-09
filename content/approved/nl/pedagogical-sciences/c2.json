@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 61,
+  "sequence": 66,
   "course": "pedagogical-sciences",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "3cadf37b-fb1c-4847-9ae4-49fb73f16811",
-  "source_release": null,
-  "approved_at": "2026-11-08T18:53:06.808925+00:00",
+  "submission_id": "d32258af-c6fd-4384-9e0f-e46fdcd6b0d0",
+  "source_release": "a237f390-8cc3-4f0b-ad6f-69ac0bc8ba52",
+  "approved_at": "2026-11-09T10:50:16.336872+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -20,12 +20,705 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "Alles wat je niet hebt verteld: dat je d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "k"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "k"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "j"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "u"
+              },
+              {
+                "text": "m"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "u"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": ","
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "j"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "z"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": "f"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "b"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "c"
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "b"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "v"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "v"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "j"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "u"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "p"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": "c"
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": ","
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "j"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "w"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "j"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "z"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "v"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "b"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "k"
+              },
+              {
+                "text": "u"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "u"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "w"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "k"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "s"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "k"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "u"
+              },
+              {
+                "text": "m"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "."
               }
             ]
           ],
@@ -42,12 +735,12 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "Alles wat je niet hebt verteld: dat je docent moeilijke vragen stelt, dat antwoordopties vaak sterk op elkaar lijken en dat precieze kennis van definities nodig is om het juiste antwoord te kunnen kiezen. "
               }
             ]
           ],
@@ -64,12 +757,12 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet, is alles wat je niet hebt verteld: dat je het artikel al hebt gelezen, dat je vooral moeite hebt met het onderzoeksdesign, dat je vermoedt dat het om een between-subjects design gaat en dat je wilt beoordelen of het design de conclusie ondersteunt."
               }
             ]
           ],
@@ -86,12 +779,120 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "Alles wat je niet hebt verteld: dat je het concept al gedeeltelijk begrijpt, dat je denkt dat het te maken heeft met "
+              },
+              {
+                "text": "factoren die kinderen helpen zich positief te ontwikkelen"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "j"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "v"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "b"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "j"
+              },
+              {
+                "text": "p"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " hoe het verschilt van"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "simpelweg een goede omgeving hebben of minder risicofactoren"
+              },
+              {
+                "text": "."
               }
             ]
           ],
@@ -108,12 +909,252 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "Alles wat je niet hebt verteld: dat je zelf twijfelt over de laatste "
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "w"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "zin"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": ", dat je tutor eerder heeft aangegeven dat je "
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "h"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "b"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "m"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "j"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "z"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "u"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "o"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": "g"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "w"
+              },
+              {
+                "text": "i"
+              },
+              {
+                "text": "k"
+              },
+              {
+                "text": "k"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "l"
+              },
+              {
+                "text": "d"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "t"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "m"
+              },
+              {
+                "text": "a"
+              },
+              {
+                "text": "k"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "n"
+              },
+              {
+                "text": ","
+              },
+              {
+                "text": " "
+              },
+              {
+                "text": "en dat je vooral wilt weten of je dat in de laatste zin opnieuw doet."
               }
             ]
           ],
@@ -130,12 +1171,15 @@
           "fields": [
             [
               {
-                "text": ""
+                "text": "Wat het model niet weet"
               }
             ],
             [
               {
-                "text": ""
+                "text": "Alles wat je niet hebt verteld: waarom je juist deze stage wilt, w"
+              },
+              {
+                "text": "elke relevante ervaring je hebt, dat de organisatie ‘zelfstandige denkers’ zoekt en dat je enthousiast en zelfstandig wilt overkomen zonder arrogant te klinken."
               }
             ]
           ],
@@ -148,72 +1192,72 @@
     },
     "c2.examples": [
       {
-        "title": "Connecting an article to an argument in a scientific essay",
-        "typing": "\"How can I use this article to support my statement in my scientific essay?\"",
-        "thinking": "I want to use this article in my scientific essay because I think it supports my statement, but I'm not sure how to make the connection. My statement is that schools should play a larger role in preventing child maltreatment. Based on its findings, I think that the article could support an argument about the importance of early identification and support in schools, but I am not sure how to translate this idea into a strong argument.",
-        "processing": "The full text of the article is processed. Main findings, theoretical concepts, and conclusions are extracted. The most statistically likely \"helpful\" response pattern for \"how can I use this article to support my statement\" is activated. → Generate a comprehensive answer covering multiple possible ways to translate the article into an argument: relevant findings, connections between evidence and the statement, theoretical explanations, and possible ways to integrate the article into the essay. Present them as options. Sound confident and thorough.",
-        "typing_note": "[uploads a PDF]"
+        "title": "Een artikel koppelen aan een argument in een wetenschappelijk essay",
+        "typing": "\"Hoe kan ik dit artikel gebruiken om mijn stelling in mijn wetenschappelijk essay te onderbouwen?\"",
+        "thinking": "Ik wil dit artikel gebruiken in mijn wetenschappelijk essay, omdat ik denk dat het mijn stelling ondersteunt, maar ik weet niet goed hoe ik die verbinding moet leggen. Mijn stelling is dat scholen een grotere rol zouden moeten spelen bij het voorkomen van kindermishandeling. Op basis van de bevindingen denk ik dat het artikel een argument zou kunnen ondersteunen over het belang van vroegtijdige signalering en ondersteuning op scholen, maar ik weet niet goed how ik dit idee kan uitwerken tot een sterk argument. ",
+        "processing": "De volledige tekst van beide artikelen wordt verwerkt. De belangrijkste bevindingen, theoretische concepten en conclusies worden allemaal geëxtraheerd. Het statistisch meest waarschijnlijke \"behulpzame\" antwoordpatroon voor \"hoe kan ik dit artikel gebruiken om mijn stelling te onderbouwen?\" wordt geactiveerd. → Genereer een uitgebreid antwoord met verschillende mogelijke manieren om de bevindingen van het artikel te vertalen naar een argument:relevante bevindingen,verbanden tussen het bewijs en de stelling, theoretische verklaringen en mogelijke manieren om het artikel in het essay te verwerken. Presenteer deze als opties. Klink zelfverzekerd en grondig. ",
+        "typing_note": "[uploadt twee PDF's]"
       },
       {
-        "title": "Creating practice questions",
-        "typing": "\"Make me some MCQs on chapter 4.\"",
-        "thinking": "My exam is next week and I want to test myself on chapter 4. The professor always writes tricky MCQs where two options look almost the same and you have to know the exact definition to tell them apart. I need questions that are at that level, not the easy ones where you can guess by elimination.",
-        "processing": "Full chapter text is processed. Key concepts, definitions, and relationships identified. \"MCQ\" triggers a default format: one correct answer, three distractors, medium difficulty, recall focused. → Generate questions that cover the chapter evenly, make distractors plausible but clearly distinguishable from the correct answer.",
-        "typing_note": "[pastes chapter 4 text]"
+        "title": "Oefenvragen maken",
+        "typing": "\"Maak wat meerkeuzevragen over hoofdstuk 4.\"",
+        "thinking": "Mijn tentamen is volgende week en ik wil mezelf testen op hoofdstuk 4. De docent schrijft altijd lastige meerkeuzevragen waarbij twee antwoordopties bijna hetzelfde lijken en je de exacte definitie moet kennen om ze van elkaar te onderscheiden. Ik heb vragen nodig op dat niveau, niet de makkelijke waarbij je door uitsluiting kunt raden. ",
+        "processing": "De volledige hoofdstuktekst wordt verwerkt. Kernbegrippen, definities en verbanden worden geïdentificeerd. \"Meerkeuzevraag\" activeert een standaardtype: één juist antwoord, drie afleiders, gemiddelde moeilijkheidsgraad, gericht op reproductie. → Genereer vragen die het hoofdstuk gelijkmatig dekken, maak afleiders geloofwaardig maar duidelijk te onderscheiden van het juiste antwoord.",
+        "typing_note": "[plakt tekst van hoofdstuk 4]"
       },
       {
-        "title": "Summarizing a paper",
-        "typing": "\"Can you summarize this paper?\"",
-        "thinking": "I read this paper but I am not sure I understood the method section. I think they used a between subjects design but the way they describe the groups is confusing. I do not need a full summary, I just need someone to explain the design so I can figure out whether their conclusion actually follows from it.",
-        "processing": "Full paper is processed. All sections weighted. \"Summarize\" triggers a default structure: background, aim, method, key findings, conclusion. Roughly equal coverage across sections. → Produce something that reads like a complete, balanced overview. Sound clear and organized.",
-        "typing_note": "[uploads PDF]"
+        "title": "Een artikel samenvatten",
+        "typing": "\"Kun je dit artikel samenvatten?\"",
+        "thinking": "Ik heb dit artikel gelezen, maar ik weet niet zeker of ik de methodesectie goed heb begrepen. Ik denk dat ze een between-subjects design gebruikten, maar de manier waarop ze de groepen beschrijven is verwarrend. Ik heb geen volledige samenvatting nodig, ik wil alleen dat het onderzoeksdesign wordt uitgelegd zodat ik kan bepalen of de conclusie daadwerkelijk uit het onderzoek volgt.",
+        "processing": "Het volledige artikel wordt verwerkt. Alle secties worden even zwaar gewogen. \"Samenvatten\" activeert een standaardstructuur: achtergrond, doel, methode, belangrijkste bevindingen, conclusie. Min or meer gelijke dekking van alle secties. → Produceer iets dat leest als een compleet, evenwichtig overzicht. Kink helder en georganisserd.",
+        "typing_note": "[uploadt PDF] "
       },
       {
-        "title": "Understanding a concept",
-        "typing": "\"What are protective factors?\"",
-        "thinking": "The professor used the term \"protective factors\" in the lecture today and I kind of got it from context, but when I tried to explain it to my friend I couldn't. I think it has something to do with factors that help children develop positively, but I am not sure how it differs from simply having a good environment or fewer risk factors.",
-        "processing": "A definition request. \"Protective factors\" is a well represented concept in the training data. → Generate a clear, textbook style definition. Add an example. Possibly mention related terms. Present a self contained explanation, covering the concept broadly rather than targeting any specific point of confusion.",
+        "title": "Een concept begrijpen",
+        "typing": "\"Wat zijn beschermende factoren?\"",
+        "thinking": "De docent gebruikte vandaag tijdens het college de term \"beschermende factoren\" en ik begreep het min of meer uit de context, maar toen ik het aan mijn vriend probeerde uit te leggen, lukte dat niet. Ik denk dat het iets te maken heeft met factoren die kinderen helpen zich positief te ontwikkelen, maar ik weet niet zeker hoe dit verschilt van simpelweg een goede omgeving hebben of minder risicofactoren.",
+        "processing": "Een verzoek om een definitie. \"Berschemende factoren\" is een goed vertegenwoordigd concept in de trainingsdata. → Genereer een heldere, leerboekachtige definitie. Voeg een voorbeeld toe. Noem mogelijk gerelateerde termen. Presenteer een op zichzelf staande uitleg, die het concept breed behandelt in plaats van gericht in te gaan op een specifiek punt van verwarring. ",
         "typing_note": ""
       },
       {
-        "title": "Asking for feedback on your writing",
-        "typing": "\"What do you think of this? Any feedback?\"",
-        "thinking": "I spent two hours on this introduction and I think I explain the pedagogical dilemma clearly, but I am not sure whether the last two sentences lead naturally to my statement. My tutor told me last time that I tend to overcomplicate my sentences and explanations, and I want to know if I am doing that again here.",
-        "processing": "A paragraph is provided. Feedback requested with no specific focus. → Scan for grammar, clarity, structure, and argument strength across the entire paragraph. Generate a balanced set of comments covering multiple aspects. Highlight positives first, then suggest improvements. Distribute attention evenly across the whole text.",
-        "typing_note": "[pastes paragraph]"
+        "title": "Feedback vragen op je schrijfwerk",
+        "typing": "\"Wat vind je hiervan? Nog feedback?\"",
+        "thinking": "Ik heb twee uur aan deze inleiding gewerkt en ik denk dat ik het pedagogische dilemma duidelijk uitleg, maar ik weet niet zeker of de laatste twee zinnen op een natuurlijke manier naar mijn stelling toewerken. Mijn tutor zei de vorige keer dat ik de neiging heb om mijn zinnen en uitleg onnodig ingewikkeld te maken, en ik wil weten of ik dat hier weer doe.",
+        "processing": "Er wordt een alinea aangeleverd. Feedback wordt gevraagd zonder specifieke focus. → Scan de hele alinea op grammatica, helderheid, structuur en argumentatiekracht. Genereer een evenwichtige reeks opmerkingen die meerdere aspecten bestrijkt. Benoem eerst de positieve punten, geef daarna verbeterpunten. Verdeel de aandacht gelijkmatig over de hele tekst. ",
+        "typing_note": "[plakt alinea]"
       },
       {
-        "title": "Writing a motivation letter",
-        "typing": "\"Help me write a motivation letter for a youth care internship.\"",
-        "thinking": "I am applying for an internship at a youth care organization, and I really want it because I would like to gain practical experience working with children and families. I have some relevant experience from my courses and volunteer work, but I am not sure whether it is enough to mention in my motivation letter. The deadline is tomorrow and I saw that they value \"independent thinkers\" but I do not want to sound arrogant.",
-        "processing": "A motivation letter for a youth care internship. No specific organization, no specific tasks, no applicant background, no deadline pressure, no tone preference. → Generate a polished, general purpose motivation letter template. Use broadly applicable language about \"passion for children and youth\" and \"eagerness to learn.\" Structure it in a standard format. Sound professional and enthusiastic.",
+        "title": "Een motivatiebrief schrijven",
+        "typing": "\"Help mee een motivatiebrief schrijven voor een stage bij een jeugdzorgorganisatie.\"",
+        "thinking": "Ik solliciteer naar deze stage bij een jeugdzorgorganisatie en ik wil hem heel graag, omdat ik praktijkervaring wil opdoen in het werken met kinderen en gezinnen. Ik heb wat relevante ervaring vanuit mijn studie en vrijwilligerswerk, maar ik weet niet zeker of dit voldoende is om in mijn motivatiebrief te vermelden. De deadline is morgen en ik zag dat ze \"zelfstandige denkers\" waarderen, maar ik wil niet arrogant overkomen. ",
+        "processing": "Een motivatiebrief voor een stage bij een jeugdzorgorganisatie. Geen specifieke organisatie, geen specifieke taken, geen achtergrond van de sollicitant, geen deadlinedruk, geen voorkeur voor toon. → Genereer een gepolijste, algemeen toepasbare sjabloon voor een motivatiebrief. Gebruik breed toepasbare taal over “passie voor kinderen en jongeren” en “leergierigheid.” Structureer deze in een standaardformaat. Klink professioneel en enthousiast. ",
         "typing_note": ""
       }
     ],
     "c2.sat_example": {
-      "note": "The example ends here, but the S.A.T process does not have to stop here. If the student feels that the idea still needs to be developed or wants to ask for feedback, they can start another Self–Team or Self–AI cycle.",
+      "note": "Opmerking: het voorbeeld stopt hier, maar het SAT-proces hoeft hier niet te eindigen. Als de student het gevoel heeft dat het idee nog verder ontwikkeld moet worden, of om feedback wil vragen, kan ze een nieuwe Self-AI of Self-Team cyclus starten. ",
       "phases": [
         {
           "label": "Self–AI",
           "steps": [
             {
-              "name": "Intent",
-              "text": "A student wants to write their scientific essay about child maltreatment. They are interested in the role schools can play in preventing it and have a rough idea of what the statement could be: schools are important to prevent child maltreatment. However, they are unsure whether this is specific and arguable enough for the assignment.",
+              "name": "Intentie",
+              "text": "Een student wil haar wetenschappelijk essay schrijven over kindermishandeling. Ze is geïnteresseerd in de rol die scholen kunnen spelen bij het voorkomen ervan en heeft een ruw idee van wat haar stelling zou kunnen zijn: scholen zijn belangrijk bij het voorkomen van kindermishandeling. Ze weet echter niet zeker of dit specifiek en betwistbaar genoeg is voor de opdracht.",
               "actor": "self"
             },
             {
-              "name": "Operationalize",
-              "text": "The student asks AI in which ways they could be more specific regarding the statement. AI suggests exploring different types of schools, different forms of prevention, and different roles within schools where the responsibility to prevent child maltreatment should lie.",
+              "name": "Operationaliseren",
+              "text": "De student vraagt AI hoe ze haar stelling specifieker zou kunnen maken. AI stelt voor om te kijken naar verschillende soorten scholen, verschillende vormen van preventie en verschillende rollen binnen scholen te verkwnnen waarin de verantwoordelijkheid voor het voorkomen van kindermishandeling zou moeten liggen.",
               "actor": "ai"
             },
             {
-              "name": "Judge",
-              "text": "The student considers the alternatives and decides that they will focus on primary schools and the role of teachers. Their statement is now: primary school teachers are important to prevent child maltreatment.",
+              "name": "Beoordelen",
+              "text": "De student overweegt deze mogelijkheden en besluit zich te richten op basisscholen en de rol van leerkrachten. Har nieuwe stelling is: Leerkrachten in het basisonderwijjs zijn belangrijk bij het voorkomen van kindermishandeling.",
               "actor": "self"
             },
             {
-              "name": "Refine",
-              "text": "The student asks AI to help refine the wording of their statement without changing its underlying position. AI suggests changing \"are important\" for \"should play a larger role\". The student now has a specific and arguable statement: primary school teachers should play a larger role in preventing child maltreatment.",
+              "name": "Verfijnen",
+              "text": "De student vraagt AI om de formulering van haar stelling te helpen verfijnen zonder het onderliggende standpunt te veranderen. AI stelt voor om \"zijn belangrijk bij\" te vervangen door \"zouden betrokken moeten zijn bij\". De student formuleert op basis van deze input zelf een nieuwe specifieke en betwistbare stelling: leerkrachten in het basisonderwijs zouden een grotere rol moeten spelen bij het voorkomen van kindermishandeling.",
               "actor": "ai"
             }
           ]
@@ -222,56 +1266,29 @@
           "label": "Self–Team",
           "steps": [
             {
-              "name": "Present",
-              "text": "In class, the student shares their statement with their classmates and asks for their feedback.",
+              "name": "Presenteren",
+              "text": "In de les deelt de student haar stelling met haar medestudenten en vraagt om feedback.",
               "actor": "self"
             },
             {
               "name": "Feedback",
-              "text": "Overall, the student's classmates understand the statement and think it's a good dilemma. One classmate asks whether prevention refers to primary prevention, aimed at all students, or secondary prevention, aimed at children who have risk factors for maltreatment.",
+              "text": "Over het algemeen begrijpen de andere medestudenten de stelling en vinden ze het een interessant dilemma. Een medestudent vraagt of het bij preventie gaat om primaire preventie, gericht op alle leerlingen, of om secundaire preventie, gericht op kinderen met risicofactoren voor kindermishandeling.",
               "actor": "team"
             },
             {
-              "name": "Integrate",
-              "text": "The student realizes that the statement is still too general. They reflect on the question raised by their classmate and agree that they should be more specific regarding that element.",
+              "name": "Integreren",
+              "text": "De student realiseert zich dat de stelling nog te algemeen is. Ze denkt na over de vraag van haar medestudent en is het ermee eens dat ze dit aspect specifieker moet afbakenen.",
               "actor": "self"
             },
             {
-              "name": "Expand",
-              "text": "The student and their classmates discuss whether primary or secondary prevention fits the statement better. During the discussion, another classmate asks what kind of preventive measures they are thinking about.",
+              "name": "Uitbreden",
+              "text": "De student en haar medestudenten zijn het erover eens dat primaire preventie beter bij de stelling past. Een andere medestudent vraagt aan welke soorten preventieve maatregelen ze denken. Hierdoor realiseert de student zich dat ze geen aannames moet doen over de preventieve maatregelen voordat ze de literatuur gaat lezen. De student is nu tevreden met haar stelling en klaar om te beginnen met het plannen van de literatuurzoektocht.",
               "actor": "team"
-            }
-          ]
-        },
-        {
-          "label": "Self–AI",
-          "steps": [
-            {
-              "name": "Intent",
-              "text": "The student wants to make the statement more specific regarding the type of prevention and the preventive measures teachers could use. However, they realize they lack knowledge about these concepts.",
-              "actor": "self"
-            },
-            {
-              "name": "Operationalize",
-              "text": "The student asks AI to clarify the concepts and provide some examples.",
-              "actor": "ai"
-            },
-            {
-              "name": "Judge",
-              "text": "The student evaluates the explanations and the examples and decides that education about recognizing inappropriate behavior and seeking help fits their intended focus best. They also decide that they want the intervention to be delivered as part of regular classroom education to all students.",
-              "actor": "self"
-            },
-            {
-              "name": "Refine",
-              "text": "The student asks AI to help formulate a statement that is more specific, including the new insights. AI suggests several formulations, and the student selects the one that best reflects their intended position: primary school teachers should play a larger role in the prevention of child maltreatment by providing all students with education on recognizing inappropriate behavior and seeking help.",
-              "actor": "ai"
             }
           ]
         }
       ]
     },
-    "c2.sat_example_title": "Developing a scientific essay statement through the S.A.T loop"
-  },
-  "structure_only": true,
-  "layout_review_required": true
+    "c2.sat_example_title": "S.A.T uitgewerkt voorbeeld"
+  }
 }
