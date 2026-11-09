@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 25,
+  "sequence": 84,
   "course": "common",
   "chapter": "c2",
   "locale": "nl",
-  "submission_id": "d02241e4-df64-4979-8fc3-b70ad078f72c",
-  "source_release": "724af4d1-48f3-40c0-8e39-736e12d6c66c",
-  "approved_at": "2026-11-05T10:59:04.975972+00:00",
+  "submission_id": "baa11423-554c-47a8-91cb-50a8e938e41c",
+  "source_release": "bbbd5cae-5736-441d-9936-c2119aceba51",
+  "approved_at": "2026-11-09T13:04:48.321435+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -108,7 +108,44 @@
           "template": "text"
         }
       ],
-      "formats": [],
+      "formats": [
+        {
+          "path": [
+            "Text 3"
+          ],
+          "runs": [
+            {
+              "text": "Onderzoek laat zien dat dit ook in gesprekken met  large language models een rol speelt. Studies hebben aangetoond dat large language models antwoorden genereren met aanzienlijk minder conversationele afstemming ("
+            },
+            {
+              "text": "grounding",
+              "italic": true
+            },
+            {
+              "text": ") dan mensen. In plaats van actief te controleren of ze je correct hebben begrepen, gaan ze er doorgaans van uit dat er al een gemeenschappelijke basis bestaat. Hierbij doet zich een interessante complicatie voor: de fine-tuning die modellen behulpzamer en meer als een assistent laat reageren, kan dit probleem juist verergeren. Hoe meer het model zich als een assistent gedraagt, hoe kleiner de kans dat het eerst controleert wat je daadwerkelijk bedoelde. "
+            }
+          ],
+          "slot": "c2.block-14"
+        },
+        {
+          "path": [
+            "Text 2"
+          ],
+          "runs": [
+            {
+              "text": "Het menselijk werkgeheugen kan ongeveer vier tot zeven informatieeenheden ("
+            },
+            {
+              "text": "chunks",
+              "italic": true
+            },
+            {
+              "text": ") vasthouden en actief bewerken. De contextvensters van GenAI duizenden tokens passief beschikbaar houden. Studies laten zien dat ook GenAI beperkingen heeft wanneer informatie actief moet worden bewerkt. Mensen zijn echter beter in staat om flexibel te bepalen welke informatie relevant is en hun denken aan te passen wanneer de situatie verandert."
+            }
+          ],
+          "slot": "c2.block-24"
+        }
+      ],
       "version": 1
     },
     "c2.block-0": {
@@ -268,7 +305,7 @@
     },
     "c2.block-20": {
       "Text 1": "Emotionele verwerking",
-      "Text 2": "Mensen ervaren emoties die hun denken, motivatie en gedrag beïnvloeden. Als je tijdens een gesprek merkt dat iets je ongemakkelijk maakt, kan dat een signaal zijn om beter op te letten, door te vragen of je gedrag aan te passen. GenAI kan emotionele signalen in taal herkennen en daarop passend reageren, maar ervaart die emoties niet zelf en beschikt dus niet over zulke eigen emotionele signalen om een situatie te beoordelen en erop te reageren. "
+      "Text 2": "Mensen ervaren emoties die hun denken, motivatie en gedrag beïnvloeden. Bijvoorbeeld, als je tijdens een gesprek merkt dat iets je ongemakkelijk maakt, kan dat een signaal zijn om beter op te letten, door te vragen of je gedrag aan te passen. GenAI kan emotionele signalen in taal herkennen en daarop passend reageren, maar ervaart die emoties niet zelf en beschikt dus niet over zulke eigen emotionele signalen om een situatie te beoordelen en erop te reageren. "
     },
     "c2.block-21": {
       "Text 1": "Metacognitie",
@@ -471,9 +508,9 @@
       "Navigation c2 section 1 1": "Is kunstmatige intelligentie hetzelfde als menselijke intelligentie?",
       "Navigation c2 section 2 1": "Mens vs GenAI: een functionele vergelijking",
       "Navigation c2 section 3 1": "Een kader voor samenwerking: S.A.T Framework",
-      "Navigation c3 section 1 1": "Prompten",
-      "Navigation c3 section 2 1": "Bekritiseren",
-      "Navigation c3 section 3 1": "Integreren"
+      "Navigation c3 section 1 1": "De input ontwerpen",
+      "Navigation c3 section 2 1": "Output is geen antwoord — het is een voorstel",
+      "Navigation c3 section 3 1": "Hoe AI-output je werk binnenkomt"
     },
     "c2.extra-12": {
       "Page title 1": "AI-Wise · C2: What is AI for us?"
