@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 57,
+  "sequence": 86,
   "course": "common",
   "chapter": "c3",
   "locale": "nl",
-  "submission_id": "e57c2427-c4bd-4e9c-a925-750b64d99637",
+  "submission_id": "ff072cfa-6ea0-49eb-b313-cdc49be02b1a",
   "source_release": "555653a6-692d-4064-9fda-c89608ea4e27",
-  "approved_at": "2026-11-08T18:06:45.456559+00:00",
+  "approved_at": "2026-11-09T13:08:35.338985+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -845,7 +845,7 @@
       "processing 1": "Hoe het model dit daadwerkelijk verwerkt",
       "course help 1": "AI-Wijs past de voorbeelden, uitleg en prompttemplates aan je vak aan. Je kunt dit op elk moment wijzigen.",
       "subsections 1": "subsecties in-/uitschakelen",
-      "Navigation c1 1": "C1: Wat is AI?",
+      "Navigation c1 1": "C1: Wat is Generatieve AI?",
       "Navigation c2 1": "C2: Wat betekent AI voor ons?",
       "Navigation c3 1": "C3: Hoe gebruiken we AI?",
       "choose course 1": "Kies je vak",
