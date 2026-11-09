@@ -1,0 +1,207 @@
+{
+  "schema": 1,
+  "sequence": 69,
+  "course": "pedagogical-sciences",
+  "chapter": "c3",
+  "locale": "en",
+  "submission_id": "6a4e6a44-0220-4792-b5cd-0ebb5b13de73",
+  "source_release": null,
+  "approved_at": "2026-11-09T10:50:25.495184+00:00",
+  "slots": {
+    "c3.amd_example": {
+      "intro": "Student asked AI to extract the main argument from each of the three articles. AI presented three main arguments:",
+      "items": [
+        {
+          "tag": "adopt",
+          "text": "Article A: \"Supportive teacher-student relationships are associated with better socio-emotional development in children\"",
+          "reason": "Matches the original article's main argument. Usable as a starting point for organizing the evidence for and against my statement."
+        },
+        {
+          "tag": "modify",
+          "text": "Article B: \"Parental involvement in schools leads to better educational outcomes\"",
+          "reason": "Direction is correct, but AI generalized a \"positive association\" into a \"causal relationship.\" Corrected to \"positive association.\" Original article re-checked."
+        },
+        {
+          "tag": "discard",
+          "text": "Article C: \"Schools should implement mandatory parent-training programmes\"",
+          "reason": "I asked for the article's main argument, not practical implications. This recommendation does not represent the article's central claim. Deleted. Record: \"AI exceeded request scope by adding practical implications.\""
+        }
+      ],
+      "title": "Worked example — Main argument extraction"
+    },
+    "c3.full_example": [
+      {
+        "tag": "rol",
+        "lines": [
+          "You are an academic writing assistant for a",
+          "first-year pedagogical sciences student."
+        ]
+      },
+      {
+        "tag": "taak",
+        "lines": [
+          "Extract the main argument from each of the",
+          "following three journal articles. Focus on the",
+          "authors' central claim, not on secondary points",
+          "or practical implications."
+        ]
+      },
+      {
+        "tag": "context",
+        "lines": [
+          "I am writing a scientific essay for my course",
+          "\"Inleiding in opvoeding en onderwijs\". I have",
+          "read all three papers. I am currently at the",
+          "stage of organizing my sources before drafting",
+          "an outline."
+        ]
+      },
+      {
+        "tag": "randvoorwaarden",
+        "lines": [
+          "Do not summarize each paper individually.",
+          "Base your response only on the evidence",
+          "presented in each article.",
+          "Do not add interpretations or practical",
+          "implications."
+        ]
+      },
+      {
+        "tag": "stappen",
+        "lines": [
+          "1. Read the three abstracts I provide below.",
+          "2. Identify the authors' main argument in each",
+          "   article.",
+          "3. State each main argument clearly and concisely."
+        ]
+      },
+      {
+        "tag": "outputformaat",
+        "lines": [
+          "Example argument format:",
+          "\"Article A: Supportive teacher-student",
+          "relationships are associated with better",
+          "socio-emotional development in children\""
+        ]
+      },
+      {
+        "tag": "voorbeelden",
+        "lines": [
+          "Numbered list, one article per item.",
+          "For each article, state its main argument",
+          "in one or two sentences."
+        ]
+      }
+    ],
+    "c3.critique.read": "Student asked \"Extract the main argument from each of these three articles.\" AI returned three paragraphs. Observation: AI identified one main argument for each article and wrote in paragraph form.",
+    "c3.critique.decide": "Article A's main argument is usable as a starting point. Article B's main argument needs adjustment. Article C's practical implications are deleted — may re-prompt after checking the original.",
+    "c3.critique.verify": "Checking Article A: AI correctly identified the main argument, but also added a secondary argument. Checking Article B: AI generalized the original claim. Checking Article C: AI provided \"practical implications\" based on the findings, rather than the main argument. The \"practical implications\" section covers a stage I haven't reached yet.",
+    "c3.techniques.role": {
+      "bad": "\"Check my Boolean search string\"",
+      "good": "\"You are a search strategy advisor for academic databases. Review the Boolean search string I wrote. If there are logical errors, don't fix them directly — ask me questions about what went wrong.\""
+    },
+    "c3.critique.question": "Are these really the main arguments of the articles, or did AI generalize? Did AI accurately distinguish the authors' main arguments from secondary points? Article B's argument sounds stronger than I remember — is that what the authors actually concluded? I only asked for the main argument, but AI added \"practical implications\" — did it exceed my request scope?",
+    "c3.full_example_title": "Full worked example — Connecting articles to a statement",
+    "c3.techniques.few_shot": {
+      "good": "\"Summarize each paper's core claim in one sentence, like this:\nSmith (2022): Supportive teacher-student relationships can reduce the negative impact of family-related risk factors on children's socio-emotional development.\nDo the same for the remaining three papers.\""
+    },
+    "c3.template_compare.md": [
+      {
+        "lines": [
+          "You are an academic writing assistant."
+        ],
+        "heading": "Role"
+      },
+      {
+        "lines": [
+          "Extract the main argument from each of",
+          "these three articles."
+        ],
+        "heading": "Task"
+      },
+      {
+        "lines": [
+          "I am writing a scientific essay for",
+          "\"Inleiding in opvoeding en onderwijs\"."
+        ],
+        "heading": "Context"
+      },
+      {
+        "lines": [
+          "- Do not summarize each paper individually",
+          "- Base your response only on the evidence",
+          "  presented in each article",
+          "- Do not add interpretations or practical",
+          "  implications"
+        ],
+        "heading": "Constraints"
+      },
+      {
+        "lines": [
+          "Numbered list, one article per item.",
+          "For each article, state its main argument",
+          "in one or two sentences."
+        ],
+        "heading": "Output Format"
+      }
+    ],
+    "c3.template_compare.xml": [
+      {
+        "tag": "rol",
+        "lines": [
+          "You are an academic writing assistant."
+        ]
+      },
+      {
+        "tag": "taak",
+        "lines": [
+          "Extract the main argument from each of",
+          "these three articles."
+        ]
+      },
+      {
+        "tag": "context",
+        "lines": [
+          "I am writing a scientific essay for",
+          "\"Inleiding in opvoeding en onderwijs\"."
+        ]
+      },
+      {
+        "tag": "randvoorwaarden",
+        "lines": [
+          "Do not summarize each paper individually.",
+          "Base your response only on the evidence",
+          "presented in each article.",
+          "Do not add interpretations or practical",
+          "implications."
+        ]
+      },
+      {
+        "tag": "outputformaat",
+        "lines": [
+          "Numbered list, one article per item.",
+          "For each article, state its main argument",
+          "in one or two sentences."
+        ]
+      }
+    ],
+    "c3.techniques.output_format": {
+      "bad": "\"Compare these three papers\"",
+      "good": "\"Create a comparison table for these three papers. Columns: author/year, research question, methodology, key findings, limitations. One sentence per cell.\""
+    },
+    "c3.techniques.chain_of_thought": {
+      "bad": "\"Are the conclusions of these two papers contradictory?\"",
+      "good": "\"Determine whether the conclusions of these two papers contradict each other. First, summarize each paper's core claim. Then compare where they overlap and where they differ. Finally, explain step by step whether the difference is a genuine contradiction or a difference in scope or conditions.\""
+    },
+    "c3.techniques.clear_instruction": {
+      "bad": "\"Summarize this paper\"",
+      "good": "\"Summarize this paper's main argument and research methodology in two sentences each. This is for an undergraduate pedagogical sciences class presentation.\""
+    },
+    "c3.techniques.task_decomposition": {
+      "bad": "\"Build my scientific essay outline\"",
+      "good": "Step 1: \"Extract the main argument from each of these three articles\" → Step 2: \"Compare the main arguments and identify similarities and differences between the articles\" → Step 3: \"Suggest possible ways to organize these articles based on their main arguments\""
+    }
+  },
+  "structure_only": true,
+  "layout_review_required": true
+}
