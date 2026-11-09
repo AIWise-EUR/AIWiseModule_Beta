@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 62,
+  "sequence": 77,
   "course": "psychology",
   "chapter": "c2",
   "locale": "en",
-  "submission_id": "ae925013-3d4f-42f6-97ff-23f532948e37",
+  "submission_id": "4e4b7b8b-088f-45cd-92ca-50572ce8737e",
   "source_release": null,
-  "approved_at": "2026-11-09T08:06:08.931563+00:00",
+  "approved_at": "2026-11-09T11:26:04.142772+00:00",
   "slots": {
     "_studio": {
       "boxes": [
@@ -1431,16 +1431,34 @@
             ],
             [
               {
-                "text": "W"
+                "text": "E"
+              },
+              {
+                "text": "v"
+              },
+              {
+                "text": "e"
+              },
+              {
+                "text": "r"
+              },
+              {
+                "text": "y"
+              },
+              {
+                "text": "t"
               },
               {
                 "text": "h"
               },
               {
-                "text": "a"
+                "text": "i"
               },
               {
-                "text": "t"
+                "text": "n"
+              },
+              {
+                "text": "g"
               },
               {
                 "text": " "
