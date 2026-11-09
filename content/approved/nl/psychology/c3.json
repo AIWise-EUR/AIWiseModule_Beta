@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "sequence": 49,
+  "sequence": 76,
   "course": "psychology",
   "chapter": "c3",
   "locale": "nl",
-  "submission_id": "88ecc4a1-2424-4241-8f1f-ccf4d856d82e",
+  "submission_id": "2ecc6d0a-c203-4c1e-952c-d12a8ae7ef26",
   "source_release": "dcb54674-a48e-4d33-b8d0-a5d0aa7875ef",
-  "approved_at": "2026-11-05T22:22:22.295184+00:00",
+  "approved_at": "2026-11-09T11:25:48.620671+00:00",
   "slots": {
     "c3.amd_example": {
       "intro": "Een student vroeg AI om gemeenschappelijke thema's uit drie artikelen te halen. AI presenteerde de volgende drie thema's:  ",
@@ -31,14 +31,14 @@
     },
     "c3.full_example": [
       {
-        "tag": "rol",
+        "tag": "role",
         "lines": [
           "Jij bent een assistent voor academische literatuuranalyse",
           "voor een eerstejaarsstudent psychologie."
         ]
       },
       {
-        "tag": "taak",
+        "tag": "task",
         "lines": [
           "Identificeer gemeenschappelijke thema's in de volgende",
           "drie wetenschappelijke artikelen. Focus op overlappende",
@@ -55,7 +55,7 @@
         ]
       },
       {
-        "tag": "randvoorwaarden",
+        "tag": "constraints",
         "lines": [
           "Vat niet elk artikel afzonderlijk samen.",
           "Stel geen overzicht of structuur voor.",
@@ -63,7 +63,7 @@
         ]
       },
       {
-        "tag": "stappen",
+        "tag": "steps",
         "lines": [
           "1. Lees de drie samenvattingen die ik hieronder aanlever.",
           "2. Indentificeer terugkende onderwepen of constructen.",
@@ -71,7 +71,7 @@
         ]
       },
       {
-        "tag": "outputformaat",
+        "tag": "output_format",
         "lines": [
           "Een genummerde lijst van 3-5 gemeenschappelijke thema's. ",
           "Elk thema in één zin, met de relevante",
@@ -79,7 +79,7 @@
         ]
       },
       {
-        "tag": "voorbeelden",
+        "tag": "examples",
         "lines": [
           "Voorbeeld themaformaat:",
           "\"Slaapverstoring als mediator tussen schermtijd ",
@@ -134,13 +134,13 @@
     ],
     "c3.template_compare.xml": [
       {
-        "tag": "rol",
+        "tag": "role",
         "lines": [
           "Jij bent een assistent voor literatuuranalyse."
         ]
       },
       {
-        "tag": "taak",
+        "tag": "task",
         "lines": [
           "Identificeer gemeenschappelijke thema's in drie artikelen."
         ]
@@ -152,14 +152,14 @@
         ]
       },
       {
-        "tag": "randvoorwaarden",
+        "tag": "constraints",
         "lines": [
           "Vat niet elk artikel afzonderlijk samen.",
           "Blijf alleen bij het identificeren van thema’s."
         ]
       },
       {
-        "tag": "outputformaat",
+        "tag": "output_format",
         "lines": [
           "Genummerde lijst, één zin per thema."
         ]
@@ -181,5 +181,6 @@
       "bad": "\"Maak een overzicht voor mijn literatuuroverzicht\"",
       "good": "Stap 1: \"Haal de gemeenschappelijke thema's uit de vijf artikelen die ik heb gelezen.”→ Stap 2: “Breng de verbanden tussen die thema’s in kaart.” → Stap 3: “Stel mogelijke structuren voor mijn literatuuroverzicht voor op basis van die verbanden.”"
     }
-  }
+  },
+  "layout_review_required": true
 }
