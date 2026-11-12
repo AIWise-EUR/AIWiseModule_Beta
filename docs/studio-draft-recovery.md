@@ -235,3 +235,31 @@ changed by this patch.
 
 Log: 2026-11-09 — reproduced the user's exported failure; implemented placement
 matching and verified preservation without committing private authored content.
+
+
+## 2026-11-12 · Pre-refactor restore point
+
+Baseline: `c444116a8913474d79c873f37fe688b6fbf92c8c`, successful Pages run
+`42624118005`. Tag: `backup/editor-pre-refactor-2026-11-12`.
+Work branch: `refactor/editor-core-2026-11-12`, in an isolated worktree.
+No runtime or approved-content changes are part of this preparation.
+
+A complete-history Git bundle and source ZIP are stored outside the checkout at
+`../backups/editor-pre-refactor-2026-11-12/`, with SHA-256 manifest and test log.
+Bundle verification and an independent clone/checkout matched the baseline;
+ZIP CRC verification and all 62 baseline test files passed.
+
+This preserves tracked source and committed approved content, not live database
+rows, user-browser localStorage/IndexedDB, unsaved input or the separate student
+repository. Before changing any persistence/API contract, take the corresponding
+data backup and define backwards-compatible reads/writes. Preserve existing
+browser work through the work-export flow; deployment cannot capture another
+browser's in-memory input.
+
+Rollback procedure: preserve current state, create a recovery branch from latest
+development, revert only the reviewed refactor code changes, check all intervening
+changes and saved-draft/translation/recovery compatibility, then test and deploy.
+Do not force-reset development to the tag or overwrite later approved content.
+The tag is also available for an independent comparison checkout; this does not
+change the live site. Refactor commits should keep runtime, content and migrations
+separate so each code change can be reversed without rolling back authors' work.

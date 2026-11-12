@@ -176,6 +176,8 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 20 | Content fit and six DPAS examples | Beta deployed; six DPAS slots confirmed; draft recovery fix validated; 61 test files passed | [Record](content-fit-and-examples.md) |
 | 21 | Fourth C2 example section | 61 test files passed; browser layout verified | Restored-draft carousel navigation corrected; independent title/body; shared heading typography; existing text retained; [record](studio-block-editing.md#2026-11-06-fourth-c2-example-section) |
 
+| 22 | Editor refactor restore point | Baseline archived and independently restored; no runtime changes | Tag `backup/editor-pre-refactor-2026-11-12`; 62 baseline test files passed; isolated `refactor/editor-core-2026-11-12` branch |
+
 ## How to verify
 
 - `sh checks/run-tests.sh` runs the tests under Deno (52 files).
@@ -352,3 +354,5 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 - 2026-11-09 — C2 recovery now reconciles independently added same-family/example boxes under the approved identity, preserving authored Dutch text. See studio-draft-recovery.md.
 
 - 2026-11-09 — Module bottom-left badges now display registry bachelor names (Psychology, Pedagogical Sciences, DPAS). Course identities, fixed links, content lookup and individual course chooser entries remain unchanged. Existing loader checks cover all four fixed course links and the unpinned badge.
+
+- **2026-11-12** (Codex) Preserved deployed baseline `c444116a8913474d79c873f37fe688b6fbf92c8c` before editor unification. Tagged source, created full-history bundle and source ZIP, verified independent restoration and all 62 tests. Future work is isolated; code rollback must preserve subsequent approved content and online/browser work. See the restore-point section of `studio-draft-recovery.md`.
