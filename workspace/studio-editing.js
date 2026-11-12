@@ -7,9 +7,65 @@
   function historyCopy(s){const copy=clone(s.values);if(s.layoutPlan){s.layoutHistory ||= new WeakMap();s.layoutHistory.set(copy,clone(s.layoutPlan.maps));}return copy;}
   function remember(s){if(!s.blockEditing)return;s.undo.push(historyCopy(s));if(s.undo.length>60)s.undo.shift();s.redo=[];}
   function changed(s){if(s.layoutEnabled&&s.layoutPlan&&window.AIWiseLayoutSync.changed(s.base,s.values,s.layoutPlan.maps))s.needsUpgrade=true;s.blockEditing.update();s.blockEditing.controls();s.blockEditing.message('Unsaved edits · Preview only.');}
-  function mutate(s,fn,reopen=false){if(s.layoutEnabled&&s.layoutProblem){s.blockEditing.message(s.layoutProblem);return;}remember(s);fn();changed(s);if(reopen)s.blockEditing.open();}
+  // All edits use the same lifecycle; targets describe storage, not UI or locale.
+  // Legacy callers retain their notification/history policy during this refactor.
+  function change(s,write,{notify=changed,history=true,reopen=false}={}){
+    if(history)remember(s);
+    write();notify(s);
+    if(reopen)s.blockEditing.open();
+  }
+  function capabilities(s){
+    const language=s.locale==='en'||!!s.layoutEnabled;
+    return {
+      boxTools:!!s.blocksEnabled&&language,
+      examplePlacement:!!s.exampleBoxesEnabled&&language,
+      exampleText:!!s.blocksEnabled&&!!s.exampleBoxesEnabled&&language&&!s.blocked&&!s.layoutProblem,
+      satStructure:!!s.blocksEnabled&&!!s.satPhasesEnabled&&!s.blocked,
+      legacyTranslation:!!s.isCommon&&s.locale==='nl'&&!s.layoutEnabled
+    };
+  }
+  function mutate(s,fn,reopen=false){if(s.layoutEnabled&&s.layoutProblem){s.blockEditing.message(s.layoutProblem);return;}change(s,fn,{reopen});}
   function formatRecord(s,slot,path){return s.values._studio?.formats.find(f=>f.slot===slot&&JSON.stringify(f.path)===JSON.stringify(path));}
   function textChanged(s,slot,path,text){const f=formatRecord(s,slot,path);if(f)editRuns(f,text);}
+  function slotTarget(s,slot,path,{omitEmpty=false}={}){
+    return {
+      readRuns:()=>formatRecord(s,slot,path)?.runs,
+      writeRuns:runs=>{const records=ext(s).formats,f=formatRecord(s,slot,path);if(f)f.runs=runs;else records.push({slot,path,runs});},
+      writeText:text=>{
+        if(!path.length){s.values[slot]=text;return;}
+        const parent=path.slice(0,-1).reduce((value,key)=>value[key],s.values[slot]),key=path.at(-1);
+        if(omitEmpty&&!text)delete parent[key];else parent[key]=text;
+      }
+    };
+  }
+  const richTarget=(readRuns,writeRuns)=>({readRuns,writeRuns});
+  function editText(s,target,text,options){
+    change(s,()=>{
+      const runs=target.readRuns();
+      if(runs){const f={runs};editRuns(f,text);target.writeRuns(f.runs);}
+      target.writeText?.(text);
+    },options);
+  }
+  // Reordering a collection must move its formatting and language correspondence
+  // together. The descriptor retains the existing array paths and box identities.
+  function remapCollection(s,{slot,indexPath,exampleBoxes=false},before,after,duplicate=-1,original=-1){
+    window.AIWiseLayoutSync?.remap(s,slot,before,after,duplicate,original);
+    if(!s.values._studio)return;
+    const remapped=(previous,value,place)=>{
+      const next=after.indexOf(before[previous]),result=[];
+      if(next>=0)result.push(place(value,next,false));
+      if(duplicate>=0&&previous===original)result.push(place(clone(value),duplicate,true));
+      return result;
+    };
+    s.values._studio.formats=s.values._studio.formats.flatMap(f=>{
+      if(f.slot!==slot||!indexPath.every((key,i)=>f.path[i]===key))return [f];
+      return remapped(Number(f.path[indexPath.length]),f,(value,index)=>({...value,path:[...indexPath,String(index),...value.path.slice(indexPath.length+1)]}));
+    });
+    if(exampleBoxes)s.values._studio.boxes=s.values._studio.boxes.flatMap(box=>{
+      if(!M().exampleBox(box))return [box];
+      return remapped(M().exampleIndex(box),box,(value,index,copy)=>({...value,...(copy?{id:'box-'+crypto.randomUUID()}:{}),example:index,family:M().boxFamily(box)}));
+    });
+  }
   function editRuns(f,text){
     const old=M().plain(f.runs);let a=0,b=0;while(a<old.length&&a<text.length&&old[a]===text[a])a++;
     while(b<old.length-a&&b<text.length-a&&old[old.length-b-1]===text[text.length-b-1])b++;
@@ -27,8 +83,8 @@
     const bar=document.createElement('div');bar.className='cs-formatbar';bar.setAttribute('role','group');bar.setAttribute('aria-label','Text formatting');
     let selection=null;const capture=()=>{selection=[input.selectionStart,input.selectionEnd];};input.addEventListener('select',capture);input.addEventListener('keyup',capture);input.addEventListener('mouseup',capture);
     const apply=(mark,val)=>{const [a,b]=selection||[input.selectionStart,input.selectionEnd];if(a===b){s.blockEditing.message('Select the words to format first.');return;}
-      remember(s);const runs=read();const selected=[];let offset=0;runs.forEach(r=>{if(offset<b&&offset+r.text.length>a)selected.push(r);offset+=r.text.length;});
-      write(M().format(runs,a,b,mark,val===undefined?!selected.every(r=>r[mark]):val));changed(s);input.focus();input.setSelectionRange(a,b);
+      change(s,()=>{const runs=read();const selected=[];let offset=0;runs.forEach(r=>{if(offset<b&&offset+r.text.length>a)selected.push(r);offset+=r.text.length;});
+        write(M().format(runs,a,b,mark,val===undefined?!selected.every(r=>r[mark]):val));});input.focus();input.setSelectionRange(a,b);
     };
     bar.append(button('Bold',()=>apply('bold')),button('Italic',()=>apply('italic')),
       menu('Color',[['Default',null],['Ink','#173e43'],['Teal','#2b646a'],['Green','#2c7354'],['Amber','#9a621a'],['Red','#a43b36']],v=>apply('color',v||false)),
@@ -40,19 +96,18 @@
     bar.addEventListener('click',draw);input.addEventListener('input',draw);wrap.append(bar,preview);
   }
   function field(s,wrap,input,slot,path){
-    if(!s.blocksEnabled||(s.locale!=='en'&&!s.layoutEnabled))return;
+    if(!capabilities(s).boxTools)return;
     // Attributes and diagram labels stay plain; their DOM does not accept inline spans.
     if(s.isCommon){const block=s.commonBlocks?.find(b=>b.path===slot),i=block&&Object.keys(block.fields).indexOf(path[0]);if(i===undefined||i<0||block.nodes[i].nodeType!==3||block.nodes[i].parentElement.closest('svg,title'))return;}
-    toolbar(s,wrap,input,()=>formatRecord(s,slot,path)?.runs||M().rich(input.value),runs=>{
-      const records=ext(s).formats,f=formatRecord(s,slot,path);if(f)f.runs=runs;else records.push({slot,path,runs});
-    });
+    const target=slotTarget(s,slot,path);
+    toolbar(s,wrap,input,()=>target.readRuns()||M().rich(input.value),target.writeRuns);
   }
   function exampleReminders(s,index){
     const boxes=(s.values._studio?.boxes||[]).filter(b=>M().exampleBox(b)&&!M().unknownBox(b)),own=new Set(boxes.filter(b=>M().exampleIndex(b)===index).map(M().boxFamily)),seen=new Set();
     return boxes.filter(b=>{const family=M().boxFamily(b);if(own.has(family)||seen.has(family))return false;seen.add(family);return true;});
   }
   function addExampleBox(s,source,index){
-    if(s.blocked||s.abort?.signal.aborted||!s.exampleBoxesEnabled||(s.locale!=='en'&&!s.layoutEnabled)||ext(s).boxes.length>=50||!s.values['c2.examples']?.[index]||!exampleReminders(s,index).includes(source))return;
+    if(s.blocked||s.abort?.signal.aborted||!capabilities(s).examplePlacement||ext(s).boxes.length>=50||!s.values['c2.examples']?.[index]||!exampleReminders(s,index).includes(source))return;
     mutate(s,()=>{ext(s).boxes.push({...clone(source),id:'box-'+crypto.randomUUID(),example:index,family:M().boxFamily(source),anchor:0});},true);
   }
   function reminder(s,source,index,doc=document){
@@ -62,7 +117,7 @@
     const origin=doc.createElement('p');origin.textContent='Added in Example '+(M().exampleIndex(source)+1);origin.style.cssText='font-size:12px;margin:0 0 8px';
     const hint=doc.createElement('p');hint.textContent='No box has been added to this version yet.';hint.style.cssText='margin:0 0 12px';
     const add=doc.createElement('button');add.type='button';add.textContent='Add this box to this version';add.className='button';add.style.cssText='padding:10px 14px;border:1px solid #2b5d63;border-radius:8px;background:#fff;color:#173e43;font:inherit;cursor:pointer';
-    add.disabled=!!s.blocked||!s.exampleBoxesEnabled||(s.locale!=='en'&&!s.layoutEnabled)||(s.values._studio?.boxes.length||0)>=50;
+    add.disabled=!!s.blocked||!capabilities(s).examplePlacement||(s.values._studio?.boxes.length||0)>=50;
     add.onclick=e=>{e.stopPropagation();addExampleBox(s,source,index);};
     const note=doc.createElement('small');note.textContent='Editor only';note.style.cssText='display:block;margin-top:10px';
     node.append(title,origin,hint,add,note);return node;
@@ -75,7 +130,7 @@
   function unknownPanel(s,container,index){
     const read=()=>M().unknownFor(s.values._studio?.boxes||[],index);
     const full=!read()&&(s.values._studio?.boxes.length||0)>=50;
-    const enabled=s.blocksEnabled&&s.exampleBoxesEnabled&&(s.locale==='en'||s.layoutEnabled)&&!s.blocked&&!s.layoutProblem&&!full;
+    const enabled=capabilities(s).exampleText&&!full;
     const defaults=[M().rich(M().unknownTitle(s.locale)),M().rich('')];
     const section=document.createElement('fieldset'),legend=document.createElement('legend');
     legend.textContent='What the model doesn’t know';section.append(legend);
@@ -95,8 +150,9 @@
       const wrap=document.createElement('label'),input=document.createElement(i===0?'input':'textarea');
       wrap.textContent=name;input.setAttribute('aria-label',name);input.value=M().plain(read()?.fields[i]||defaults[i]);input.disabled=!enabled;
       if(i===1)input.rows=5;
-      input.oninput=()=>{if(!enabled)return;remember(s);const f={runs:clone(read()?.fields[i]||defaults[i])};editRuns(f,input.value);write(i,f.runs);changed(s);};
-      wrap.append(input);if(enabled)toolbar(s,wrap,input,()=>read()?.fields[i]||defaults[i],runs=>write(i,runs));section.append(wrap);
+      const target=richTarget(()=>read()?.fields[i]||defaults[i],runs=>write(i,runs));
+      input.oninput=()=>{if(enabled)editText(s,target,input.value);};
+      wrap.append(input);if(enabled)toolbar(s,wrap,input,target.readRuns,target.writeRuns);section.append(wrap);
       if(s.locale==='nl'){
         const source=M().unknownFor(s.englishBase?._studio?.boxes||[],index);
         if(source){const detail=document.createElement('details'),summary=document.createElement('summary'),p=document.createElement('p');summary.textContent='Show English source';p.textContent=M().plain(source.fields[i]);detail.append(summary,p);section.append(detail);}
@@ -105,8 +161,9 @@
     container.append(section);
   }
   function panel(s,container,item){
-    if(s.isCommon&&s.locale==='nl'&&!s.layoutEnabled){translationPanel(s,container,item);return;}
-    if(!s.blocksEnabled||(s.locale!=='en'&&!s.layoutEnabled))return;
+    const allowed=capabilities(s);
+    if(allowed.legacyTranslation){translationPanel(s,container,item);return;}
+    if(!allowed.boxTools)return;
     const section=document.createElement('section');section.className='cs-block-actions';
     const heading=document.createElement('h3');heading.textContent='Boxes & layout';section.append(heading);
     const actions=document.createElement('div');actions.className='cs-formatbar';section.append(actions);
@@ -130,7 +187,8 @@
       for(const box of s.values._studio?.boxes.filter(b=>b.slot===item.path&&(item.example===undefined||M().exampleIndex(b)===item.example)&&!(item.example!==undefined&&b===M().unknownFor(s.values._studio.boxes,item.example)))||[]){
         const card=document.createElement('fieldset'),legend=document.createElement('legend');legend.textContent='Added box · '+(M().plain(box.fields[0]).trim()||'Untitled');card.append(legend);
         box.fields.forEach((runs,i)=>{const wrap=document.createElement('label');wrap.textContent=i===0?'Title':'Text '+i;const input=document.createElement('textarea');input.setAttribute('aria-label',i===0?'Title':'Text '+i);input.rows=i===0?2:5;input.value=M().plain(runs);
-          input.oninput=()=>{remember(s);const f={runs:box.fields[i]};editRuns(f,input.value);box.fields[i]=f.runs;changed(s);};wrap.append(input);toolbar(s,wrap,input,()=>box.fields[i],runs=>box.fields[i]=runs);card.append(wrap);});
+          const target=richTarget(()=>box.fields[i],runs=>box.fields[i]=runs);
+          input.oninput=()=>editText(s,target,input.value);wrap.append(input);toolbar(s,wrap,input,target.readRuns,target.writeRuns);card.append(wrap);});
         const group=document.createElement('div');group.className='cs-formatbar';
         const duplicateBox=button('Duplicate',()=>mutate(s,()=>{if(ext(s).boxes.length<50){const a=ext(s).boxes,id='box-'+crypto.randomUUID();a.splice(a.indexOf(box)+1,0,{...clone(box),id,...(M().exampleBox(box)?{example:M().exampleIndex(box),family:id}:{})});}},true));duplicateBox.disabled=item.example!==undefined&&!s.exampleBoxesEnabled;
         group.append(duplicateBox,
@@ -142,7 +200,7 @@
     if(!s.isCommon&&item.example!==undefined){
       const examples=s.values['c2.examples'];
       const change=op=>mutate(s,()=>{
-        const a=s.values['c2.examples'],i=item.example,old=a.slice(),formats=s.values._studio?.formats||[];let duplicate=-1;
+        const a=s.values['c2.examples'],i=item.example,old=a.slice();let duplicate=-1;
         const boxes=s.values._studio?.boxes||[],scoped=boxes.filter(M().exampleBox);
         if(scoped.length&&!s.exampleBoxesEnabled)return;
         if(op==='duplicate'&&boxes.length+scoped.filter(b=>M().exampleIndex(b)===i).length>50)return;
@@ -151,17 +209,7 @@
         if(op==='up'&&i>0)[a[i-1],a[i]]=[a[i],a[i-1]];
         if(op==='down'&&i<a.length-1)[a[i+1],a[i]]=[a[i],a[i+1]];
         if(op==='remove'&&a.length>1)a.splice(i,1);
-        window.AIWiseLayoutSync?.remap(s,'c2.examples',old,a,duplicate,i);
-        if(s.values._studio)s.values._studio.formats=formats.flatMap(f=>{
-          if(f.slot!=='c2.examples')return [f];const previous=Number(f.path[0]),next=a.indexOf(old[previous]),result=[];
-          if(next>=0)result.push({...f,path:[String(next),...f.path.slice(1)]});
-          if(duplicate>=0&&previous===i)result.push({...clone(f),path:[String(duplicate),...f.path.slice(1)]});return result;
-        });
-        if(s.values._studio)s.values._studio.boxes=boxes.flatMap(b=>{
-          if(!M().exampleBox(b))return [b];const previous=M().exampleIndex(b),next=a.indexOf(old[previous]),family=M().boxFamily(b),result=[];
-          if(next>=0)result.push({...b,example:next,family});
-          if(duplicate>=0&&previous===i)result.push({...clone(b),id:'box-'+crypto.randomUUID(),example:duplicate,family});return result;
-        });
+        remapCollection(s,{slot:'c2.examples',indexPath:[],exampleBoxes:true},old,a,duplicate,i);
       },true);
       for(const [label,op] of [['Add same card','add'],['Duplicate card','duplicate'],['Move up','up'],['Move down','down'],['Remove card','remove']]){const control=button(label,()=>change(op));control.disabled=!!s.values._studio?.boxes.some(M().exampleBox)&&!s.exampleBoxesEnabled||op==='duplicate'&&(s.values._studio?.boxes.length||0)+(s.values._studio?.boxes.filter(b=>M().exampleBox(b)&&M().exampleIndex(b)===item.example).length||0)>50;actions.append(control);}
       for(const source of exampleReminders(s,item.example))section.append(reminder(s,source,item.example));
@@ -178,19 +226,20 @@
       const en=s.englishApproved._studio.boxes.find(en=>en.id===box.id);
       box.fields.forEach((runs,index)=>{const wrap=document.createElement('div'),label=document.createElement('label'),input=document.createElement('textarea');
         label.textContent=index===0?'Title':'Text '+index;input.setAttribute('aria-label',label.textContent);input.rows=index===0?2:5;input.value=M().plain(runs);
-        input.oninput=()=>{const f={runs:box.fields[index]};editRuns(f,input.value);box.fields[index]=f.runs;changed(s);};label.append(input);wrap.append(label);
+        const target=richTarget(()=>box.fields[index],runs=>box.fields[index]=runs);
+        input.oninput=()=>editText(s,target,input.value,{history:false});label.append(input);wrap.append(label);
         window.AIWiseCommonStudio.translationField(s,wrap,JSON.stringify(['box',box.id,index]),M().plain(en.fields[index]));card.append(wrap);
       });section.append(card);
     }
     container.append(section);
   }
   function satPanel(s,container,item,field){
-    const sat=s.values[item.path], enabled=s.blocksEnabled&&s.satPhasesEnabled&&!s.blocked;
+    const sat=s.values[item.path], enabled=capabilities(s).satStructure;
     const note=document.createElement('p');note.className='cs-language-status';
     note.textContent=enabled?'Each box is one Self–AI or Self–Team cycle. Empty boxes are hidden in the module. Delete can be undone before saving.':'Edit the text in each box below. Add and Delete become available after the S.A.T backend update.';
     container.append(note);
     const change=(index,kind)=>{
-      if(!s.blocksEnabled||!s.satPhasesEnabled||s.blocked)return;
+      if(!capabilities(s).satStructure)return;
       if(kind!=='delete'&&sat.phases.length>=50)return;
       mutate(s,()=>{
         const before=sat.phases.slice();
@@ -200,13 +249,7 @@
           s.satEditingIndex=index;
           sat.phases.splice(index,0,{label:team?'Self–Team':'Self–AI',steps:names.map((name,i)=>({actor:i%2?(team?'team':'ai'):'self',name,text:''}))});
         }
-        window.AIWiseLayoutSync?.remap(s,'c2.sat_example',before,sat.phases);
-        // Formatting follows the surviving box, not its previous numeric position.
-        if(s.values._studio)s.values._studio.formats=s.values._studio.formats.flatMap(f=>{
-          if(f.slot!==item.path||f.path[0]!=='phases')return [f];
-          const next=sat.phases.indexOf(before[Number(f.path[1])]);
-          return next<0?[]:[{...f,path:['phases',String(next),...f.path.slice(2)]}];
-        });
+        remapCollection(s,{slot:item.path,indexPath:['phases']},before,sat.phases);
       },true);
     };
     function addControls(index){
@@ -246,5 +289,5 @@
       examplePreview(s);
     }).catch(()=>{});
   }
-  window.AIWiseStudioEditing={mount,field,panel,satPanel,remember,textChanged,examplePreview,exampleReminders,addExampleBox,unknownPanel};
+  window.AIWiseStudioEditing={mount,field,panel,satPanel,remember,textChanged,examplePreview,exampleReminders,addExampleBox,unknownPanel,slotTarget,editText};
 })();

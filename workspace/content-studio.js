@@ -438,17 +438,13 @@
         input.setAttribute('aria-label',label(name)); input.name = path.join('.') || 'value'; input.value = value;
         if (input.tagName === 'TEXTAREA') input.rows = 5;
         input.addEventListener('input', () => {
-          window.AIWiseStudioEditing?.remember(s);
-          window.AIWiseStudioEditing?.textChanged(s,valuePath,item.example!==undefined&&valuePath===item.path?[String(item.example),...path]:path,input.value);
-          if (!path.length) s.values[valuePath] = input.value;
-          else {
-            const target = valuePath === item.path ? currentValue(s, item) : s.values[valuePath], keys = [...path], last = keys.pop();
-            const parent = keys.reduce((obj, key) => obj[key], target);
-            if (last === 'typing_note' && !input.value && !Object.hasOwn(item.example === undefined ? s.base[item.path] : s.base[item.path][item.example], last)) delete parent[last];
-            else parent[last] = input.value;
-          }
-          updatePreview(s); controls(s);
-          message(s, s.blocked ? 'Preview edits only. Saving is unavailable until the saved draft is reset.' : dirty() ? 'Unsaved edits · Preview only.' : '', s.blocked);
+          const editing=window.AIWiseStudioEditing;
+          const targetPath=item.example!==undefined&&valuePath===item.path?[String(item.example),...path]:path;
+          const omitEmpty=path.at(-1)==='typing_note'&&!input.value&&!Object.hasOwn(item.example===undefined?s.base[item.path]:s.base[item.path][item.example],'typing_note');
+          editing.editText(s,editing.slotTarget(s,valuePath,targetPath,{omitEmpty}),input.value,{notify:()=>{
+            updatePreview(s);controls(s);
+            message(s, s.blocked ? 'Preview edits only. Saving is unavailable until the saved draft is reset.' : dirty() ? 'Unsaved edits · Preview only.' : '', s.blocked);
+          }});
         });
         if(!value.trim()){input.placeholder='Enter '+label(name).toLowerCase();const hint=document.createElement('small');hint.textContent='Empty field · add text in this language.';wrap.append(hint);}
         wrap.appendChild(input);

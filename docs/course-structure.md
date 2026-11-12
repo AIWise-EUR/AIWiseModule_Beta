@@ -177,6 +177,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 | 21 | Fourth C2 example section | 61 test files passed; browser layout verified | Restored-draft carousel navigation corrected; independent title/body; shared heading typography; existing text retained; [record](studio-block-editing.md#2026-11-06-fourth-c2-example-section) |
 
 | 22 | Editor refactor restore point | Baseline archived and independently restored; no runtime changes | Tag `backup/editor-pre-refactor-2026-11-12`; 62 baseline test files passed; isolated `refactor/editor-core-2026-11-12` branch |
+| 23 | Editor operation consolidation | First pass implemented and verified on refactor branch; not deployed | Shared text lifecycle/targets, collection remapping and capability predicates; 63 test files; 20 real-browser combinations match baseline stored drafts and submission gates |
 
 ## How to verify
 
@@ -191,6 +192,32 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- **2026-11-12** (Codex) Consolidated editor operations on
+  `refactor/editor-core-2026-11-12`, starting from `c444116` (still latest
+  `origin/development` when fetched). `change()` now owns history/write/notification;
+  `editText()` uses plain-slot or rich-text target adapters for normal fields,
+  added boxes, the fourth example section and the legacy translation panel.
+  Formatting and structural changes reuse the lifecycle. `remapCollection()`
+  shares formatting/language-map remapping for examples and SAT, retaining existing
+  box IDs/families and duplication rules. Repeated capability predicates are
+  consolidated without changing their policies. UI constructors and collection
+  defaults remain specialized; this is the first consolidation, not a replacement
+  of the entire editor. Existing exported helper names remain available.
+  No data-schema, storage-key, approved-content, backend, save/recovery, submission,
+  or publication changes. Existing notification differences and the legacy Dutch
+  translation panel's no-history input behavior are intentionally retained.
+  Validation: all **63 test files passed**, including 9 new operation regressions;
+  real Chrome edit/save/reload across **20 scope/chapter/language combinations**,
+  course C2 next/previous navigation, and **14 mocked submissions** passed with
+  production network access blocked. Repeated the same browser workflow against
+  both baseline editor scripts: all 20 saved records match exactly after excluding
+  `savedAt`, and submission eligibility matches (the same 6 source/review gates
+  remain). The baseline already selects SAT instead of the first example when
+  restoring a C2 draft at numeric item index 0; the comparison explicitly opens
+  `c2.examples` and leaves that unrelated behavior unchanged. Browser tests use
+  isolated profiles, local copies of approved fixtures and no production writes.
+  Original browser work, online requests, Beta and student releases are untouched.
 
 - **2026-11-04** (Codex) Added English/Nederlands share links for each of the four
   courses. Both start at the lobby as requested; descriptive text follows the
