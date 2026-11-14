@@ -178,7 +178,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 
 | 22 | Editor refactor restore point | Baseline archived and independently restored; no runtime changes | Tag `backup/editor-pre-refactor-2026-11-12`; 62 baseline test files passed; isolated `refactor/editor-core-2026-11-12` branch |
 | 23 | Editor operation consolidation | First pass implemented and verified on refactor branch; not deployed | Shared text lifecycle/targets, collection remapping and capability predicates; 63 test files; 20 real-browser combinations match baseline stored drafts and submission gates |
-| 24 | Editor target definitions and coverage | Verified on refactor branch; all 64 test files passed; runtime unchanged | [Definitions and current behavior mapping](editor-target-model.md); source catalog and 19 approved snapshots covered; legacy differences explicitly retained |
+| 24 | Editor target definitions and coverage | Verified on refactor branch; all 64 test files passed; runtime unchanged | [Definitions and current behavior mapping](editor-target-model.md); [independent verification guide and Claude prompt](editor-audit-handoff.md); source catalog and 19 approved snapshots covered; legacy differences explicitly retained |
 
 ## How to verify
 
@@ -193,6 +193,11 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- **2026-11-15** (Codex) Added the independent verification handoff and Claude prompt,
+  pinned to `4dbc2c1`: isolated checkout, prerequisites, full/target/browser commands,
+  expected results, comparison limits and reporting format. Verified the documented
+  Deno audit CLI produces the expected JSON. Documentation only; no runtime changes.
 
 - **2026-11-15** (Codex) Built a read-only target inventory and classification model
   before the next runtime refactor. Audited 243 Common blocks / 879 source fields,
