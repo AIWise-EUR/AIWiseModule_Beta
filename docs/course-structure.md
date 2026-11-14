@@ -178,6 +178,7 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
 
 | 22 | Editor refactor restore point | Baseline archived and independently restored; no runtime changes | Tag `backup/editor-pre-refactor-2026-11-12`; 62 baseline test files passed; isolated `refactor/editor-core-2026-11-12` branch |
 | 23 | Editor operation consolidation | First pass implemented and verified on refactor branch; not deployed | Shared text lifecycle/targets, collection remapping and capability predicates; 63 test files; 20 real-browser combinations match baseline stored drafts and submission gates |
+| 24 | Editor target definitions and coverage | Verified on refactor branch; all 64 test files passed; runtime unchanged | [Definitions and current behavior mapping](editor-target-model.md); source catalog and 19 approved snapshots covered; legacy differences explicitly retained |
 
 ## How to verify
 
@@ -192,6 +193,17 @@ the style of the existing `*_SETUP.md` files, because only the owner can apply i
   Supabase safeguards. After each owner action, confirm in the workspace as well.
 
 ## Log
+
+- **2026-11-15** (Codex) Built a read-only target inventory and classification model
+  before the next runtime refactor. Audited 243 Common blocks / 879 source fields,
+  18 course slots across three bachelor sources, and 19 approved snapshots. No
+  unmatched stored targets. Added five checks against existing behavior, including
+  actual formatting-tool eligibility on all Common fields and variable/fixed list
+  validation. Documented XML tag structural synchronization, virtual fourth-section
+  ownership, map formatting limitations, legacy actor compatibility and translation
+  history policy instead of silently normalizing them. All 64 test files passed.
+  Neither runtime scripts nor
+  existing content, browser storage or backend data were changed in this step.
 
 - **2026-11-12** (Codex) Consolidated editor operations on
   `refactor/editor-core-2026-11-12`, starting from `c444116` (still latest
